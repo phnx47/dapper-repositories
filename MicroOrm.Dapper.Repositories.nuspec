@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+  <metadata schemaVersion="2">
+    <id>MicroOrm.Dapper.Repositories</id>
+    <version>1.0.0</version>
+    <title>MicroOrm.Dapper.Repositories</title>
+    <authors>Sergey Kuznetsov</authors>
+    <owners>Sergey Kuznetsov</owners>
+    <licenseUrl>http://opensource.org/licenses/MIT</licenseUrl>
+    <projectUrl>https://github.com/phnx47/MicroOrm.Dapper.Repositories</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>CRUD for Dapper, implement Data Repository</description>
+    <releaseNotes></releaseNotes>
+    <tags>dapper, microorm, repositories</tags>
+	<dependencies>
+		<dependency id="Dapper" version="1.42" />
+	</dependencies>
+  </metadata>
+  <files>
+	<file src="MicroOrm.Dapper.Repositories\bin\Release\MicroOrm.Dapper.Repositories.dll" target="lib\net45" />
+    <file src="MicroOrm.Dapper.Repositories\bin\Release\MicroOrm.Dapper.Repositories.pdb" target="lib\net45" />
+    <file src="MicroOrm.Dapper.Repositories\bin\Release\MicroOrm.Dapper.Repositories.xml" target="lib\net45" />
+  </files>
+</package>
