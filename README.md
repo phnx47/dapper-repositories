@@ -1,7 +1,5 @@
 # MicroOrm.Dapper.Repositories
 
-===========================
-
 If you like your code runs fast, probably you know about Micro ORMs.
 They are simple and one of their main goals is be the fastest way to execute your SQL sentences on your data repositories.
 However, for some of them you need to write your own SQL sentences. This is the case of the most popular Micro ORM [Dapper](https://github.com/StackExchange/dapper-dot-net)
