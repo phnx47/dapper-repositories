@@ -46,7 +46,6 @@ Some notes
 
 *  By default the SQL Generator is going to map the POCO name with the table name, and each public property to a column.
 *  If the `Status` is used on a certain POCO, the "delete" sentence will be an update instead of a delete.
-*  Identity may be used for external library, for example: Repository
 *  Complex primary keys are supported.
 
 SQL Sentences
