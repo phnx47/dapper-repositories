@@ -32,9 +32,6 @@ From System.ComponentModel.DataAnnotations.Schema - By default the column name w
 ### [NotMapped]
 From System.ComponentModel.DataAnnotations.Schema - For "logical" properties that does not have a corresponding column and have to be ignored by the SQL Generator.
 
-Metadata attributes: "MicroOrm.SqlGenerator.Attributes"
--------------------
-
 ###	[Status]
 For tables that implements "logical deletes" instead of physical deletes. This attribute can decorate only `enum` properties and one of the possible values for that enumeration has to be decorated with the "Deleted" attribute
 
