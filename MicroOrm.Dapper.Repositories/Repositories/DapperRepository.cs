@@ -160,7 +160,8 @@ namespace MicroOrm.Dapper.Repositories.Repositories
 
         #endregion Update
 
-        #region Date Beetwen
+        #region Beetwen
+
         public IEnumerable<TEntity> FindAllBeetwen(object from, object to, Expression<Func<TEntity, object>> btwFiled)
         {
             return FindAllBeetwen(from, to, btwFiled, null);
@@ -187,9 +188,7 @@ namespace MicroOrm.Dapper.Repositories.Repositories
             return data;
         }
 
-       
-        #endregion Date Beetwen
-
+        #endregion Beetwen
 
     }
 }
