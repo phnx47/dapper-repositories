@@ -83,7 +83,7 @@ Lets see some SQL sentences examples that this tool will create. "Users" POCO:
 		}
 	}
 	
-	public enum UserStatus : byte
+	public enum UserStatus
 	{
 	    Active = 0,
 	
