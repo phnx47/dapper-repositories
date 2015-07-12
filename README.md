@@ -83,6 +83,16 @@ Lets see some SQL sentences examples that this tool will create. "Users" POCO:
 		}
 	}
 	
+	public enum UserStatus : byte
+	{
+	    Active = 0,
+	
+	    Inactive = 1,
+	
+	    [Deleted]
+	    Deleted = 2
+	}
+	
 Implements the repository:
 
     public class UserRepository : DapperRepository<User>
@@ -99,20 +109,31 @@ Implements the repository:
 Simple as that, we have defined a fully functional data repository for the "User" POCO. Because the inheritance pattern we are doing here, both repository contract and repository implementation contains this functions:
 
         bool Delete(TEntity instance);
+        
         Task<bool> DeleteAsync(TEntity instance);
+        
         TEntity Find(Expression<Func<TEntity, bool>> expression);
+        
         IEnumerable<TEntity> FindAll();
+        
         IEnumerable<TEntity> FindAll(Expression<Func<TEntity, bool>> expression);
+        
         Task<IEnumerable<TEntity>> FindAllAsync();
+        
         Task<IEnumerable<TEntity>> FindAllAsync(Expression<Func<TEntity, bool>> expression);
+        
         Task<TEntity> FindAsync(Expression<Func<TEntity, bool>> expression);
+        
         bool Insert(TEntity instance);
+        
         Task<bool> InsertAsync(TEntity instance);
+        
         bool Update(TEntity instance);
+        
         Task<bool> UpdateAsync(TEntity instance);
 
 Example:
 
     var user = await userRepository.FindAsync(x => x.Id == 5);
     
-    var allUsers = await userRepository.FindAllAsync(x => x.AccountId == 3 && x.Status != EEntityStatus.Deleted); // all users for 3 account and not deleted
+    var allUsers = await userRepository.FindAllAsync(x => x.AccountId == 3 && x.Status != UserStatus.Deleted); // all users for 3 account and not deleted
