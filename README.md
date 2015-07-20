@@ -11,6 +11,10 @@ that generates all the CRUD sentences for a POCO class based on its definition w
 
 I tested this with MSSQL, PostgreSQL(partially) and MySQL .
 
+Available on [nuget](https://www.nuget.org/packages/MicroOrm.Dapper.Repositories/)
+
+	PM> Install-Package MicroOrm.Dapper.Repositories
+
 Goals
 -----
 *  Avoid writing SQL.
