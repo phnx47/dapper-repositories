@@ -80,7 +80,7 @@ namespace MicroOrm.Dapper.Repositories.Repositories
 
             if (SqlGenerator.IsIdentity)
             {
-                var newId = Connection.Query<long>(queryResult.Sql, queryResult.Param).Single();
+                var newId = Connection.Query<long>(queryResult.Sql, queryResult.Param).FirstOrDefault();
                 added = newId > 0;
 
                 if (added)
@@ -105,7 +105,7 @@ namespace MicroOrm.Dapper.Repositories.Repositories
 
             if (SqlGenerator.IsIdentity)
             {
-                var newId = (await Connection.QueryAsync<long>(queryResult.Sql, queryResult.Param)).Single();
+                var newId = (await Connection.QueryAsync<long>(queryResult.Sql, queryResult.Param)).FirstOrDefault();
                 added = newId > 0;
 
                 if (added)
