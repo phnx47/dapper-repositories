@@ -7,7 +7,6 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
-using MicroOrm.Dapper.Repositories.DbContext;
 using MicroOrm.Dapper.Repositories.SqlGenerator.Attributes;
 using MicroOrm.Dapper.Repositories.SqlGenerator.Interfaces;
 
@@ -20,7 +19,6 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator.Models
         public SqlGenerator(ESqlConnector sqlConnector)
         {
             SqlConnector = sqlConnector;
-
 
             var entityType = typeof(TEntity);
 
@@ -69,38 +67,21 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator.Models
 
         public ESqlConnector SqlConnector { get; set; }
 
-        public bool IsIdentity
-        {
-            get
-            {
-                return this.IdentityProperty != null;
-            }
-        }
+        public bool IsIdentity => this.IdentityProperty != null;
 
+        public bool LogicalDelete => StatusProperty != null;
 
-        public bool LogicalDelete
-        {
-            get
-            {
-                return StatusProperty != null;
-            }
-        }
+        public string TableName { get; }
 
-        public string TableName { get; private set; }
-
-
-        public PropertyMetadata IdentityProperty { get; private set; }
-
+        public PropertyMetadata IdentityProperty { get; }
 
         public IEnumerable<PropertyMetadata> KeyProperties { get; private set; }
 
+        public IEnumerable<PropertyMetadata> BaseProperties { get; }
 
-        public IEnumerable<PropertyMetadata> BaseProperties { get; private set; }
+        public PropertyMetadata StatusProperty { get; }
 
-
-        public PropertyMetadata StatusProperty { get; private set; }
-
-        public object LogicalDeleteValue { get; private set; }
+        public object LogicalDeleteValue { get; }
 
         #endregion Properties
 
@@ -113,14 +94,14 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator.Models
                 this.BaseProperties.Where(p => !p.Name.Equals(this.IdentityProperty.Name, StringComparison.InvariantCultureIgnoreCase)) :
                 this.BaseProperties).ToList();
 
-            string columNames = string.Join(", ", properties.Select(p => string.Format("{0}", p.ColumnName)));
-            string values = string.Join(", ", properties.Select(p => string.Format("@{0}", p.Name)));
+            string columNames = string.Join(", ", properties.Select(p => $"{p.ColumnName}"));
+            string values = string.Join(", ", properties.Select(p => $"@{p.Name}"));
 
             var sqlBuilder = new StringBuilder();
             sqlBuilder.AppendFormat("INSERT INTO {0} {1} {2} ",
                                     this.TableName,
-                                    string.IsNullOrEmpty(columNames) ? string.Empty : string.Format("({0})", columNames),
-                                    string.IsNullOrEmpty(values) ? string.Empty : string.Format(" VALUES ({0})", values));
+                                    string.IsNullOrEmpty(columNames) ? string.Empty : $"({columNames})",
+                                    string.IsNullOrEmpty(values) ? string.Empty : $" VALUES ({values})");
 
             switch (SqlConnector)
             {
@@ -151,8 +132,8 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator.Models
             var sqlBuilder = new StringBuilder();
             sqlBuilder.AppendFormat("UPDATE {0} SET {1} WHERE {2}",
                                     this.TableName,
-                                    string.Join(", ", properties.Select(p => string.Format("{0} = @{1}", p.ColumnName, p.Name))),
-                                    string.Join(" AND ", this.KeyProperties.Select(p => string.Format("{0} = @{1}", p.ColumnName, p.Name))));
+                                    string.Join(", ", properties.Select(p => $"{p.ColumnName} = @{p.Name}")),
+                                    string.Join(" AND ", this.KeyProperties.Select(p => $"{p.ColumnName} = @{p.Name}")));
 
 
             return new QueryResult(sqlBuilder.ToString().TrimEnd(), entity);
@@ -160,16 +141,16 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator.Models
 
         public virtual QueryResult GetSelect()
         {
-            IDictionary<string, Object> expando = new ExpandoObject();
+            IDictionary<string, object> expando = new ExpandoObject();
             var builder = new StringBuilder();
 
             //Projection function
             Func<PropertyMetadata, string> projectionFunction = (p) =>
             {
                 if (!string.IsNullOrEmpty(p.Alias))
-                    return string.Format("{0} AS {1}", p.ColumnName, p.Name);
+                    return $"{p.ColumnName} AS {p.Name}";
 
-                return string.Format("{0}", p.ColumnName);
+                return $"{p.ColumnName}";
             };
 
             // convert the query parms into a SQL string and dynamic property object
@@ -186,7 +167,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator.Models
 
 
 
-            IDictionary<string, Object> expando = new ExpandoObject();
+            IDictionary<string, object> expando = new ExpandoObject();
             var builder = new StringBuilder();
 
             // walk the tree and build up a list of query parameter objects
@@ -198,9 +179,9 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator.Models
             Func<PropertyMetadata, string> projectionFunction = (p) =>
             {
                 if (!string.IsNullOrEmpty(p.Alias))
-                    return string.Format("{0} AS {1}", p.ColumnName, p.Name);
+                    return $"{p.ColumnName} AS {p.Name}";
 
-                return string.Format("{0}", p.ColumnName);
+                return $"{p.ColumnName}";
             };
 
             // convert the query parms into a SQL string and dynamic property object
@@ -251,7 +232,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator.Models
                 op = "AND";
             }
 
-            queryResult.AppendToSql(string.Format(" {0} {1} BETWEEN '{2}' AND '{3}'", op, filedName, from, to));
+            queryResult.AppendToSql($" {op} {filedName} BETWEEN '{@from}' AND '{to}'");
 
             return queryResult;
 
@@ -268,18 +249,17 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator.Models
                     this.TableName,
                     string.Join(" AND ",
                         this.KeyProperties.Select(
-                            p => string.Format("{0} = @{1}", p.ColumnName, p.Name))));
+                            p => $"{p.ColumnName} = @{p.Name}")));
 
             }
             else
             {
                 sqlBuilder.AppendFormat("UPDATE {0} SET {1} WHERE {2}",
                     this.TableName,
-                    string.Format("{0} = {1}", this.StatusProperty.ColumnName,
-                        this.LogicalDeleteValue),
+                    $"{this.StatusProperty.ColumnName} = {this.LogicalDeleteValue}",
                     string.Join(" AND ",
                         this.KeyProperties.Select(
-                            p => string.Format("{0} = @{1}", p.ColumnName, p.Name))));
+                            p => $"{p.ColumnName} = @{p.Name}")));
             }
 
 

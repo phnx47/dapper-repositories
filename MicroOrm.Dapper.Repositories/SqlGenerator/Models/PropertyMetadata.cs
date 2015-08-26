@@ -5,25 +5,13 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator.Models
 {
     public class PropertyMetadata
     {
-        public PropertyInfo PropertyInfo { get; private set; }
+        public PropertyInfo PropertyInfo { get; }
 
-        public string Alias { get; private set; }
+        public string Alias { get; }
 
-        public string ColumnName
-        {
-            get
-            {
-                return string.IsNullOrEmpty(this.Alias) ? this.PropertyInfo.Name : this.Alias;
-            }
-        }
+        public string ColumnName => string.IsNullOrEmpty(this.Alias) ? this.PropertyInfo.Name : this.Alias;
 
-        public string Name
-        {
-            get 
-            {
-                return PropertyInfo.Name;
-            }
-        }
+        public string Name => PropertyInfo.Name;
 
         public PropertyMetadata(PropertyInfo propertyInfo)
         {

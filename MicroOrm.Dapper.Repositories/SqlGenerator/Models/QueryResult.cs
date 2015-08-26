@@ -16,7 +16,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator.Models
         /// <param name="param">The param.</param>
         public QueryResult(string sql, dynamic param)
         {
-            _param = param;
+            Param = param;
             Sql = sql;
         }
 
@@ -29,22 +29,13 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator.Models
         /// </value>
         public string Sql { get; private set; }
 
-        private readonly object _param;
-
         /// <summary>
         /// Gets the param, for Select
         /// </summary>
         /// <value>
         /// The param.
         /// </value>
-        public object Param
-        {
-            get
-            {
-                return _param;
-            }
-        }
-
+        public object Param { get; }
 
 
         public void AppendToSql(string sqlString)

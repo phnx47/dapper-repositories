@@ -1,13 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.SqlClient;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Dapper;
 using MicroOrm.Dapper.Repositories.SqlGenerator.Interfaces;
-using MicroOrm.Dapper.Repositories.SqlGenerator.Models;
 
 namespace MicroOrm.Dapper.Repositories.Repositories
 {
@@ -26,9 +24,9 @@ namespace MicroOrm.Dapper.Repositories.Repositories
         #region Properties
 
 
-        protected ISqlGenerator<TEntity> SqlGenerator { get; private set; }
+        protected ISqlGenerator<TEntity> SqlGenerator { get; }
 
-        protected IDbConnection Connection { get; private set; }
+        protected IDbConnection Connection { get; }
 
         #endregion Properties
 
