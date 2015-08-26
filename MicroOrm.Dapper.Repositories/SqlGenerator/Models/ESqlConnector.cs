@@ -2,11 +2,11 @@
 {
     public enum ESqlConnector
     {
-        Default,
-
         MSSQL,
 
-        MySQL
+        MySQL,
+
+        PostgreSQL
     }
 
 }

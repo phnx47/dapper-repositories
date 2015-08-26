@@ -58,7 +58,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator.Models
         }
 
         public SqlGenerator()
-            : this(ESqlConnector.Default)
+            : this(ESqlConnector.MSSQL)
         {
 
         }
@@ -113,7 +113,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator.Models
                 this.BaseProperties.Where(p => !p.Name.Equals(this.IdentityProperty.Name, StringComparison.InvariantCultureIgnoreCase)) :
                 this.BaseProperties).ToList();
 
-            string columNames = string.Join(", ", properties.Select(p => string.Format("{0}.{1}", this.TableName, p.ColumnName)));
+            string columNames = string.Join(", ", properties.Select(p => string.Format("{0}", p.ColumnName)));
             string values = string.Join(", ", properties.Select(p => string.Format("@{0}", p.Name)));
 
             var sqlBuilder = new StringBuilder();
@@ -129,8 +129,13 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator.Models
                     sqlBuilder.Append("SET	@NEWID = SCOPE_IDENTITY()");
                     sqlBuilder.Append("SELECT @NEWID");
                     break;
+
                 case ESqlConnector.MySQL:
                     sqlBuilder.Append("; SELECT CONVERT(LAST_INSERT_ID(), SIGNED INTEGER) AS Id;");
+                    break;
+
+                case ESqlConnector.PostgreSQL:
+                    sqlBuilder.Append("RETURNING " + this.IdentityProperty.ColumnName);
                     break;
 
             }
@@ -146,8 +151,8 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator.Models
             var sqlBuilder = new StringBuilder();
             sqlBuilder.AppendFormat("UPDATE {0} SET {1} WHERE {2}",
                                     this.TableName,
-                                    string.Join(", ", properties.Select(p => string.Format("{0}.{1} = @{2}", this.TableName, p.ColumnName, p.Name))),
-                                    string.Join(" AND ", this.KeyProperties.Select(p => string.Format("{0}.{1} = @{2}", this.TableName, p.ColumnName, p.Name))));
+                                    string.Join(", ", properties.Select(p => string.Format("{0} = @{1}", p.ColumnName, p.Name))),
+                                    string.Join(" AND ", this.KeyProperties.Select(p => string.Format("{0} = @{1}", p.ColumnName, p.Name))));
 
 
             return new QueryResult(sqlBuilder.ToString().TrimEnd(), entity);
@@ -162,9 +167,9 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator.Models
             Func<PropertyMetadata, string> projectionFunction = (p) =>
             {
                 if (!string.IsNullOrEmpty(p.Alias))
-                    return string.Format("{0}.{1} AS {2}", this.TableName, p.ColumnName, p.Name);
+                    return string.Format("{0} AS {1}", p.ColumnName, p.Name);
 
-                return string.Format("{0}.{1}", this.TableName, p.ColumnName);
+                return string.Format("{0}", p.ColumnName);
             };
 
             // convert the query parms into a SQL string and dynamic property object
@@ -193,9 +198,9 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator.Models
             Func<PropertyMetadata, string> projectionFunction = (p) =>
             {
                 if (!string.IsNullOrEmpty(p.Alias))
-                    return string.Format("{0}.{1} AS {2}", this.TableName, p.ColumnName, p.Name);
+                    return string.Format("{0} AS {1}", p.ColumnName, p.Name);
 
-                return string.Format("{0}.{1}", this.TableName, p.ColumnName);
+                return string.Format("{0}", p.ColumnName);
             };
 
             // convert the query parms into a SQL string and dynamic property object
@@ -263,18 +268,18 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator.Models
                     this.TableName,
                     string.Join(" AND ",
                         this.KeyProperties.Select(
-                            p => string.Format("{0}.{1} = @{2}", this.TableName, p.ColumnName, p.Name))));
+                            p => string.Format("{0} = @{1}", p.ColumnName, p.Name))));
 
             }
             else
             {
                 sqlBuilder.AppendFormat("UPDATE {0} SET {1} WHERE {2}",
                     this.TableName,
-                    string.Format("{0}.{1} = {2}", this.TableName, this.StatusProperty.ColumnName,
+                    string.Format("{0} = {1}", this.StatusProperty.ColumnName,
                         this.LogicalDeleteValue),
                     string.Join(" AND ",
                         this.KeyProperties.Select(
-                            p => string.Format("{0}.{1} = @{2}", this.TableName, p.ColumnName, p.Name))));
+                            p => string.Format("{0} = @{1}", p.ColumnName, p.Name))));
             }
 
 
