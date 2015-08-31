@@ -6,6 +6,7 @@ using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Dapper;
 using MicroOrm.Dapper.Repositories.SqlGenerator.Interfaces;
+using MicroOrm.Dapper.Repositories.SqlGenerator.Models;
 
 namespace MicroOrm.Dapper.Repositories.Repositories
 {
@@ -103,7 +104,18 @@ namespace MicroOrm.Dapper.Repositories.Repositories
 
             if (SqlGenerator.IsIdentity)
             {
-                var newId = (await Connection.QueryAsync<int>(queryResult.Sql, queryResult.Param)).FirstOrDefault();
+                //hack
+                int newId;
+                if (SqlGenerator.SqlConnector == ESqlConnector.MSSQL)
+                {
+                    var decimalId = (await Connection.QueryAsync<decimal>(queryResult.Sql, queryResult.Param)).FirstOrDefault();
+                    newId = Convert.ToInt32(decimalId);
+                }
+                else
+                {
+                    newId = (await Connection.QueryAsync<int>(queryResult.Sql, queryResult.Param)).FirstOrDefault();
+                }
+
                 added = newId > 0;
 
                 if (added)
