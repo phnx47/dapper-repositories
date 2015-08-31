@@ -106,14 +106,20 @@ namespace MicroOrm.Dapper.Repositories.Repositories
             {
                 //hack
                 int newId;
-                if (SqlGenerator.SqlConnector == ESqlConnector.MSSQL)
+                switch (SqlGenerator.SqlConnector)
                 {
-                    var decimalId = (await Connection.QueryAsync<decimal>(queryResult.Sql, queryResult.Param)).FirstOrDefault();
-                    newId = Convert.ToInt32(decimalId);
-                }
-                else
-                {
-                    newId = (await Connection.QueryAsync<int>(queryResult.Sql, queryResult.Param)).FirstOrDefault();
+                    case ESqlConnector.MSSQL:
+                        var decimalId = (await Connection.QueryAsync<decimal>(queryResult.Sql, queryResult.Param)).FirstOrDefault();
+                        newId = Convert.ToInt32(decimalId);
+                        break;
+                    case ESqlConnector.MySQL:
+                        var longId = (await Connection.QueryAsync<long>(queryResult.Sql, queryResult.Param)).FirstOrDefault();
+                        newId = Convert.ToInt32(longId);
+                        break;
+                    default:
+                        newId = (await Connection.QueryAsync<int>(queryResult.Sql, queryResult.Param)).FirstOrDefault();
+                        break;
+
                 }
 
                 added = newId > 0;
