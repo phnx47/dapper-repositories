@@ -103,22 +103,25 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator.Models
                                     string.IsNullOrEmpty(columNames) ? string.Empty : $"({columNames})",
                                     string.IsNullOrEmpty(values) ? string.Empty : $" VALUES ({values})");
 
-            switch (SqlConnector)
+            if (this.IsIdentity)
             {
-                case ESqlConnector.MSSQL:
-                    sqlBuilder.Append("DECLARE @NEWID NUMERIC(38, 0)");
-                    sqlBuilder.Append("SET	@NEWID = SCOPE_IDENTITY()");
-                    sqlBuilder.Append("SELECT @NEWID");
-                    break;
+                switch (SqlConnector)
+                {
+                    case ESqlConnector.MSSQL:
+                        sqlBuilder.Append("DECLARE @NEWID NUMERIC(38, 0)");
+                        sqlBuilder.Append("SET	@NEWID = SCOPE_IDENTITY()");
+                        sqlBuilder.Append("SELECT @NEWID");
+                        break;
 
-                case ESqlConnector.MySQL:
-                    sqlBuilder.Append("; SELECT CONVERT(LAST_INSERT_ID(), SIGNED INTEGER) AS Id;");
-                    break;
+                    case ESqlConnector.MySQL:
+                        sqlBuilder.Append("; SELECT CONVERT(LAST_INSERT_ID(), SIGNED INTEGER) AS Id;");
+                        break;
 
-                case ESqlConnector.PostgreSQL:
-                    sqlBuilder.Append("RETURNING " + this.IdentityProperty.ColumnName);
-                    break;
+                    case ESqlConnector.PostgreSQL:
+                        sqlBuilder.Append("RETURNING " + this.IdentityProperty.ColumnName);
+                        break;
 
+                }
             }
 
 
