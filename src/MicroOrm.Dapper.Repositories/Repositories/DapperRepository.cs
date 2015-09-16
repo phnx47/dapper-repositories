@@ -79,7 +79,7 @@ namespace MicroOrm.Dapper.Repositories.Repositories
 
             if (SqlGenerator.IsIdentity)
             {
-                var newId = Connection.Query<int>(queryResult.Sql, queryResult.Param).FirstOrDefault();
+                var newId = Connection.Query<long>(queryResult.Sql, queryResult.Param).FirstOrDefault();
                 added = newId > 0;
 
                 if (added)
@@ -98,36 +98,25 @@ namespace MicroOrm.Dapper.Repositories.Repositories
 
         public virtual async Task<bool> InsertAsync(TEntity instance)
         {
-            bool added;
+            bool added = false;
 
             var queryResult = SqlGenerator.GetInsert(instance);
 
             if (SqlGenerator.IsIdentity)
             {
-                //hack
-                int newId;
-                switch (SqlGenerator.SqlConnector)
+                //hack: https://github.com/StackExchange/dapper-dot-net/pull/338
+                var res = (await Connection.QueryAsync<dynamic>(queryResult.Sql, queryResult.Param)).FirstOrDefault();
+                var dictionary = (IDictionary<string, object>)res;
+                if (dictionary != null && dictionary.Keys.Any())
                 {
-                    case ESqlConnector.MSSQL:
-                        var decimalId = (await Connection.QueryAsync<decimal>(queryResult.Sql, queryResult.Param)).FirstOrDefault();
-                        newId = Convert.ToInt32(decimalId);
-                        break;
-                    case ESqlConnector.MySQL:
-                        var longId = (await Connection.QueryAsync<long>(queryResult.Sql, queryResult.Param)).FirstOrDefault();
-                        newId = Convert.ToInt32(longId);
-                        break;
-                    default:
-                        newId = (await Connection.QueryAsync<int>(queryResult.Sql, queryResult.Param)).FirstOrDefault();
-                        break;
+                    var newId = Convert.ToInt64(dictionary[dictionary.Keys.First()]);
+                    added = newId > 0;
 
-                }
-
-                added = newId > 0;
-
-                if (added)
-                {
-                    var newParsedId = Convert.ChangeType(newId, SqlGenerator.IdentityProperty.PropertyInfo.PropertyType);
-                    SqlGenerator.IdentityProperty.PropertyInfo.SetValue(instance, newParsedId);
+                    if (added)
+                    {
+                        var newParsedId = Convert.ChangeType(newId, SqlGenerator.IdentityProperty.PropertyInfo.PropertyType);
+                        SqlGenerator.IdentityProperty.PropertyInfo.SetValue(instance, newParsedId);
+                    }
                 }
             }
             else

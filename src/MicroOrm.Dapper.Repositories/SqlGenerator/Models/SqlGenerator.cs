@@ -108,13 +108,11 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator.Models
                 switch (SqlConnector)
                 {
                     case ESqlConnector.MSSQL:
-                        sqlBuilder.Append("DECLARE @NEWID NUMERIC(38, 0)");
-                        sqlBuilder.Append("SET	@NEWID = SCOPE_IDENTITY()");
-                        sqlBuilder.Append("SELECT @NEWID");
+                        sqlBuilder.Append("SELECT SCOPE_IDENTITY() AS " + this.IdentityProperty.ColumnName);
                         break;
 
                     case ESqlConnector.MySQL:
-                        sqlBuilder.Append("; SELECT CONVERT(LAST_INSERT_ID(), SIGNED INTEGER) AS Id;");
+                        sqlBuilder.Append("; SELECT CONVERT(LAST_INSERT_ID(), SIGNED INTEGER) AS " + this.IdentityProperty.ColumnName);
                         break;
 
                     case ESqlConnector.PostgreSQL:
