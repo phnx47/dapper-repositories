@@ -35,8 +35,12 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator.Models
         /// <value>
         /// The param.
         /// </value>
-        public object Param { get; }
+        public object Param { get; private set; }
 
+        public void SetParam(dynamic param)
+        {
+            Param = param;
+        }
 
         public void AppendToSql(string sqlString)
         {

@@ -1,4 +1,7 @@
-﻿using System;
+﻿using MicroOrm.Dapper.Repositories.SqlGenerator.Attributes;
+using MicroOrm.Dapper.Repositories.SqlGenerator.Attributes.LogicalDelete;
+using MicroOrm.Dapper.Repositories.SqlGenerator.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -7,8 +10,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
-using MicroOrm.Dapper.Repositories.SqlGenerator.Attributes;
-using MicroOrm.Dapper.Repositories.SqlGenerator.Interfaces;
+using MicroOrm.Dapper.Repositories.SqlGenerator.Attributes.Joins;
 
 namespace MicroOrm.Dapper.Repositories.SqlGenerator.Models
 {
@@ -58,7 +60,6 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator.Models
         public SqlGenerator()
             : this(ESqlConnector.MSSQL)
         {
-
         }
 
         #endregion Constructors
@@ -89,7 +90,6 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator.Models
 
         public virtual QueryResult GetInsert(TEntity entity)
         {
-
             List<PropertyMetadata> properties = (this.IsIdentity ?
                 this.BaseProperties.Where(p => !p.Name.Equals(this.IdentityProperty.Name, StringComparison.InvariantCultureIgnoreCase)) :
                 this.BaseProperties).ToList();
@@ -118,10 +118,8 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator.Models
                     case ESqlConnector.PostgreSQL:
                         sqlBuilder.Append("RETURNING " + this.IdentityProperty.ColumnName);
                         break;
-
                 }
             }
-
 
             return new QueryResult(sqlBuilder.ToString(), entity);
         }
@@ -136,62 +134,50 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator.Models
                                     string.Join(", ", properties.Select(p => $"{p.ColumnName} = @{p.Name}")),
                                     string.Join(" AND ", this.KeyProperties.Select(p => $"{p.ColumnName} = @{p.Name}")));
 
-
             return new QueryResult(sqlBuilder.ToString().TrimEnd(), entity);
+        }
+
+        #region Get Select
+
+        private StringBuilder GetBaseBuilderSelect()
+        {
+            var builder = new StringBuilder();
+
+            //Projection function
+            Func<PropertyMetadata, string> projectionFunction = (p) =>
+            {
+                if (!string.IsNullOrEmpty(p.Alias))
+                    return $"{p.ColumnName} AS {p.Name}";
+
+                return $"{p.ColumnName}";
+            };
+
+            // convert the query parms into a SQL string and dynamic property object
+            builder.AppendFormat("SELECT {0} FROM {1}",
+                                    string.Join(", ", this.BaseProperties.Select(projectionFunction)),
+                                    this.TableName);
+
+            return builder;
         }
 
         public virtual QueryResult GetSelect()
         {
-            IDictionary<string, object> expando = new ExpandoObject();
-            var builder = new StringBuilder();
-
-            //Projection function
-            Func<PropertyMetadata, string> projectionFunction = (p) =>
-            {
-                if (!string.IsNullOrEmpty(p.Alias))
-                    return $"{p.ColumnName} AS {p.Name}";
-
-                return $"{p.ColumnName}";
-            };
-
-            // convert the query parms into a SQL string and dynamic property object
-            builder.AppendFormat("SELECT {0} FROM {1}",
-                                    string.Join(", ", this.BaseProperties.Select(projectionFunction)),
-                                    this.TableName);
-
-            return new QueryResult(builder.ToString().TrimEnd(), expando);
+            var builder = GetBaseBuilderSelect();
+            return new QueryResult(builder.ToString().TrimEnd(), new ExpandoObject());
         }
 
         public virtual QueryResult GetSelect(Expression<Func<TEntity, bool>> expression)
         {
-            var queryProperties = new List<QueryParameter>();
-
-
-
-            IDictionary<string, object> expando = new ExpandoObject();
-            var builder = new StringBuilder();
+            var builder = GetBaseBuilderSelect();
 
             // walk the tree and build up a list of query parameter objects
             // from the left and right branches of the expression tree
-
-            FillQueryProperties(GetBinaryExpression(expression.Body), ExpressionType.Default, ref queryProperties);
-
-            //Projection function
-            Func<PropertyMetadata, string> projectionFunction = (p) =>
-            {
-                if (!string.IsNullOrEmpty(p.Alias))
-                    return $"{p.ColumnName} AS {p.Name}";
-
-                return $"{p.ColumnName}";
-            };
-
-            // convert the query parms into a SQL string and dynamic property object
-            builder.AppendFormat("SELECT {0} FROM {1}",
-                                    string.Join(", ", this.BaseProperties.Select(projectionFunction)),
-                                    this.TableName);
-
+            var queryProperties = new List<QueryParameter>();
+            ExpressionHelper.FillQueryProperties(ExpressionHelper.GetBinaryExpression(expression.Body), ExpressionType.Default, ref queryProperties);
 
             builder.Append(" WHERE ");
+
+            IDictionary<string, object> expando = new ExpandoObject();
             for (int i = 0; i < queryProperties.Count; i++)
             {
                 var item = queryProperties[i];
@@ -209,18 +195,15 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator.Models
                 expando[item.PropertyName] = item.PropertyValue;
             }
 
-
             return new QueryResult(builder.ToString().TrimEnd(), expando);
-
         }
-
 
         public virtual QueryResult GetSelectBetween(object from, object to, Expression<Func<TEntity, object>> btwFiled, Expression<Func<TEntity, bool>> expression)
         {
             string op;
             QueryResult queryResult;
 
-            var filedName = GetPropertyName(btwFiled);
+            var filedName = ExpressionHelper.GetPropertyName(btwFiled);
 
             if (expression == null)
             {
@@ -236,9 +219,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator.Models
             queryResult.AppendToSql($" {op} {filedName} BETWEEN '{@from}' AND '{to}'");
 
             return queryResult;
-
         }
-
 
         public virtual QueryResult GetDelete(TEntity entity)
         {
@@ -251,7 +232,6 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator.Models
                     string.Join(" AND ",
                         this.KeyProperties.Select(
                             p => $"{p.ColumnName} = @{p.Name}")));
-
             }
             else
             {
@@ -263,134 +243,13 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator.Models
                             p => $"{p.ColumnName} = @{p.Name}")));
             }
 
-
             return new QueryResult(sqlBuilder.ToString(), entity);
         }
 
-        #endregion
+        #endregion Get Select
 
-        #region Private utility
+        #endregion Query generators
 
-        /// <summary>
-        /// Gets the name of the property.
-        /// </summary>
-        /// <param name="body">The body.</param>
-        /// <returns>The property name for the property expression.</returns>
-        private static string GetPropertyName(BinaryExpression body)
-        {
-            string propertyName = body.Left.ToString().Split('.')[1];
-
-            if (body.Left.NodeType == ExpressionType.Convert)
-            {
-                // remove the trailing ) when convering.
-                propertyName = propertyName.Replace(")", string.Empty);
-            }
-
-            return propertyName;
-        }
-
-        private static string GetPropertyName<TSource, TField>(Expression<Func<TSource, TField>> field)
-        {
-            if (Equals(field, null))
-            {
-                throw new NullReferenceException("Field is required");
-            }
-
-            MemberExpression expr = null;
-
-            var body = field.Body as MemberExpression;
-            if (body != null)
-            {
-                expr = body;
-            }
-            else
-            {
-                var expression = field.Body as UnaryExpression;
-                if (expression != null)
-                {
-                    expr = (MemberExpression)expression.Operand;
-                }
-                else
-                {
-                    const string format = "Expression '{0}' not supported.";
-                    string message = string.Format(format, field);
-
-                    throw new ArgumentException(message, "field");
-                }
-            }
-
-            return expr.Member.Name;
-        }
-
-
-        private static object GetValue(Expression member)
-        {
-            var objectMember = Expression.Convert(member, typeof(object));
-            var getterLambda = Expression.Lambda<Func<object>>(objectMember);
-            var getter = getterLambda.Compile();
-            return getter();
-        }
-
-        /// <summary>
-        /// Fill query properties
-        /// </summary>
-        /// <param name="body">The body.</param>
-        /// <param name="linkingType">Type of the linking.</param>
-        /// <param name="queryProperties">The query properties.</param>
-        private static void FillQueryProperties(BinaryExpression body, ExpressionType linkingType, ref List<QueryParameter> queryProperties)
-        {
-            if (body.NodeType != ExpressionType.AndAlso && body.NodeType != ExpressionType.OrElse)
-            {
-                string propertyName = GetPropertyName(body);
-                object propertyValue = GetValue(body.Right);
-                string opr = GetOperator(body.NodeType);
-                string link = GetOperator(linkingType);
-
-                queryProperties.Add(new QueryParameter(link, propertyName, propertyValue, opr));
-            }
-            else
-            {
-                FillQueryProperties(GetBinaryExpression(body.Left), body.NodeType, ref queryProperties);
-                FillQueryProperties(GetBinaryExpression(body.Right), body.NodeType, ref queryProperties);
-            }
-        }
-
-        private static string GetOperator(ExpressionType type)
-        {
-            switch (type)
-            {
-                case ExpressionType.Equal:
-                    return "=";
-                case ExpressionType.NotEqual:
-                    return "!=";
-                case ExpressionType.LessThan:
-                    return "<";
-                case ExpressionType.LessThanOrEqual:
-                    return "<=";
-                case ExpressionType.GreaterThan:
-                    return ">";
-                case ExpressionType.GreaterThanOrEqual:
-                    return ">=";
-                case ExpressionType.AndAlso:
-                case ExpressionType.And:
-                    return "AND";
-                case ExpressionType.Or:
-                case ExpressionType.OrElse:
-                    return "OR";
-                case ExpressionType.Default:
-                    return string.Empty;
-                default:
-                    throw new NotImplementedException();
-            }
-        }
-
-        private static BinaryExpression GetBinaryExpression(Expression expression)
-        {
-            var binaryExpression = expression as BinaryExpression;
-            var body = binaryExpression ?? Expression.MakeBinary(ExpressionType.Equal, expression, Expression.Constant(true));
-            return body;
-        }
-
-        #endregion Private utility
+       
     }
 }

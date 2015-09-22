@@ -1,12 +1,11 @@
-﻿using System;
+﻿using Dapper;
+using MicroOrm.Dapper.Repositories.SqlGenerator.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
-using Dapper;
-using MicroOrm.Dapper.Repositories.SqlGenerator.Interfaces;
-using MicroOrm.Dapper.Repositories.SqlGenerator.Models;
 
 namespace MicroOrm.Dapper.Repositories.Repositories
 {
@@ -23,7 +22,6 @@ namespace MicroOrm.Dapper.Repositories.Repositories
         #endregion Constructors
 
         #region Properties
-
 
         protected ISqlGenerator<TEntity> SqlGenerator { get; }
 
@@ -170,7 +168,6 @@ namespace MicroOrm.Dapper.Repositories.Repositories
         public IEnumerable<TEntity> FindAllBeetwen(object from, object to, Expression<Func<TEntity, object>> btwFiled)
         {
             return FindAllBeetwen(from, to, btwFiled, null);
-
         }
 
         public async Task<IEnumerable<TEntity>> FindAllBetweenAsync(object from, object to, Expression<Func<TEntity, object>> btwFiled)
@@ -183,7 +180,6 @@ namespace MicroOrm.Dapper.Repositories.Repositories
             var queryResult = SqlGenerator.GetSelectBetween(from, to, btwFiled, expression);
             var data = Connection.Query<TEntity>(queryResult.Sql, queryResult.Param);
             return data;
-
         }
 
         public async Task<IEnumerable<TEntity>> FindAllBetweenAsync(object from, object to, Expression<Func<TEntity, object>> btwFiled, Expression<Func<TEntity, bool>> expression)
@@ -194,6 +190,5 @@ namespace MicroOrm.Dapper.Repositories.Repositories
         }
 
         #endregion Beetwen
-
     }
 }
