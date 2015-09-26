@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq.Expressions;
 
 namespace MicroOrm.Dapper.Repositories.SqlGenerator.Models
@@ -66,30 +65,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator.Models
         }
 
 
-        // TODO: убрать из Хэлпера в класс
-        /// <summary>
-        /// Fill query properties
-        /// </summary>
-        /// <param name="body">The body.</param>
-        /// <param name="linkingType">Type of the linking.</param>
-        /// <param name="queryProperties">The query properties.</param>
-        internal static void FillQueryProperties(BinaryExpression body, ExpressionType linkingType, ref List<QueryParameter> queryProperties)
-        {
-            if (body.NodeType != ExpressionType.AndAlso && body.NodeType != ExpressionType.OrElse)
-            {
-                string propertyName = GetPropertyName(body);
-                object propertyValue = GetValue(body.Right);
-                string opr = GetOperator(body.NodeType);
-                string link = GetOperator(linkingType);
-
-                queryProperties.Add(new QueryParameter(link, propertyName, propertyValue, opr));
-            }
-            else
-            {
-                FillQueryProperties(GetBinaryExpression(body.Left), body.NodeType, ref queryProperties);
-                FillQueryProperties(GetBinaryExpression(body.Right), body.NodeType, ref queryProperties);
-            }
-        }
+        
 
         internal static string GetOperator(ExpressionType type)
         {

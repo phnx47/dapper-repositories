@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace MicroOrm.Dapper.Repositories.SqlGenerator.Attributes.LogicalDelete
+namespace MicroOrm.Dapper.Repositories.SqlGenerator.Attributes
 {
     /// <summary>
     /// Use with "Deleted" for logical delete

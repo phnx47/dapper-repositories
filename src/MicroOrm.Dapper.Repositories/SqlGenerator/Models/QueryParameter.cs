@@ -1,4 +1,7 @@
-﻿namespace MicroOrm.Dapper.Repositories.SqlGenerator.Models
+﻿using System.Collections.Generic;
+using System.Linq.Expressions;
+
+namespace MicroOrm.Dapper.Repositories.SqlGenerator.Models
 {
     /// <summary>
     /// Class that models the data structure in coverting the expression tree into SQL and Params.

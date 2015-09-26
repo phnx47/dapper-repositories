@@ -6,6 +6,7 @@ using System.Data;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using MicroOrm.Dapper.Repositories.SqlGenerator.Models;
 
 namespace MicroOrm.Dapper.Repositories.Repositories
 {
@@ -13,16 +14,16 @@ namespace MicroOrm.Dapper.Repositories.Repositories
     {
         #region Constructors
 
-        protected DapperRepository(IDbConnection connection, ESqlConnector sqlConnector)
-        {
-            Connection = connection;
-            SqlGenerator = new SqlGenerator<TEntity>(sqlConnector);
-        }
-
         protected DapperRepository(IDbConnection connection)
         {
             Connection = connection;
             SqlGenerator = new SqlGenerator<TEntity>(ESqlConnector.MSSQL);
+        }
+
+        protected DapperRepository(IDbConnection connection, ESqlConnector sqlConnector)
+        {
+            Connection = connection;
+            SqlGenerator = new SqlGenerator<TEntity>(sqlConnector);
         }
 
         protected DapperRepository(IDbConnection connection, ISqlGenerator<TEntity> sqlGenerator)

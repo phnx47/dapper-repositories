@@ -1,5 +1,4 @@
 ﻿using MicroOrm.Dapper.Repositories.SqlGenerator.Attributes;
-using MicroOrm.Dapper.Repositories.SqlGenerator.Attributes.LogicalDelete;
 using MicroOrm.Dapper.Repositories.SqlGenerator.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -10,7 +9,6 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
-using MicroOrm.Dapper.Repositories.SqlGenerator.Attributes.Joins;
 
 namespace MicroOrm.Dapper.Repositories.SqlGenerator.Models
 {
@@ -94,14 +92,14 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator.Models
                 this.BaseProperties.Where(p => !p.Name.Equals(this.IdentityProperty.Name, StringComparison.InvariantCultureIgnoreCase)) :
                 this.BaseProperties).ToList();
 
-            string columNames = string.Join(", ", properties.Select(p => $"{p.ColumnName}"));
-            string values = string.Join(", ", properties.Select(p => $"@{p.Name}"));
+            string columNames = String.Join(", ", properties.Select(p => $"{p.ColumnName}"));
+            string values = String.Join(", ", properties.Select(p => $"@{p.Name}"));
 
             var sqlBuilder = new StringBuilder();
             sqlBuilder.AppendFormat("INSERT INTO {0} {1} {2} ",
                                     this.TableName,
-                                    string.IsNullOrEmpty(columNames) ? string.Empty : $"({columNames})",
-                                    string.IsNullOrEmpty(values) ? string.Empty : $" VALUES ({values})");
+                                    String.IsNullOrEmpty(columNames) ? String.Empty : $"({columNames})",
+                                    String.IsNullOrEmpty(values) ? String.Empty : $" VALUES ({values})");
 
             if (this.IsIdentity)
             {
@@ -131,8 +129,8 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator.Models
             var sqlBuilder = new StringBuilder();
             sqlBuilder.AppendFormat("UPDATE {0} SET {1} WHERE {2}",
                                     this.TableName,
-                                    string.Join(", ", properties.Select(p => $"{p.ColumnName} = @{p.Name}")),
-                                    string.Join(" AND ", this.KeyProperties.Select(p => $"{p.ColumnName} = @{p.Name}")));
+                                    String.Join(", ", properties.Select(p => $"{p.ColumnName} = @{p.Name}")),
+                                    String.Join(" AND ", this.KeyProperties.Select(p => $"{p.ColumnName} = @{p.Name}")));
 
             return new QueryResult(sqlBuilder.ToString().TrimEnd(), entity);
         }
@@ -146,7 +144,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator.Models
             //Projection function
             Func<PropertyMetadata, string> projectionFunction = (p) =>
             {
-                if (!string.IsNullOrEmpty(p.Alias))
+                if (!String.IsNullOrEmpty(p.Alias))
                     return $"{p.ColumnName} AS {p.Name}";
 
                 return $"{p.ColumnName}";
@@ -154,7 +152,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator.Models
 
             // convert the query parms into a SQL string and dynamic property object
             builder.AppendFormat("SELECT {0} FROM {1}",
-                                    string.Join(", ", this.BaseProperties.Select(projectionFunction)),
+                                    String.Join(", ", this.BaseProperties.Select(projectionFunction)),
                                     this.TableName);
 
             return builder;
@@ -173,7 +171,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator.Models
             // walk the tree and build up a list of query parameter objects
             // from the left and right branches of the expression tree
             var queryProperties = new List<QueryParameter>();
-            ExpressionHelper.FillQueryProperties(ExpressionHelper.GetBinaryExpression(expression.Body), ExpressionType.Default, ref queryProperties);
+            FillQueryProperties(ExpressionHelper.GetBinaryExpression(expression.Body), ExpressionType.Default, ref queryProperties);
 
             builder.Append(" WHERE ");
 
@@ -182,14 +180,14 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator.Models
             {
                 var item = queryProperties[i];
 
-                if (!string.IsNullOrEmpty(item.LinkingOperator) && i > 0)
+                if (!String.IsNullOrEmpty(item.LinkingOperator) && i > 0)
                 {
-                    builder.Append(string.Format("{0} {1} {2} @{1} ", item.LinkingOperator, item.PropertyName,
+                    builder.Append(String.Format("{0} {1} {2} @{1} ", item.LinkingOperator, item.PropertyName,
                         item.QueryOperator));
                 }
                 else
                 {
-                    builder.Append(string.Format("{0} {1} @{0} ", item.PropertyName, item.QueryOperator));
+                    builder.Append(String.Format("{0} {1} @{0} ", item.PropertyName, item.QueryOperator));
                 }
 
                 expando[item.PropertyName] = item.PropertyValue;
@@ -229,7 +227,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator.Models
             {
                 sqlBuilder.AppendFormat("DELETE FROM {0} WHERE {1}",
                     this.TableName,
-                    string.Join(" AND ",
+                    String.Join(" AND ",
                         this.KeyProperties.Select(
                             p => $"{p.ColumnName} = @{p.Name}")));
             }
@@ -238,7 +236,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator.Models
                 sqlBuilder.AppendFormat("UPDATE {0} SET {1} WHERE {2}",
                     this.TableName,
                     $"{this.StatusProperty.ColumnName} = {this.LogicalDeleteValue}",
-                    string.Join(" AND ",
+                    String.Join(" AND ",
                         this.KeyProperties.Select(
                             p => $"{p.ColumnName} = @{p.Name}")));
             }
@@ -248,8 +246,31 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator.Models
 
         #endregion Get Select
 
-        #endregion Query generators
+        /// <summary>
+        /// Fill query properties
+        /// </summary>
+        /// <param name="body">The body.</param>
+        /// <param name="linkingType">Type of the linking.</param>
+        /// <param name="queryProperties">The query properties.</param>
+        private static void FillQueryProperties(BinaryExpression body, ExpressionType linkingType, ref List<QueryParameter> queryProperties)
+        {
+            if (body.NodeType != ExpressionType.AndAlso && body.NodeType != ExpressionType.OrElse)
+            {
+                string propertyName = ExpressionHelper.GetPropertyName(body);
+                object propertyValue = ExpressionHelper.GetValue(body.Right);
+                string opr = ExpressionHelper.GetOperator(body.NodeType);
+                string link = ExpressionHelper.GetOperator(linkingType);
 
-       
+                queryProperties.Add(new QueryParameter(link, propertyName, propertyValue, opr));
+            }
+            else
+            {
+                FillQueryProperties(ExpressionHelper.GetBinaryExpression(body.Left), body.NodeType, ref queryProperties);
+                FillQueryProperties(ExpressionHelper.GetBinaryExpression(body.Right), body.NodeType, ref queryProperties);
+            }
+        }
+
+
+        #endregion Query generators
     }
 }
