@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq.Expressions;
 
-namespace MicroOrm.Dapper.Repositories.SqlGenerator.Models
+namespace MicroOrm.Dapper.Repositories.SqlGenerator
 {
     internal static class ExpressionHelper
     {
@@ -63,9 +63,6 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator.Models
             var getter = getterLambda.Compile();
             return getter();
         }
-
-
-        
 
         internal static string GetOperator(ExpressionType type)
         {

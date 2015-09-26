@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.Reflection;
 
-namespace MicroOrm.Dapper.Repositories.SqlGenerator.Models
+namespace MicroOrm.Dapper.Repositories.SqlGenerator
 {
     public class PropertyMetadata
     {

@@ -1,6 +1,8 @@
-﻿using MicroOrm.Dapper.Repositories.SqlGenerator.Attributes;
-using MicroOrm.Dapper.Repositories.SqlGenerator.Interfaces;
+﻿using MicroOrm.Dapper.Repositories.Attributes;
+using MicroOrm.Dapper.Repositories.Attributes.Joins;
+using MicroOrm.Dapper.Repositories.Attributes.LogicalDelete;
 using System;
+using System.CodeDom;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -10,23 +12,24 @@ using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
 
-namespace MicroOrm.Dapper.Repositories.SqlGenerator.Models
+namespace MicroOrm.Dapper.Repositories.SqlGenerator
 {
-    public class SqlGenerator<TEntity> : ISqlGenerator<TEntity> where TEntity : new()
+
+    public class SqlGenerator<TEntity> : ISqlGenerator<TEntity>
+        where TEntity : class
     {
         #region Constructors
+
 
         public SqlGenerator(ESqlConnector sqlConnector)
         {
             SqlConnector = sqlConnector;
-
             var entityType = typeof(TEntity);
-
             var aliasAttribute = entityType.GetCustomAttribute<TableAttribute>();
             this.TableName = aliasAttribute != null ? aliasAttribute.Name : entityType.Name;
-
+            AllProperties = entityType.GetProperties();
             //Load all the "primitive" entity properties
-            PropertyInfo[] props = entityType.GetProperties().Where(p => p.PropertyType.IsValueType || p.PropertyType.Name.Equals("String", StringComparison.InvariantCultureIgnoreCase)).ToArray();
+            var props = AllProperties.Where(p => p.PropertyType.IsValueType || p.PropertyType.Name.Equals("String", StringComparison.InvariantCultureIgnoreCase)).ToArray();
 
             //Filter the non stored properties
             this.BaseProperties = props.Where(p => !p.GetCustomAttributes<NotMappedAttribute>().Any()).Select(p => new PropertyMetadata(p));
@@ -55,6 +58,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator.Models
                 this.LogicalDeleteValue = Convert.ChangeType(enumValue, Enum.GetUnderlyingType(statusPropertyType));
         }
 
+
         public SqlGenerator()
             : this(ESqlConnector.MSSQL)
         {
@@ -72,9 +76,11 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator.Models
 
         public string TableName { get; }
 
+        public PropertyInfo[] AllProperties { get; }
+
         public PropertyMetadata IdentityProperty { get; }
 
-        public IEnumerable<PropertyMetadata> KeyProperties { get; private set; }
+        public IEnumerable<PropertyMetadata> KeyProperties { get; }
 
         public IEnumerable<PropertyMetadata> BaseProperties { get; }
 
@@ -92,14 +98,14 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator.Models
                 this.BaseProperties.Where(p => !p.Name.Equals(this.IdentityProperty.Name, StringComparison.InvariantCultureIgnoreCase)) :
                 this.BaseProperties).ToList();
 
-            string columNames = String.Join(", ", properties.Select(p => $"{p.ColumnName}"));
-            string values = String.Join(", ", properties.Select(p => $"@{p.Name}"));
+            string columNames = string.Join(", ", properties.Select(p => $"{p.ColumnName}"));
+            string values = string.Join(", ", properties.Select(p => $"@{p.Name}"));
 
             var sqlBuilder = new StringBuilder();
             sqlBuilder.AppendFormat("INSERT INTO {0} {1} {2} ",
                                     this.TableName,
-                                    String.IsNullOrEmpty(columNames) ? String.Empty : $"({columNames})",
-                                    String.IsNullOrEmpty(values) ? String.Empty : $" VALUES ({values})");
+                                    string.IsNullOrEmpty(columNames) ? "" : $"({columNames})",
+                                    string.IsNullOrEmpty(values) ? "" : $" VALUES ({values})");
 
             if (this.IsIdentity)
             {
@@ -129,47 +135,89 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator.Models
             var sqlBuilder = new StringBuilder();
             sqlBuilder.AppendFormat("UPDATE {0} SET {1} WHERE {2}",
                                     this.TableName,
-                                    String.Join(", ", properties.Select(p => $"{p.ColumnName} = @{p.Name}")),
-                                    String.Join(" AND ", this.KeyProperties.Select(p => $"{p.ColumnName} = @{p.Name}")));
+                                    string.Join(", ", properties.Select(p => $"{p.ColumnName} = @{p.Name}")),
+                                    string.Join(" AND ", this.KeyProperties.Select(p => $"{p.ColumnName} = @{p.Name}")));
 
             return new QueryResult(sqlBuilder.ToString().TrimEnd(), entity);
         }
 
         #region Get Select
 
-        private StringBuilder GetBaseBuilderSelect()
-        {
-            var builder = new StringBuilder();
 
+        private StringBuilder AppendJoinToSelect(StringBuilder originalBuilder, params Expression<Func<TEntity, object>>[] includes)
+        {
+            StringBuilder joinsBuilder = new StringBuilder();
+
+            foreach (var include in includes)
+            {
+                var propertyName = ExpressionHelper.GetPropertyName(include);
+                var joinProperty = AllProperties.First(x => x.Name == propertyName);
+                var attrJoin = joinProperty.GetCustomAttribute<JoinAttributeBase>();
+                var propertyFk = AllProperties.Where(x => x.GetCustomAttributes<ForeignKeyAttribute>().Any()).FirstOrDefault(x => x.GetCustomAttribute<ForeignKeyAttribute>().Name == propertyName);
+                if (attrJoin != null && propertyFk != null)
+                {
+                    var joinString = "";
+                    if (attrJoin is LeftJoinAttribute)
+                    {
+                        joinString = "LEFT JOIN ";
+                    }
+                    else if (attrJoin is InnerJoinAttribute)
+                    {
+                        joinString = "INNER JOIN ";
+                    }
+                    else if (attrJoin is RightJoinAttribute)
+                    {
+                        joinString = "RIGHT JOIN ";
+                    }
+
+                    var properties = joinProperty.PropertyType.GetProperties();
+                    var props = properties.Where(p => !p.GetCustomAttributes<NotMappedAttribute>().Any()).Select(p => new PropertyMetadata(p));
+                    var key = properties.Where(p => p.GetCustomAttributes<KeyAttribute>().Any()).Select(p => new PropertyMetadata(p)).First();
+                    originalBuilder.Append(", " +  GetFieldsSelect(attrJoin.TableName, props));
+                    joinsBuilder.Append($"{joinString} {attrJoin.TableName} ON {TableName}.{propertyFk.Name} = {attrJoin.TableName}.{key.Name} ");
+                }
+
+            }
+            return joinsBuilder;
+        }
+
+        private static string GetFieldsSelect(string tableName, IEnumerable<PropertyMetadata> properties)
+        {
             //Projection function
             Func<PropertyMetadata, string> projectionFunction = (p) =>
             {
-                if (!String.IsNullOrEmpty(p.Alias))
-                    return $"{p.ColumnName} AS {p.Name}";
+                if (!string.IsNullOrEmpty(p.Alias))
+                    return $"{tableName}.{p.ColumnName} AS {p.Name}";
 
-                return $"{p.ColumnName}";
+                return $"{tableName}.{p.ColumnName}";
             };
 
+            return string.Join(", ", properties.Select(projectionFunction));
+        }
+
+        public virtual QueryResult GetSelect(Expression<Func<TEntity, bool>> expression, params Expression<Func<TEntity, object>>[] includes)
+        {
+            var builder = new StringBuilder();
+
             // convert the query parms into a SQL string and dynamic property object
-            builder.AppendFormat("SELECT {0} FROM {1}",
-                                    String.Join(", ", this.BaseProperties.Select(projectionFunction)),
-                                    this.TableName);
+            builder.Append($"SELECT {GetFieldsSelect(TableName, BaseProperties)}");
 
-            return builder;
-        }
+            if (includes.Any())
+            {
+                var joinsBuilder = AppendJoinToSelect(builder, includes);
+                builder.Append($" FROM {TableName} ");
+                builder.Append(joinsBuilder);
 
-        public virtual QueryResult GetSelect()
-        {
-            var builder = GetBaseBuilderSelect();
-            return new QueryResult(builder.ToString().TrimEnd(), new ExpandoObject());
-        }
+            }
+            else
+            {
+                builder.Append($"FROM {TableName} ");
+            }
 
-        public virtual QueryResult GetSelect(Expression<Func<TEntity, bool>> expression)
-        {
-            var builder = GetBaseBuilderSelect();
+            if (expression == null)
+                return new QueryResult(builder.ToString().TrimEnd(), new ExpandoObject());
 
-            // walk the tree and build up a list of query parameter objects
-            // from the left and right branches of the expression tree
+            // WHERE
             var queryProperties = new List<QueryParameter>();
             FillQueryProperties(ExpressionHelper.GetBinaryExpression(expression.Body), ExpressionType.Default, ref queryProperties);
 
@@ -180,14 +228,13 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator.Models
             {
                 var item = queryProperties[i];
 
-                if (!String.IsNullOrEmpty(item.LinkingOperator) && i > 0)
+                if (!string.IsNullOrEmpty(item.LinkingOperator) && i > 0)
                 {
-                    builder.Append(String.Format("{0} {1} {2} @{1} ", item.LinkingOperator, item.PropertyName,
-                        item.QueryOperator));
+                    builder.Append(string.Format("{0} {1} {2}.{3} @{2} ", item.LinkingOperator, TableName, item.PropertyName, item.QueryOperator));
                 }
                 else
                 {
-                    builder.Append(String.Format("{0} {1} @{0} ", item.PropertyName, item.QueryOperator));
+                    builder.Append(string.Format("{0}.{1} {2} @{1} ", TableName, item.PropertyName, item.QueryOperator));
                 }
 
                 expando[item.PropertyName] = item.PropertyValue;
@@ -198,21 +245,9 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator.Models
 
         public virtual QueryResult GetSelectBetween(object from, object to, Expression<Func<TEntity, object>> btwFiled, Expression<Func<TEntity, bool>> expression)
         {
-            string op;
-            QueryResult queryResult;
-
             var filedName = ExpressionHelper.GetPropertyName(btwFiled);
-
-            if (expression == null)
-            {
-                queryResult = this.GetSelect();
-                op = "WHERE";
-            }
-            else
-            {
-                queryResult = this.GetSelect(expression);
-                op = "AND";
-            }
+            var queryResult = this.GetSelect(expression);
+            var op = expression == null ? "WHERE" : "AND";
 
             queryResult.AppendToSql($" {op} {filedName} BETWEEN '{@from}' AND '{to}'");
 
@@ -227,7 +262,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator.Models
             {
                 sqlBuilder.AppendFormat("DELETE FROM {0} WHERE {1}",
                     this.TableName,
-                    String.Join(" AND ",
+                    string.Join(" AND ",
                         this.KeyProperties.Select(
                             p => $"{p.ColumnName} = @{p.Name}")));
             }
@@ -236,7 +271,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator.Models
                 sqlBuilder.AppendFormat("UPDATE {0} SET {1} WHERE {2}",
                     this.TableName,
                     $"{this.StatusProperty.ColumnName} = {this.LogicalDeleteValue}",
-                    String.Join(" AND ",
+                    string.Join(" AND ",
                         this.KeyProperties.Select(
                             p => $"{p.ColumnName} = @{p.Name}")));
             }
@@ -269,7 +304,6 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator.Models
                 FillQueryProperties(ExpressionHelper.GetBinaryExpression(body.Right), body.NodeType, ref queryProperties);
             }
         }
-
 
         #endregion Query generators
     }

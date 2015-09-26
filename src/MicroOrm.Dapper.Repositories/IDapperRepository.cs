@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 
-namespace MicroOrm.Dapper.Repositories.Repositories
+namespace MicroOrm.Dapper.Repositories
 {
-    public interface IDapperRepository<TEntity> where TEntity : new()
+    public interface IDapperRepository<TEntity> where TEntity : class
     {
         IEnumerable<TEntity> FindAll();
 
@@ -14,6 +14,8 @@ namespace MicroOrm.Dapper.Repositories.Repositories
         IEnumerable<TEntity> FindAll(Expression<Func<TEntity, bool>> expression);
 
         Task<IEnumerable<TEntity>> FindAllAsync(Expression<Func<TEntity, bool>> expression);
+
+        Task<IEnumerable<TEntity>> FindAllAsync<TJ1>(Expression<Func<TEntity, bool>> expression,  Expression<Func<TEntity, object>> tj1);
 
         TEntity Find(Expression<Func<TEntity, bool>> expression);
 

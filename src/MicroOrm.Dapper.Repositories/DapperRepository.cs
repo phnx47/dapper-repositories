@@ -1,16 +1,16 @@
-﻿using Dapper;
-using MicroOrm.Dapper.Repositories.SqlGenerator.Interfaces;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
-using MicroOrm.Dapper.Repositories.SqlGenerator.Models;
+using Dapper;
+using MicroOrm.Dapper.Repositories.SqlGenerator;
 
-namespace MicroOrm.Dapper.Repositories.Repositories
+
+namespace MicroOrm.Dapper.Repositories
 {
-    public class DapperRepository<TEntity> : IDapperRepository<TEntity> where TEntity : new()
+    public class DapperRepository<TEntity> : IDapperRepository<TEntity> where TEntity : class
     {
         #region Constructors
 
@@ -46,8 +46,7 @@ namespace MicroOrm.Dapper.Repositories.Repositories
 
         public virtual IEnumerable<TEntity> FindAll()
         {
-            var queryResult = SqlGenerator.GetSelect();
-            return Connection.Query<TEntity>(queryResult.Sql);
+            return FindAll(null);
         }
 
         public virtual IEnumerable<TEntity> FindAll(Expression<Func<TEntity, bool>> expression)
@@ -63,14 +62,29 @@ namespace MicroOrm.Dapper.Repositories.Repositories
 
         public virtual async Task<IEnumerable<TEntity>> FindAllAsync()
         {
-            var queryResult = SqlGenerator.GetSelect();
-            return await Connection.QueryAsync<TEntity>(queryResult.Sql);
+            return await FindAllAsync(null);
         }
 
         public virtual async Task<IEnumerable<TEntity>> FindAllAsync(Expression<Func<TEntity, bool>> expression)
         {
             var queryResult = SqlGenerator.GetSelect(expression);
             return await Connection.QueryAsync<TEntity>(queryResult.Sql, queryResult.Param);
+
+        }
+
+        public virtual async Task<IEnumerable<TEntity>> FindAllAsync<TJ1>(Expression<Func<TEntity, bool>> expression, Expression<Func<TEntity, object>> tj1)
+        {
+            var queryResult = SqlGenerator.GetSelect(expression, tj1);
+
+            var type = typeof(TEntity);
+            var propertyName = ExpressionHelper.GetPropertyName(tj1);
+            var result = await Connection.QueryAsync<TEntity, TJ1, TEntity>(queryResult.Sql, (entity, j1) =>
+            {
+                type.GetProperty(propertyName).SetValue(entity, j1);
+                return entity;
+            }, queryResult.Param);
+            return result;
+
         }
 
         public virtual async Task<TEntity> FindAsync(Expression<Func<TEntity, bool>> expression)

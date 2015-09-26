@@ -20,6 +20,6 @@
     <file src="src\MicroOrm.Dapper.Repositories\bin\Release\MicroOrm.Dapper.Repositories.dll" target="lib\net45" />
     <file src="src\MicroOrm.Dapper.Repositories\bin\Release\MicroOrm.Dapper.Repositories.pdb" target="lib\net45" />
     <file src="src\MicroOrm.Dapper.Repositories\bin\Release\MicroOrm.Dapper.Repositories.xml" target="lib\net45" />
-	<file src="src\MicroOrm.Dapper.Repositories\**\*.cs" target="src" />
+    <file src="src\MicroOrm.Dapper.Repositories\**\*.cs" target="src" />
   </files>
 </package>

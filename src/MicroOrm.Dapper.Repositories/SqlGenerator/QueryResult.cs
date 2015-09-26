@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Text;
 
-namespace MicroOrm.Dapper.Repositories.SqlGenerator.Models
+namespace MicroOrm.Dapper.Repositories.SqlGenerator
 {
     /// <summary>
     /// A result object with the generated sql and dynamic params.
