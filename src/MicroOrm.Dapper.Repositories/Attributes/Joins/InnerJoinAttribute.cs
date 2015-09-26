@@ -6,8 +6,8 @@
         {
         }
 
-        public InnerJoinAttribute(string tableName) 
-            : base(tableName)
+        public InnerJoinAttribute(string tableName, string key, string externalKey)
+            : base(tableName, key, externalKey)
         {
         }
     }

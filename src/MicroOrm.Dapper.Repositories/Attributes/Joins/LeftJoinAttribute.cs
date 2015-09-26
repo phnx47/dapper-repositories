@@ -6,8 +6,8 @@
         {
         }
 
-        public LeftJoinAttribute(string tableName) 
-            : base(tableName)
+        public LeftJoinAttribute(string tableName, string key, string externalKey) 
+            : base(tableName, key, externalKey)
         {
         }
     }

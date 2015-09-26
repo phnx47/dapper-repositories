@@ -15,7 +15,13 @@ namespace MicroOrm.Dapper.Repositories
 
         Task<IEnumerable<TEntity>> FindAllAsync(Expression<Func<TEntity, bool>> expression);
 
-        Task<IEnumerable<TEntity>> FindAllAsync<TJ1>(Expression<Func<TEntity, bool>> expression,  Expression<Func<TEntity, object>> tj1);
+        IEnumerable<TEntity> FindAll<TJ1>(Expression<Func<TEntity, object>> tj1);
+
+        Task<IEnumerable<TEntity>> FindAllAsync<TJ1>(Expression<Func<TEntity, object>> tj1);
+
+        IEnumerable<TEntity> FindAll<TJ1>(Expression<Func<TEntity, bool>> expression, Expression<Func<TEntity, object>> tj1);
+
+        Task<IEnumerable<TEntity>> FindAllAsync<TJ1>(Expression<Func<TEntity, bool>> expression, Expression<Func<TEntity, object>> tj1);
 
         TEntity Find(Expression<Func<TEntity, bool>> expression);
 

@@ -6,8 +6,8 @@
         {
         }
 
-        public RightJoinAttribute(string tableName)
-            : base(tableName)
+        public RightJoinAttribute(string tableName, string key, string externalKey)
+            : base(tableName, key, externalKey)
         {
         }
     }

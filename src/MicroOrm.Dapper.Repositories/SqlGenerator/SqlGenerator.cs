@@ -2,7 +2,7 @@
 using MicroOrm.Dapper.Repositories.Attributes.Joins;
 using MicroOrm.Dapper.Repositories.Attributes.LogicalDelete;
 using System;
-using System.CodeDom;
+using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -14,12 +14,10 @@ using System.Text;
 
 namespace MicroOrm.Dapper.Repositories.SqlGenerator
 {
-
     public class SqlGenerator<TEntity> : ISqlGenerator<TEntity>
         where TEntity : class
     {
         #region Constructors
-
 
         public SqlGenerator(ESqlConnector sqlConnector)
         {
@@ -57,7 +55,6 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
             if (enumValue != null)
                 this.LogicalDeleteValue = Convert.ChangeType(enumValue, Enum.GetUnderlyingType(statusPropertyType));
         }
-
 
         public SqlGenerator()
             : this(ESqlConnector.MSSQL)
@@ -143,7 +140,6 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
 
         #region Get Select
 
-
         private StringBuilder AppendJoinToSelect(StringBuilder originalBuilder, params Expression<Func<TEntity, object>>[] includes)
         {
             StringBuilder joinsBuilder = new StringBuilder();
@@ -153,8 +149,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                 var propertyName = ExpressionHelper.GetPropertyName(include);
                 var joinProperty = AllProperties.First(x => x.Name == propertyName);
                 var attrJoin = joinProperty.GetCustomAttribute<JoinAttributeBase>();
-                var propertyFk = AllProperties.Where(x => x.GetCustomAttributes<ForeignKeyAttribute>().Any()).FirstOrDefault(x => x.GetCustomAttribute<ForeignKeyAttribute>().Name == propertyName);
-                if (attrJoin != null && propertyFk != null)
+                if (attrJoin != null)
                 {
                     var joinString = "";
                     if (attrJoin is LeftJoinAttribute)
@@ -170,13 +165,17 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                         joinString = "RIGHT JOIN ";
                     }
 
-                    var properties = joinProperty.PropertyType.GetProperties();
-                    var props = properties.Where(p => !p.GetCustomAttributes<NotMappedAttribute>().Any()).Select(p => new PropertyMetadata(p));
-                    var key = properties.Where(p => p.GetCustomAttributes<KeyAttribute>().Any()).Select(p => new PropertyMetadata(p)).First();
-                    originalBuilder.Append(", " +  GetFieldsSelect(attrJoin.TableName, props));
-                    joinsBuilder.Append($"{joinString} {attrJoin.TableName} ON {TableName}.{propertyFk.Name} = {attrJoin.TableName}.{key.Name} ");
-                }
+                    var joinType = joinProperty.PropertyType.IsGenericType 
+                        ? joinProperty.PropertyType.GenericTypeArguments[0] 
+                        : joinProperty.PropertyType;
 
+                    var properties = joinType.GetProperties().Where(p => p.PropertyType.IsValueType || p.PropertyType.Name.Equals("String", StringComparison.InvariantCultureIgnoreCase));
+                    var props = properties.Where(p => !p.GetCustomAttributes<NotMappedAttribute>().Any()).Select(p => new PropertyMetadata(p));
+                    originalBuilder.Append(", " + GetFieldsSelect(attrJoin.TableName, props));
+
+
+                    joinsBuilder.Append($"{joinString} {attrJoin.TableName} ON {TableName}.{attrJoin.Key} = {attrJoin.TableName}.{attrJoin.ExternalKey} ");
+                }
             }
             return joinsBuilder;
         }
@@ -207,7 +206,6 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                 var joinsBuilder = AppendJoinToSelect(builder, includes);
                 builder.Append($" FROM {TableName} ");
                 builder.Append(joinsBuilder);
-
             }
             else
             {
