@@ -25,6 +25,8 @@ namespace MicroOrm.Dapper.Repositories
 
         TEntity Find(Expression<Func<TEntity, bool>> expression);
 
+        TEntity Find<TJ1>(Expression<Func<TEntity, bool>> expression, Expression<Func<TEntity, object>> tj1);
+
         Task<TEntity> FindAsync(Expression<Func<TEntity, bool>> expression);
 
         bool Insert(TEntity instance);

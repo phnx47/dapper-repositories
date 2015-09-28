@@ -1,10 +1,12 @@
 ﻿using Dapper;
 using MicroOrm.Dapper.Repositories.SqlGenerator;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
 using System.Threading.Tasks;
 
 namespace MicroOrm.Dapper.Repositories
@@ -67,10 +69,10 @@ namespace MicroOrm.Dapper.Repositories
             var propertyName = ExpressionHelper.GetPropertyName(tj1);
 
             var result = Connection.Query<TEntity, TJ1, TEntity>(queryResult.Sql, (entity, j1) =>
-           {
-               type.GetProperty(propertyName).SetValue(entity, j1);
-               return entity;
-           }, queryResult.Param);
+               {
+                   type.GetProperty(propertyName).SetValue(entity, j1);
+                   return entity;
+               }, queryResult.Param);
 
             return result;
         }
@@ -78,6 +80,48 @@ namespace MicroOrm.Dapper.Repositories
         public virtual TEntity Find(Expression<Func<TEntity, bool>> expression)
         {
             return FindAll(expression).FirstOrDefault();
+        }
+
+        public virtual TEntity Find<TJ1>(Expression<Func<TEntity, bool>> expression, Expression<Func<TEntity, object>> tj1)
+        {
+            var queryResult = SqlGenerator.GetSelect(expression, tj1);
+
+            var type = typeof(TEntity);
+            var propertyName = ExpressionHelper.GetPropertyName(tj1);
+
+            TEntity result = null;
+            var tj1Property = type.GetProperty(propertyName);
+            if (tj1Property.PropertyType.IsGenericType)
+            {
+                var lookup = new Dictionary<int, TEntity>();
+                var add = tj1Property.PropertyType.GetMethod("Add");
+                result = Connection.Query<TEntity, TJ1, TEntity>(queryResult.Sql, (entity, j1) =>
+                {
+                    TEntity en;
+                    if (!lookup.TryGetValue(entity.GetHashCode(), out en))
+                    {
+                        lookup.Add(entity.GetHashCode(), en = entity);
+                    }
+
+                    if (tj1Property.GetValue(en) == null)
+                        tj1Property.SetValue(en, new List<TJ1>());
+
+                    var col = tj1Property.GetValue(en) as List<TJ1>;
+                    col?.Add(j1);
+
+                    return en;
+                }, queryResult.Param).FirstOrDefault();
+            }
+            else
+            {
+                result = Connection.Query<TEntity, TJ1, TEntity>(queryResult.Sql, (entity, j1) =>
+                {
+                    type.GetProperty(propertyName).SetValue(entity, j1);
+                    return entity;
+                }, queryResult.Param).FirstOrDefault();
+            }
+
+            return result;
         }
 
         public virtual async Task<IEnumerable<TEntity>> FindAllAsync()
@@ -90,7 +134,6 @@ namespace MicroOrm.Dapper.Repositories
             var queryResult = SqlGenerator.GetSelect(expression);
             return await Connection.QueryAsync<TEntity>(queryResult.Sql, queryResult.Param);
         }
-
 
         // join only object
         public virtual async Task<IEnumerable<TEntity>> FindAllAsync<TJ1>(Expression<Func<TEntity, object>> tj1)
@@ -106,10 +149,10 @@ namespace MicroOrm.Dapper.Repositories
             var propertyName = ExpressionHelper.GetPropertyName(tj1);
 
             var result = await Connection.QueryAsync<TEntity, TJ1, TEntity>(queryResult.Sql, (entity, j1) =>
-            {
-                type.GetProperty(propertyName).SetValue(entity, j1);
-                return entity;
-            }, queryResult.Param);
+                {
+                    type.GetProperty(propertyName).SetValue(entity, j1);
+                    return entity;
+                }, queryResult.Param);
 
             return result;
         }
