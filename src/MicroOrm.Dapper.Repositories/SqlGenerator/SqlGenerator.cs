@@ -291,8 +291,8 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
             {
                 string propertyName = ExpressionHelper.GetPropertyName(body);
                 object propertyValue = ExpressionHelper.GetValue(body.Right);
-                string opr = ExpressionHelper.GetOperator(body.NodeType);
-                string link = ExpressionHelper.GetOperator(linkingType);
+                string opr = ExpressionHelper.GetSqlOperator(body.NodeType);
+                string link = ExpressionHelper.GetSqlOperator(linkingType);
 
                 queryProperties.Add(new QueryParameter(link, propertyName, propertyValue, opr));
             }

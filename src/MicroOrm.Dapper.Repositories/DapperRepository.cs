@@ -1,12 +1,10 @@
 ﻿using Dapper;
 using MicroOrm.Dapper.Repositories.SqlGenerator;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Reflection;
 using System.Threading.Tasks;
 
 namespace MicroOrm.Dapper.Repositories
@@ -56,19 +54,19 @@ namespace MicroOrm.Dapper.Repositories
             return Connection.Query<TEntity>(queryResult.Sql, queryResult.Param);
         }
 
-        public virtual IEnumerable<TEntity> FindAll<TJ1>(Expression<Func<TEntity, object>> tj1)
+        public virtual IEnumerable<TEntity> FindAll<TChild1>(Expression<Func<TEntity, object>> tChild1)
         {
-            return FindAll<TJ1>(null, tj1);
+            return FindAll<TChild1>(null, tChild1);
         }
 
-        public virtual IEnumerable<TEntity> FindAll<TJ1>(Expression<Func<TEntity, bool>> expression, Expression<Func<TEntity, object>> tj1)
+        public virtual IEnumerable<TEntity> FindAll<TChild1>(Expression<Func<TEntity, bool>> expression, Expression<Func<TEntity, object>> tChild1)
         {
-            var queryResult = SqlGenerator.GetSelect(expression, tj1);
+            var queryResult = SqlGenerator.GetSelect(expression, tChild1);
 
             var type = typeof(TEntity);
-            var propertyName = ExpressionHelper.GetPropertyName(tj1);
+            var propertyName = ExpressionHelper.GetPropertyName(tChild1);
 
-            var result = Connection.Query<TEntity, TJ1, TEntity>(queryResult.Sql, (entity, j1) =>
+            var result = Connection.Query<TEntity, TChild1, TEntity>(queryResult.Sql, (entity, j1) =>
                {
                    type.GetProperty(propertyName).SetValue(entity, j1);
                    return entity;
@@ -82,43 +80,99 @@ namespace MicroOrm.Dapper.Repositories
             return FindAll(expression).FirstOrDefault();
         }
 
-        public virtual TEntity Find<TJ1>(Expression<Func<TEntity, bool>> expression, Expression<Func<TEntity, object>> tj1)
+        public virtual TEntity Find<TChild1>(Expression<Func<TEntity, bool>> expression, Expression<Func<TEntity, object>> tChild1)
         {
-            var queryResult = SqlGenerator.GetSelect(expression, tj1);
+            var queryResult = SqlGenerator.GetSelect(expression, tChild1);
 
             var type = typeof(TEntity);
-            var propertyName = ExpressionHelper.GetPropertyName(tj1);
+            var propertyName = ExpressionHelper.GetPropertyName(tChild1);
 
             TEntity result = null;
             var tj1Property = type.GetProperty(propertyName);
             if (tj1Property.PropertyType.IsGenericType)
             {
-                var lookup = new Dictionary<int, TEntity>();
-                var add = tj1Property.PropertyType.GetMethod("Add");
-                result = Connection.Query<TEntity, TJ1, TEntity>(queryResult.Sql, (entity, j1) =>
+                var lookup = new Dictionary<object, TEntity>();
+                var childs = new List<TChild1>();
+
+                var keyPropertyMeta = SqlGenerator.KeyProperties.FirstOrDefault();
+                if (keyPropertyMeta == null)
+                    throw new Exception("key not found");
+
+                var keyProperty = keyPropertyMeta.PropertyInfo;
+
+                result = Connection.Query<TEntity, TChild1, TEntity>(queryResult.Sql, (entity, j1) =>
                 {
+                    var key = keyProperty.GetValue(entity);
+
                     TEntity en;
-                    if (!lookup.TryGetValue(entity.GetHashCode(), out en))
+                    if (!lookup.TryGetValue(key, out en))
                     {
-                        lookup.Add(entity.GetHashCode(), en = entity);
+                        lookup.Add(key, en = entity);
                     }
 
-                    if (tj1Property.GetValue(en) == null)
-                        tj1Property.SetValue(en, new List<TJ1>());
-
-                    var col = tj1Property.GetValue(en) as List<TJ1>;
-                    col?.Add(j1);
+                    childs.Add(j1);
 
                     return en;
                 }, queryResult.Param).FirstOrDefault();
+
+                tj1Property.SetValue(result, childs);
             }
             else
             {
-                result = Connection.Query<TEntity, TJ1, TEntity>(queryResult.Sql, (entity, j1) =>
+                result = Connection.Query<TEntity, TChild1, TEntity>(queryResult.Sql, (entity, j1) =>
                 {
                     type.GetProperty(propertyName).SetValue(entity, j1);
                     return entity;
                 }, queryResult.Param).FirstOrDefault();
+            }
+
+            return result;
+        }
+
+        public virtual async Task<TEntity> FindAsync<TChild1>(Expression<Func<TEntity, bool>> expression, Expression<Func<TEntity, object>> tChild1)
+        {
+            var queryResult = SqlGenerator.GetSelect(expression, tChild1);
+
+            var type = typeof(TEntity);
+            var propertyName = ExpressionHelper.GetPropertyName(tChild1);
+
+            TEntity result = null;
+            var tj1Property = type.GetProperty(propertyName);
+            if (tj1Property.PropertyType.IsGenericType)
+            {
+                var lookup = new Dictionary<object, TEntity>();
+                var childs = new List<TChild1>();
+
+                var keyPropertyMeta = SqlGenerator.KeyProperties.FirstOrDefault();
+                if (keyPropertyMeta == null)
+                    throw new Exception("key not found");
+
+                var keyProperty = keyPropertyMeta.PropertyInfo;
+
+                result = (await Connection.QueryAsync<TEntity, TChild1, TEntity>(queryResult.Sql, (entity, j1) =>
+                {
+                    var key = keyProperty.GetValue(entity);
+
+                    TEntity en;
+                    if (!lookup.TryGetValue(key, out en))
+                    {
+                        lookup.Add(key, en = entity);
+                    }
+
+                    childs.Add(j1);
+
+                    return en;
+                }, queryResult.Param)).FirstOrDefault();
+
+                tj1Property.SetValue(result, childs);
+            }
+            else
+            {
+                result = (await Connection.QueryAsync<TEntity, TChild1, TEntity>(queryResult.Sql, (entity, j1) =>
+                {
+                    type.GetProperty(propertyName).SetValue(entity, j1);
+                    return entity;
+                }, queryResult.Param)).FirstOrDefault();
             }
 
             return result;
@@ -136,19 +190,19 @@ namespace MicroOrm.Dapper.Repositories
         }
 
         // join only object
-        public virtual async Task<IEnumerable<TEntity>> FindAllAsync<TJ1>(Expression<Func<TEntity, object>> tj1)
+        public virtual async Task<IEnumerable<TEntity>> FindAllAsync<TChild1>(Expression<Func<TEntity, object>> tChild1)
         {
-            return await FindAllAsync<TJ1>(null, tj1);
+            return await FindAllAsync<TChild1>(null, tChild1);
         }
 
-        public virtual async Task<IEnumerable<TEntity>> FindAllAsync<TJ1>(Expression<Func<TEntity, bool>> expression, Expression<Func<TEntity, object>> tj1)
+        public virtual async Task<IEnumerable<TEntity>> FindAllAsync<TChild1>(Expression<Func<TEntity, bool>> expression, Expression<Func<TEntity, object>> tChild1)
         {
-            var queryResult = SqlGenerator.GetSelect(expression, tj1);
+            var queryResult = SqlGenerator.GetSelect(expression, tChild1);
 
             var type = typeof(TEntity);
-            var propertyName = ExpressionHelper.GetPropertyName(tj1);
+            var propertyName = ExpressionHelper.GetPropertyName(tChild1);
 
-            var result = await Connection.QueryAsync<TEntity, TJ1, TEntity>(queryResult.Sql, (entity, j1) =>
+            var result = await Connection.QueryAsync<TEntity, TChild1, TEntity>(queryResult.Sql, (entity, j1) =>
                 {
                     type.GetProperty(propertyName).SetValue(entity, j1);
                     return entity;

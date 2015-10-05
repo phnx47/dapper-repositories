@@ -46,8 +46,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                 }
                 else
                 {
-                    const string format = "Expression '{0}' not supported.";
-                    string message = string.Format(format, field);
+                    string message = $"Expression '{field}' not supported.";
 
                     throw new ArgumentException(message, nameof(field));
                 }
@@ -64,7 +63,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
             return getter();
         }
 
-        internal static string GetOperator(ExpressionType type)
+        internal static string GetSqlOperator(ExpressionType type)
         {
             switch (type)
             {
