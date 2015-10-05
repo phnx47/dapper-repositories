@@ -3,6 +3,9 @@ using System.Data;
 
 namespace MicroOrm.Dapper.Repositories.DbContext
 {
+    /// <summary>
+    /// Class is helper for use and close IDbConnection
+    /// </summary>
     public abstract class DapperDbContext : IDisposable
     {
         #region Constructors

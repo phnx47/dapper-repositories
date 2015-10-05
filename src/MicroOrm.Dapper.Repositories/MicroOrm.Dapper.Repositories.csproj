@@ -68,18 +68,24 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DbContext\DapperDbContext.cs" />
-    <Compile Include="SqlGenerator\Models\ESqlConnector.cs" />
+    <Compile Include="Extensions\QueryExtensions.cs" />
+    <Compile Include="Attributes\Joins\InnerJoinAttribute.cs" />
+    <Compile Include="Attributes\Joins\JoinAttributeBase.cs" />
+    <Compile Include="Attributes\Joins\LeftJoinAttribute.cs" />
+    <Compile Include="Attributes\Joins\RightJoinAttribute.cs" />
+    <Compile Include="Attributes\LogicalDelete\DeletedAttribute.cs" />
+    <Compile Include="Attributes\LogicalDelete\StatusAttribute.cs" />
+    <Compile Include="SqlGenerator\ESqlConnector.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Repositories\DapperRepository.cs" />
-    <Compile Include="Repositories\IDapperRepository.cs" />
-    <Compile Include="SqlGenerator\Attributes\DeletedAttribute.cs" />
-    <Compile Include="SqlGenerator\Attributes\IdentityAttribute.cs" />
-    <Compile Include="SqlGenerator\Attributes\StatusAttribute.cs" />
-    <Compile Include="SqlGenerator\Interfaces\ISqlGenerator.cs" />
-    <Compile Include="SqlGenerator\Models\PropertyMetadata.cs" />
-    <Compile Include="SqlGenerator\Models\QueryParameter.cs" />
-    <Compile Include="SqlGenerator\Models\QueryResult.cs" />
-    <Compile Include="SqlGenerator\Models\SqlGenerator.cs" />
+    <Compile Include="DapperRepository.cs" />
+    <Compile Include="IDapperRepository.cs" />
+    <Compile Include="Attributes\IdentityAttribute.cs" />
+    <Compile Include="SqlGenerator\ISqlGenerator.cs" />
+    <Compile Include="SqlGenerator\PropertyMetadata.cs" />
+    <Compile Include="SqlGenerator\QueryParameter.cs" />
+    <Compile Include="SqlGenerator\QueryResult.cs" />
+    <Compile Include="SqlGenerator\SqlGenerator.cs" />
+    <Compile Include="SqlGenerator\ExpressionHelper.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

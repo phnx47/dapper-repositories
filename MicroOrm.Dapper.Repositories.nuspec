@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
   <metadata schemaVersion="2">
     <id>MicroOrm.Dapper.Repositories</id>
-    <version>1.2.3</version>
+    <version>1.3.0</version>
     <title>MicroOrm.Dapper.Repositories</title>
     <authors>Sergey Kuznetsov</authors>
     <owners>Sergey Kuznetsov</owners>
@@ -20,6 +20,6 @@
     <file src="src\MicroOrm.Dapper.Repositories\bin\Release\MicroOrm.Dapper.Repositories.dll" target="lib\net45" />
     <file src="src\MicroOrm.Dapper.Repositories\bin\Release\MicroOrm.Dapper.Repositories.pdb" target="lib\net45" />
     <file src="src\MicroOrm.Dapper.Repositories\bin\Release\MicroOrm.Dapper.Repositories.xml" target="lib\net45" />
-	<file src="src\MicroOrm.Dapper.Repositories\**\*.cs" target="src" />
+    <file src="src\MicroOrm.Dapper.Repositories\**\*.cs" target="src" />
   </files>
 </package>
