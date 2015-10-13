@@ -2,7 +2,6 @@
 using MicroOrm.Dapper.Repositories.Attributes.Joins;
 using MicroOrm.Dapper.Repositories.Attributes.LogicalDelete;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -209,7 +208,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
             }
             else
             {
-                builder.Append($"FROM {TableName} ");
+                builder.Append($" FROM {TableName} ");
             }
 
             if (expression == null)

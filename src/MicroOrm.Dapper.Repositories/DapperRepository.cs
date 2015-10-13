@@ -1,14 +1,11 @@
 ﻿using Dapper;
 using MicroOrm.Dapper.Repositories.SqlGenerator;
-using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Linq;
 using System.Linq.Expressions;
-using System.Reflection;
+using System.Linq;
 using System.Threading.Tasks;
-using System.Web.WebSockets;
-using MicroOrm.Dapper.Repositories.Attributes.Joins;
+using System;
 
 namespace MicroOrm.Dapper.Repositories
 {
@@ -38,10 +35,8 @@ namespace MicroOrm.Dapper.Repositories
 
         #region Properties
 
-        protected ISqlGenerator<TEntity> SqlGenerator { get; }
-
         protected IDbConnection Connection { get; }
-
+        protected ISqlGenerator<TEntity> SqlGenerator { get; }
         #endregion Properties
 
         #region Find
@@ -91,46 +86,6 @@ namespace MicroOrm.Dapper.Repositories
 
             return result;
         }
-
-        public virtual async Task<TEntity> FindAsync<TChild1>(Expression<Func<TEntity, bool>> expression, Expression<Func<TEntity, object>> tChild1)
-        {
-            var queryResult = SqlGenerator.GetSelect(expression, tChild1);
-
-            var type = typeof(TEntity);
-            var propertyName = ExpressionHelper.GetPropertyName(tChild1);
-
-            TEntity result = null;
-            var tj1Property = type.GetProperty(propertyName);
-            if (tj1Property.PropertyType.IsGenericType)
-            {
-                var childs = new List<TChild1>();
-
-                var keyPropertyMeta = SqlGenerator.KeyProperties.FirstOrDefault();
-                if (keyPropertyMeta == null)
-                    throw new Exception("key not found");
-
-                result = (await Connection.QueryAsync<TEntity, TChild1, TEntity>(queryResult.Sql, (entity, j1) =>
-                {
-                    if (j1 != null)
-                        childs.Add(j1);
-
-                    return entity;
-                }, queryResult.Param)).FirstOrDefault();
-
-                tj1Property.SetValue(result, childs);
-            }
-            else
-            {
-                result = (await Connection.QueryAsync<TEntity, TChild1, TEntity>(queryResult.Sql, (entity, j1) =>
-                {
-                    type.GetProperty(propertyName).SetValue(entity, j1);
-                    return entity;
-                }, queryResult.Param)).FirstOrDefault();
-            }
-
-            return result;
-        }
-
 
         public virtual IEnumerable<TEntity> FindAll()
         {
@@ -200,7 +155,6 @@ namespace MicroOrm.Dapper.Repositories
             return result;
         }
 
-
         public virtual async Task<IEnumerable<TEntity>> FindAllAsync()
         {
             return await FindAllAsync(null);
@@ -212,7 +166,6 @@ namespace MicroOrm.Dapper.Repositories
             return await Connection.QueryAsync<TEntity>(queryResult.Sql, queryResult.Param);
         }
 
-        // join only object
         public virtual async Task<IEnumerable<TEntity>> FindAllAsync<TChild1>(Expression<Func<TEntity, object>> tChild1)
         {
             return await FindAllAsync<TChild1>(null, tChild1);
@@ -271,6 +224,44 @@ namespace MicroOrm.Dapper.Repositories
 
         }
 
+        public virtual async Task<TEntity> FindAsync<TChild1>(Expression<Func<TEntity, bool>> expression, Expression<Func<TEntity, object>> tChild1)
+        {
+            var queryResult = SqlGenerator.GetSelect(expression, tChild1);
+
+            var type = typeof(TEntity);
+            var propertyName = ExpressionHelper.GetPropertyName(tChild1);
+
+            TEntity result = null;
+            var tj1Property = type.GetProperty(propertyName);
+            if (tj1Property.PropertyType.IsGenericType)
+            {
+                var childs = new List<TChild1>();
+
+                var keyPropertyMeta = SqlGenerator.KeyProperties.FirstOrDefault();
+                if (keyPropertyMeta == null)
+                    throw new Exception("key not found");
+
+                result = (await Connection.QueryAsync<TEntity, TChild1, TEntity>(queryResult.Sql, (entity, j1) =>
+                {
+                    if (j1 != null)
+                        childs.Add(j1);
+
+                    return entity;
+                }, queryResult.Param)).FirstOrDefault();
+
+                tj1Property.SetValue(result, childs);
+            }
+            else
+            {
+                result = (await Connection.QueryAsync<TEntity, TChild1, TEntity>(queryResult.Sql, (entity, j1) =>
+                {
+                    type.GetProperty(propertyName).SetValue(entity, j1);
+                    return entity;
+                }, queryResult.Param)).FirstOrDefault();
+            }
+
+            return result;
+        }
         public virtual async Task<TEntity> FindAsync(Expression<Func<TEntity, bool>> expression)
         {
             return (await FindAllAsync(expression)).FirstOrDefault();
@@ -381,11 +372,6 @@ namespace MicroOrm.Dapper.Repositories
             return FindAllBeetwen(from, to, btwFiled, null);
         }
 
-        public async Task<IEnumerable<TEntity>> FindAllBetweenAsync(object from, object to, Expression<Func<TEntity, object>> btwFiled)
-        {
-            return await FindAllBetweenAsync(from, to, btwFiled, null);
-        }
-
         public IEnumerable<TEntity> FindAllBeetwen(object from, object to, Expression<Func<TEntity, object>> btwFiled, Expression<Func<TEntity, bool>> expression)
         {
             var queryResult = SqlGenerator.GetSelectBetween(from, to, btwFiled, expression);
@@ -393,6 +379,10 @@ namespace MicroOrm.Dapper.Repositories
             return data;
         }
 
+        public async Task<IEnumerable<TEntity>> FindAllBetweenAsync(object from, object to, Expression<Func<TEntity, object>> btwFiled)
+        {
+            return await FindAllBetweenAsync(from, to, btwFiled, null);
+        }
         public async Task<IEnumerable<TEntity>> FindAllBetweenAsync(object from, object to, Expression<Func<TEntity, object>> btwFiled, Expression<Func<TEntity, bool>> expression)
         {
             var queryResult = SqlGenerator.GetSelectBetween(from, to, btwFiled, expression);
