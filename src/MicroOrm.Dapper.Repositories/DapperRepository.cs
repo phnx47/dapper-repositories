@@ -50,42 +50,7 @@ namespace MicroOrm.Dapper.Repositories
 
         public virtual TEntity Find<TChild1>(Expression<Func<TEntity, bool>> expression, Expression<Func<TEntity, object>> tChild1)
         {
-            var queryResult = SqlGenerator.GetSelect(expression, tChild1);
-
-            var type = typeof(TEntity);
-            var propertyName = ExpressionHelper.GetPropertyName(tChild1);
-
-            TEntity result = null;
-            var tj1Property = type.GetProperty(propertyName);
-
-            if (tj1Property.PropertyType.IsGenericType)
-            {
-                var childs = new List<TChild1>();
-
-                var keyPropertyMeta = SqlGenerator.KeyProperties.FirstOrDefault();
-                if (keyPropertyMeta == null)
-                    throw new Exception("key not found");
-
-                result = Connection.Query<TEntity, TChild1, TEntity>(queryResult.Sql, (entity, j1) =>
-                {
-                    if (j1 != null)
-                        childs.Add(j1);
-
-                    return entity;
-                }, queryResult.Param).FirstOrDefault();
-
-                tj1Property.SetValue(result, childs);
-            }
-            else
-            {
-                result = Connection.Query<TEntity, TChild1, TEntity>(queryResult.Sql, (entity, j1) =>
-                {
-                    type.GetProperty(propertyName).SetValue(entity, j1);
-                    return entity;
-                }, queryResult.Param).FirstOrDefault();
-            }
-
-            return result;
+            return FindAll<TChild1>(expression, tChild1).FirstOrDefault();
         }
 
         public virtual IEnumerable<TEntity> FindAll()
@@ -227,42 +192,9 @@ namespace MicroOrm.Dapper.Repositories
 
         public virtual async Task<TEntity> FindAsync<TChild1>(Expression<Func<TEntity, bool>> expression, Expression<Func<TEntity, object>> tChild1)
         {
-            var queryResult = SqlGenerator.GetSelect(expression, tChild1);
-
-            var type = typeof(TEntity);
-            var propertyName = ExpressionHelper.GetPropertyName(tChild1);
-
-            TEntity result = null;
-            var tj1Property = type.GetProperty(propertyName);
-            if (tj1Property.PropertyType.IsGenericType)
-            {
-                var childs = new List<TChild1>();
-
-                var keyPropertyMeta = SqlGenerator.KeyProperties.FirstOrDefault();
-                if (keyPropertyMeta == null)
-                    throw new Exception("key not found");
-
-                result = (await Connection.QueryAsync<TEntity, TChild1, TEntity>(queryResult.Sql, (entity, j1) =>
-                {
-                    if (j1 != null)
-                        childs.Add(j1);
-
-                    return entity;
-                }, queryResult.Param)).FirstOrDefault();
-
-                tj1Property.SetValue(result, childs);
-            }
-            else
-            {
-                result = (await Connection.QueryAsync<TEntity, TChild1, TEntity>(queryResult.Sql, (entity, j1) =>
-                {
-                    type.GetProperty(propertyName).SetValue(entity, j1);
-                    return entity;
-                }, queryResult.Param)).FirstOrDefault();
-            }
-
-            return result;
+            return (await FindAllAsync<TChild1>(expression, tChild1)).FirstOrDefault();
         }
+
         public virtual async Task<TEntity> FindAsync(Expression<Func<TEntity, bool>> expression)
         {
             return (await FindAllAsync(expression)).FirstOrDefault();

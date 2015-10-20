@@ -45,14 +45,20 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
 
             this.StatusProperty = new PropertyMetadata(statusProperty);
             var statusPropertyType = statusProperty.PropertyType;
-            var deleteOption = statusPropertyType.GetFields().FirstOrDefault(f => f.GetCustomAttribute<DeletedAttribute>() != null);
+            if (statusPropertyType.IsEnum)
+            {
+                var deleteOption =
+                    statusPropertyType.GetFields().FirstOrDefault(f => f.GetCustomAttribute<DeletedAttribute>() != null);
 
-            if (deleteOption == null) return;
+                if (deleteOption == null) return;
 
-            var enumValue = Enum.Parse(statusPropertyType, deleteOption.Name);
+                var enumValue = Enum.Parse(statusPropertyType, deleteOption.Name);
 
-            if (enumValue != null)
-                this.LogicalDeleteValue = Convert.ChangeType(enumValue, Enum.GetUnderlyingType(statusPropertyType));
+                if (enumValue != null)
+                    this.LogicalDeleteValue = Convert.ChangeType(enumValue, Enum.GetUnderlyingType(statusPropertyType));
+
+                LogicalDelete = true;
+            }
         }
 
         public SqlGenerator()
@@ -68,7 +74,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
 
         public bool IsIdentity => this.IdentityProperty != null;
 
-        public bool LogicalDelete => StatusProperty != null;
+        public bool LogicalDelete { get; }
 
         public string TableName { get; }
 
