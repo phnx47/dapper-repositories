@@ -35,8 +35,9 @@ namespace MicroOrm.Dapper.Repositories
 
         #region Properties
 
-        protected IDbConnection Connection { get; }
-        protected ISqlGenerator<TEntity> SqlGenerator { get; }
+        public IDbConnection Connection { get; }
+        public ISqlGenerator<TEntity> SqlGenerator { get; }
+
         #endregion Properties
 
         #region Find
@@ -367,12 +368,12 @@ namespace MicroOrm.Dapper.Repositories
 
         #region Beetwen
 
-        public IEnumerable<TEntity> FindAllBeetwen(object from, object to, Expression<Func<TEntity, object>> btwFiled)
+        public IEnumerable<TEntity> FindAllBetween(object from, object to, Expression<Func<TEntity, object>> btwFiled)
         {
-            return FindAllBeetwen(from, to, btwFiled, null);
+            return FindAllBetween(from, to, btwFiled, null);
         }
 
-        public IEnumerable<TEntity> FindAllBeetwen(object from, object to, Expression<Func<TEntity, object>> btwFiled, Expression<Func<TEntity, bool>> expression)
+        public IEnumerable<TEntity> FindAllBetween(object from, object to, Expression<Func<TEntity, object>> btwFiled, Expression<Func<TEntity, bool>> expression)
         {
             var queryResult = SqlGenerator.GetSelectBetween(from, to, btwFiled, expression);
             var data = Connection.Query<TEntity>(queryResult.Sql, queryResult.Param);
@@ -388,6 +389,31 @@ namespace MicroOrm.Dapper.Repositories
             var queryResult = SqlGenerator.GetSelectBetween(from, to, btwFiled, expression);
             var data = await Connection.QueryAsync<TEntity>(queryResult.Sql, queryResult.Param);
             return data;
+        }
+
+        private const string DateTimeFormat = "yyyy-MM-dd HH:mm:ss";
+
+        public IEnumerable<TEntity> FindAllBetween(DateTime from, DateTime to, Expression<Func<TEntity, object>> btwFiled)
+        {
+            return FindAllBetween(from, to, btwFiled, null);
+        }
+
+        public IEnumerable<TEntity> FindAllBetween(DateTime from, DateTime to, Expression<Func<TEntity, object>> btwFiled, Expression<Func<TEntity, bool>> expression)
+        {
+            var fromString = from.ToString(DateTimeFormat);
+            var toString = to.ToString(DateTimeFormat);
+            return FindAllBetween(fromString, toString, btwFiled, expression);
+        }
+
+        public async Task<IEnumerable<TEntity>> FindAllBetweenAsync(DateTime from, DateTime to, Expression<Func<TEntity, object>> btwFiled)
+        {
+            return await FindAllBetweenAsync(from, to, btwFiled, null);
+        }
+        public async Task<IEnumerable<TEntity>> FindAllBetweenAsync(DateTime from, DateTime to, Expression<Func<TEntity, object>> btwFiled, Expression<Func<TEntity, bool>> expression)
+        {
+            var fromString = from.ToString(DateTimeFormat);
+            var toString = to.ToString(DateTimeFormat);
+            return await FindAllBetweenAsync(fromString, toString, btwFiled, expression);
         }
 
         #endregion Beetwen
