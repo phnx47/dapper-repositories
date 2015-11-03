@@ -233,7 +233,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
 
                 if (!string.IsNullOrEmpty(item.LinkingOperator) && i > 0)
                 {
-                    builder.Append(string.Format("{0} {1} {2}.{3} @{2} ", item.LinkingOperator, TableName, item.PropertyName, item.QueryOperator));
+                    builder.Append(string.Format("{0} {1}.{2} {3} @{2} ", item.LinkingOperator, TableName, item.PropertyName, item.QueryOperator));
                 }
                 else
                 {
