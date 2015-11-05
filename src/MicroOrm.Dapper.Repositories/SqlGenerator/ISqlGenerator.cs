@@ -35,15 +35,17 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
 
         #region Methods
 
-        QueryResult GetSelect(Expression<Func<TEntity, bool>> expression, params Expression<Func<TEntity, object>>[] includes);
+        SqlQuery GetSelectFirst(Expression<Func<TEntity, bool>> expression, params Expression<Func<TEntity, object>>[] includes);
 
-        QueryResult GetSelectBetween(object from, object to, Expression<Func<TEntity, object>> btwFiled, Expression<Func<TEntity, bool>> expression);
+        SqlQuery GetSelectAll(Expression<Func<TEntity, bool>> expression, params Expression<Func<TEntity, object>>[] includes);
 
-        QueryResult GetInsert(TEntity entity);
+        SqlQuery GetSelectBetween(object from, object to, Expression<Func<TEntity, object>> btwFiled, Expression<Func<TEntity, bool>> expression);
 
-        QueryResult GetUpdate(TEntity entity);
+        SqlQuery GetInsert(TEntity entity);
 
-        QueryResult GetDelete(TEntity entity);
+        SqlQuery GetUpdate(TEntity entity);
+
+        SqlQuery GetDelete(TEntity entity);
 
         #endregion Methods
     }

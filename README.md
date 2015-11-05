@@ -1,5 +1,7 @@
 # MicroOrm.Dapper.Repositories
 
+[![Latest version](https://img.shields.io/nuget/v/MicroOrm.Dapper.Repositories.svg)](https://www.nuget.org/packages/MicroOrm.Dapper.Repositories)  [![License MIT](https://img.shields.io/badge/license-MIT-green.svg)](https://opensource.org/licenses/MIT)
+
 If you like your code runs fast, probably you know about Micro ORMs.
 They are simple and one of their main goals is be the fastest way to execute your SQL sentences on your data repositories.
 However, for some of them you need to write your own SQL sentences. This is the case of the most popular Micro ORM [Dapper](https://github.com/StackExchange/dapper-dot-net)
@@ -9,17 +11,15 @@ We know there are plugins for both Micro ORMs to implement the execution of this
 but that's exactly the difference of this tool. The "SQL Generator" is a generic component
 that generates all the CRUD sentences for a POCO class based on its definition with the possibility to override the way the SQL generator builds each sentence.
 
-I tested this with MSSQL, PostgreSQL(partially) and MySQL .
-
-Available on [nuget](https://www.nuget.org/packages/MicroOrm.Dapper.Repositories/)
+I tested this with MSSQL, PostgreSQL and MySQL .
 
 	PM> Install-Package MicroOrm.Dapper.Repositories
 
 Goals
 -----
 *  Avoid writing SQL.
-*  Avoid possible overwhelming of your application by using Reflection on each CRUD operation execution. The best idea about this is handling SQL Generators as singletons.
-*  Abstract the SQL generation process and reuse the same implementation with both Micro ORMs [Dapper](https://github.com/StackExchange/dapper-dot-net) or even other kind of tools rather than Micro ORMs
+*  Avoid possible overwhelming of your application by using Reflection on each CRUD operation execution.
+*  Abstract the SQL generation process and reuse the same implementation with both Micro ORMs [Dapper](https://github.com/StackExchange/dapper-dot-net)
 
 Metadata attributes
 -------------------

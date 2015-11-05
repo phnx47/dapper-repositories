@@ -4,9 +4,9 @@ using System.Text;
 namespace MicroOrm.Dapper.Repositories.SqlGenerator
 {
     /// <summary>
-    /// A result object with the generated sql and dynamic params.
+    /// A object with the generated sql and dynamic params.
     /// </summary>
-    public class QueryResult
+    public class SqlQuery
     {
 
         /// <summary>
@@ -14,7 +14,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         /// </summary>
         /// <param name="sql">The SQL.</param>
         /// <param name="param">The param.</param>
-        public QueryResult(string sql, dynamic param)
+        public SqlQuery(string sql, dynamic param)
         {
             Param = param;
             Sql = sql;

@@ -1,0 +1,36 @@
+{
+  "version": "1.0.0-*",
+  "description": "MicroOrm.Dapper.Repositories.Tests",
+  "authors": [ "Sergey Kuznetsov" ],
+
+  "dependencies": {
+    "Dapper": "1.50.0-*",
+    "MicroOrm.Dapper.Repositories": "1.4.0-*",
+    "xunit": "2.1.0"
+  },
+  "commands": {
+    "test": "xunit.runner.dnx"
+  },
+
+  "frameworks": {
+    "net45": {
+      "frameworkAssemblies": {
+        "System.Runtime": "4.0.0.0",
+        "System.Data": "4.0.0.0",
+        "System.Xml": "4.0.0.0",
+        "System.ComponentModel": "4.0.0.0",
+        "System.ComponentModel.DataAnnotations": "4.0.0.0"
+      }
+    },
+    "dnx452": {
+      "frameworkAssemblies": {
+        "System.Configuration": "4.0.0.0",
+        "System.Data.Linq": "4.0.0.0",
+        "System.Transactions": "4.0.0.0"
+      },
+      "dependencies": {
+        "xunit.runner.dnx": "2.1.0-*"
+      }
+    }
+  }
+}

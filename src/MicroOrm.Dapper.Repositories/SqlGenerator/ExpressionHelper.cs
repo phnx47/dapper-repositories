@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Linq.Expressions;
+using System.Reflection;
+using MicroOrm.Dapper.Repositories.Extensions;
 
 namespace MicroOrm.Dapper.Repositories.SqlGenerator
 {
@@ -10,7 +12,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         /// </summary>
         /// <param name="body">The body.</param>
         /// <returns>The property name for the property expression.</returns>
-        internal static string GetPropertyName(BinaryExpression body)
+        public static string GetPropertyName(BinaryExpression body)
         {
             string propertyName = body.Left.ToString().Split('.')[1];
 
@@ -23,7 +25,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
             return propertyName;
         }
 
-        internal static string GetPropertyName<TSource, TField>(Expression<Func<TSource, TField>> field)
+        public static string GetPropertyName<TSource, TField>(Expression<Func<TSource, TField>> field)
         {
             if (Equals(field, null))
             {
@@ -55,7 +57,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
             return expr.Member.Name;
         }
 
-        internal static object GetValue(Expression member)
+        public static object GetValue(Expression member)
         {
             var objectMember = Expression.Convert(member, typeof(object));
             var getterLambda = Expression.Lambda<Func<object>>(objectMember);
@@ -63,7 +65,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
             return getter();
         }
 
-        internal static string GetSqlOperator(ExpressionType type)
+        public static string GetSqlOperator(ExpressionType type)
         {
             switch (type)
             {
@@ -101,11 +103,16 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
             }
         }
 
-        internal static BinaryExpression GetBinaryExpression(Expression expression)
+        public static BinaryExpression GetBinaryExpression(Expression expression)
         {
             var binaryExpression = expression as BinaryExpression;
             var body = binaryExpression ?? Expression.MakeBinary(ExpressionType.Equal, expression, Expression.Constant(true));
             return body;
+        }
+
+        public static Func<PropertyInfo, bool> GetPrimitivePropertiesPredicate()
+        {
+            return p => p.PropertyType.IsValueType() || p.PropertyType.Name.Equals("String", StringComparison.OrdinalIgnoreCase);
         }
     }
 }

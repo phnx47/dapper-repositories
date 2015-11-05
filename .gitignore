@@ -2,7 +2,10 @@
 *.user
 *.suo
 *.exe
+*.lock.json
 
+.vs
 bin
 obj
 packages
+TestResults

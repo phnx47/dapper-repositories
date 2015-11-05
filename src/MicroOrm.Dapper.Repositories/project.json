@@ -1,0 +1,94 @@
+﻿{
+  "version": "1.4.0-beta1",
+  "description": "MicroOrm.Dapper.Repositories",
+  "authors": [ "Sergey Kuznetsov" ],
+  "tags": [ "dapper", "micro-orm", "repositories", "crud" ],
+  "projectUrl": "https://github.com/phnx47/MicroOrm.Dapper.Repositories",
+  "licenseUrl": "https://opensource.org/licenses/MIT",
+  "compilationOptions": {
+    "warningsAsErrors": true
+  },
+  "dependencies": {
+    "Dapper": "1.50.0-*"
+  },
+  "frameworks": {
+    "net45": {
+      "frameworkAssemblies": {
+        "System.Data": "4.0.0.0",
+        "System.Xml": "4.0.0.0",
+        "System.ComponentModel": "4.0.0.0",
+        "System.ComponentModel.DataAnnotations": "4.0.0.0"
+      }
+    },
+    "net452": {
+      "frameworkAssemblies": {
+        "System.Data": "4.0.0.0",
+        "System.Xml": "4.0.0.0",
+        "System.ComponentModel": "4.0.0.0",
+        "System.ComponentModel.DataAnnotations": "4.0.0.0"
+      }
+    },
+    "net46": {
+      "frameworkAssemblies": {
+        "System.Data": "4.0.0.0",
+        "System.Xml": "4.0.0.0",
+        "System.ComponentModel": "4.0.0.0",
+        "System.ComponentModel.DataAnnotations": "4.0.0.0"
+      }
+    },
+    "dnx452": {
+      "frameworkAssemblies": {
+        "System.Data": "4.0.0.0",
+        "System.Xml": "4.0.0.0",
+        "System.ComponentModel": "4.0.0.0",
+        "System.ComponentModel.DataAnnotations": "4.0.0.0"
+      }
+    },
+    "dnxcore5": {
+      "compilationOptions": {
+        "define": [ "COREFX" ]
+      },
+      "dependencies": {
+        "Microsoft.CSharp": "4.0.1-*",
+        "System.Runtime": "4.0.21-*",
+        "System.ComponentModel": "4.0.1-*",
+        "System.ComponentModel.Annotations": "4.0.11-*",
+        "System.Collections": "4.0.11-*",
+        "System.Collections.Concurrent": "4.0.11-*",
+        "System.Data.SqlClient": "4.0.0-*",
+        "System.Linq": "4.0.1-*",
+        "System.Reflection": "4.0.10-*",
+        "System.Reflection.Emit.ILGeneration": "4.0.1-*",
+        "System.Reflection.Emit.Lightweight": "4.0.1-*",
+        "System.Reflection.TypeExtensions": "4.0.1-*",
+        "System.Text.RegularExpressions": "4.0.11-*",
+        "System.Threading": "4.0.11-*",
+        "System.Threading.ThreadPool": "4.0.10-*",
+        "System.Collections.NonGeneric": "4.0.1-*"
+      }
+    },
+    "dotnet5.5": {
+      "compilationOptions": {
+        "define": [ "COREFX" ]
+      },
+      "dependencies": {
+        "Microsoft.CSharp": "4.0.1-*",
+        "System.Runtime": "4.0.21-*",
+        "System.ComponentModel": "4.0.1-*",
+        "System.ComponentModel.Annotations": "4.0.11-*",
+        "System.Collections": "4.0.11-*",
+        "System.Collections.Concurrent": "4.0.11-*",
+        "System.Data.SqlClient": "4.0.0-*",
+        "System.Linq": "4.0.1-*",
+        "System.Reflection": "4.0.10-*",
+        "System.Reflection.Emit.ILGeneration": "4.0.1-*",
+        "System.Reflection.Emit.Lightweight": "4.0.1-*",
+        "System.Reflection.TypeExtensions": "4.0.1-*",
+        "System.Text.RegularExpressions": "4.0.11-*",
+        "System.Threading": "4.0.11-*",
+        "System.Threading.ThreadPool": "4.0.10-*",
+        "System.Collections.NonGeneric": "4.0.1-*"
+      }
+    }
+  }
+}
