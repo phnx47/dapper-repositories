@@ -147,14 +147,14 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
 
         #region Get Select
 
-        public virtual SqlQuery GetSelectFirst(Expression<Func<TEntity, bool>> expression, params Expression<Func<TEntity, object>>[] includes)
+        public virtual SqlQuery GetSelectFirst(Expression<Func<TEntity, bool>> predicate, params Expression<Func<TEntity, object>>[] includes)
         {
-            return GetSelect(expression, true, includes);
+            return GetSelect(predicate, true, includes);
         }
 
-        public virtual SqlQuery GetSelectAll(Expression<Func<TEntity, bool>> expression, params Expression<Func<TEntity, object>>[] includes)
+        public virtual SqlQuery GetSelectAll(Expression<Func<TEntity, bool>> predicate, params Expression<Func<TEntity, object>>[] includes)
         {
-            return GetSelect(expression, false, includes);
+            return GetSelect(predicate, false, includes);
         }
 
         private StringBuilder InitBuilderSelect(bool firstOnly)
@@ -220,7 +220,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         }
 
 
-        private SqlQuery GetSelect(Expression<Func<TEntity, bool>> expression, bool firstOnly, params Expression<Func<TEntity, object>>[] includes)
+        private SqlQuery GetSelect(Expression<Func<TEntity, bool>> predicate, bool firstOnly, params Expression<Func<TEntity, object>>[] includes)
         {
             var builder = InitBuilderSelect(firstOnly);
 
@@ -237,11 +237,11 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
 
             IDictionary<string, object> expando = new ExpandoObject();
 
-            if (expression != null)
+            if (predicate != null)
             {
                 // WHERE
                 var queryProperties = new List<QueryParameter>();
-                FillQueryProperties(ExpressionHelper.GetBinaryExpression(expression.Body), ExpressionType.Default, ref queryProperties);
+                FillQueryProperties(ExpressionHelper.GetBinaryExpression(predicate.Body), ExpressionType.Default, ref queryProperties);
 
                 builder.Append(" WHERE ");
 

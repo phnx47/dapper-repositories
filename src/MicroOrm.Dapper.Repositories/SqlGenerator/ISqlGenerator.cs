@@ -11,8 +11,6 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
     /// <typeparam name="TEntity"></typeparam>
     public interface ISqlGenerator<TEntity> where TEntity : class
     {
-        #region Properties
-
         string TableName { get; }
 
         bool IsIdentity { get; }
@@ -31,22 +29,16 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
 
         bool LogicalDelete { get; }
 
-        #endregion Properties
+        SqlQuery GetSelectFirst(Expression<Func<TEntity, bool>> predicate, params Expression<Func<TEntity, object>>[] includes);
 
-        #region Methods
+        SqlQuery GetSelectAll(Expression<Func<TEntity, bool>> predicate, params Expression<Func<TEntity, object>>[] includes);
 
-        SqlQuery GetSelectFirst(Expression<Func<TEntity, bool>> expression, params Expression<Func<TEntity, object>>[] includes);
-
-        SqlQuery GetSelectAll(Expression<Func<TEntity, bool>> expression, params Expression<Func<TEntity, object>>[] includes);
-
-        SqlQuery GetSelectBetween(object from, object to, Expression<Func<TEntity, object>> btwFiled, Expression<Func<TEntity, bool>> expression);
+        SqlQuery GetSelectBetween(object from, object to, Expression<Func<TEntity, object>> btwFiled, Expression<Func<TEntity, bool>> predicate);
 
         SqlQuery GetInsert(TEntity entity);
 
         SqlQuery GetUpdate(TEntity entity);
 
         SqlQuery GetDelete(TEntity entity);
-
-        #endregion Methods
     }
 }
