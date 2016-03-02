@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq.Expressions;
 
 namespace MicroOrm.Dapper.Repositories.SqlGenerator
@@ -15,15 +14,15 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
 
         bool IsIdentity { get; }
 
-        ESqlConnector SqlConnector { get; set; }
+        SqlConnector SqlConnector { get; set; }
 
-        IEnumerable<PropertyMetadata> KeyProperties { get; }
+        PropertyMetadata[] KeyProperties { get; }
 
-        IEnumerable<PropertyMetadata> BaseProperties { get; }
+        PropertyMetadata[] BaseProperties { get; }
 
         PropertyMetadata IdentityProperty { get; }
 
-        PropertyMetadata StatusProperty { get; }
+        string StatusPropertyName { get; }
 
         object LogicalDeleteValue { get; }
 

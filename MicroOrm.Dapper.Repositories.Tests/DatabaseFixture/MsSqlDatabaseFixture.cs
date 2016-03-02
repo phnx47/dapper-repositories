@@ -40,8 +40,8 @@ namespace MicroOrm.Dapper.Repositories.Tests.DatabaseFixture
             }
             Db.Connection.Execute("INSERT INTO [dbo].[Users]([Name],[Deleted])VALUES(\'TestName0\', 0)");
 
-            Db.Connection.Execute(@"CREATE TABLE Cars (Id int IDENTITY(1,1) not null, Name varchar(256) not null, UserId int not null, PRIMARY KEY (Id))");
-            Db.Connection.Execute("INSERT INTO [dbo].[Cars]([Name],[UserId])VALUES('TestCar0',1)");
+            Db.Connection.Execute(@"CREATE TABLE Cars (Id int IDENTITY(1,1) not null, Name varchar(256) not null, UserId int not null, Status int not null, PRIMARY KEY (Id))");
+            Db.Connection.Execute("INSERT INTO [dbo].[Cars]([Name],[UserId],[Status])VALUES('TestCar0', 1, 0)");
         }
     }
 }

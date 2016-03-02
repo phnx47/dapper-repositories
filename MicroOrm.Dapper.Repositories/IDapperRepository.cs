@@ -1,13 +1,9 @@
-#if COREFX
-using IDbConnection = System.Data.Common.DbConnection;
-#endif
-
-using MicroOrm.Dapper.Repositories.SqlGenerator;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using MicroOrm.Dapper.Repositories.SqlGenerator;
 
 namespace MicroOrm.Dapper.Repositories
 {
@@ -25,25 +21,17 @@ namespace MicroOrm.Dapper.Repositories
 
         IEnumerable<TEntity> FindAll(Expression<Func<TEntity, bool>> expression);
 
-        IEnumerable<TEntity> FindAll(SqlQuery sqlQuery);
-
         IEnumerable<TEntity> FindAll<TChild1>(Expression<Func<TEntity, object>> tChild1);
 
         IEnumerable<TEntity> FindAll<TChild1>(Expression<Func<TEntity, bool>> expression, Expression<Func<TEntity, object>> tChild1);
-
-        IEnumerable<TEntity> FindAll<TChild1>(SqlQuery sqlQuery, Expression<Func<TEntity, object>> tChild1);
 
         Task<IEnumerable<TEntity>> FindAllAsync();
 
         Task<IEnumerable<TEntity>> FindAllAsync(Expression<Func<TEntity, bool>> expression);
 
-        Task<IEnumerable<TEntity>> FindAllAsync(SqlQuery sqlQuery);
-
         Task<IEnumerable<TEntity>> FindAllAsync<TChild1>(Expression<Func<TEntity, object>> tChild1);
 
         Task<IEnumerable<TEntity>> FindAllAsync<TChild1>(Expression<Func<TEntity, bool>> expression, Expression<Func<TEntity, object>> tChild1);
-
-        Task<IEnumerable<TEntity>> FindAllAsync<TChild1>(SqlQuery sqlQuery, Expression<Func<TEntity, object>> tChild1);
 
         Task<TEntity> FindAsync<TChild1>(Expression<Func<TEntity, object>> tChild1);
 

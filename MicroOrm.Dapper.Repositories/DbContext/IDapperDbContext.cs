@@ -1,8 +1,4 @@
-﻿#if COREFX
-using IDbConnection = System.Data.Common.DbConnection;
-#endif
-
-using System;
+﻿using System;
 using System.Data;
 
 namespace MicroOrm.Dapper.Repositories.DbContext

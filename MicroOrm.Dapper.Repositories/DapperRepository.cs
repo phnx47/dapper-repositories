@@ -1,8 +1,4 @@
-﻿#if COREFX
-using IDbConnection = System.Data.Common.DbConnection;
-#endif
-
-using Dapper;
+﻿using Dapper;
 using MicroOrm.Dapper.Repositories.SqlGenerator;
 using System;
 using System.Collections.Generic;
@@ -19,10 +15,10 @@ namespace MicroOrm.Dapper.Repositories
         public DapperRepository(IDbConnection connection)
         {
             Connection = connection;
-            SqlGenerator = new SqlGenerator<TEntity>(ESqlConnector.MSSQL);
+            SqlGenerator = new SqlGenerator<TEntity>(SqlConnector.MSSQL);
         }
 
-        public DapperRepository(IDbConnection connection, ESqlConnector sqlConnector)
+        public DapperRepository(IDbConnection connection, SqlConnector sqlConnector)
         {
             Connection = connection;
             SqlGenerator = new SqlGenerator<TEntity>(sqlConnector);
@@ -39,32 +35,64 @@ namespace MicroOrm.Dapper.Repositories
         public ISqlGenerator<TEntity> SqlGenerator { get; }
 
         #region Find
+        public virtual TEntity Find()
+        {
+            return Find(null);
+        }
 
         public virtual TEntity Find(Expression<Func<TEntity, bool>> expression)
         {
             var queryResult = SqlGenerator.GetSelectFirst(expression);
-            return FindAll(queryResult).FirstOrDefault();
+            return Connection.QueryFirstOrDefault<TEntity>(queryResult.Sql, queryResult.Param);
         }
 
+        //todo: реализовать через QueryFirst
         public virtual TEntity Find<TChild1>(Expression<Func<TEntity, bool>> expression, Expression<Func<TEntity, object>> tChild1)
         {
             var queryResult = SqlGenerator.GetSelectFirst(expression);
             return FindAll<TChild1>(queryResult, tChild1).FirstOrDefault();
         }
 
+        public virtual async Task<TEntity> FindAsync<TChild1>(Expression<Func<TEntity, object>> tChild1)
+        {
+            var queryResult = SqlGenerator.GetSelectFirst(null, tChild1);
+            return (await FindAllAsync<TChild1>(queryResult, tChild1)).FirstOrDefault();
+        }
+
+        public virtual async Task<TEntity> FindAsync<TChild1>(Expression<Func<TEntity, bool>> expression, Expression<Func<TEntity, object>> tChild1)
+        {
+            var queryResult = SqlGenerator.GetSelectFirst(expression, tChild1);
+            return (await FindAllAsync<TChild1>(queryResult, tChild1)).FirstOrDefault();
+        }
+
+        public virtual async Task<TEntity> FindAsync(Expression<Func<TEntity, bool>> expression)
+        {
+            var queryResult = SqlGenerator.GetSelectFirst(expression);
+            return (await FindAllAsync(queryResult)).FirstOrDefault();
+        }
+
+        public virtual async Task<TEntity> FindAsync()
+        {
+            var queryResult = SqlGenerator.GetSelectFirst(null);
+            return (await FindAllAsync(queryResult)).FirstOrDefault();
+        }
+
+        #endregion Find
+
+        #region FindAll
+
         public virtual IEnumerable<TEntity> FindAll()
         {
-            var queryResult = SqlGenerator.GetSelectAll(null);
-            return FindAll(queryResult);
+            return FindAll(expression: null);
         }
 
         public virtual IEnumerable<TEntity> FindAll(Expression<Func<TEntity, bool>> expression)
         {
             var queryResult = SqlGenerator.GetSelectAll(expression);
-            return Connection.Query<TEntity>(queryResult.Sql, queryResult.Param);
+            return FindAll(queryResult);
         }
 
-        public virtual IEnumerable<TEntity> FindAll(SqlQuery sqlQuery)
+        private IEnumerable<TEntity> FindAll(SqlQuery sqlQuery)
         {
             return Connection.Query<TEntity>(sqlQuery.Sql, sqlQuery.Param);
         }
@@ -81,7 +109,7 @@ namespace MicroOrm.Dapper.Repositories
             return FindAll<TChild1>(queryResult, tChild1);
         }
 
-        public virtual IEnumerable<TEntity> FindAll<TChild1>(SqlQuery sqlQuery, Expression<Func<TEntity, object>> tChild1)
+        private IEnumerable<TEntity> FindAll<TChild1>(SqlQuery sqlQuery, Expression<Func<TEntity, object>> tChild1)
         {
             var type = typeof(TEntity);
             IEnumerable<TEntity> result;
@@ -132,8 +160,7 @@ namespace MicroOrm.Dapper.Repositories
 
         public virtual async Task<IEnumerable<TEntity>> FindAllAsync()
         {
-            var queryResult = SqlGenerator.GetSelectAll(null);
-            return await FindAllAsync(queryResult);
+            return await FindAllAsync(expression: null);
         }
 
         public virtual async Task<IEnumerable<TEntity>> FindAllAsync(Expression<Func<TEntity, bool>> expression)
@@ -142,7 +169,7 @@ namespace MicroOrm.Dapper.Repositories
             return await FindAllAsync(queryResult);
         }
 
-        public virtual async Task<IEnumerable<TEntity>> FindAllAsync(SqlQuery sqlQuery)
+        private async Task<IEnumerable<TEntity>> FindAllAsync(SqlQuery sqlQuery)
         {
             return await Connection.QueryAsync<TEntity>(sqlQuery.Sql, sqlQuery.Param);
         }
@@ -159,7 +186,7 @@ namespace MicroOrm.Dapper.Repositories
             return await FindAllAsync<TChild1>(queryResult, tChild1);
         }
 
-        public virtual async Task<IEnumerable<TEntity>> FindAllAsync<TChild1>(SqlQuery sqlQuery, Expression<Func<TEntity, object>> tChild1)
+        private async Task<IEnumerable<TEntity>> FindAllAsync<TChild1>(SqlQuery sqlQuery, Expression<Func<TEntity, object>> tChild1)
         {
             var type = typeof(TEntity);
             var propertyName = ExpressionHelper.GetPropertyName(tChild1);
@@ -209,31 +236,7 @@ namespace MicroOrm.Dapper.Repositories
             return result;
         }
 
-        public virtual async Task<TEntity> FindAsync<TChild1>(Expression<Func<TEntity, object>> tChild1)
-        {
-            var queryResult = SqlGenerator.GetSelectFirst(null, tChild1);
-            return (await FindAllAsync<TChild1>(queryResult, tChild1)).FirstOrDefault();
-        }
-
-        public virtual async Task<TEntity> FindAsync<TChild1>(Expression<Func<TEntity, bool>> expression, Expression<Func<TEntity, object>> tChild1)
-        {
-            var queryResult = SqlGenerator.GetSelectFirst(expression, tChild1);
-            return (await FindAllAsync<TChild1>(queryResult, tChild1)).FirstOrDefault();
-        }
-
-        public virtual async Task<TEntity> FindAsync(Expression<Func<TEntity, bool>> expression)
-        {
-            var queryResult = SqlGenerator.GetSelectFirst(expression);
-            return (await FindAllAsync(queryResult)).FirstOrDefault();
-        }
-
-        public virtual async Task<TEntity> FindAsync()
-        {
-            var queryResult = SqlGenerator.GetSelectFirst(null);
-            return (await FindAllAsync(queryResult)).FirstOrDefault();
-        }
-
-        #endregion Find
+        #endregion FindAll
 
         #region Insert
 
@@ -278,7 +281,6 @@ namespace MicroOrm.Dapper.Repositories
                     var newParsedId = Convert.ChangeType(newId, SqlGenerator.IdentityProperty.PropertyInfo.PropertyType);
                     SqlGenerator.IdentityProperty.PropertyInfo.SetValue(instance, newParsedId);
                 }
-
             }
             else
             {
@@ -365,6 +367,7 @@ namespace MicroOrm.Dapper.Repositories
             var data = await Connection.QueryAsync<TEntity>(queryResult.Sql, queryResult.Param);
             return data;
         }
+
         public async Task<IEnumerable<TEntity>> FindAllBetweenAsync(DateTime from, DateTime to, Expression<Func<TEntity, object>> btwField)
         {
             return await FindAllBetweenAsync(from, to, btwField, null);

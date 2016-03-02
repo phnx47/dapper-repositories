@@ -1,9 +1,4 @@
-﻿#if COREFX
-using IDbConnection = System.Data.Common.DbConnection;
-#endif
-
-using System;
-using System.Data;
+﻿using System.Data;
 
 namespace MicroOrm.Dapper.Repositories.DbContext
 {
@@ -14,6 +9,7 @@ namespace MicroOrm.Dapper.Repositories.DbContext
     /// </summary>
     public class DapperDbContext : IDapperDbContext
     {
+
         protected DapperDbContext(IDbConnection connection)
         {
             InnerConnection = connection;

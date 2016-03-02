@@ -2,19 +2,17 @@
 using System.Threading.Tasks;
 using MicroOrm.Dapper.Repositories.Tests.Classes;
 using MicroOrm.Dapper.Repositories.Tests.DatabaseFixture;
-using MicroOrm.Dapper.Repositories.Tests.DbContexts;
 using Xunit;
 
-
-namespace MicroOrm.Dapper.Repositories.Tests
+namespace MicroOrm.Dapper.Repositories.Tests.Tests
 {
 
-    public class MsSqlTests : IClassFixture<MsSqlDatabaseFixture>
+    public class MsSqlRepositoriesTests : IClassFixture<MsSqlDatabaseFixture>
     {
         private readonly MsSqlDatabaseFixture _sqlDatabaseFixture;
 
 
-        public MsSqlTests(MsSqlDatabaseFixture msSqlDatabaseFixture)
+        public MsSqlRepositoriesTests(MsSqlDatabaseFixture msSqlDatabaseFixture)
         {
             _sqlDatabaseFixture = msSqlDatabaseFixture;
         }
@@ -98,7 +96,7 @@ namespace MicroOrm.Dapper.Repositories.Tests
         }
 
         [Fact]
-        public async Task LogicalDeletedAsync()
+        public async Task LogicalDeletedBoolAsync()
         {
             const int id = 10;
 
@@ -109,7 +107,22 @@ namespace MicroOrm.Dapper.Repositories.Tests
             Assert.True(deleted);
 
             var deletedUser = _sqlDatabaseFixture.Db.Users.Find(x => x.Id == id);
-            Assert.True(deletedUser.Deleted);
+            Assert.Null(deletedUser);
+        }
+
+        [Fact]
+        public async Task LogicalDeletedEnumAsync()
+        {
+            const int id = 1;
+
+            var car = _sqlDatabaseFixture.Db.Cars.Find(x => x.Id == id);
+            Assert.False(car.Status == StatusCar.Deleted);
+
+            var deleted = await _sqlDatabaseFixture.Db.Cars.DeleteAsync(car);
+            Assert.True(deleted);
+
+            var deletedCar = _sqlDatabaseFixture.Db.Cars.Find(x => x.Id == id);
+            Assert.Null(deletedCar);
         }
     }
 }

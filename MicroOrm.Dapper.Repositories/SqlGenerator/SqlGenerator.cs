@@ -17,114 +17,164 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
     public class SqlGenerator<TEntity> : ISqlGenerator<TEntity>
         where TEntity : class
     {
-        public SqlGenerator(ESqlConnector sqlConnector)
-        {
-            SqlConnector = sqlConnector;
-            var entityType = typeof (TEntity);
-            var entityTypeInfo = entityType.GetTypeInfo();
-            var aliasAttribute = entityTypeInfo.GetCustomAttribute<TableAttribute>();
 
-            this.TableName = aliasAttribute != null ? aliasAttribute.Name : entityTypeInfo.Name;
-            AllProperties = entityType.GetProperties();
-            //Load all the "primitive" entity properties
+        public SqlConnector SqlConnector { get; set; }
+
+        public bool IsIdentity => IdentityProperty != null;
+
+        public string TableName { get; protected set; }
+
+
+        public PropertyInfo[] AllProperties { get; protected set; }
+
+        public PropertyMetadata IdentityProperty { get; protected set; }
+
+        public PropertyMetadata[] KeyProperties { get; protected set; }
+
+        public PropertyMetadata[] BaseProperties { get; protected set; }
+
+        #region Logic delete
+
+        public bool LogicalDelete { get; protected set; }
+
+        public string StatusPropertyName { get; protected set; }
+
+        public object LogicalDeleteValue { get; protected set; }
+
+        #endregion Logic delete
+
+
+
+        #region Init
+
+        public SqlGenerator()
+           : this(SqlConnector.MSSQL)
+        {
+        }
+
+        public SqlGenerator(SqlConnector sqlConnector)
+        {
+
+
+            InitProperties();
+
+            InitSqlConnector(sqlConnector);
+            InitLogicalDeleted();
+
+            //todo: init joins
+
+        }
+
+        private void InitProperties()
+        {
+            var entityType = typeof(TEntity);
+            var entityTypeInfo = entityType.GetTypeInfo();
+            var tableAliasAttribute = entityTypeInfo.GetCustomAttribute<TableAttribute>();
+            TableName = tableAliasAttribute != null ? tableAliasAttribute.Name : entityTypeInfo.Name;
+            AllProperties = entityType.GetProperties().ToArray();
             var props = AllProperties.Where(ExpressionHelper.GetPrimitivePropertiesPredicate()).ToArray();
 
-            //Filter the non stored properties
-            this.BaseProperties = props.Where(p => !p.GetCustomAttributes<NotMappedAttribute>().Any()).Select(p => new PropertyMetadata(p));
+            // Filter the non stored properties
+            BaseProperties = props.Where(p => !p.GetCustomAttributes<NotMappedAttribute>().Any()).Select(p => new PropertyMetadata(p)).ToArray();
 
-            //Filter key properties
-            this.KeyProperties = props.Where(p => p.GetCustomAttributes<KeyAttribute>().Any()).Select(p => new PropertyMetadata(p));
+            // Filter key properties
+            KeyProperties = props.Where(p => p.GetCustomAttributes<KeyAttribute>().Any()).Select(p => new PropertyMetadata(p)).ToArray();
 
-            //Use identity as key pattern
+            // Use identity as key pattern
             var identityProperty = props.FirstOrDefault(p => p.GetCustomAttributes<IdentityAttribute>().Any());
-            this.IdentityProperty = identityProperty != null ? new PropertyMetadata(identityProperty) : null;
+            IdentityProperty = identityProperty != null ? new PropertyMetadata(identityProperty) : null;
+        }
 
-            //Status property (if exists, and if it does, it must be an enumeration)
-            var statusProperty = props.FirstOrDefault(p => p.GetCustomAttributes<StatusAttribute>().Any());
+        private void InitSqlConnector(SqlConnector sqlConnector)
+        {
+            SqlConnector = sqlConnector;
+            switch (SqlConnector)
+            {
+                case SqlConnector.MSSQL:
+                    TableName = TableName.Insert(0, "[");
+                    TableName = TableName.Insert(TableName.Length, "]");
+
+                    foreach (var propertyMetadata in BaseProperties)
+                    {
+                        propertyMetadata.ColumnName = propertyMetadata.ColumnName.Insert(0, "[");
+                        propertyMetadata.ColumnName = propertyMetadata.ColumnName.Insert(propertyMetadata.ColumnName.Length, "]");
+                    }
+
+                    foreach (var propertyMetadata in KeyProperties)
+                    {
+                        propertyMetadata.ColumnName = propertyMetadata.ColumnName.Insert(0, "[");
+                        propertyMetadata.ColumnName = propertyMetadata.ColumnName.Insert(propertyMetadata.ColumnName.Length, "]");
+                    }
+
+                    break;
+                case SqlConnector.MySQL:
+                    break;
+                case SqlConnector.PostgreSQL:
+                    //todo: ковычки
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(SqlConnector));
+            }
+        }
+
+        private void InitLogicalDeleted()
+        {
+            var statusProperty =
+                BaseProperties.FirstOrDefault(x => x.PropertyInfo.GetCustomAttributes<StatusAttribute>().Any());
 
             if (statusProperty == null) return;
-            StatusProperty = new PropertyMetadata(statusProperty);
+            StatusPropertyName = statusProperty.ColumnName;
 
-            if (statusProperty.PropertyType.IsBool())
+            if (statusProperty.PropertyInfo.PropertyType.IsBool())
             {
-                var deleteProperty = props.FirstOrDefault(p => p.GetCustomAttributes<DeletedAttribute>().Any());
+                var deleteProperty = AllProperties.FirstOrDefault(p => p.GetCustomAttributes<DeletedAttribute>().Any());
                 if (deleteProperty == null) return;
 
                 LogicalDelete = true;
                 LogicalDeleteValue = 1; // true
-
             }
-            else if (statusProperty.PropertyType.IsEnum())
+            else if (statusProperty.PropertyInfo.PropertyType.IsEnum())
             {
-              
-                var deleteOption =
-                    statusProperty.PropertyType.GetFields()
-                        .FirstOrDefault(f => f.GetCustomAttribute<DeletedAttribute>() != null);
+                var deleteOption = statusProperty.PropertyInfo.PropertyType.GetFields().FirstOrDefault(f => f.GetCustomAttribute<DeletedAttribute>() != null);
 
                 if (deleteOption == null) return;
 
-                var enumValue = Enum.Parse(statusProperty.PropertyType, deleteOption.Name);
+                var enumValue = Enum.Parse(statusProperty.PropertyInfo.PropertyType, deleteOption.Name);
 
                 if (enumValue != null)
-                    LogicalDeleteValue = Convert.ChangeType(enumValue, Enum.GetUnderlyingType(statusProperty.PropertyType));
+                    LogicalDeleteValue = Convert.ChangeType(enumValue, Enum.GetUnderlyingType(statusProperty.PropertyInfo.PropertyType));
 
                 LogicalDelete = true;
             }
         }
 
-        public SqlGenerator()
-            : this(ESqlConnector.MSSQL)
-        {
-        }
+        #endregion
 
-        public ESqlConnector SqlConnector { get; set; }
-
-        public bool IsIdentity => this.IdentityProperty != null;
-
-        public bool LogicalDelete { get; }
-
-        public string TableName { get; }
-
-        public PropertyInfo[] AllProperties { get; }
-
-        public PropertyMetadata IdentityProperty { get; }
-
-        public IEnumerable<PropertyMetadata> KeyProperties { get; }
-
-        public IEnumerable<PropertyMetadata> BaseProperties { get; }
-
-        public PropertyMetadata StatusProperty { get; }
-
-        public object LogicalDeleteValue { get; }
+        #region Insert
 
         public virtual SqlQuery GetInsert(TEntity entity)
         {
-            List<PropertyMetadata> properties = (this.IsIdentity ?
-                this.BaseProperties.Where(p => !p.Name.Equals(this.IdentityProperty.Name, StringComparison.OrdinalIgnoreCase)) :
-                this.BaseProperties).ToList();
+            var properties = (this.IsIdentity ? this.BaseProperties.Where(p => !p.Name.Equals(this.IdentityProperty.Name, StringComparison.OrdinalIgnoreCase)) : this.BaseProperties).ToList();
 
             string columNames = string.Join(", ", properties.Select(p => $"{p.ColumnName}"));
             string values = string.Join(", ", properties.Select(p => $"@{p.Name}"));
 
             var sqlBuilder = new StringBuilder();
-            sqlBuilder.AppendFormat("INSERT INTO {0} {1} {2} ",
-                                    this.TableName,
-                                    string.IsNullOrEmpty(columNames) ? "" : $"({columNames})",
-                                    string.IsNullOrEmpty(values) ? "" : $" VALUES ({values})");
+            sqlBuilder.Append($"INSERT INTO {this.TableName} {(string.IsNullOrEmpty(columNames) ? "" : $"({columNames})")} {(string.IsNullOrEmpty(values) ? "" : $" VALUES ({values})")} ");
 
             if (this.IsIdentity)
             {
                 switch (SqlConnector)
                 {
-                    case ESqlConnector.MSSQL:
+                    case SqlConnector.MSSQL:
                         sqlBuilder.Append("SELECT SCOPE_IDENTITY() AS " + this.IdentityProperty.ColumnName);
                         break;
 
-                    case ESqlConnector.MySQL:
+                    case SqlConnector.MySQL:
                         sqlBuilder.Append("; SELECT CONVERT(LAST_INSERT_ID(), SIGNED INTEGER) AS " + this.IdentityProperty.ColumnName);
                         break;
 
-                    case ESqlConnector.PostgreSQL:
+                    case SqlConnector.PostgreSQL:
                         sqlBuilder.Append("RETURNING " + this.IdentityProperty.ColumnName);
                         break;
                     default:
@@ -135,17 +185,23 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
             return new SqlQuery(sqlBuilder.ToString(), entity);
         }
 
+        #endregion
+
+        #region Update
+
         public virtual SqlQuery GetUpdate(TEntity entity)
         {
             var properties = this.BaseProperties.Where(p => !this.KeyProperties.Any(k => k.Name.Equals(p.Name, StringComparison.OrdinalIgnoreCase)));
 
             var sqlBuilder = new StringBuilder();
-            sqlBuilder.AppendFormat("UPDATE {0} SET {1} WHERE {2}", this.TableName, string.Join(", ", properties.Select(p => $"{p.ColumnName} = @{p.Name}")), string.Join(" AND ", this.KeyProperties.Select(p => $"{p.ColumnName} = @{p.Name}")));
+            sqlBuilder.Append($"UPDATE {this.TableName} SET {string.Join(", ", properties.Select(p => $"{p.ColumnName} = @{p.Name}"))} WHERE {string.Join(" AND ", this.KeyProperties.Select(p => $"{p.ColumnName} = @{p.Name}"))}");
 
             return new SqlQuery(sqlBuilder.ToString().TrimEnd(), entity);
         }
 
-        #region Get Select
+        #endregion
+
+        #region  Select
 
         public virtual SqlQuery GetSelectFirst(Expression<Func<TEntity, bool>> predicate, params Expression<Func<TEntity, object>>[] includes)
         {
@@ -162,11 +218,11 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
             var builder = new StringBuilder();
             var select = "SELECT ";
 
-            if (firstOnly && SqlConnector == ESqlConnector.MSSQL)
+            if (firstOnly && SqlConnector == SqlConnector.MSSQL)
                 select += "TOP 1 ";
 
             // convert the query parms into a SQL string and dynamic property object
-            builder.Append($"{select} {GetFieldsSelect(TableName, BaseProperties)}");
+            builder.Append($"{select}{GetFieldsSelect(TableName, BaseProperties)}");
 
             return builder;
         }
@@ -212,9 +268,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         private static string GetFieldsSelect(string tableName, IEnumerable<PropertyMetadata> properties)
         {
             //Projection function
-            Func<PropertyMetadata, string> projectionFunction = (p) => !string.IsNullOrEmpty(p.Alias)
-                ? $"{tableName}.{p.ColumnName} AS {p.Name}"
-                : $"{tableName}.{p.ColumnName}";
+            Func<PropertyMetadata, string> projectionFunction = (p) => !string.IsNullOrEmpty(p.Alias) ? $"{tableName}.{p.ColumnName} AS {p.Name}" : $"{tableName}.{p.ColumnName}";
 
             return string.Join(", ", properties.Select(projectionFunction));
         }
@@ -249,21 +303,34 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                 for (int i = 0; i < queryProperties.Count; i++)
                 {
                     var item = queryProperties[i];
+                    var columnName = BaseProperties.First(x => x.Name == item.PropertyName).ColumnName;
 
                     if (!string.IsNullOrEmpty(item.LinkingOperator) && i > 0)
                     {
-                        builder.Append(string.Format("{0} {1}.{2} {3} @{2} ", item.LinkingOperator, TableName, item.PropertyName, item.QueryOperator));
+                        builder.Append($"{item.LinkingOperator} {TableName}.{columnName} {item.QueryOperator} @{item.PropertyName} ");
                     }
                     else
                     {
-                        builder.Append(string.Format("{0}.{1} {2} @{1} ", TableName, item.PropertyName, item.QueryOperator));
+                        builder.Append($"{TableName}.{columnName} {item.QueryOperator} @{item.PropertyName} ");
                     }
 
                     expando[item.PropertyName] = item.PropertyValue;
                 }
+
+                if (LogicalDelete)
+                {
+                    builder.Append($"AND {TableName}.{StatusPropertyName} != {LogicalDeleteValue}");
+                }
+            }
+            else
+            {
+                if (LogicalDelete)
+                {
+                    builder.Append($"WHERE {TableName}.{StatusPropertyName} != {LogicalDeleteValue}");
+                }
             }
 
-            if (firstOnly && (SqlConnector == ESqlConnector.MySQL || SqlConnector == ESqlConnector.PostgreSQL))
+            if (firstOnly && (SqlConnector == SqlConnector.MySQL || SqlConnector == SqlConnector.PostgreSQL))
                 builder.Append("LIMIT 1");
 
 
@@ -276,7 +343,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
             var queryResult = GetSelectAll(expression);
             var op = expression == null ? "WHERE" : "AND";
 
-            queryResult.AppendToSql($" {op} {filedName} BETWEEN '{@from}' AND '{to}'");
+            queryResult.AppendToSql($" {op} {filedName} BETWEEN '{from}' AND '{to}'");
 
             return queryResult;
         }
@@ -287,17 +354,15 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
 
             if (!LogicalDelete)
             {
-                sqlBuilder.AppendFormat("DELETE FROM {0} WHERE {1}", this.TableName, string.Join(" AND ", this.KeyProperties.Select(p => $"{p.ColumnName} = @{p.Name}")));
+                sqlBuilder.Append($"DELETE FROM {this.TableName} WHERE {string.Join(" AND ", KeyProperties.Select(p => $"{p.ColumnName} = @{p.Name}"))}");
             }
             else
             {
-                sqlBuilder.AppendFormat("UPDATE {0} SET {1} WHERE {2}", this.TableName, $"{this.StatusProperty.ColumnName} = {this.LogicalDeleteValue}", string.Join(" AND ", this.KeyProperties.Select(p => $"{p.ColumnName} = @{p.Name}")));
+                sqlBuilder.Append($"UPDATE {this.TableName} SET {this.StatusPropertyName} = {LogicalDeleteValue} WHERE {string.Join(" AND ", this.KeyProperties.Select(p => $"{p.ColumnName} = @{p.Name}"))}");
             }
 
             return new SqlQuery(sqlBuilder.ToString(), entity);
         }
-
-        #endregion Get Select
 
         /// <summary>
         /// Fill query properties
@@ -322,5 +387,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                 FillQueryProperties(ExpressionHelper.GetBinaryExpression(body.Right), body.NodeType, ref queryProperties);
             }
         }
+
+        #endregion  Select
     }
 }
