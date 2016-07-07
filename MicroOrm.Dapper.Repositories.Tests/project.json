@@ -3,14 +3,20 @@
   "description": "MicroOrm.Dapper.Repositories.Tests",
   "authors": [ "Sergey Kuznetsov" ],
   "dependencies": {
+    "MicroOrm.Dapper.Repositories": {
+      "target": "project"
+    },
     "xunit": "2.2.0-beta2-build3300",
-    "MicroOrm.Dapper.Repositories": "1.4.0-beta2",
     "dotnet-test-xunit": "2.2.0-preview2-build1029"
   },
   "buildOptions": {
-    "warningsAsErrors": true,
-   
-    "debugType": "portable"
+    "warningsAsErrors": false,
+    "debugType": "portable",
+    "xmlDoc": false,
+    "emitEntryPoint": true,
+    "copyToOutput": {
+      "include": [ "xunit.runner.json" ]
+    }
   },
   "testRunner": "xunit",
 
@@ -26,5 +32,6 @@
         }
       }
     }
+
   }
 }

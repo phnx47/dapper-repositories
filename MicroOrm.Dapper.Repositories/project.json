@@ -1,5 +1,4 @@
 ﻿{
-
   "packOptions": {
     "summary": "CRUD for Dapper, implement Data Repository",
     "tags": [ "dapper", "micro-orm", "repositories", "crud" ],
@@ -17,8 +16,9 @@
   "title": "MicroOrm.Dapper.Repositories",
   "copyright": "2016 © Sergey Kuznetsov",
   "buildOptions": {
-    "xmlDoc": false,
-    "warningsAsErrors": true
+    "xmlDoc": true,
+    "warningsAsErrors": false,
+    "optimize": true
   },
   "dependencies": {
     "Dapper": "1.50.0-*"
