@@ -1,6 +1,6 @@
 ﻿namespace MicroOrm.Dapper.Repositories.SqlGenerator
 {
-    public enum SqlConnector
+    public enum ESqlConnector
     {
         MSSQL,
 

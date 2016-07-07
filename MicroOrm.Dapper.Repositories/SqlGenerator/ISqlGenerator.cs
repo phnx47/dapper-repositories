@@ -14,7 +14,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
 
         bool IsIdentity { get; }
 
-        SqlConnector SqlConnector { get; set; }
+        ESqlConnector ESqlConnector { get; set; }
 
         PropertyMetadata[] KeyProperties { get; }
 

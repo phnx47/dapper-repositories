@@ -10,5 +10,6 @@ namespace MicroOrm.Dapper.Repositories.DbContext
     public interface IDapperDbContext : IDisposable
     {
         IDbConnection Connection { get; }
-    }
+        IDbTransaction Transaction { get; }
+   }
 }

@@ -18,7 +18,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         where TEntity : class
     {
 
-        public SqlConnector SqlConnector { get; set; }
+        public ESqlConnector ESqlConnector { get; set; }
 
         public bool IsIdentity => IdentityProperty != null;
 
@@ -48,11 +48,11 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         #region Init
 
         public SqlGenerator()
-           : this(SqlConnector.MSSQL)
+           : this(ESqlConnector.MSSQL)
         {
         }
 
-        public SqlGenerator(SqlConnector sqlConnector)
+        public SqlGenerator(ESqlConnector sqlConnector)
         {
 
 
@@ -85,12 +85,12 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
             IdentityProperty = identityProperty != null ? new PropertyMetadata(identityProperty) : null;
         }
 
-        private void InitSqlConnector(SqlConnector sqlConnector)
+        private void InitSqlConnector(ESqlConnector sqlConnector)
         {
-            SqlConnector = sqlConnector;
-            switch (SqlConnector)
+            ESqlConnector = sqlConnector;
+            switch (ESqlConnector)
             {
-                case SqlConnector.MSSQL:
+                case ESqlConnector.MSSQL:
                     TableName = TableName.Insert(0, "[");
                     TableName = TableName.Insert(TableName.Length, "]");
 
@@ -107,13 +107,13 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                     }
 
                     break;
-                case SqlConnector.MySQL:
+                case ESqlConnector.MySQL:
                     break;
-                case SqlConnector.PostgreSQL:
+                case ESqlConnector.PostgreSQL:
                     //todo: ковычки
                     break;
                 default:
-                    throw new ArgumentOutOfRangeException(nameof(SqlConnector));
+                    throw new ArgumentOutOfRangeException(nameof(ESqlConnector));
             }
         }
 
@@ -164,17 +164,17 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
 
             if (this.IsIdentity)
             {
-                switch (SqlConnector)
+                switch (ESqlConnector)
                 {
-                    case SqlConnector.MSSQL:
+                    case ESqlConnector.MSSQL:
                         sqlBuilder.Append("SELECT SCOPE_IDENTITY() AS " + this.IdentityProperty.ColumnName);
                         break;
 
-                    case SqlConnector.MySQL:
+                    case ESqlConnector.MySQL:
                         sqlBuilder.Append("; SELECT CONVERT(LAST_INSERT_ID(), SIGNED INTEGER) AS " + this.IdentityProperty.ColumnName);
                         break;
 
-                    case SqlConnector.PostgreSQL:
+                    case ESqlConnector.PostgreSQL:
                         sqlBuilder.Append("RETURNING " + this.IdentityProperty.ColumnName);
                         break;
                     default:
@@ -218,7 +218,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
             var builder = new StringBuilder();
             var select = "SELECT ";
 
-            if (firstOnly && SqlConnector == SqlConnector.MSSQL)
+            if (firstOnly && ESqlConnector == ESqlConnector.MSSQL)
                 select += "TOP 1 ";
 
             // convert the query parms into a SQL string and dynamic property object
@@ -330,7 +330,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                 }
             }
 
-            if (firstOnly && (SqlConnector == SqlConnector.MySQL || SqlConnector == SqlConnector.PostgreSQL))
+            if (firstOnly && (ESqlConnector == ESqlConnector.MySQL || ESqlConnector == ESqlConnector.PostgreSQL))
                 builder.Append("LIMIT 1");
 
 
