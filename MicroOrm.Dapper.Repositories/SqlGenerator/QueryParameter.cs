@@ -19,10 +19,10 @@
         /// <param name="queryOperator">The query operator.</param>
         internal QueryParameter(string linkingOperator, string propertyName, object propertyValue, string queryOperator)
         {
-            this.LinkingOperator = linkingOperator;
-            this.PropertyName = propertyName;
-            this.PropertyValue = propertyValue;
-            this.QueryOperator = queryOperator;
+            LinkingOperator = linkingOperator;
+            PropertyName = propertyName;
+            PropertyValue = propertyValue;
+            QueryOperator = queryOperator;
         }
     }
 }

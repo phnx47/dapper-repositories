@@ -1,6 +1,6 @@
 # MicroOrm.Dapper.Repositories
 
-[![NuGet](https://img.shields.io/nuget/v/MicroOrm.Dapper.Repositories.svg)](https://www.nuget.org/packages/MicroOrm.Dapper.Repositories) [![NuGet Pre Release](https://img.shields.io/nuget/vpre/MicroOrm.Dapper.Repositories.svg?maxAge=2592000)](https://www.nuget.org/packages/MicroOrm.Dapper.Repositories/1.4.0-beta1) [![License MIT](https://img.shields.io/badge/license-MIT-green.svg)](https://opensource.org/licenses/MIT) [![Build status](https://ci.appveyor.com/api/projects/status/5v68lbhwc9d4948g?svg=true)](https://ci.appveyor.com/project/phnx47/microorm-dapper-repositories)
+[![NuGet](https://img.shields.io/nuget/v/MicroOrm.Dapper.Repositories.svg)](https://www.nuget.org/packages/MicroOrm.Dapper.Repositories) [![NuGet Pre Release](https://img.shields.io/nuget/vpre/MicroOrm.Dapper.Repositories.svg?maxAge=2592000)](https://www.nuget.org/packages/MicroOrm.Dapper.Repositories/1.4.0-beta3) [![License MIT](https://img.shields.io/badge/license-MIT-green.svg)](https://opensource.org/licenses/MIT) [![Build status](https://ci.appveyor.com/api/projects/status/5v68lbhwc9d4948g?svg=true)](https://ci.appveyor.com/project/phnx47/microorm-dapper-repositories)
 
 If you like your code runs fast, probably you know about Micro ORMs.
 They are simple and one of their main goals is be the fastest way to execute your SQL sentences on your data repositories.
