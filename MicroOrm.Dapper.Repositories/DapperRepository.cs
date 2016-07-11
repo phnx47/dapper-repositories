@@ -96,7 +96,6 @@ namespace MicroOrm.Dapper.Repositories
         /// <param name="expression"></param>
         /// <param name="tChild1"></param>
         /// <returns></returns>
-        //todo: реализовать через QueryFirst
         public virtual TEntity Find<TChild1>(Expression<Func<TEntity, bool>> expression, Expression<Func<TEntity, object>> tChild1)
         {
             var queryResult = SqlGenerator.GetSelectFirst(expression);
@@ -225,7 +224,7 @@ namespace MicroOrm.Dapper.Repositories
             {
                 var lookup = new Dictionary<object, TEntity>();
 
-                var keyPropertyMeta = SqlGenerator.KeyProperties.FirstOrDefault();
+                var keyPropertyMeta = SqlGenerator.KeySqlProperties.FirstOrDefault();
                 if (keyPropertyMeta == null)
                     throw new Exception("key not found");
 
@@ -337,7 +336,7 @@ namespace MicroOrm.Dapper.Repositories
             {
                 var lookup = new Dictionary<object, TEntity>();
 
-                var keyPropertyMeta = SqlGenerator.KeyProperties.FirstOrDefault();
+                var keyPropertyMeta = SqlGenerator.KeySqlProperties.FirstOrDefault();
                 if (keyPropertyMeta == null)
                     throw new Exception("key not found");
 
@@ -398,8 +397,8 @@ namespace MicroOrm.Dapper.Repositories
 
                 if (added)
                 {
-                    var newParsedId = Convert.ChangeType(newId, SqlGenerator.IdentityProperty.PropertyInfo.PropertyType);
-                    SqlGenerator.IdentityProperty.PropertyInfo.SetValue(instance, newParsedId);
+                    var newParsedId = Convert.ChangeType(newId, SqlGenerator.IdentitySqlProperty.PropertyInfo.PropertyType);
+                    SqlGenerator.IdentitySqlProperty.PropertyInfo.SetValue(instance, newParsedId);
                 }
             }
             else
@@ -428,8 +427,8 @@ namespace MicroOrm.Dapper.Repositories
 
                 if (added)
                 {
-                    var newParsedId = Convert.ChangeType(newId, SqlGenerator.IdentityProperty.PropertyInfo.PropertyType);
-                    SqlGenerator.IdentityProperty.PropertyInfo.SetValue(instance, newParsedId);
+                    var newParsedId = Convert.ChangeType(newId, SqlGenerator.IdentitySqlProperty.PropertyInfo.PropertyType);
+                    SqlGenerator.IdentitySqlProperty.PropertyInfo.SetValue(instance, newParsedId);
                 }
             }
             else

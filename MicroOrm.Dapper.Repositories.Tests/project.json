@@ -6,6 +6,7 @@
     "MicroOrm.Dapper.Repositories": {
       "target": "project"
     },
+    "Dapper": "1.50.0",
     "xunit": "2.2.0-beta2-build3300",
     "dotnet-test-xunit": "2.2.0-preview2-build1029"
   },
@@ -13,13 +14,12 @@
     "warningsAsErrors": false,
     "debugType": "portable",
     "xmlDoc": false,
-    "emitEntryPoint": true,
     "copyToOutput": {
       "include": [ "xunit.runner.json" ]
     }
   },
   "testRunner": "xunit",
-
+  "Microsoft.NETCore.Platforms": "1.0.1",
   "frameworks": {
     "netcoreapp1.0": {
       "buildOptions": {
@@ -30,6 +30,12 @@
           "version": "1.0.0",
           "type": "platform"
         }
+      }
+
+    },
+    "net451": {
+      "dependencies": {
+        "Microsoft.NETCore.Platforms": "1.0.1"
       }
     }
 

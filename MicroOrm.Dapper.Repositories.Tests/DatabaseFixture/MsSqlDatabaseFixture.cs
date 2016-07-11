@@ -32,7 +32,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.DatabaseFixture
             Action<string> dropTable = name => Db.Connection.Execute($@"IF OBJECT_ID('{name}', 'U') IS NOT NULL DROP TABLE [{name}]; ");
             dropTable("Users");
             dropTable("Cars");
-
+           
             Db.Connection.Execute(@"CREATE TABLE Users (Id int IDENTITY(1,1) not null, Name varchar(256) not null, Deleted bit not null, PRIMARY KEY (Id))");
             for (var i = 0; i < 10; i++)
             {

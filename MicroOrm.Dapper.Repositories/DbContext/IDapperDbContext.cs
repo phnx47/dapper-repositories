@@ -9,7 +9,14 @@ namespace MicroOrm.Dapper.Repositories.DbContext
     /// </summary>
     public interface IDapperDbContext : IDisposable
     {
+        /// <summary>
+        /// 
+        /// </summary>
         IDbConnection Connection { get; }
+
+        /// <summary>
+        /// 
+        /// </summary>
         IDbTransaction Transaction { get; }
    }
 }
