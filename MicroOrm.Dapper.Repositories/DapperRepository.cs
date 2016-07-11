@@ -81,11 +81,11 @@ namespace MicroOrm.Dapper.Repositories
         /// <summary>
         ///
         /// </summary>
-        /// <param name="expression"></param>
+        /// <param name="predicate"></param>
         /// <returns></returns>
-        public virtual TEntity Find(Expression<Func<TEntity, bool>> expression)
+        public virtual TEntity Find(Expression<Func<TEntity, bool>> predicate)
         {
-            var queryResult = SqlGenerator.GetSelectFirst(expression);
+            var queryResult = SqlGenerator.GetSelectFirst(predicate);
             return Connection.QueryFirstOrDefault<TEntity>(queryResult.Sql, queryResult.Param);
         }
 
@@ -93,12 +93,12 @@ namespace MicroOrm.Dapper.Repositories
         ///
         /// </summary>
         /// <typeparam name="TChild1"></typeparam>
-        /// <param name="expression"></param>
+        /// <param name="predicate"></param>
         /// <param name="tChild1"></param>
         /// <returns></returns>
-        public virtual TEntity Find<TChild1>(Expression<Func<TEntity, bool>> expression, Expression<Func<TEntity, object>> tChild1)
+        public virtual TEntity Find<TChild1>(Expression<Func<TEntity, bool>> predicate, Expression<Func<TEntity, object>> tChild1)
         {
-            var queryResult = SqlGenerator.GetSelectFirst(expression);
+            var queryResult = SqlGenerator.GetSelectFirst(predicate);
             return FindAll<TChild1>(queryResult, tChild1).FirstOrDefault();
         }
 
@@ -118,23 +118,23 @@ namespace MicroOrm.Dapper.Repositories
         ///
         /// </summary>
         /// <typeparam name="TChild1"></typeparam>
-        /// <param name="expression"></param>
+        /// <param name="predicate"></param>
         /// <param name="tChild1"></param>
         /// <returns></returns>
-        public virtual async Task<TEntity> FindAsync<TChild1>(Expression<Func<TEntity, bool>> expression, Expression<Func<TEntity, object>> tChild1)
+        public virtual async Task<TEntity> FindAsync<TChild1>(Expression<Func<TEntity, bool>> predicate, Expression<Func<TEntity, object>> tChild1)
         {
-            var queryResult = SqlGenerator.GetSelectFirst(expression, tChild1);
+            var queryResult = SqlGenerator.GetSelectFirst(predicate, tChild1);
             return (await FindAllAsync<TChild1>(queryResult, tChild1)).FirstOrDefault();
         }
 
         /// <summary>
         ///
         /// </summary>
-        /// <param name="expression"></param>
+        /// <param name="predicate"></param>
         /// <returns></returns>
-        public virtual async Task<TEntity> FindAsync(Expression<Func<TEntity, bool>> expression)
+        public virtual async Task<TEntity> FindAsync(Expression<Func<TEntity, bool>> predicate)
         {
-            var queryResult = SqlGenerator.GetSelectFirst(expression);
+            var queryResult = SqlGenerator.GetSelectFirst(predicate);
             return (await FindAllAsync(queryResult)).FirstOrDefault();
         }
 
@@ -158,17 +158,17 @@ namespace MicroOrm.Dapper.Repositories
         /// <returns></returns>
         public virtual IEnumerable<TEntity> FindAll()
         {
-            return FindAll(expression: null);
+            return FindAll(predicate: null);
         }
 
         /// <summary>
         ///
         /// </summary>
-        /// <param name="expression"></param>
+        /// <param name="predicate"></param>
         /// <returns></returns>
-        public virtual IEnumerable<TEntity> FindAll(Expression<Func<TEntity, bool>> expression)
+        public virtual IEnumerable<TEntity> FindAll(Expression<Func<TEntity, bool>> predicate)
         {
-            var queryResult = SqlGenerator.GetSelectAll(expression);
+            var queryResult = SqlGenerator.GetSelectAll(predicate);
             return Connection.Query<TEntity>(queryResult.Sql, queryResult.Param, Transaction);
         }
 
@@ -198,12 +198,12 @@ namespace MicroOrm.Dapper.Repositories
         ///
         /// </summary>
         /// <typeparam name="TChild1"></typeparam>
-        /// <param name="expression"></param>
+        /// <param name="predicate"></param>
         /// <param name="tChild1"></param>
         /// <returns></returns>
-        public virtual IEnumerable<TEntity> FindAll<TChild1>(Expression<Func<TEntity, bool>> expression, Expression<Func<TEntity, object>> tChild1)
+        public virtual IEnumerable<TEntity> FindAll<TChild1>(Expression<Func<TEntity, bool>> predicate, Expression<Func<TEntity, object>> tChild1)
         {
-            var queryResult = SqlGenerator.GetSelectAll(expression, tChild1);
+            var queryResult = SqlGenerator.GetSelectAll(predicate, tChild1);
             return FindAll<TChild1>(queryResult, tChild1);
         }
 
@@ -269,17 +269,17 @@ namespace MicroOrm.Dapper.Repositories
         /// <returns></returns>
         public virtual async Task<IEnumerable<TEntity>> FindAllAsync()
         {
-            return await FindAllAsync(expression: null);
+            return await FindAllAsync(predicate: null);
         }
 
         /// <summary>
         ///
         /// </summary>
-        /// <param name="expression"></param>
+        /// <param name="predicate"></param>
         /// <returns></returns>
-        public virtual async Task<IEnumerable<TEntity>> FindAllAsync(Expression<Func<TEntity, bool>> expression)
+        public virtual async Task<IEnumerable<TEntity>> FindAllAsync(Expression<Func<TEntity, bool>> predicate)
         {
-            var queryResult = SqlGenerator.GetSelectAll(expression);
+            var queryResult = SqlGenerator.GetSelectAll(predicate);
             return await FindAllAsync(queryResult);
         }
 
@@ -309,12 +309,12 @@ namespace MicroOrm.Dapper.Repositories
         ///
         /// </summary>
         /// <typeparam name="TChild1"></typeparam>
-        /// <param name="expression"></param>
+        /// <param name="predicate"></param>
         /// <param name="tChild1"></param>
         /// <returns></returns>
-        public virtual async Task<IEnumerable<TEntity>> FindAllAsync<TChild1>(Expression<Func<TEntity, bool>> expression, Expression<Func<TEntity, object>> tChild1)
+        public virtual async Task<IEnumerable<TEntity>> FindAllAsync<TChild1>(Expression<Func<TEntity, bool>> predicate, Expression<Func<TEntity, object>> tChild1)
         {
-            var queryResult = SqlGenerator.GetSelectAll(expression, tChild1);
+            var queryResult = SqlGenerator.GetSelectAll(predicate, tChild1);
             return await FindAllAsync<TChild1>(queryResult, tChild1);
         }
 
@@ -519,11 +519,11 @@ namespace MicroOrm.Dapper.Repositories
         /// <param name="from"></param>
         /// <param name="to"></param>
         /// <param name="btwField"></param>
-        /// <param name="expression"></param>
+        /// <param name="predicate"></param>
         /// <returns></returns>
-        public IEnumerable<TEntity> FindAllBetween(object from, object to, Expression<Func<TEntity, object>> btwField, Expression<Func<TEntity, bool>> expression)
+        public IEnumerable<TEntity> FindAllBetween(object from, object to, Expression<Func<TEntity, object>> btwField, Expression<Func<TEntity, bool>> predicate)
         {
-            var queryResult = SqlGenerator.GetSelectBetween(from, to, btwField, expression);
+            var queryResult = SqlGenerator.GetSelectBetween(from, to, btwField, predicate);
             var data = Connection.Query<TEntity>(queryResult.Sql, queryResult.Param, Transaction);
             return data;
         }
@@ -546,13 +546,13 @@ namespace MicroOrm.Dapper.Repositories
         /// <param name="from"></param>
         /// <param name="to"></param>
         /// <param name="btwField"></param>
-        /// <param name="expression"></param>
+        /// <param name="predicate"></param>
         /// <returns></returns>
-        public IEnumerable<TEntity> FindAllBetween(DateTime from, DateTime to, Expression<Func<TEntity, object>> btwField, Expression<Func<TEntity, bool>> expression)
+        public IEnumerable<TEntity> FindAllBetween(DateTime from, DateTime to, Expression<Func<TEntity, object>> btwField, Expression<Func<TEntity, bool>> predicate)
         {
             var fromString = from.ToString(DateTimeFormat);
             var toString = to.ToString(DateTimeFormat);
-            return FindAllBetween(fromString, toString, btwField, expression);
+            return FindAllBetween(fromString, toString, btwField, predicate);
         }
 
         /// <summary>
@@ -573,11 +573,11 @@ namespace MicroOrm.Dapper.Repositories
         /// <param name="from"></param>
         /// <param name="to"></param>
         /// <param name="btwField"></param>
-        /// <param name="expression"></param>
+        /// <param name="predicate"></param>
         /// <returns></returns>
-        public async Task<IEnumerable<TEntity>> FindAllBetweenAsync(object from, object to, Expression<Func<TEntity, object>> btwField, Expression<Func<TEntity, bool>> expression)
+        public async Task<IEnumerable<TEntity>> FindAllBetweenAsync(object from, object to, Expression<Func<TEntity, object>> btwField, Expression<Func<TEntity, bool>> predicate)
         {
-            var queryResult = SqlGenerator.GetSelectBetween(from, to, btwField, expression);
+            var queryResult = SqlGenerator.GetSelectBetween(from, to, btwField, predicate);
             var data = await Connection.QueryAsync<TEntity>(queryResult.Sql, queryResult.Param, Transaction);
             return data;
         }
@@ -600,13 +600,13 @@ namespace MicroOrm.Dapper.Repositories
         /// <param name="from"></param>
         /// <param name="to"></param>
         /// <param name="btwField"></param>
-        /// <param name="expression"></param>
+        /// <param name="predicate"></param>
         /// <returns></returns>
-        public async Task<IEnumerable<TEntity>> FindAllBetweenAsync(DateTime from, DateTime to, Expression<Func<TEntity, object>> btwField, Expression<Func<TEntity, bool>> expression)
+        public async Task<IEnumerable<TEntity>> FindAllBetweenAsync(DateTime from, DateTime to, Expression<Func<TEntity, object>> btwField, Expression<Func<TEntity, bool>> predicate)
         {
             var fromString = from.ToString(DateTimeFormat);
             var toString = to.ToString(DateTimeFormat);
-            return await FindAllBetweenAsync(fromString, toString, btwField, expression);
+            return await FindAllBetweenAsync(fromString, toString, btwField, predicate);
         }
 
         #endregion Beetwen
