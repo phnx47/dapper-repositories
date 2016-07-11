@@ -447,14 +447,20 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         /// <param name="body">The body.</param>
         /// <param name="linkingType">Type of the linking.</param>
         /// <param name="queryProperties">The query properties.</param>
-        private static void FillQueryProperties(BinaryExpression body, ExpressionType linkingType, ref List<QueryParameter> queryProperties)
+        private void FillQueryProperties(BinaryExpression body, ExpressionType linkingType, ref List<QueryParameter> queryProperties)
         {
             if (body.NodeType != ExpressionType.AndAlso && body.NodeType != ExpressionType.OrElse)
             {
-                string propertyName = ExpressionHelper.GetPropertyName(body);
-                object propertyValue = ExpressionHelper.GetValue(body.Right);
-                string opr = ExpressionHelper.GetSqlOperator(body.NodeType);
-                string link = ExpressionHelper.GetSqlOperator(linkingType);
+                var propertyName = ExpressionHelper.GetPropertyName(body);
+
+                if (!BaseSqlProperties.Select(x => x.Name).Contains(propertyName))
+                {
+                    throw new NotImplementedException("predicate can't parse");
+                }
+
+                var propertyValue = ExpressionHelper.GetValue(body.Right);
+                var opr = ExpressionHelper.GetSqlOperator(body.NodeType);
+                var link = ExpressionHelper.GetSqlOperator(linkingType);
 
                 queryProperties.Add(new QueryParameter(link, propertyName, propertyValue, opr));
             }
