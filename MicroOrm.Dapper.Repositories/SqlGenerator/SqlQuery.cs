@@ -37,11 +37,19 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         /// </value>
         public object Param { get; private set; }
 
+        /// <summary>
+        /// Set alternative param
+        /// </summary>
+        /// <param name="param"></param>
         public void SetParam(dynamic param)
         {
             Param = param;
         }
 
+
+        /// <summary>
+        /// Append string in current SQL query
+        /// </summary>
         public void AppendToSql(string sqlString)
         {
             var sqlBuilder = new StringBuilder(Sql);
@@ -49,6 +57,10 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
             Sql = sqlBuilder.ToString();
         }
 
+
+        /// <summary>
+        /// Append string in current SQL query
+        /// </summary>
         public void AppendToSql(IEnumerable<string> sqlStrings)
         {
             var sqlBuilder = new StringBuilder(Sql);

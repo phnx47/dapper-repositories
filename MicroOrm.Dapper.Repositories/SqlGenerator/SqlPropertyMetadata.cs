@@ -3,17 +3,37 @@ using System.Reflection;
 
 namespace MicroOrm.Dapper.Repositories.SqlGenerator
 {
-    public class PropertyMetadata
+
+    /// <summary>
+    /// 
+    /// </summary>
+    public class SqlPropertyMetadata
     {
+        /// <summary>
+        /// 
+        /// </summary>
         public PropertyInfo PropertyInfo { get; }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public string Alias { get; set; }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public string ColumnName { get; set; }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public string Name => PropertyInfo.Name;
 
-        public PropertyMetadata(PropertyInfo propertyInfo)
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public SqlPropertyMetadata(PropertyInfo propertyInfo)
         {
             PropertyInfo = propertyInfo;
             var alias = PropertyInfo.GetCustomAttribute<ColumnAttribute>();
@@ -27,7 +47,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
             {
                 ColumnName = PropertyInfo.Name;
             }
-           
+
         }
     }
 }
