@@ -19,36 +19,27 @@ namespace MicroOrm.Dapper.Repositories
         /// <summary>
         /// Constructor
         /// </summary>
-        public DapperRepository(IDbConnection connection, IDbTransaction transaction = null)
+        public DapperRepository(IDbConnection connection)
         {
             Connection = connection;
-            Transaction = transaction;
             SqlGenerator = new SqlGenerator<TEntity>(ESqlConnector.MSSQL);
         }
 
         /// <summary>
-        ///
+        /// Constructor
         /// </summary>
-        /// <param name="connection"></param>
-        /// <param name="sqlConnector"></param>
-        /// <param name="transaction"></param>
-        public DapperRepository(IDbConnection connection, ESqlConnector sqlConnector, IDbTransaction transaction = null)
+        public DapperRepository(IDbConnection connection, ESqlConnector sqlConnector)
         {
             Connection = connection;
-            Transaction = transaction;
             SqlGenerator = new SqlGenerator<TEntity>(sqlConnector);
         }
 
         /// <summary>
-        ///
+        /// Constructor
         /// </summary>
-        /// <param name="connection"></param>
-        /// <param name="sqlGenerator"></param>
-        /// <param name="transaction"></param>
-        public DapperRepository(IDbConnection connection, ISqlGenerator<TEntity> sqlGenerator, IDbTransaction transaction = null)
+        public DapperRepository(IDbConnection connection, ISqlGenerator<TEntity> sqlGenerator)
         {
             Connection = connection;
-            Transaction = transaction;
             SqlGenerator = sqlGenerator;
         }
 
@@ -57,10 +48,6 @@ namespace MicroOrm.Dapper.Repositories
         /// </summary>
         public IDbConnection Connection { get; }
 
-        /// <summary>
-        ///
-        /// </summary>
-        public IDbTransaction Transaction { get; }
 
         /// <summary>
         ///
@@ -73,17 +60,15 @@ namespace MicroOrm.Dapper.Repositories
         ///
         /// </summary>
         /// <returns></returns>
-        public virtual TEntity Find()
+        public virtual TEntity Find(IDbTransaction transaction = null)
         {
-            return Find(null);
+            return Find(null, transaction);
         }
 
         /// <summary>
         ///
         /// </summary>
-        /// <param name="predicate"></param>
-        /// <returns></returns>
-        public virtual TEntity Find(Expression<Func<TEntity, bool>> predicate)
+        public virtual TEntity Find(Expression<Func<TEntity, bool>> predicate, IDbTransaction transaction = null)
         {
             var queryResult = SqlGenerator.GetSelectFirst(predicate);
             return Connection.QueryFirstOrDefault<TEntity>(queryResult.Sql, queryResult.Param);
@@ -92,11 +77,8 @@ namespace MicroOrm.Dapper.Repositories
         /// <summary>
         ///
         /// </summary>
-        /// <typeparam name="TChild1"></typeparam>
-        /// <param name="predicate"></param>
-        /// <param name="tChild1"></param>
-        /// <returns></returns>
-        public virtual TEntity Find<TChild1>(Expression<Func<TEntity, bool>> predicate, Expression<Func<TEntity, object>> tChild1)
+
+        public virtual TEntity Find<TChild1>(Expression<Func<TEntity, bool>> predicate, Expression<Func<TEntity, object>> tChild1, IDbTransaction transaction = null)
         {
             var queryResult = SqlGenerator.GetSelectFirst(predicate);
             return FindAll<TChild1>(queryResult, tChild1).FirstOrDefault();
@@ -105,47 +87,37 @@ namespace MicroOrm.Dapper.Repositories
         /// <summary>
         ///
         /// </summary>
-        /// <typeparam name="TChild1"></typeparam>
-        /// <param name="tChild1"></param>
-        /// <returns></returns>
-        public virtual async Task<TEntity> FindAsync<TChild1>(Expression<Func<TEntity, object>> tChild1)
+        public virtual async Task<TEntity> FindAsync<TChild1>(Expression<Func<TEntity, object>> tChild1, IDbTransaction transaction = null)
         {
             var queryResult = SqlGenerator.GetSelectFirst(null, tChild1);
-            return (await FindAllAsync<TChild1>(queryResult, tChild1)).FirstOrDefault();
+            return (await FindAllAsync<TChild1>(queryResult, tChild1, transaction)).FirstOrDefault();
         }
 
         /// <summary>
         ///
         /// </summary>
-        /// <typeparam name="TChild1"></typeparam>
-        /// <param name="predicate"></param>
-        /// <param name="tChild1"></param>
-        /// <returns></returns>
-        public virtual async Task<TEntity> FindAsync<TChild1>(Expression<Func<TEntity, bool>> predicate, Expression<Func<TEntity, object>> tChild1)
+        public virtual async Task<TEntity> FindAsync<TChild1>(Expression<Func<TEntity, bool>> predicate, Expression<Func<TEntity, object>> tChild1, IDbTransaction transaction = null)
         {
             var queryResult = SqlGenerator.GetSelectFirst(predicate, tChild1);
-            return (await FindAllAsync<TChild1>(queryResult, tChild1)).FirstOrDefault();
+            return (await FindAllAsync<TChild1>(queryResult, tChild1, transaction)).FirstOrDefault();
         }
 
         /// <summary>
         ///
         /// </summary>
-        /// <param name="predicate"></param>
-        /// <returns></returns>
-        public virtual async Task<TEntity> FindAsync(Expression<Func<TEntity, bool>> predicate)
+        public virtual async Task<TEntity> FindAsync(Expression<Func<TEntity, bool>> predicate, IDbTransaction transaction = null)
         {
             var queryResult = SqlGenerator.GetSelectFirst(predicate);
-            return (await FindAllAsync(queryResult)).FirstOrDefault();
+            return (await FindAllAsync(queryResult, transaction)).FirstOrDefault();
         }
 
         /// <summary>
         ///
         /// </summary>
-        /// <returns></returns>
-        public virtual async Task<TEntity> FindAsync()
+        public virtual async Task<TEntity> FindAsync(IDbTransaction transaction = null)
         {
             var queryResult = SqlGenerator.GetSelectFirst(null);
-            return (await FindAllAsync(queryResult)).FirstOrDefault();
+            return (await FindAllAsync(queryResult, transaction)).FirstOrDefault();
         }
 
         #endregion Find
@@ -155,66 +127,50 @@ namespace MicroOrm.Dapper.Repositories
         /// <summary>
         ///
         /// </summary>
-        /// <returns></returns>
-        public virtual IEnumerable<TEntity> FindAll()
+        public virtual IEnumerable<TEntity> FindAll(IDbTransaction transaction = null)
         {
-            return FindAll(predicate: null);
+            return FindAll(predicate: null, transaction: transaction);
         }
 
         /// <summary>
         ///
         /// </summary>
-        /// <param name="predicate"></param>
-        /// <returns></returns>
-        public virtual IEnumerable<TEntity> FindAll(Expression<Func<TEntity, bool>> predicate)
+        public virtual IEnumerable<TEntity> FindAll(Expression<Func<TEntity, bool>> predicate, IDbTransaction transaction = null)
         {
             var queryResult = SqlGenerator.GetSelectAll(predicate);
-            return Connection.Query<TEntity>(queryResult.Sql, queryResult.Param, Transaction);
+            return Connection.Query<TEntity>(queryResult.Sql, queryResult.Param, transaction);
         }
 
         /// <summary>
         ///
         /// </summary>
-        /// <param name="sqlQuery"></param>
-        /// <returns></returns>
-        private IEnumerable<TEntity> FindAll(SqlQuery sqlQuery)
+        private IEnumerable<TEntity> FindAll(SqlQuery sqlQuery, IDbTransaction transaction = null)
         {
-            return Connection.Query<TEntity>(sqlQuery.Sql, sqlQuery.Param, Transaction);
+            return Connection.Query<TEntity>(sqlQuery.Sql, sqlQuery.Param, transaction);
         }
 
         /// <summary>
         ///
         /// </summary>
-        /// <typeparam name="TChild1"></typeparam>
-        /// <param name="tChild1"></param>
-        /// <returns></returns>
-        public virtual IEnumerable<TEntity> FindAll<TChild1>(Expression<Func<TEntity, object>> tChild1)
+        public virtual IEnumerable<TEntity> FindAll<TChild1>(Expression<Func<TEntity, object>> tChild1, IDbTransaction transaction = null)
         {
             var queryResult = SqlGenerator.GetSelectAll(null, tChild1);
-            return FindAll<TChild1>(queryResult, tChild1);
+            return FindAll<TChild1>(queryResult, tChild1, transaction);
         }
 
         /// <summary>
         ///
         /// </summary>
-        /// <typeparam name="TChild1"></typeparam>
-        /// <param name="predicate"></param>
-        /// <param name="tChild1"></param>
-        /// <returns></returns>
-        public virtual IEnumerable<TEntity> FindAll<TChild1>(Expression<Func<TEntity, bool>> predicate, Expression<Func<TEntity, object>> tChild1)
+        public virtual IEnumerable<TEntity> FindAll<TChild1>(Expression<Func<TEntity, bool>> predicate, Expression<Func<TEntity, object>> tChild1, IDbTransaction transaction = null)
         {
             var queryResult = SqlGenerator.GetSelectAll(predicate, tChild1);
-            return FindAll<TChild1>(queryResult, tChild1);
+            return FindAll<TChild1>(queryResult, tChild1, transaction);
         }
 
         /// <summary>
         ///
         /// </summary>
-        /// <typeparam name="TChild1"></typeparam>
-        /// <param name="sqlQuery"></param>
-        /// <param name="tChild1"></param>
-        /// <returns></returns>
-        private IEnumerable<TEntity> FindAll<TChild1>(SqlQuery sqlQuery, Expression<Func<TEntity, object>> tChild1)
+        private IEnumerable<TEntity> FindAll<TChild1>(SqlQuery sqlQuery, Expression<Func<TEntity, object>> tChild1, IDbTransaction transaction = null)
         {
             var type = typeof(TEntity);
             IEnumerable<TEntity> result;
@@ -247,7 +203,7 @@ namespace MicroOrm.Dapper.Repositories
                     tj1Property.SetValue(en, list);
 
                     return en;
-                }, sqlQuery.Param);
+                }, sqlQuery.Param, transaction);
 
                 result = lookup.Values;
             }
@@ -257,7 +213,7 @@ namespace MicroOrm.Dapper.Repositories
                 {
                     type.GetProperty(propertyName).SetValue(entity, j1);
                     return entity;
-                }, sqlQuery.Param);
+                }, sqlQuery.Param, transaction);
             }
 
             return result;
@@ -267,65 +223,50 @@ namespace MicroOrm.Dapper.Repositories
         ///
         /// </summary>
         /// <returns></returns>
-        public virtual async Task<IEnumerable<TEntity>> FindAllAsync()
+        public virtual async Task<IEnumerable<TEntity>> FindAllAsync(IDbTransaction transaction = null)
         {
-            return await FindAllAsync(predicate: null);
+            return await FindAllAsync(predicate: null, transaction: transaction);
         }
 
         /// <summary>
         ///
         /// </summary>
-        /// <param name="predicate"></param>
-        /// <returns></returns>
-        public virtual async Task<IEnumerable<TEntity>> FindAllAsync(Expression<Func<TEntity, bool>> predicate)
+        public virtual async Task<IEnumerable<TEntity>> FindAllAsync(Expression<Func<TEntity, bool>> predicate, IDbTransaction transaction = null)
         {
             var queryResult = SqlGenerator.GetSelectAll(predicate);
-            return await FindAllAsync(queryResult);
+            return await FindAllAsync(queryResult, transaction);
         }
 
         /// <summary>
         ///
         /// </summary>
-        /// <param name="sqlQuery"></param>
-        /// <returns></returns>
-        private async Task<IEnumerable<TEntity>> FindAllAsync(SqlQuery sqlQuery)
+        private async Task<IEnumerable<TEntity>> FindAllAsync(SqlQuery sqlQuery, IDbTransaction transaction = null)
         {
-            return await Connection.QueryAsync<TEntity>(sqlQuery.Sql, sqlQuery.Param, Transaction);
+            return await Connection.QueryAsync<TEntity>(sqlQuery.Sql, sqlQuery.Param, transaction);
         }
 
         /// <summary>
         ///
         /// </summary>
-        /// <typeparam name="TChild1"></typeparam>
-        /// <param name="tChild1"></param>
-        /// <returns></returns>
-        public virtual async Task<IEnumerable<TEntity>> FindAllAsync<TChild1>(Expression<Func<TEntity, object>> tChild1)
+        public virtual async Task<IEnumerable<TEntity>> FindAllAsync<TChild1>(Expression<Func<TEntity, object>> tChild1, IDbTransaction transaction = null)
         {
             var queryResult = SqlGenerator.GetSelectAll(null, tChild1);
-            return await FindAllAsync<TChild1>(queryResult, tChild1);
+            return await FindAllAsync<TChild1>(queryResult, tChild1, transaction);
         }
 
         /// <summary>
         ///
         /// </summary>
-        /// <typeparam name="TChild1"></typeparam>
-        /// <param name="predicate"></param>
-        /// <param name="tChild1"></param>
-        /// <returns></returns>
-        public virtual async Task<IEnumerable<TEntity>> FindAllAsync<TChild1>(Expression<Func<TEntity, bool>> predicate, Expression<Func<TEntity, object>> tChild1)
+        public virtual async Task<IEnumerable<TEntity>> FindAllAsync<TChild1>(Expression<Func<TEntity, bool>> predicate, Expression<Func<TEntity, object>> tChild1, IDbTransaction transaction = null)
         {
             var queryResult = SqlGenerator.GetSelectAll(predicate, tChild1);
-            return await FindAllAsync<TChild1>(queryResult, tChild1);
+            return await FindAllAsync<TChild1>(queryResult, tChild1, transaction);
         }
 
         /// <summary>
         ///
         /// </summary>
-        /// <typeparam name="TChild1"></typeparam>
-        /// <param name="sqlQuery"></param>
-        /// <param name="tChild1"></param>
-        /// <returns></returns>
-        private async Task<IEnumerable<TEntity>> FindAllAsync<TChild1>(SqlQuery sqlQuery, Expression<Func<TEntity, object>> tChild1)
+        private async Task<IEnumerable<TEntity>> FindAllAsync<TChild1>(SqlQuery sqlQuery, Expression<Func<TEntity, object>> tChild1, IDbTransaction transaction = null)
         {
             var type = typeof(TEntity);
             var propertyName = ExpressionHelper.GetPropertyName(tChild1);
@@ -359,7 +300,7 @@ namespace MicroOrm.Dapper.Repositories
                     tj1Property.SetValue(en, list);
 
                     return en;
-                }, sqlQuery.Param);
+                }, sqlQuery.Param, transaction);
 
                 result = lookup.Values;
             }
@@ -369,7 +310,7 @@ namespace MicroOrm.Dapper.Repositories
                 {
                     type.GetProperty(propertyName).SetValue(entity, j1);
                     return entity;
-                }, sqlQuery.Param);
+                }, sqlQuery.Param, transaction);
             }
 
             return result;
@@ -382,9 +323,7 @@ namespace MicroOrm.Dapper.Repositories
         /// <summary>
         ///
         /// </summary>
-        /// <param name="instance"></param>
-        /// <returns></returns>
-        public virtual bool Insert(TEntity instance)
+        public virtual bool Insert(TEntity instance, IDbTransaction transaction = null)
         {
             bool added;
 
@@ -392,7 +331,7 @@ namespace MicroOrm.Dapper.Repositories
 
             if (SqlGenerator.IsIdentity)
             {
-                var newId = Connection.Query<long>(queryResult.Sql, queryResult.Param, Transaction).FirstOrDefault();
+                var newId = Connection.Query<long>(queryResult.Sql, queryResult.Param, transaction).FirstOrDefault();
                 added = newId > 0;
 
                 if (added)
@@ -403,7 +342,7 @@ namespace MicroOrm.Dapper.Repositories
             }
             else
             {
-                added = Connection.Execute(queryResult.Sql, instance, Transaction) > 0;
+                added = Connection.Execute(queryResult.Sql, instance, transaction) > 0;
             }
 
             return added;
@@ -411,10 +350,8 @@ namespace MicroOrm.Dapper.Repositories
 
         /// <summary>
         ///
-        /// </summary>
-        /// <param name="instance"></param>
-        /// <returns></returns>
-        public virtual async Task<bool> InsertAsync(TEntity instance)
+        /// </summary>>
+        public virtual async Task<bool> InsertAsync(TEntity instance, IDbTransaction transaction = null)
         {
             bool added;
 
@@ -422,7 +359,7 @@ namespace MicroOrm.Dapper.Repositories
 
             if (SqlGenerator.IsIdentity)
             {
-                var newId = (await Connection.QueryAsync<long>(queryResult.Sql, queryResult.Param, Transaction)).FirstOrDefault();
+                var newId = (await Connection.QueryAsync<long>(queryResult.Sql, queryResult.Param, transaction)).FirstOrDefault();
                 added = newId > 0;
 
                 if (added)
@@ -433,7 +370,7 @@ namespace MicroOrm.Dapper.Repositories
             }
             else
             {
-                added = Connection.Execute(queryResult.Sql, instance, Transaction) > 0;
+                added = Connection.Execute(queryResult.Sql, instance, transaction) > 0;
             }
 
             return added;
@@ -446,24 +383,20 @@ namespace MicroOrm.Dapper.Repositories
         /// <summary>
         ///
         /// </summary>
-        /// <param name="instance"></param>
-        /// <returns></returns>
-        public virtual bool Delete(TEntity instance)
+        public virtual bool Delete(TEntity instance, IDbTransaction transaction = null)
         {
             var queryResult = SqlGenerator.GetDelete(instance);
-            var deleted = Connection.Execute(queryResult.Sql, queryResult.Param, Transaction) > 0;
+            var deleted = Connection.Execute(queryResult.Sql, queryResult.Param, transaction) > 0;
             return deleted;
         }
 
         /// <summary>
         ///
         /// </summary>
-        /// <param name="instance"></param>
-        /// <returns></returns>
-        public virtual async Task<bool> DeleteAsync(TEntity instance)
+        public virtual async Task<bool> DeleteAsync(TEntity instance, IDbTransaction transaction = null)
         {
             var queryResult = SqlGenerator.GetDelete(instance);
-            var deleted = (await Connection.ExecuteAsync(queryResult.Sql, queryResult.Param, Transaction)) > 0;
+            var deleted = (await Connection.ExecuteAsync(queryResult.Sql, queryResult.Param, transaction)) > 0;
             return deleted;
         }
 
@@ -474,24 +407,20 @@ namespace MicroOrm.Dapper.Repositories
         /// <summary>
         ///
         /// </summary>
-        /// <param name="instance"></param>
-        /// <returns></returns>
-        public virtual bool Update(TEntity instance)
+        public virtual bool Update(TEntity instance, IDbTransaction transaction = null)
         {
             var query = SqlGenerator.GetUpdate(instance);
-            var updated = Connection.Execute(query.Sql, instance, Transaction) > 0;
+            var updated = Connection.Execute(query.Sql, instance, transaction) > 0;
             return updated;
         }
 
         /// <summary>
         ///
         /// </summary>
-        /// <param name="instance"></param>
-        /// <returns></returns>
-        public virtual async Task<bool> UpdateAsync(TEntity instance)
+        public virtual async Task<bool> UpdateAsync(TEntity instance, IDbTransaction transaction = null)
         {
             var query = SqlGenerator.GetUpdate(instance);
-            var updated = (await Connection.ExecuteAsync(query.Sql, instance, Transaction)) > 0;
+            var updated = (await Connection.ExecuteAsync(query.Sql, instance, transaction)) > 0;
             return updated;
         }
 
@@ -504,51 +433,33 @@ namespace MicroOrm.Dapper.Repositories
         /// <summary>
         ///
         /// </summary>
-        /// <param name="from"></param>
-        /// <param name="to"></param>
-        /// <param name="btwField"></param>
-        /// <returns></returns>
-        public IEnumerable<TEntity> FindAllBetween(object from, object to, Expression<Func<TEntity, object>> btwField)
+        public IEnumerable<TEntity> FindAllBetween(object from, object to, Expression<Func<TEntity, object>> btwField, IDbTransaction transaction = null)
         {
-            return FindAllBetween(from, to, btwField, null);
+            return FindAllBetween(from, to, btwField, null, transaction);
         }
 
         /// <summary>
         ///
         /// </summary>
-        /// <param name="from"></param>
-        /// <param name="to"></param>
-        /// <param name="btwField"></param>
-        /// <param name="predicate"></param>
-        /// <returns></returns>
-        public IEnumerable<TEntity> FindAllBetween(object from, object to, Expression<Func<TEntity, object>> btwField, Expression<Func<TEntity, bool>> predicate)
+        public IEnumerable<TEntity> FindAllBetween(object from, object to, Expression<Func<TEntity, object>> btwField, Expression<Func<TEntity, bool>> predicate, IDbTransaction transaction = null)
         {
             var queryResult = SqlGenerator.GetSelectBetween(from, to, btwField, predicate);
-            var data = Connection.Query<TEntity>(queryResult.Sql, queryResult.Param, Transaction);
+            var data = Connection.Query<TEntity>(queryResult.Sql, queryResult.Param, transaction);
             return data;
         }
 
         /// <summary>
         ///
         /// </summary>
-        /// <param name="from"></param>
-        /// <param name="to"></param>
-        /// <param name="btwField"></param>
-        /// <returns></returns>
-        public IEnumerable<TEntity> FindAllBetween(DateTime from, DateTime to, Expression<Func<TEntity, object>> btwField)
+        public IEnumerable<TEntity> FindAllBetween(DateTime from, DateTime to, Expression<Func<TEntity, object>> btwField, IDbTransaction transaction = null)
         {
-            return FindAllBetween(from, to, btwField, null);
+            return FindAllBetween(from, to, btwField, null, transaction);
         }
 
         /// <summary>
         ///
         /// </summary>
-        /// <param name="from"></param>
-        /// <param name="to"></param>
-        /// <param name="btwField"></param>
-        /// <param name="predicate"></param>
-        /// <returns></returns>
-        public IEnumerable<TEntity> FindAllBetween(DateTime from, DateTime to, Expression<Func<TEntity, object>> btwField, Expression<Func<TEntity, bool>> predicate)
+        public IEnumerable<TEntity> FindAllBetween(DateTime from, DateTime to, Expression<Func<TEntity, object>> btwField, Expression<Func<TEntity, bool>> predicate, IDbTransaction transaction = null)
         {
             var fromString = from.ToString(DateTimeFormat);
             var toString = to.ToString(DateTimeFormat);
@@ -558,55 +469,37 @@ namespace MicroOrm.Dapper.Repositories
         /// <summary>
         ///
         /// </summary>
-        /// <param name="from"></param>
-        /// <param name="to"></param>
-        /// <param name="btwField"></param>
-        /// <returns></returns>
-        public async Task<IEnumerable<TEntity>> FindAllBetweenAsync(object from, object to, Expression<Func<TEntity, object>> btwField)
+        public async Task<IEnumerable<TEntity>> FindAllBetweenAsync(object from, object to, Expression<Func<TEntity, object>> btwField, IDbTransaction transaction = null)
         {
-            return await FindAllBetweenAsync(from, to, btwField, null);
+            return await FindAllBetweenAsync(from, to, btwField, null, transaction);
         }
 
         /// <summary>
         ///
-        /// </summary>
-        /// <param name="from"></param>
-        /// <param name="to"></param>
-        /// <param name="btwField"></param>
-        /// <param name="predicate"></param>
-        /// <returns></returns>
-        public async Task<IEnumerable<TEntity>> FindAllBetweenAsync(object from, object to, Expression<Func<TEntity, object>> btwField, Expression<Func<TEntity, bool>> predicate)
+        /// </summary>>
+        public async Task<IEnumerable<TEntity>> FindAllBetweenAsync(object from, object to, Expression<Func<TEntity, object>> btwField, Expression<Func<TEntity, bool>> predicate, IDbTransaction transaction = null)
         {
             var queryResult = SqlGenerator.GetSelectBetween(from, to, btwField, predicate);
-            var data = await Connection.QueryAsync<TEntity>(queryResult.Sql, queryResult.Param, Transaction);
+            var data = await Connection.QueryAsync<TEntity>(queryResult.Sql, queryResult.Param, transaction);
             return data;
         }
 
         /// <summary>
         ///
         /// </summary>
-        /// <param name="from"></param>
-        /// <param name="to"></param>
-        /// <param name="btwField"></param>
-        /// <returns></returns>
-        public async Task<IEnumerable<TEntity>> FindAllBetweenAsync(DateTime from, DateTime to, Expression<Func<TEntity, object>> btwField)
+        public async Task<IEnumerable<TEntity>> FindAllBetweenAsync(DateTime from, DateTime to, Expression<Func<TEntity, object>> btwField, IDbTransaction transaction = null)
         {
-            return await FindAllBetweenAsync(from, to, btwField, null);
+            return await FindAllBetweenAsync(from, to, btwField, null, transaction);
         }
 
         /// <summary>
         ///
         /// </summary>
-        /// <param name="from"></param>
-        /// <param name="to"></param>
-        /// <param name="btwField"></param>
-        /// <param name="predicate"></param>
-        /// <returns></returns>
-        public async Task<IEnumerable<TEntity>> FindAllBetweenAsync(DateTime from, DateTime to, Expression<Func<TEntity, object>> btwField, Expression<Func<TEntity, bool>> predicate)
+        public async Task<IEnumerable<TEntity>> FindAllBetweenAsync(DateTime from, DateTime to, Expression<Func<TEntity, object>> btwField, Expression<Func<TEntity, bool>> predicate, IDbTransaction transaction = null)
         {
             var fromString = from.ToString(DateTimeFormat);
             var toString = to.ToString(DateTimeFormat);
-            return await FindAllBetweenAsync(fromString, toString, btwField, predicate);
+            return await FindAllBetweenAsync(fromString, toString, btwField, predicate, transaction);
         }
 
         #endregion Beetwen

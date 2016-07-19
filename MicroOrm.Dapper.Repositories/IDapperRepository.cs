@@ -1,28 +1,22 @@
-using MicroOrm.Dapper.Repositories.SqlGenerator;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using MicroOrm.Dapper.Repositories.SqlGenerator;
 
 namespace MicroOrm.Dapper.Repositories
 {
     /// <summary>
-    /// Interface for Repository
+    /// interface for repository
     /// </summary>
     /// <typeparam name="TEntity"></typeparam>
-    public interface IDapperRepository<TEntity>
-        where TEntity : class
+    public interface IDapperRepository<TEntity> where TEntity : class
     {
         /// <summary>
-        /// Connection
+        ///
         /// </summary>
         IDbConnection Connection { get; }
-
-        /// <summary>
-        /// Transaction
-        /// </summary>
-        IDbTransaction Transaction { get; }
 
         /// <summary>
         ///
@@ -32,225 +26,148 @@ namespace MicroOrm.Dapper.Repositories
         /// <summary>
         ///
         /// </summary>
-        /// <param name="expression"></param>
         /// <returns></returns>
-        TEntity Find(Expression<Func<TEntity, bool>> expression);
+        TEntity Find(IDbTransaction transaction = null);
 
         /// <summary>
         ///
         /// </summary>
-        /// <typeparam name="TChild1"></typeparam>
-        /// <param name="expression"></param>
-        /// <param name="tChild1"></param>
-        /// <returns></returns>
-        TEntity Find<TChild1>(Expression<Func<TEntity, bool>> expression, Expression<Func<TEntity, object>> tChild1);
+        TEntity Find(Expression<Func<TEntity, bool>> predicate, IDbTransaction transaction = null);
 
         /// <summary>
         ///
         /// </summary>
-        /// <returns></returns>
-        IEnumerable<TEntity> FindAll();
+        TEntity Find<TChild1>(Expression<Func<TEntity, bool>> predicate, Expression<Func<TEntity, object>> tChild1, IDbTransaction transaction = null);
 
         /// <summary>
         ///
         /// </summary>
-        /// <param name="expression"></param>
-        /// <returns></returns>
-        IEnumerable<TEntity> FindAll(Expression<Func<TEntity, bool>> expression);
+        Task<TEntity> FindAsync<TChild1>(Expression<Func<TEntity, object>> tChild1, IDbTransaction transaction = null);
 
         /// <summary>
         ///
         /// </summary>
-        /// <typeparam name="TChild1"></typeparam>
-        /// <param name="tChild1"></param>
-        /// <returns></returns>
-        IEnumerable<TEntity> FindAll<TChild1>(Expression<Func<TEntity, object>> tChild1);
+        Task<TEntity> FindAsync<TChild1>(Expression<Func<TEntity, bool>> predicate, Expression<Func<TEntity, object>> tChild1, IDbTransaction transaction = null);
 
         /// <summary>
         ///
         /// </summary>
-        /// <typeparam name="TChild1"></typeparam>
-        /// <param name="expression"></param>
-        /// <param name="tChild1"></param>
-        /// <returns></returns>
-        IEnumerable<TEntity> FindAll<TChild1>(Expression<Func<TEntity, bool>> expression, Expression<Func<TEntity, object>> tChild1);
+        Task<TEntity> FindAsync(Expression<Func<TEntity, bool>> predicate, IDbTransaction transaction = null);
 
         /// <summary>
         ///
         /// </summary>
-        /// <returns></returns>
-        Task<IEnumerable<TEntity>> FindAllAsync();
+        Task<TEntity> FindAsync(IDbTransaction transaction = null);
 
         /// <summary>
         ///
         /// </summary>
-        /// <param name="expression"></param>
-        /// <returns></returns>
-        Task<IEnumerable<TEntity>> FindAllAsync(Expression<Func<TEntity, bool>> expression);
+        IEnumerable<TEntity> FindAll(IDbTransaction transaction = null);
 
         /// <summary>
         ///
         /// </summary>
-        /// <typeparam name="TChild1"></typeparam>
-        /// <param name="tChild1"></param>
-        /// <returns></returns>
-        Task<IEnumerable<TEntity>> FindAllAsync<TChild1>(Expression<Func<TEntity, object>> tChild1);
+        IEnumerable<TEntity> FindAll(Expression<Func<TEntity, bool>> predicate, IDbTransaction transaction = null);
 
         /// <summary>
         ///
         /// </summary>
-        /// <typeparam name="TChild1"></typeparam>
-        /// <param name="expression"></param>
-        /// <param name="tChild1"></param>
-        /// <returns></returns>
-        Task<IEnumerable<TEntity>> FindAllAsync<TChild1>(Expression<Func<TEntity, bool>> expression, Expression<Func<TEntity, object>> tChild1);
+        IEnumerable<TEntity> FindAll<TChild1>(Expression<Func<TEntity, object>> tChild1, IDbTransaction transaction = null);
 
         /// <summary>
         ///
         /// </summary>
-        /// <typeparam name="TChild1"></typeparam>
-        /// <param name="tChild1"></param>
-        /// <returns></returns>
-        Task<TEntity> FindAsync<TChild1>(Expression<Func<TEntity, object>> tChild1);
-
-        /// <summary>
-        ///
-        /// </summary>
-        /// <typeparam name="TChild1"></typeparam>
-        /// <param name="expression"></param>
-        /// <param name="tChild1"></param>
-        /// <returns></returns>
-        Task<TEntity> FindAsync<TChild1>(Expression<Func<TEntity, bool>> expression, Expression<Func<TEntity, object>> tChild1);
-
-        /// <summary>
-        ///
-        /// </summary>
-        /// <param name="expression"></param>
-        /// <returns></returns>
-        Task<TEntity> FindAsync(Expression<Func<TEntity, bool>> expression);
+        IEnumerable<TEntity> FindAll<TChild1>(Expression<Func<TEntity, bool>> predicate, Expression<Func<TEntity, object>> tChild1, IDbTransaction transaction = null);
 
         /// <summary>
         ///
         /// </summary>
         /// <returns></returns>
-        Task<TEntity> FindAsync();
+        Task<IEnumerable<TEntity>> FindAllAsync(IDbTransaction transaction = null);
 
         /// <summary>
         ///
         /// </summary>
-        /// <param name="instance"></param>
-        /// <returns></returns>
-        bool Insert(TEntity instance);
+        Task<IEnumerable<TEntity>> FindAllAsync(Expression<Func<TEntity, bool>> predicate, IDbTransaction transaction = null);
 
         /// <summary>
         ///
         /// </summary>
-        /// <param name="instance"></param>
-        /// <returns></returns>
-        Task<bool> InsertAsync(TEntity instance);
+        Task<IEnumerable<TEntity>> FindAllAsync<TChild1>(Expression<Func<TEntity, object>> tChild1, IDbTransaction transaction = null);
 
         /// <summary>
         ///
         /// </summary>
-        /// <param name="instance"></param>
-        /// <returns></returns>
-        bool Delete(TEntity instance);
+        Task<IEnumerable<TEntity>> FindAllAsync<TChild1>(Expression<Func<TEntity, bool>> predicate, Expression<Func<TEntity, object>> tChild1, IDbTransaction transaction = null);
 
         /// <summary>
         ///
         /// </summary>
-        /// <param name="instance"></param>
-        /// <returns></returns>
-        Task<bool> DeleteAsync(TEntity instance);
+        bool Insert(TEntity instance, IDbTransaction transaction = null);
+
+        /// <summary>
+        ///
+        /// </summary>>
+        Task<bool> InsertAsync(TEntity instance, IDbTransaction transaction = null);
 
         /// <summary>
         ///
         /// </summary>
-        /// <param name="instance"></param>
-        /// <returns></returns>
-        bool Update(TEntity instance);
+        bool Delete(TEntity instance, IDbTransaction transaction = null);
 
         /// <summary>
         ///
         /// </summary>
-        /// <param name="instance"></param>
-        /// <returns></returns>
-        Task<bool> UpdateAsync(TEntity instance);
+        Task<bool> DeleteAsync(TEntity instance, IDbTransaction transaction = null);
 
         /// <summary>
         ///
         /// </summary>
-        /// <param name="from"></param>
-        /// <param name="to"></param>
-        /// <param name="btwField"></param>
-        /// <returns></returns>
-        IEnumerable<TEntity> FindAllBetween(object from, object to, Expression<Func<TEntity, object>> btwField);
+        bool Update(TEntity instance, IDbTransaction transaction = null);
 
         /// <summary>
         ///
         /// </summary>
-        /// <param name="from"></param>
-        /// <param name="to"></param>
-        /// <param name="btwField"></param>
-        /// <param name="expression"></param>
-        /// <returns></returns>
-        IEnumerable<TEntity> FindAllBetween(object from, object to, Expression<Func<TEntity, object>> btwField, Expression<Func<TEntity, bool>> expression);
+        Task<bool> UpdateAsync(TEntity instance, IDbTransaction transaction = null);
 
         /// <summary>
         ///
         /// </summary>
-        /// <param name="from"></param>
-        /// <param name="to"></param>
-        /// <param name="btwField"></param>
-        /// <returns></returns>
-        Task<IEnumerable<TEntity>> FindAllBetweenAsync(object from, object to, Expression<Func<TEntity, object>> btwField);
+        IEnumerable<TEntity> FindAllBetween(object from, object to, Expression<Func<TEntity, object>> btwField, IDbTransaction transaction = null);
 
         /// <summary>
         ///
         /// </summary>
-        /// <param name="from"></param>
-        /// <param name="to"></param>
-        /// <param name="btwField"></param>
-        /// <param name="expression"></param>
-        /// <returns></returns>
-        Task<IEnumerable<TEntity>> FindAllBetweenAsync(object from, object to, Expression<Func<TEntity, object>> btwField, Expression<Func<TEntity, bool>> expression);
+        IEnumerable<TEntity> FindAllBetween(object from, object to, Expression<Func<TEntity, object>> btwField, Expression<Func<TEntity, bool>> predicate, IDbTransaction transaction = null);
 
         /// <summary>
         ///
         /// </summary>
-        /// <param name="from"></param>
-        /// <param name="to"></param>
-        /// <param name="btwField"></param>
-        /// <returns></returns>
-        IEnumerable<TEntity> FindAllBetween(DateTime from, DateTime to, Expression<Func<TEntity, object>> btwField);
+        IEnumerable<TEntity> FindAllBetween(DateTime from, DateTime to, Expression<Func<TEntity, object>> btwField, IDbTransaction transaction = null);
 
         /// <summary>
         ///
         /// </summary>
-        /// <param name="from"></param>
-        /// <param name="to"></param>
-        /// <param name="btwField"></param>
-        /// <param name="expression"></param>
-        /// <returns></returns>
-        IEnumerable<TEntity> FindAllBetween(DateTime from, DateTime to, Expression<Func<TEntity, object>> btwField, Expression<Func<TEntity, bool>> expression);
+        IEnumerable<TEntity> FindAllBetween(DateTime from, DateTime to, Expression<Func<TEntity, object>> btwField, Expression<Func<TEntity, bool>> predicate, IDbTransaction transaction = null);
 
         /// <summary>
         ///
         /// </summary>
-        /// <param name="from"></param>
-        /// <param name="to"></param>
-        /// <param name="btwField"></param>
-        /// <returns></returns>
-        Task<IEnumerable<TEntity>> FindAllBetweenAsync(DateTime from, DateTime to, Expression<Func<TEntity, object>> btwField);
+        Task<IEnumerable<TEntity>> FindAllBetweenAsync(object from, object to, Expression<Func<TEntity, object>> btwField, IDbTransaction transaction = null);
+
+        /// <summary>
+        ///
+        /// </summary>>
+        Task<IEnumerable<TEntity>> FindAllBetweenAsync(object from, object to, Expression<Func<TEntity, object>> btwField, Expression<Func<TEntity, bool>> predicate, IDbTransaction transaction = null);
 
         /// <summary>
         ///
         /// </summary>
-        /// <param name="from"></param>
-        /// <param name="to"></param>
-        /// <param name="btwField"></param>
-        /// <param name="expression"></param>
-        /// <returns></returns>
-        Task<IEnumerable<TEntity>> FindAllBetweenAsync(DateTime from, DateTime to, Expression<Func<TEntity, object>> btwField, Expression<Func<TEntity, bool>> expression);
+        Task<IEnumerable<TEntity>> FindAllBetweenAsync(DateTime from, DateTime to, Expression<Func<TEntity, object>> btwField, IDbTransaction transaction = null);
+
+        /// <summary>
+        ///
+        /// </summary>
+        Task<IEnumerable<TEntity>> FindAllBetweenAsync(DateTime from, DateTime to, Expression<Func<TEntity, object>> btwField, Expression<Func<TEntity, bool>> predicate, IDbTransaction transaction = null);
     }
 }

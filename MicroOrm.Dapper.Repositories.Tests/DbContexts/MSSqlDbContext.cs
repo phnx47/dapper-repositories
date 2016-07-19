@@ -1,4 +1,5 @@
 ﻿using System.Data.SqlClient;
+using MicroOrm.Dapper.Repositories.SqlGenerator;
 using MicroOrm.Dapper.Repositories.Tests.Classes;
 
 namespace MicroOrm.Dapper.Repositories.Tests.DbContexts
@@ -11,9 +12,9 @@ namespace MicroOrm.Dapper.Repositories.Tests.DbContexts
         }
 
         private IDapperRepository<User> _users;
-        public IDapperRepository<User> Users => _users ?? (_users = new DapperRepository<User>(Connection));
+        public IDapperRepository<User> Users => _users ?? (_users = new DapperRepository<User>(Connection, ESqlConnector.MSSQL));
 
         private IDapperRepository<Car> _cars;
-        public IDapperRepository<Car> Cars => _cars ?? (_cars = new DapperRepository<Car>(Connection));
+        public IDapperRepository<Car> Cars => _cars ?? (_cars = new DapperRepository<Car>(Connection, ESqlConnector.MSSQL));
     }
 }

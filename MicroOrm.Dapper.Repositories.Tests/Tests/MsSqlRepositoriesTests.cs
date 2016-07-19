@@ -1,22 +1,19 @@
-﻿using System.Linq;
-using System.Threading.Tasks;
-using MicroOrm.Dapper.Repositories.Tests.Classes;
+﻿using MicroOrm.Dapper.Repositories.Tests.Classes;
 using MicroOrm.Dapper.Repositories.Tests.DatabaseFixture;
+using System.Linq;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace MicroOrm.Dapper.Repositories.Tests.Tests
 {
-
     public class MsSqlRepositoriesTests : IClassFixture<MsSqlDatabaseFixture>
     {
         private readonly MsSqlDatabaseFixture _sqlDatabaseFixture;
-
 
         public MsSqlRepositoriesTests(MsSqlDatabaseFixture msSqlDatabaseFixture)
         {
             _sqlDatabaseFixture = msSqlDatabaseFixture;
         }
-
 
         [Fact]
         public void Find()
@@ -58,9 +55,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.Tests
 
             var user11 = users.FirstOrDefault(x => x.Id == 11);
             Assert.NotNull(user11);
-
         }
-
 
         [Fact]
         public async Task FindJoinAsync()
@@ -71,7 +66,6 @@ namespace MicroOrm.Dapper.Repositories.Tests.Tests
 
             var car = await _sqlDatabaseFixture.Db.Cars.FindAsync<User>(x => x.Id == 1, q => q.User);
             Assert.Equal(car.User.Name, "TestName0");
-
         }
 
         [Fact]
@@ -123,6 +117,30 @@ namespace MicroOrm.Dapper.Repositories.Tests.Tests
 
             var deletedCar = _sqlDatabaseFixture.Db.Cars.Find(x => x.Id == id);
             Assert.Null(deletedCar);
+        }
+
+        [Fact]
+        public async Task TransactionTest()
+        {
+            var user = new User()
+            {
+                Name = "Sergey_Transaction",
+            };
+            using (var trans = _sqlDatabaseFixture.Db.BeginTransaction())
+            {
+                await _sqlDatabaseFixture.Db.Users.InsertAsync(user, trans);
+                trans.Rollback();
+            }
+            var userFromDb = await _sqlDatabaseFixture.Db.Users.FindAsync(x => x.Name == "Sergey_Transaction");
+            Assert.Null(userFromDb);
+
+            using (var trans = _sqlDatabaseFixture.Db.BeginTransaction())
+            {
+                await _sqlDatabaseFixture.Db.Users.InsertAsync(user, trans);
+                trans.Commit();
+            }
+            userFromDb = await _sqlDatabaseFixture.Db.Users.FindAsync(x => x.Name == "Sergey_Transaction");
+            Assert.NotNull(userFromDb);
         }
     }
 }
