@@ -14,9 +14,5 @@ namespace MicroOrm.Dapper.Repositories.DbContext
         /// </summary>
         IDbConnection Connection { get; }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        IDbTransaction Transaction { get; }
    }
 }
