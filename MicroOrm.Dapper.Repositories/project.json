@@ -10,7 +10,7 @@
       "url": "https://github.com/phnx47/MicroOrm.Dapper.Repositories"
     }
   },
-  "version": "1.4.1",
+  "version": "1.4.2",
   "authors": [ "Sergey Kuznetsov" ],
   "description": "CRUD for Dapper, implement Data Repository",
   "title": "MicroOrm.Dapper.Repositories",
