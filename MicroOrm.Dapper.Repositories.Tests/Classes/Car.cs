@@ -15,6 +15,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.Classes
 
         public string Name { get; set; }
 
+
         public int UserId { get; set; }
 
         [LeftJoin("Users", "UserId", "Id")]
