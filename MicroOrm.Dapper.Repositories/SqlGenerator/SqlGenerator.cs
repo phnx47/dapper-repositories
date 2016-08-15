@@ -22,44 +22,44 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
     {
 
         /// <summary>
-        /// 
+        /// Sql provider
         /// </summary>
         public ESqlConnector SqlConnector { get; set; }
 
 
         /// <summary>
-        /// 
+        /// IsIdentity
         /// </summary>
         public bool IsIdentity => IdentitySqlProperty != null;
 
 
         /// <summary>
-        /// 
+        /// Table Name
         /// </summary>
         public string TableName { get; protected set; }
 
 
         /// <summary>
-        /// 
+        /// All original properties
         /// </summary>
         public PropertyInfo[] AllProperties { get; protected set; }
 
 
         /// <summary>
-        /// 
+        /// Identity Metadata property
         /// </summary>
         public SqlPropertyMetadata IdentitySqlProperty { get; protected set; }
 
 
         /// <summary>
-        /// 
+        /// Keys Metadata sql properties
         /// </summary>
         public SqlPropertyMetadata[] KeySqlProperties { get; protected set; }
 
         /// <summary>
-        /// 
+        /// Metadata sql properties
         /// </summary>
-        public SqlPropertyMetadata[] BaseSqlProperties { get; protected set; }
+        public SqlPropertyMetadata[] SqlProperties { get; protected set; }
 
         #region Logic delete
 
@@ -114,11 +114,11 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
             var tableAliasAttribute = entityTypeInfo.GetCustomAttribute<TableAttribute>();
             TableName = tableAliasAttribute != null ? tableAliasAttribute.Name : entityTypeInfo.Name;
 
-            AllProperties = entityType.GetProperties().ToArray();
+            AllProperties = entityType.GetProperties().Where(q => q.CanWrite).ToArray();
             var props = AllProperties.Where(ExpressionHelper.GetPrimitivePropertiesPredicate()).ToArray();
 
             // Filter the non stored properties
-            BaseSqlProperties = props.Where(p => !p.GetCustomAttributes<NotMappedAttribute>().Any()).Select(p => new SqlPropertyMetadata(p)).ToArray();
+            SqlProperties = props.Where(p => !p.GetCustomAttributes<NotMappedAttribute>().Any()).Select(p => new SqlPropertyMetadata(p)).ToArray();
 
             // Filter key properties
             KeySqlProperties = props.Where(p => p.GetCustomAttributes<KeyAttribute>().Any()).Select(p => new SqlPropertyMetadata(p)).ToArray();
@@ -141,7 +141,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                     TableName = TableName.Insert(0, "[");
                     TableName = TableName.Insert(TableName.Length, "]");
 
-                    foreach (var propertyMetadata in BaseSqlProperties)
+                    foreach (var propertyMetadata in SqlProperties)
                     {
                         propertyMetadata.ColumnName = propertyMetadata.ColumnName.Insert(0, "[");
                         propertyMetadata.ColumnName = propertyMetadata.ColumnName.Insert(propertyMetadata.ColumnName.Length, "]");
@@ -167,7 +167,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         private void InitLogicalDeleted()
         {
             var statusProperty =
-                BaseSqlProperties.FirstOrDefault(x => x.PropertyInfo.GetCustomAttributes<StatusAttribute>().Any());
+                SqlProperties.FirstOrDefault(x => x.PropertyInfo.GetCustomAttributes<StatusAttribute>().Any());
 
             if (statusProperty == null) return;
             StatusPropertyName = statusProperty.ColumnName;
@@ -206,7 +206,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         /// <returns></returns>
         public virtual SqlQuery GetInsert(TEntity entity)
         {
-            var properties = (this.IsIdentity ? this.BaseSqlProperties.Where(p => !p.Name.Equals(this.IdentitySqlProperty.Name, StringComparison.OrdinalIgnoreCase)) : this.BaseSqlProperties).ToList();
+            var properties = (this.IsIdentity ? this.SqlProperties.Where(p => !p.Name.Equals(this.IdentitySqlProperty.Name, StringComparison.OrdinalIgnoreCase)) : this.SqlProperties).ToList();
 
             string columNames = string.Join(", ", properties.Select(p => $"{p.ColumnName}"));
             string values = string.Join(", ", properties.Select(p => $"@{p.Name}"));
@@ -249,7 +249,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         /// <returns></returns>
         public virtual SqlQuery GetUpdate(TEntity entity)
         {
-            var properties = BaseSqlProperties.Where(p => !KeySqlProperties.Any(k => k.Name.Equals(p.Name, StringComparison.OrdinalIgnoreCase)));
+            var properties = SqlProperties.Where(p => !KeySqlProperties.Any(k => k.Name.Equals(p.Name, StringComparison.OrdinalIgnoreCase)));
 
             var sqlBuilder = new StringBuilder();
             sqlBuilder.Append($"UPDATE {this.TableName} SET {string.Join(", ", properties.Select(p => $"{p.ColumnName} = @{p.Name}"))} WHERE {string.Join(" AND ", this.KeySqlProperties.Select(p => $"{p.ColumnName} = @{p.Name}"))}");
@@ -294,7 +294,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                 select += "TOP 1 ";
 
             // convert the query parms into a SQL string and dynamic property object
-            builder.Append($"{select}{GetFieldsSelect(TableName, BaseSqlProperties)}");
+            builder.Append($"{select}{GetFieldsSelect(TableName, SqlProperties)}");
 
             return builder;
         }
@@ -374,7 +374,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                 for (int i = 0; i < queryProperties.Count; i++)
                 {
                     var item = queryProperties[i];
-                    var columnName = BaseSqlProperties.First(x => x.Name == item.PropertyName).ColumnName;
+                    var columnName = SqlProperties.First(x => x.Name == item.PropertyName).ColumnName;
 
                     if (!string.IsNullOrEmpty(item.LinkingOperator) && i > 0)
                     {
@@ -453,7 +453,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
             {
                 var propertyName = ExpressionHelper.GetPropertyName(body);
 
-                if (!BaseSqlProperties.Select(x => x.Name).Contains(propertyName))
+                if (!SqlProperties.Select(x => x.Name).Contains(propertyName))
                 {
                     throw new NotImplementedException("predicate can't parse");
                 }

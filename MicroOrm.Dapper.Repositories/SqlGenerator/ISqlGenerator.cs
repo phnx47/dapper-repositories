@@ -32,7 +32,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         /// <summary>
         /// 
         /// </summary>
-        SqlPropertyMetadata[] BaseSqlProperties { get; }
+        SqlPropertyMetadata[] SqlProperties { get; }
 
         /// <summary>
         /// 
