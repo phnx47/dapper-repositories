@@ -1,5 +1,6 @@
 ﻿using MicroOrm.Dapper.Repositories.Tests.Classes;
 using MicroOrm.Dapper.Repositories.Tests.DatabaseFixture;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
@@ -141,6 +142,20 @@ namespace MicroOrm.Dapper.Repositories.Tests.Tests
             }
             userFromDb = await _sqlDatabaseFixture.Db.Users.FindAsync(x => x.Name == "Sergey_Transaction");
             Assert.NotNull(userFromDb);
+        }
+
+        [Fact]
+        public async Task ChangeDate_InsertAndFind()
+        {
+            var diff = 12;
+            var dateTime = DateTime.UtcNow.AddDays(-diff);
+            var user = new User() { Name = "Sergey Phoenix", UpdatedAt = dateTime };
+            await _sqlDatabaseFixture.Db.Users.InsertAsync(user);
+            var userFromDb = await _sqlDatabaseFixture.Db.Users.FindAsync(q => q.Id == user.Id);
+            var resultDiff = (userFromDb.UpdatedAt.Value - dateTime).Days;
+            Assert.Equal(diff, resultDiff);
+
+
         }
     }
 }

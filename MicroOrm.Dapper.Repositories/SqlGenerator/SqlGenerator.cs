@@ -64,28 +64,37 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         #region Logic delete
 
         /// <summary>
-        /// 
+        /// Has Logical delete
         /// </summary>
         public bool LogicalDelete { get; protected set; }
 
         /// <summary>
-        /// 
+        /// PropertyName of Status 
         /// </summary>
         public string StatusPropertyName { get; protected set; }
 
         /// <summary>
-        /// 
+        ///  Logical delete Value
         /// </summary>
         public object LogicalDeleteValue { get; protected set; }
 
         #endregion Logic delete
 
 
+        /// <summary>
+        /// Has Date of changed
+        /// </summary>
+        public bool HasDateChanged => DateChangedProperty != null;
+
+        /// <summary>
+        /// Date of Changed Property
+        /// </summary>
+        public PropertyInfo DateChangedProperty { get; protected set; }
 
         #region Init
 
         /// <summary>
-        /// 
+        /// Constructor
         /// </summary>
         public SqlGenerator()
            : this(ESqlConnector.MSSQL)
@@ -93,9 +102,8 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         }
 
         /// <summary>
-        /// 
+        /// Constructor
         /// </summary>
-        /// <param name="sqlConnector"></param>
         public SqlGenerator(ESqlConnector sqlConnector)
         {
             InitProperties();
@@ -126,7 +134,13 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
             // Use identity as key pattern
             var identityProperty = props.FirstOrDefault(p => p.GetCustomAttributes<IdentityAttribute>().Any());
             IdentitySqlProperty = identityProperty != null ? new SqlPropertyMetadata(identityProperty) : null;
+
+            var dateChangedProperty = props.FirstOrDefault(p => p.GetCustomAttributes<DateChangedAttribute>().Count() == 1);
+            if (dateChangedProperty != null && (dateChangedProperty.PropertyType == typeof(DateTime) || dateChangedProperty.PropertyType == typeof(DateTime?)))
+                DateChangedProperty = props.FirstOrDefault(p => p.GetCustomAttributes<DateChangedAttribute>().Any());
+
         }
+
 
         /// <summary>
         /// Init type Sql provider
@@ -208,6 +222,11 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         {
             var properties = (this.IsIdentity ? this.SqlProperties.Where(p => !p.Name.Equals(this.IdentitySqlProperty.Name, StringComparison.OrdinalIgnoreCase)) : this.SqlProperties).ToList();
 
+            if (HasDateChanged)
+            {
+                DateChangedProperty.SetValue(entity, DateTime.UtcNow);
+            }
+
             string columNames = string.Join(", ", properties.Select(p => $"{p.ColumnName}"));
             string values = string.Join(", ", properties.Select(p => $"@{p.Name}"));
 
@@ -243,13 +262,16 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
 
 
         /// <summary>
-        /// 
+        /// Get SQL for UPDATE Query
         /// </summary>
-        /// <param name="entity"></param>
-        /// <returns></returns>
         public virtual SqlQuery GetUpdate(TEntity entity)
         {
             var properties = SqlProperties.Where(p => !KeySqlProperties.Any(k => k.Name.Equals(p.Name, StringComparison.OrdinalIgnoreCase)));
+
+            if (HasDateChanged)
+            {
+                DateChangedProperty.SetValue(entity, DateTime.UtcNow);
+            }
 
             var sqlBuilder = new StringBuilder();
             sqlBuilder.Append($"UPDATE {this.TableName} SET {string.Join(", ", properties.Select(p => $"{p.ColumnName} = @{p.Name}"))} WHERE {string.Join(" AND ", this.KeySqlProperties.Select(p => $"{p.ColumnName} = @{p.Name}"))}");
@@ -257,7 +279,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
             return new SqlQuery(sqlBuilder.ToString().TrimEnd(), entity);
         }
 
-        #endregion
+        #endregion Update
 
         #region  Select
 
@@ -435,6 +457,11 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
             }
             else
             {
+                if (HasDateChanged)
+                {
+                    DateChangedProperty.SetValue(entity, DateTime.UtcNow);
+                }
+
                 sqlBuilder.Append($"UPDATE {this.TableName} SET {this.StatusPropertyName} = {LogicalDeleteValue} WHERE {string.Join(" AND ", this.KeySqlProperties.Select(p => $"{p.ColumnName} = @{p.Name}"))}");
             }
 

@@ -21,7 +21,7 @@
     "optimize": true
   },
   "dependencies": {
-    "Dapper": "1.50.1" 
+    "Dapper": "1.50.2" 
   },
   "frameworks": {
     "net45": {

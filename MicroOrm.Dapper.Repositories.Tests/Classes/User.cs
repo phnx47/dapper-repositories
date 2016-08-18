@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using MicroOrm.Dapper.Repositories.Attributes;
 using MicroOrm.Dapper.Repositories.Attributes.Joins;
 using MicroOrm.Dapper.Repositories.Attributes.LogicalDelete;
+using System;
 
 namespace MicroOrm.Dapper.Repositories.Tests.Classes
 {
@@ -23,5 +24,8 @@ namespace MicroOrm.Dapper.Repositories.Tests.Classes
 
         [Status, Deleted]
         public bool Deleted { get; set; }
+
+        [DateChanged]
+        public DateTime? UpdatedAt { get; set; }
     }
 }
