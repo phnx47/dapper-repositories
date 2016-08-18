@@ -32,16 +32,21 @@ namespace MicroOrm.Dapper.Repositories.Tests.DatabaseFixture
             Action<string> dropTable = name => Db.Connection.Execute($@"IF OBJECT_ID('{name}', 'U') IS NOT NULL DROP TABLE [{name}]; ");
             dropTable("Users");
             dropTable("Cars");
-           
-            Db.Connection.Execute(@"CREATE TABLE Users (Id int IDENTITY(1,1) not null, Name varchar(256) not null, Deleted bit not null, PRIMARY KEY (Id))");
+
+            Db.Connection.Execute(@"CREATE TABLE Users (Id int IDENTITY(1,1) not null, Name varchar(256) not null, Deleted bit not null, UpdatedAt datetime2, PRIMARY KEY (Id))");
+
             for (var i = 0; i < 10; i++)
             {
-                Db.Connection.Execute($"INSERT INTO [dbo].[Users]([Name],[Deleted])VALUES('TestName{i}', 0)");
+                Db.Users.Insert(new Classes.User()
+                {
+                    Name = $"TestName{i}"
+                });
             }
-            Db.Connection.Execute("INSERT INTO [dbo].[Users]([Name],[Deleted])VALUES(\'TestName0\', 0)");
+            Db.Users.Insert(new Classes.User() { Name = $"TestName0" });
 
             Db.Connection.Execute(@"CREATE TABLE Cars (Id int IDENTITY(1,1) not null, Name varchar(256) not null, UserId int not null, Status int not null, PRIMARY KEY (Id))");
-            Db.Connection.Execute("INSERT INTO [dbo].[Cars]([Name],[UserId],[Status])VALUES('TestCar0', 1, 0)");
+
+            Db.Cars.Insert(new Classes.Car() { Name = $"TestCar0", UserId = 1 });
         }
     }
 }

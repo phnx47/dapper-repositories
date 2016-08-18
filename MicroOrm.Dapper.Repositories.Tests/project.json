@@ -6,24 +6,25 @@
     "MicroOrm.Dapper.Repositories": {
       "target": "project"
     },
-    "Dapper": "1.50.1",
+    "Dapper": "1.50.2",
     "xunit": "2.2.0-beta2-build3300",
     "dotnet-test-xunit": "2.2.0-preview2-build1029"
   },
   "buildOptions": {
     "warningsAsErrors": false,
     "debugType": "portable",
-    "xmlDoc": false,
-    "copyToOutput": {
-      "include": [ "xunit.runner.json" ]
-    }
+    "xmlDoc": false
+
   },
   "testRunner": "xunit",
-  "Microsoft.NETCore.Platforms": "1.0.1",
   "frameworks": {
     "netcoreapp1.0": {
+      "imports": [
+        "portable-net451+win8",
+        "dnxcore50"
+      ],
       "buildOptions": {
-        "define": [ "COREFX", "XUNIT2" ]
+        "define": [ "COREFX" ]
       },
       "dependencies": {
         "Microsoft.NETCore.App": {
@@ -40,4 +41,5 @@
     }
 
   }
+
 }
