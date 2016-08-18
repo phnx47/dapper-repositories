@@ -152,7 +152,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.Tests
             var user = new User() { Name = "Sergey Phoenix", UpdatedAt = dateTime };
             await _sqlDatabaseFixture.Db.Users.InsertAsync(user);
             var userFromDb = await _sqlDatabaseFixture.Db.Users.FindAsync(q => q.Id == user.Id);
-            var resultDiff = (userFromDb.UpdatedAt.Value.ToUniversalTime() - dateTime).Days;
+            var resultDiff = (userFromDb.UpdatedAt.Value.ToUniversalTime().Date - dateTime.Date).Days;
             Assert.Equal(diff, resultDiff);
 
 
