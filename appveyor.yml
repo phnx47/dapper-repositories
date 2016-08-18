@@ -1,0 +1,39 @@
+version: 1.4.2-{build}-{branch}
+pull_requests:
+  do_not_increment_build_number: true
+image: Visual Studio 2015
+configuration: Release
+platform: Any CPU
+clone_folder: c:\projects\microorm.dapper.repositories
+services: mssql2014
+install:
+- cmd: 
+nuget:
+  account_feed: true
+  project_feed: true
+  disable_publish_on_pr: true
+before_build:
+- ps: dotnet restore
+build:
+  verbosity: normal
+after_build:
+- ps: >-
+    cd MicroOrm.Dapper.Repositories
+
+    dotnet pack -c Release --no-build
+test_script:
+- ps: >-
+    cd ../MicroOrm.Dapper.Repositories.Tests
+
+    dotnet test
+artifacts:
+- path: '**\*.nupkg'
+  name: All Nupkg
+deploy:
+- provider: NuGet
+  api_key:
+    secure: cFZluW3B8EOB1rgZe1z9JSNSuEdNOfH0W2ZSMsrX16qoorzXiobCpN7BpJtyk2rR
+  artifact: '**\*.nupkg'
+  on:
+    branch: master
+    Deploy: true
