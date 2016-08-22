@@ -2,23 +2,22 @@
 
 [![NuGet](https://img.shields.io/nuget/v/MicroOrm.Dapper.Repositories.svg)](https://www.nuget.org/packages/MicroOrm.Dapper.Repositories) [![License MIT](https://img.shields.io/badge/license-MIT-green.svg)](https://opensource.org/licenses/MIT) [![Build status](https://ci.appveyor.com/api/projects/status/5v68lbhwc9d4948g?svg=true)](https://ci.appveyor.com/project/phnx47/microorm-dapper-repositories)
 
-If you like your code runs fast, probably you know about Micro ORMs.
-They are simple and one of their main goals is be the fastest way to execute your SQL sentences on your data repositories.
-However, for some of them you need to write your own SQL sentences. This is the case of the most popular Micro ORM [Dapper](https://github.com/StackExchange/dapper-dot-net)
+If you like your code to run fast, you probably know about Micro ORMs.
+They are simple and one of their main goals is to be the fastest execution of your SQL sentences in you data repository.
+For some Micro ORM's you need to write your own SQL sentences and this is the case of the most popular Micro ORM [Dapper](https://github.com/StackExchange/dapper-dot-net)
 
-The idea of this tool is to abstract the generation of the SQL sentence for CRUD operations based on each POCO class "metadata".
-We know there are plugins for both Micro ORMs to implement the execution of this kind of tasks,
-but that's exactly the difference of this tool. The "SQL Generator" is a generic component
-that generates all the CRUD sentences for a POCO class based on its definition with the possibility to override the way the SQL generator builds each sentence.
+This tool abstracts the generation of the SQL sentence for CRUD operations based on each C# POCO class "metadata".
+We know there are plugins for both Micro ORMs that implement the execution of these tasks, but that's exactly where this tool is different. The "SQL Generator" is a generic component
+that generates all the CRUD sentences for a POCO class based on its definition and the possibility to override the SQL generatorand the way it builds each sentence.
 
-I tested this with MSSQL, PostgreSQL and MySQL .
+I tested this with MSSQL, PostgreSQL and MySQL.
 
 	PM> Install-Package MicroOrm.Dapper.Repositories
 
 Goals
 -----
 *  Avoid writing SQL.
-*  Avoid possible overwhelming of your application by using Reflection on each CRUD operation execution.
+*  Avoid  the possible of overwhelming your application using Reflection on each CRUD operation execution.
 *  Abstract the SQL generation process and reuse the same implementation with both Micro ORMs [Dapper](https://github.com/StackExchange/dapper-dot-net)
 
 Metadata attributes
@@ -34,10 +33,10 @@ From System.ComponentModel.DataAnnotations.Schema - By default the database tabl
 From System.ComponentModel.DataAnnotations.Schema - By default the column name will match the property name but it can be overridden with this.
 
 ### [NotMapped]
-From System.ComponentModel.DataAnnotations.Schema - For "logical" properties that does not have a corresponding column and have to be ignored by the SQL Generator.
+From System.ComponentModel.DataAnnotations.Schema - For "logical" properties that do not have a corresponding column and have to be ignored by the SQL Generator.
 
 ###	[Status]
-For tables that implements "logical deletes" instead of physical deletes. This attribute can decorate only `enum` properties and one of the possible values for that enumeration has to be decorated with the "Deleted" attribute
+For tables that implement "logical deletes" instead of physical deletes. This attribute can decorate only `enum` properties and one of the possible values for that enumeration has to be decorated with the "Deleted" attribute.
 
 ###	[Deleted]
 Brother of the previous attribute. Use this to decorate the enum value that specifies the logical delete value for the status property.	
@@ -55,7 +54,7 @@ Some notes
 SQL Sentences
 =============
 
-Lets see some SQL sentences examples that this tool will create. "Users" POCO:
+Let's see some SQL sentences examples that this tool will create. "Users" POCO:
 
 	[Table("Users")]
 	public class User
@@ -110,7 +109,7 @@ Implements the repository:
         }
     }
     
-Simple as that, we have defined a fully functional data repository for the "User" POCO. Because the inheritance pattern we are doing here, both repository contract and repository implementation contains this functions:
+Simple as that, we have defined a fully functional data repository for the "User" POCO. Because of the inheritance pattern here, both contract and implementation repositories contain this function:
 
         bool Delete(TEntity instance);
         
@@ -140,4 +139,4 @@ Example:
 
     var user = await userRepository.FindAsync(x => x.Id == 5);
     
-    var allUsers = await userRepository.FindAllAsync(x => x.AccountId == 3 && x.Status != UserStatus.Deleted); // all users for 3 account and not deleted
+    var allUsers = await userRepository.FindAllAsync(x => x.AccountId == 3 && x.Status != UserStatus.Deleted); // all users for account id 3 and not deleted
