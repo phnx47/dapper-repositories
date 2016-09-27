@@ -5,7 +5,7 @@ image: Visual Studio 2015
 configuration: Release
 platform: Any CPU
 clone_folder: c:\projects\microorm.dapper.repositories
-services: mssql2014
+services: mssql2016
 install:
 - cmd: 
 nuget:
@@ -42,7 +42,7 @@ notifications:
 - provider: Email
   to:
   - sergey.kuznetsov@hotmail.com
-  subject: 'Build: MicroOrm.Dapper.Repositories'
+  subject: 'Build {{status}}: {{projectName}} {{buildVersion}}'
   on_build_success: true
   on_build_failure: true
   on_build_status_changed: true

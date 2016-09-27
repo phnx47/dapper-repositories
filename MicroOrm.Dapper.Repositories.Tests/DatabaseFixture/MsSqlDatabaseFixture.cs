@@ -6,13 +6,15 @@ namespace MicroOrm.Dapper.Repositories.Tests.DatabaseFixture
 {
     public class MsSqlDatabaseFixture : IDisposable
     {
+        private const string DbName = "test_micro_orm";
+
         public MsSqlDatabaseFixture()
         {
-            var connString = "Server=(local);Initial Catalog=microorm_test;Integrated Security=True";
+            var connString = "Server=(local);Initial Catalog=master;Integrated Security=True";
 
             if (Environments.IsAppVeyor)
             {
-                connString = @"Server=(local)\SQL2014;Database=tempdb;User ID=sa;Password=Password12!";
+                connString = "Server=(local)\\SQL2016;Database=master;User ID=sa;Password=Password12!";
             }
 
             Db = new MSSqlDbContext(connString);
@@ -22,6 +24,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.DatabaseFixture
 
         public void Dispose()
         {
+            Db.Connection.Execute($"USE master; DROP DATABASE {DbName}");
             Db.Dispose();
         }
 
@@ -29,6 +32,8 @@ namespace MicroOrm.Dapper.Repositories.Tests.DatabaseFixture
 
         private void InitDb()
         {
+            Db.Connection.Execute($"IF NOT EXISTS (SELECT name FROM master.dbo.sysdatabases WHERE name = '{DbName}') CREATE DATABASE [{DbName}];");
+            Db.Connection.Execute($"USE [{DbName}]");
             Action<string> dropTable = name => Db.Connection.Execute($@"IF OBJECT_ID('{name}', 'U') IS NOT NULL DROP TABLE [{name}]; ");
             dropTable("Users");
             dropTable("Cars");

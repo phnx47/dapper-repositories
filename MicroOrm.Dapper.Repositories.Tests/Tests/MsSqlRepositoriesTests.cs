@@ -1,9 +1,10 @@
-﻿using MicroOrm.Dapper.Repositories.Tests.Classes;
-using MicroOrm.Dapper.Repositories.Tests.DatabaseFixture;
-using System;
+﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
+using MicroOrm.Dapper.Repositories.Tests.Classes;
+using MicroOrm.Dapper.Repositories.Tests.DatabaseFixture;
+
 
 namespace MicroOrm.Dapper.Repositories.Tests.Tests
 {
