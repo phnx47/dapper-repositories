@@ -1,4 +1,4 @@
-version: 1.4.2-{build}-{branch}
+version: '{build}-{branch}'
 pull_requests:
   do_not_increment_build_number: true
 image: Visual Studio 2015
@@ -33,7 +33,16 @@ deploy:
 - provider: NuGet
   api_key:
     secure: cFZluW3B8EOB1rgZe1z9JSNSuEdNOfH0W2ZSMsrX16qoorzXiobCpN7BpJtyk2rR
+  skip_symbols: false
   artifact: '**\*.nupkg'
   on:
     branch: master
-    Deploy: true
+    appveyor_repo_tag: true
+notifications:
+- provider: Email
+  to:
+  - sergey.kuznetsov@hotmail.com
+  subject: 'Build: MicroOrm.Dapper.Repositories'
+  on_build_success: true
+  on_build_failure: true
+  on_build_status_changed: true

@@ -10,9 +10,19 @@ namespace MicroOrm.Dapper.Repositories.DbContext
     public interface IDapperDbContext : IDisposable
     {
         /// <summary>
-        /// 
+        /// Get opened DB Connection
         /// </summary>
         IDbConnection Connection { get; }
 
-   }
+        /// <summary>
+        /// Open DB connection
+        /// </summary>
+        void OpenConnection();
+
+        /// <summary>
+        /// Open DB connection and Begin transaction
+        /// </summary>
+        IDbTransaction BeginTransaction();
+
+    }
 }
