@@ -1,9 +1,7 @@
 {
   "projects": [
     "MicroOrm.Dapper.Repositories",
-    "MicroOrm.Dapper.Repositories.Tests"
-  ],
-  "sdk": {
-    "version": "1.0.0-preview2-003131"
-  }
+    "MicroOrm.Dapper.Repositories.Tests",
+    "MicroOrm.Dapper.Repositories.Benchmarks.Tests"
+  ]
 }

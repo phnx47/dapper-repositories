@@ -5,17 +5,17 @@ using MicroOrm.Dapper.Repositories.Tests.Classes;
 
 namespace MicroOrm.Dapper.Repositories.Tests.DbContexts
 {
-    public class MSSqlDbContext : DapperDbContext, IDbContext
+    public class MySqlDbContext : DapperDbContext, IDbContext
     {
-        public MSSqlDbContext(string connectionString)
+        public MySqlDbContext(string connectionString)
            : base(new SqlConnection(connectionString))
         {
         }
 
         private IDapperRepository<User> _users;
-        public IDapperRepository<User> Users => _users ?? (_users = new DapperRepository<User>(Connection, ESqlConnector.MSSQL));
+        public IDapperRepository<User> Users => _users ?? (_users = new DapperRepository<User>(Connection, ESqlConnector.MySQL));
 
         private IDapperRepository<Car> _cars;
-        public IDapperRepository<Car> Cars => _cars ?? (_cars = new DapperRepository<Car>(Connection, ESqlConnector.MSSQL));
+        public IDapperRepository<Car> Cars => _cars ?? (_cars = new DapperRepository<Car>(Connection, ESqlConnector.MySQL));
     }
 }

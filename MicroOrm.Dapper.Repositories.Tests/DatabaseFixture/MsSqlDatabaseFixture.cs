@@ -47,11 +47,11 @@ namespace MicroOrm.Dapper.Repositories.Tests.DatabaseFixture
                     Name = $"TestName{i}"
                 });
             }
-            Db.Users.Insert(new Classes.User() { Name = $"TestName0" });
+            Db.Users.Insert(new Classes.User() { Name = "TestName0" });
 
             Db.Connection.Execute(@"CREATE TABLE Cars (Id int IDENTITY(1,1) not null, Name varchar(256) not null, UserId int not null, Status int not null, PRIMARY KEY (Id))");
 
-            Db.Cars.Insert(new Classes.Car() { Name = $"TestCar0", UserId = 1 });
+            Db.Cars.Insert(new Classes.Car() { Name = "TestCar0", UserId = 1 });
         }
     }
 }

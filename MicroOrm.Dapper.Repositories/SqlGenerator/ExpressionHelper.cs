@@ -14,7 +14,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         /// <returns>The property name for the property expression.</returns>
         public static string GetPropertyName(BinaryExpression body)
         {
-            string propertyName = body.Left.ToString().Split('.')[1];
+            var propertyName = body.Left.ToString().Split('.')[1];
 
             if (body.Left.NodeType == ExpressionType.Convert)
             {
@@ -32,7 +32,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                 throw new NullReferenceException("Field is required");
             }
 
-            MemberExpression expr = null;
+            MemberExpression expr;
 
             var body = field.Body as MemberExpression;
             if (body != null)
@@ -48,7 +48,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                 }
                 else
                 {
-                    string message = $"Expression '{field}' not supported.";
+                    string message = "Expression" + field + " is not supported.";
 
                     throw new ArgumentException(message, nameof(field));
                 }
@@ -112,7 +112,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
 
         public static Func<PropertyInfo, bool> GetPrimitivePropertiesPredicate()
         {
-            return p => p.CanWrite && (p.PropertyType.IsValueType() || p.PropertyType.Name.Equals("String", StringComparison.OrdinalIgnoreCase));
+            return p => p.CanWrite && (p.PropertyType.IsValueType() || p.PropertyType.Name.Equals("String", StringComparison.OrdinalIgnoreCase) /* || p.PropertyType == typeof(byte[]) */);
         }
     }
 }

@@ -20,36 +20,30 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
     public class SqlGenerator<TEntity> : ISqlGenerator<TEntity>
         where TEntity : class
     {
-
         /// <summary>
         /// Sql provider
         /// </summary>
         public ESqlConnector SqlConnector { get; set; }
-
 
         /// <summary>
         /// IsIdentity
         /// </summary>
         public bool IsIdentity => IdentitySqlProperty != null;
 
-
         /// <summary>
         /// Table Name
         /// </summary>
         public string TableName { get; protected set; }
-
 
         /// <summary>
         /// All original properties
         /// </summary>
         public PropertyInfo[] AllProperties { get; protected set; }
 
-
         /// <summary>
         /// Identity Metadata property
         /// </summary>
         public SqlPropertyMetadata IdentitySqlProperty { get; protected set; }
-
 
         /// <summary>
         /// Keys Metadata sql properties
@@ -69,7 +63,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         public bool LogicalDelete { get; protected set; }
 
         /// <summary>
-        /// PropertyName of Status 
+        /// PropertyName of Status
         /// </summary>
         public string StatusPropertyName { get; protected set; }
 
@@ -79,7 +73,6 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         public object LogicalDeleteValue { get; protected set; }
 
         #endregion Logic delete
-
 
         /// <summary>
         /// Has Date of changed
@@ -112,7 +105,6 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
             InitLogicalDeleted();
 
             //todo: init joins
-
         }
 
         private void InitProperties()
@@ -138,9 +130,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
             var dateChangedProperty = props.FirstOrDefault(p => p.GetCustomAttributes<DateChangedAttribute>().Count() == 1);
             if (dateChangedProperty != null && (dateChangedProperty.PropertyType == typeof(DateTime) || dateChangedProperty.PropertyType == typeof(DateTime?)))
                 DateChangedProperty = props.FirstOrDefault(p => p.GetCustomAttributes<DateChangedAttribute>().Any());
-
         }
-
 
         /// <summary>
         /// Init type Sql provider
@@ -152,27 +142,28 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
             switch (SqlConnector)
             {
                 case ESqlConnector.MSSQL:
-                    TableName = TableName.Insert(0, "[");
-                    TableName = TableName.Insert(TableName.Length, "]");
+
+                    TableName = "[" + TableName + "]";
 
                     foreach (var propertyMetadata in SqlProperties)
                     {
-                        propertyMetadata.ColumnName = propertyMetadata.ColumnName.Insert(0, "[");
-                        propertyMetadata.ColumnName = propertyMetadata.ColumnName.Insert(propertyMetadata.ColumnName.Length, "]");
+                        propertyMetadata.ColumnName = "[" + propertyMetadata.ColumnName + "]";
                     }
 
                     foreach (var propertyMetadata in KeySqlProperties)
                     {
-                        propertyMetadata.ColumnName = propertyMetadata.ColumnName.Insert(0, "[");
-                        propertyMetadata.ColumnName = propertyMetadata.ColumnName.Insert(propertyMetadata.ColumnName.Length, "]");
+                        propertyMetadata.ColumnName = "[" + propertyMetadata.ColumnName + "]";
                     }
 
                     break;
+
                 case ESqlConnector.MySQL:
                     break;
+
                 case ESqlConnector.PostgreSQL:
                     //todo: ковычки
                     break;
+
                 default:
                     throw new ArgumentOutOfRangeException(nameof(SqlConnector));
             }
@@ -209,45 +200,46 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
             }
         }
 
-        #endregion
+        #endregion Init
 
         #region Insert
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="entity"></param>
         /// <returns></returns>
         public virtual SqlQuery GetInsert(TEntity entity)
         {
-            var properties = (this.IsIdentity ? this.SqlProperties.Where(p => !p.Name.Equals(this.IdentitySqlProperty.Name, StringComparison.OrdinalIgnoreCase)) : this.SqlProperties).ToList();
+            var properties = (IsIdentity ? SqlProperties.Where(p => !p.Name.Equals(IdentitySqlProperty.Name, StringComparison.OrdinalIgnoreCase)) : SqlProperties).ToList();
 
             if (HasDateChanged)
             {
                 DateChangedProperty.SetValue(entity, DateTime.UtcNow);
             }
 
-            string columNames = string.Join(", ", properties.Select(p => $"{p.ColumnName}"));
-            string values = string.Join(", ", properties.Select(p => $"@{p.Name}"));
+            var columNames = string.Join(", ", properties.Select(p => p.ColumnName));
+            var values = string.Join(", ", properties.Select(p => "@" + p.Name));
 
             var sqlBuilder = new StringBuilder();
-            sqlBuilder.Append($"INSERT INTO {this.TableName} {(string.IsNullOrEmpty(columNames) ? "" : $"({columNames})")} {(string.IsNullOrEmpty(values) ? "" : $" VALUES ({values})")} ");
+            sqlBuilder.Append("INSERT INTO" + TableName + (string.IsNullOrEmpty(columNames) ? "" : "(" + columNames + ")") + (string.IsNullOrEmpty(values) ? "" : " VALUES  (" + values + ")"));
 
-            if (this.IsIdentity)
+            if (IsIdentity)
             {
                 switch (SqlConnector)
                 {
                     case ESqlConnector.MSSQL:
-                        sqlBuilder.Append("SELECT SCOPE_IDENTITY() AS " + this.IdentitySqlProperty.ColumnName);
+                        sqlBuilder.Append("SELECT SCOPE_IDENTITY() AS " + IdentitySqlProperty.ColumnName);
                         break;
 
                     case ESqlConnector.MySQL:
-                        sqlBuilder.Append("; SELECT CONVERT(LAST_INSERT_ID(), SIGNED INTEGER) AS " + this.IdentitySqlProperty.ColumnName);
+                        sqlBuilder.Append("; SELECT CONVERT(LAST_INSERT_ID(), SIGNED INTEGER) AS " + IdentitySqlProperty.ColumnName);
                         break;
 
                     case ESqlConnector.PostgreSQL:
-                        sqlBuilder.Append("RETURNING " + this.IdentitySqlProperty.ColumnName);
+                        sqlBuilder.Append("RETURNING " + IdentitySqlProperty.ColumnName);
                         break;
+
                     default:
                         throw new ArgumentOutOfRangeException();
                 }
@@ -256,10 +248,9 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
             return new SqlQuery(sqlBuilder.ToString(), entity);
         }
 
-        #endregion
+        #endregion Insert
 
         #region Update
-
 
         /// <summary>
         /// Get SQL for UPDATE Query
@@ -274,18 +265,17 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
             }
 
             var sqlBuilder = new StringBuilder();
-            sqlBuilder.Append($"UPDATE {this.TableName} SET {string.Join(", ", properties.Select(p => $"{p.ColumnName} = @{p.Name}"))} WHERE {string.Join(" AND ", this.KeySqlProperties.Select(p => $"{p.ColumnName} = @{p.Name}"))}");
+            sqlBuilder.Append("UPDATE " + TableName + " SET " + string.Join(", ", properties.Select(p => p.ColumnName + " = @" + p.Name)) + " WHERE " + string.Join(" AND ", KeySqlProperties.Select(p => p.ColumnName + " = @" + p.Name)));
 
             return new SqlQuery(sqlBuilder.ToString().TrimEnd(), entity);
         }
 
         #endregion Update
 
-        #region  Select
-
+        #region Select
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="predicate"></param>
         /// <param name="includes"></param>
@@ -295,9 +285,8 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
             return GetSelect(predicate, true, includes);
         }
 
-
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="predicate"></param>
         /// <param name="includes"></param>
@@ -320,7 +309,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
 
             return builder;
         }
-
+        //todo: replace interpolation
         private StringBuilder AppendJoinToSelect(StringBuilder originalBuilder, params Expression<Func<TEntity, object>>[] includes)
         {
             var joinsBuilder = new StringBuilder();
@@ -352,7 +341,6 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                     var props = properties.Where(p => !p.GetCustomAttributes<NotMappedAttribute>().Any()).Select(p => new SqlPropertyMetadata(p));
                     originalBuilder.Append(", " + GetFieldsSelect(attrJoin.TableName, props));
 
-
                     joinsBuilder.Append($"{joinString} {attrJoin.TableName} ON {TableName}.{attrJoin.Key} = {attrJoin.TableName}.{attrJoin.ExternalKey} ");
                 }
             }
@@ -366,7 +354,6 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
 
             return string.Join(", ", properties.Select(projectionFunction));
         }
-
 
         private SqlQuery GetSelect(Expression<Func<TEntity, bool>> predicate, bool firstOnly, params Expression<Func<TEntity, object>>[] includes)
         {
@@ -426,12 +413,11 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
             if (firstOnly && (SqlConnector == ESqlConnector.MySQL || SqlConnector == ESqlConnector.PostgreSQL))
                 builder.Append("LIMIT 1");
 
-
             return new SqlQuery(builder.ToString().TrimEnd(), expando);
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         public virtual SqlQuery GetSelectBetween(object from, object to, Expression<Func<TEntity, object>> btwField, Expression<Func<TEntity, bool>> expression)
         {
@@ -445,7 +431,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         public virtual SqlQuery GetDelete(TEntity entity)
         {
@@ -453,7 +439,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
 
             if (!LogicalDelete)
             {
-                sqlBuilder.Append($"DELETE FROM {this.TableName} WHERE {string.Join(" AND ", KeySqlProperties.Select(p => $"{p.ColumnName} = @{p.Name}"))}");
+                sqlBuilder.Append($"DELETE FROM {TableName} WHERE {string.Join(" AND ", KeySqlProperties.Select(p => $"{p.ColumnName} = @{p.Name}"))}");
             }
             else
             {
@@ -462,7 +448,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                     DateChangedProperty.SetValue(entity, DateTime.UtcNow);
                 }
 
-                sqlBuilder.Append($"UPDATE {this.TableName} SET {this.StatusPropertyName} = {LogicalDeleteValue} WHERE {string.Join(" AND ", this.KeySqlProperties.Select(p => $"{p.ColumnName} = @{p.Name}"))}");
+                sqlBuilder.Append($"UPDATE {TableName} SET {StatusPropertyName} = {LogicalDeleteValue} WHERE {string.Join(" AND ", this.KeySqlProperties.Select(p => $"{p.ColumnName} = @{p.Name}"))}");
             }
 
             return new SqlQuery(sqlBuilder.ToString(), entity);
@@ -498,6 +484,6 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
             }
         }
 
-        #endregion  Select
+        #endregion Select
     }
 }

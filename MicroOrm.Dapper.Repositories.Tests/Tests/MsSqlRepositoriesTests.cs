@@ -148,7 +148,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.Tests
         [Fact]
         public async Task ChangeDate_InsertAndFind()
         {
-            var diff = 12;
+            const int diff = 12;
             var dateTime = DateTime.UtcNow.AddDays(-diff);
             var user = new User() { Name = "Sergey Phoenix", UpdatedAt = dateTime };
             await _sqlDatabaseFixture.Db.Users.InsertAsync(user);
