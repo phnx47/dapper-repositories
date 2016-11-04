@@ -10,7 +10,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.DatabaseFixture
 
         public MySqlDatabaseFixture()
         {
-            var connString = $"Database={DbName};Server=(local);Uid=root;Pwd=repytwjd;";
+            var connString = $"Database={DbName};Server=localhost;Uid=root;Pwd=repytwjd;";
 
             Db = new MySqlDbContext(connString);
         }

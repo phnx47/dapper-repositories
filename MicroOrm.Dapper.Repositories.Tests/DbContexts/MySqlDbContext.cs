@@ -2,13 +2,14 @@
 using MicroOrm.Dapper.Repositories.DbContext;
 using MicroOrm.Dapper.Repositories.SqlGenerator;
 using MicroOrm.Dapper.Repositories.Tests.Classes;
+using MySql.Data.MySqlClient;
 
 namespace MicroOrm.Dapper.Repositories.Tests.DbContexts
 {
     public class MySqlDbContext : DapperDbContext, IDbContext
     {
         public MySqlDbContext(string connectionString)
-           : base(new SqlConnection(connectionString))
+           : base(new MySqlConnection(connectionString))
         {
         }
 

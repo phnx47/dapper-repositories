@@ -222,7 +222,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
             var values = string.Join(", ", properties.Select(p => "@" + p.Name));
 
             var sqlBuilder = new StringBuilder();
-            sqlBuilder.Append("INSERT INTO" + TableName + (string.IsNullOrEmpty(columNames) ? "" : "(" + columNames + ")") + (string.IsNullOrEmpty(values) ? "" : " VALUES  (" + values + ")"));
+            sqlBuilder.Append("INSERT INTO " + TableName + (string.IsNullOrEmpty(columNames) ? "" : "(" + columNames + ")") + (string.IsNullOrEmpty(values) ? "" : " VALUES  (" + values + ")"));
 
             if (IsIdentity)
             {

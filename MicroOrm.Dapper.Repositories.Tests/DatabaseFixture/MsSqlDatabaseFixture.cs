@@ -38,7 +38,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.DatabaseFixture
             dropTable("Users");
             dropTable("Cars");
 
-            Db.Connection.Execute(@"CREATE TABLE Users (Id int IDENTITY(1,1) not null, Name varchar(256) not null, Deleted bit not null, UpdatedAt datetime2, PRIMARY KEY (Id))");
+            Db.Connection.Execute(@"CREATE TABLE Users (Id int IDENTITY(1,1) not null, Name varchar(256) not null, Deleted bit not null, UpdatedAt datetime2,  PRIMARY KEY (Id))");
 
             for (var i = 0; i < 10; i++)
             {
@@ -49,7 +49,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.DatabaseFixture
             }
             Db.Users.Insert(new Classes.User() { Name = "TestName0" });
 
-            Db.Connection.Execute(@"CREATE TABLE Cars (Id int IDENTITY(1,1) not null, Name varchar(256) not null, UserId int not null, Status int not null, PRIMARY KEY (Id))");
+            Db.Connection.Execute(@"CREATE TABLE Cars (Id int IDENTITY(1,1) not null, Name varchar(256) not null, UserId int not null, Status int not null, Data binary(16) null, PRIMARY KEY (Id))");
 
             Db.Cars.Insert(new Classes.Car() { Name = "TestCar0", UserId = 1 });
         }

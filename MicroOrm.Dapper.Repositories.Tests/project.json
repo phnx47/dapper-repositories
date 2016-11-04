@@ -9,7 +9,8 @@
     "Dapper": "1.50.2",
     "xunit": "2.2.0-beta3-build3402",
     "dotnet-test-xunit": "2.2.0-preview2-build1029",
-    "MySql.Data": "7.0.6-IR31"
+    "MySql.Data": "7.0.6-IR31",
+    "CoreCompat.System.Drawing": "1.0.0-beta006"
   },
   "buildOptions": {
     "warningsAsErrors": false,
@@ -30,11 +31,6 @@
           "type": "platform",
           "version": "1.0.1"
         }
-      }
-    },
-    "net451": {
-      "dependencies": {
-        "Microsoft.NETCore.Platforms": "1.0.1"
       }
     }
   }

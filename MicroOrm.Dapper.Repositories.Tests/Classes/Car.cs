@@ -15,8 +15,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.Classes
 
         public string Name { get; set; }
 
-        [NotMapped]
-        public Guid Guid { get; set; }
+        public byte[] Data { get; set; }
 
         public int UserId { get; set; }
 
