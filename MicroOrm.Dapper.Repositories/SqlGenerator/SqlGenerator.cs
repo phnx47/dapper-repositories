@@ -336,9 +336,29 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                     var joinType = joinProperty.PropertyType.IsGenericType() ? joinProperty.PropertyType.GenericTypeArguments[0] : joinProperty.PropertyType;
 
                     var properties = joinType.GetProperties().Where(ExpressionHelper.GetPrimitivePropertiesPredicate());
-                    var props = properties.Where(p => !p.GetCustomAttributes<NotMappedAttribute>().Any()).Select(p => new SqlPropertyMetadata(p));
-                    originalBuilder.SqlBuilder.Append(", " + GetFieldsSelect(attrJoin.TableName, props));
+                    var props = properties.Where(p => !p.GetCustomAttributes<NotMappedAttribute>().Any()).Select(p => new SqlPropertyMetadata(p)).ToArray();
+                 
 
+                    switch (SqlConnector)
+                    {
+                        case ESqlConnector.MSSQL:
+                            attrJoin.TableName = "[" + attrJoin.TableName + "]";
+                            attrJoin.Key = "[" + attrJoin.Key + "]";
+                            attrJoin.ExternalKey = "[" + attrJoin.ExternalKey + "]";
+                            foreach (var prop in props)
+                            {
+                                prop.ColumnName = "[" + prop.ColumnName + "]";
+                            }
+                            break;
+                        case ESqlConnector.MySQL:
+                            break;
+                        case ESqlConnector.PostgreSQL:
+                            break;
+                        default:
+                            throw new ArgumentOutOfRangeException(nameof(SqlConnector));
+                    }
+
+                    originalBuilder.SqlBuilder.Append(", " + GetFieldsSelect(attrJoin.TableName, props));
                     joinSql += joinString + " " + attrJoin.TableName + " ON " + TableName + "." + attrJoin.Key + " = " + attrJoin.TableName + "." + attrJoin.ExternalKey + " ";
                 }
             }

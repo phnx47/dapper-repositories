@@ -396,7 +396,7 @@ namespace MicroOrm.Dapper.Repositories
         public virtual async Task<bool> DeleteAsync(TEntity instance, IDbTransaction transaction = null)
         {
             var queryResult = SqlGenerator.GetDelete(instance);
-            var deleted = (await Connection.ExecuteAsync(queryResult.Sql, queryResult.Param, transaction)) > 0;
+            var deleted = await Connection.ExecuteAsync(queryResult.Sql, queryResult.Param, transaction) > 0;
             return deleted;
         }
 

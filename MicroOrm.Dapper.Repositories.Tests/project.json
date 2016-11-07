@@ -7,7 +7,7 @@
       "target": "project"
     },
     "Dapper": "1.50.2",
-    "xunit": "2.2.0-beta3-build3402",
+    "xunit": "2.2.0-beta4-build3444",
     "dotnet-test-xunit": "2.2.0-preview2-build1029",
     "MySql.Data": "7.0.6-IR31",
     "CoreCompat.System.Drawing": "1.0.0-beta006"
