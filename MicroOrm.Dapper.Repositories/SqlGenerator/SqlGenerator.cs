@@ -1,8 +1,4 @@
-﻿using MicroOrm.Dapper.Repositories.Attributes;
-using MicroOrm.Dapper.Repositories.Attributes.Joins;
-using MicroOrm.Dapper.Repositories.Attributes.LogicalDelete;
-using MicroOrm.Dapper.Repositories.Extensions;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -11,6 +7,10 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
+using MicroOrm.Dapper.Repositories.Attributes;
+using MicroOrm.Dapper.Repositories.Attributes.Joins;
+using MicroOrm.Dapper.Repositories.Attributes.LogicalDelete;
+using MicroOrm.Dapper.Repositories.Extensions;
 
 namespace MicroOrm.Dapper.Repositories.SqlGenerator
 {
@@ -305,11 +305,11 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                 select += "TOP 1 ";
 
             // convert the query parms into a SQL string and dynamic property object
-            builder.Append($"{select}{GetFieldsSelect(TableName, SqlProperties)}");
+            builder.Append(select + GetFieldsSelect(TableName, SqlProperties));
 
             return builder;
         }
-        //todo: replace interpolation
+
         private StringBuilder AppendJoinToSelect(StringBuilder originalBuilder, params Expression<Func<TEntity, object>>[] includes)
         {
             var joinsBuilder = new StringBuilder();
@@ -341,7 +341,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                     var props = properties.Where(p => !p.GetCustomAttributes<NotMappedAttribute>().Any()).Select(p => new SqlPropertyMetadata(p));
                     originalBuilder.Append(", " + GetFieldsSelect(attrJoin.TableName, props));
 
-                    joinsBuilder.Append($"{joinString} {attrJoin.TableName} ON {TableName}.{attrJoin.Key} = {attrJoin.TableName}.{attrJoin.ExternalKey} ");
+                    joinsBuilder.Append(joinString + " " + attrJoin.TableName + " ON " + TableName + "." + attrJoin.Key + " = " + attrJoin.TableName + "." + attrJoin.ExternalKey + " ");
                 }
             }
             return joinsBuilder;
@@ -350,7 +350,9 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         private static string GetFieldsSelect(string tableName, IEnumerable<SqlPropertyMetadata> properties)
         {
             //Projection function
-            Func<SqlPropertyMetadata, string> projectionFunction = (p) => !string.IsNullOrEmpty(p.Alias) ? $"{tableName}.{p.ColumnName} AS {p.Name}" : $"{tableName}.{p.ColumnName}";
+            Func<SqlPropertyMetadata, string> projectionFunction = p => !string.IsNullOrEmpty(p.Alias)
+                ? tableName + "." + p.ColumnName + " AS " + p.Name
+                : tableName + "." + p.ColumnName;
 
             return string.Join(", ", properties.Select(projectionFunction));
         }
@@ -362,15 +364,15 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
             if (includes.Any())
             {
                 var joinsBuilder = AppendJoinToSelect(builder, includes);
-                builder.Append($" FROM {TableName} ");
+                builder.Append(" FROM " + TableName + " ");
                 builder.Append(joinsBuilder);
             }
             else
             {
-                builder.Append($" FROM {TableName} ");
+                builder.Append(" FROM " + TableName + " ");
             }
 
-            IDictionary<string, object> expando = new ExpandoObject();
+            IDictionary<string, object> dictionary = new Dictionary<string, object>();
 
             if (predicate != null)
             {
@@ -380,40 +382,40 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
 
                 builder.Append("WHERE ");
 
-                for (int i = 0; i < queryProperties.Count; i++)
+                for (var i = 0; i < queryProperties.Count; i++)
                 {
                     var item = queryProperties[i];
                     var columnName = SqlProperties.First(x => x.Name == item.PropertyName).ColumnName;
 
                     if (!string.IsNullOrEmpty(item.LinkingOperator) && i > 0)
                     {
-                        builder.Append($"{item.LinkingOperator} {TableName}.{columnName} {item.QueryOperator} @{item.PropertyName} ");
+                        builder.Append(item.LinkingOperator + " " + TableName + "." + columnName + " " + item.QueryOperator + " @" + item.PropertyName + " ");
                     }
                     else
                     {
-                        builder.Append($"{TableName}.{columnName} {item.QueryOperator} @{item.PropertyName} ");
+                        builder.Append(TableName + "." + columnName + " " + item.QueryOperator + " @" + item.PropertyName + " ");
                     }
 
-                    expando[item.PropertyName] = item.PropertyValue;
+                    dictionary[item.PropertyName] = item.PropertyValue;
                 }
 
                 if (LogicalDelete)
                 {
-                    builder.Append($"AND {TableName}.{StatusPropertyName} != {LogicalDeleteValue} ");
+                    builder.Append("AND " + TableName + "." + StatusPropertyName + " != " + LogicalDeleteValue + " ");
                 }
             }
             else
             {
                 if (LogicalDelete)
                 {
-                    builder.Append($"WHERE {TableName}.{StatusPropertyName} != {LogicalDeleteValue} ");
+                    builder.Append("WHERE " + TableName + "." + StatusPropertyName + " != " + LogicalDeleteValue + " ");
                 }
             }
 
             if (firstOnly && (SqlConnector == ESqlConnector.MySQL || SqlConnector == ESqlConnector.PostgreSQL))
                 builder.Append("LIMIT 1");
 
-            return new SqlQuery(builder.ToString().TrimEnd(), expando);
+            return new SqlQuery(builder.ToString().TrimEnd(), dictionary);
         }
 
         /// <summary>
@@ -425,7 +427,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
             var queryResult = GetSelectAll(expression);
             var op = expression == null ? "WHERE" : "AND";
 
-            queryResult.AppendToSql($" {op} {filedName} BETWEEN '{from}' AND '{to}'");
+            queryResult.AppendToSql(" " + op + " " + filedName + " BETWEEN '" + from + "' AND '" + to + "'");
 
             return queryResult;
         }
@@ -436,10 +438,10 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         public virtual SqlQuery GetDelete(TEntity entity)
         {
             var sqlBuilder = new StringBuilder();
-
+            var whereSql = " WHERE " + string.Join("AND ", KeySqlProperties.Select(p => p.ColumnName + " = @" + p.Name));
             if (!LogicalDelete)
             {
-                sqlBuilder.Append($"DELETE FROM {TableName} WHERE {string.Join(" AND ", KeySqlProperties.Select(p => $"{p.ColumnName} = @{p.Name}"))}");
+                sqlBuilder.Append("DELETE FROM " + TableName + whereSql);
             }
             else
             {
@@ -447,8 +449,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                 {
                     DateChangedProperty.SetValue(entity, DateTime.UtcNow);
                 }
-
-                sqlBuilder.Append($"UPDATE {TableName} SET {StatusPropertyName} = {LogicalDeleteValue} WHERE {string.Join(" AND ", this.KeySqlProperties.Select(p => $"{p.ColumnName} = @{p.Name}"))}");
+                sqlBuilder.Append("UPDATE " + TableName + " SET " + StatusPropertyName + " = " + LogicalDeleteValue + whereSql);
             }
 
             return new SqlQuery(sqlBuilder.ToString(), entity);

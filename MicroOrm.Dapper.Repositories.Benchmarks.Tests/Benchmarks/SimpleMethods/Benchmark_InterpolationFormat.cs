@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using BenchmarkDotNet.Attributes;
+﻿using BenchmarkDotNet.Attributes;
 
-namespace MicroOrm.Dapper.Repositories.Benchmarks
+namespace MicroOrm.Dapper.Repositories.Benchmarks.Benchmarks.SimpleMethods
 {
+    [Config(typeof(Config))]
     public class Benchmark_InterpolationFormat
     {
         private const string TableName = "Name";
