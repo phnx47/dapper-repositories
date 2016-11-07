@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Text;
+﻿using System.Text;
 
 namespace MicroOrm.Dapper.Repositories.SqlGenerator
 {
@@ -8,18 +7,23 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
     /// </summary>
     public class SqlQuery
     {
+        /// <summary>
+        /// Initializes a new instance of the class.
+        /// </summary>
+        public SqlQuery()
+        {
+            SqlBuilder = new StringBuilder();
+        }
 
         /// <summary>
         /// Initializes a new instance of the class.
         /// </summary>
-        /// <param name="sql">The SQL.</param>
         /// <param name="param">The param.</param>
-        public SqlQuery(string sql, dynamic param)
+        public SqlQuery(object param)
+            : this()
         {
             Param = param;
-            Sql = sql;
         }
-
 
         /// <summary>
         /// Gets the SQL.
@@ -27,7 +31,12 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         /// <value>
         /// The SQL.
         /// </value>
-        public string Sql { get; private set; }
+        public string Sql => SqlBuilder.ToString().TrimEnd();
+
+        /// <summary>
+        /// SqlBuilder
+        /// </summary>
+        public StringBuilder SqlBuilder { get; }
 
         /// <summary>
         /// Gets the param, for Select
@@ -41,35 +50,9 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         /// Set alternative param
         /// </summary>
         /// <param name="param"></param>
-        public void SetParam(dynamic param)
+        public void SetParam(object param)
         {
             Param = param;
         }
-
-
-        /// <summary>
-        /// Append string in current SQL query
-        /// </summary>
-        public void AppendToSql(string sqlString)
-        {
-            var sqlBuilder = new StringBuilder(Sql);
-            sqlBuilder.AppendLine(sqlString);
-            Sql = sqlBuilder.ToString();
-        }
-
-
-        /// <summary>
-        /// Append string in current SQL query
-        /// </summary>
-        public void AppendToSql(IEnumerable<string> sqlStrings)
-        {
-            var sqlBuilder = new StringBuilder(Sql);
-            foreach (var s in sqlStrings)
-            {
-                sqlBuilder.AppendLine(s);
-            }
-            Sql = sqlBuilder.ToString();
-        }
-
     }
 }
