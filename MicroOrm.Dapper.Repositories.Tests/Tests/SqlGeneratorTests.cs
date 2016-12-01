@@ -82,8 +82,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.Tests
         {
             ISqlGenerator<User> userSqlGenerator = new SqlGenerator<User>(ESqlConnector.MSSQL);
             var sqlQuery = userSqlGenerator.GetSelectBetween(1,10, x => x.Id);
-
-            // used to produce WHERE Id BETWEEN without TableName and bracelets in MSSQL
+            
             Assert.Equal("SELECT [Users].[Id], [Users].[Name], [Users].[Deleted], [Users].[UpdatedAt] FROM [Users] " +
                          "WHERE [Users].[Deleted] != 1 AND [Users].[Id] BETWEEN '1' AND '10'", sqlQuery.Sql);
         }
@@ -93,8 +92,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.Tests
         {
             ISqlGenerator<Car> userSqlGenerator = new SqlGenerator<Car>(ESqlConnector.MSSQL);
             var sqlQuery = userSqlGenerator.GetSelectBetween(1, 10, x => x.Id);
-
-            // used to produce WHERE Id BETWEEN without TableName and bracelets in MSSQL
+            
             Assert.Equal("SELECT [Cars].[Id], [Cars].[Name], [Cars].[UserId], [Cars].[Status] FROM [Cars] " +
                          "WHERE [Cars].[Status] != -1 AND [Cars].[Id] BETWEEN '1' AND '10'", sqlQuery.Sql);
         }
@@ -104,11 +102,32 @@ namespace MicroOrm.Dapper.Repositories.Tests.Tests
         {
             ISqlGenerator<User> userSqlGenerator = new SqlGenerator<User>(ESqlConnector.MySQL);
             var sqlQuery = userSqlGenerator.GetSelectBetween(1, 10, x => x.Id);
-
-            // used to produce WHERE Id BETWEEN without TableName
+            
             Assert.Equal("SELECT Users.Id, Users.Name, Users.Deleted, Users.UpdatedAt FROM Users " +
                          "WHERE Users.Deleted != 1 AND Users.Id BETWEEN '1' AND '10'", sqlQuery.Sql);
         }
 
+        [Fact]
+        public void MSSQLIsNull()
+        {
+            ISqlGenerator<User> userSqlGenerator = new SqlGenerator<User>(ESqlConnector.MSSQL);
+            var sqlQuery = userSqlGenerator.GetSelectAll(user => user.UpdatedAt == null);
+
+            Assert.Equal("SELECT [Users].[Id], [Users].[Name], [Users].[Deleted], [Users].[UpdatedAt] FROM [Users] " +
+                         "WHERE [Users].[UpdatedAt] IS NULL AND [Users].[Deleted] != 1", sqlQuery.Sql);
+            Assert.DoesNotContain("== NULL", sqlQuery.Sql);
+        }
+
+        [Fact]
+        public void MySQLIsNotNull()
+        {
+            ISqlGenerator<User> userSqlGenerator = new SqlGenerator<User>(ESqlConnector.MySQL);
+            var sqlQuery = userSqlGenerator.GetSelectAll(user => user.UpdatedAt != null);
+
+            // used to produce WHERE Id BETWEEN without TableName
+            Assert.Equal("SELECT Users.Id, Users.Name, Users.Deleted, Users.UpdatedAt FROM Users " +
+                         "WHERE Users.UpdatedAt IS NOT NULL AND Users.Deleted != 1", sqlQuery.Sql);
+            Assert.DoesNotContain("!= NULL", sqlQuery.Sql);
+        }
     }
 }
