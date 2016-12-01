@@ -77,6 +77,38 @@ namespace MicroOrm.Dapper.Repositories.Tests.Tests
             Assert.NotNull(user.UpdatedAt);
         }
 
-       
+        [Fact]
+        public void MSSQLSelectBetweenWithLogicalDelete()
+        {
+            ISqlGenerator<User> userSqlGenerator = new SqlGenerator<User>(ESqlConnector.MSSQL);
+            var sqlQuery = userSqlGenerator.GetSelectBetween(1,10, x => x.Id);
+
+            // used to produce WHERE Id BETWEEN without TableName and bracelets in MSSQL
+            Assert.Equal("SELECT [Users].[Id], [Users].[Name], [Users].[Deleted], [Users].[UpdatedAt] FROM [Users] " +
+                         "WHERE [Users].[Deleted] != 1 AND [Users].[Id] BETWEEN '1' AND '10'", sqlQuery.Sql);
+        }
+
+        [Fact]
+        public void MSSQLSelectBetweenWithoutLogicalDelete()
+        {
+            ISqlGenerator<Car> userSqlGenerator = new SqlGenerator<Car>(ESqlConnector.MSSQL);
+            var sqlQuery = userSqlGenerator.GetSelectBetween(1, 10, x => x.Id);
+
+            // used to produce WHERE Id BETWEEN without TableName and bracelets in MSSQL
+            Assert.Equal("SELECT [Cars].[Id], [Cars].[Name], [Cars].[UserId], [Cars].[Status] FROM [Cars] " +
+                         "WHERE [Cars].[Status] != -1 AND [Cars].[Id] BETWEEN '1' AND '10'", sqlQuery.Sql);
+        }
+
+        [Fact]
+        public void MySQLSelectBetween()
+        {
+            ISqlGenerator<User> userSqlGenerator = new SqlGenerator<User>(ESqlConnector.MySQL);
+            var sqlQuery = userSqlGenerator.GetSelectBetween(1, 10, x => x.Id);
+
+            // used to produce WHERE Id BETWEEN without TableName
+            Assert.Equal("SELECT Users.Id, Users.Name, Users.Deleted, Users.UpdatedAt FROM Users " +
+                         "WHERE Users.Deleted != 1 AND Users.Id BETWEEN '1' AND '10'", sqlQuery.Sql);
+        }
+
     }
 }

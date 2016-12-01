@@ -441,7 +441,7 @@ namespace MicroOrm.Dapper.Repositories
         /// <summary>
         ///
         /// </summary>
-        public IEnumerable<TEntity> FindAllBetween(object from, object to, Expression<Func<TEntity, object>> btwField, Expression<Func<TEntity, bool>> predicate, IDbTransaction transaction = null)
+        public IEnumerable<TEntity> FindAllBetween(object from, object to, Expression<Func<TEntity, object>> btwField, Expression<Func<TEntity, bool>> predicate = null, IDbTransaction transaction = null)
         {
             var queryResult = SqlGenerator.GetSelectBetween(from, to, btwField, predicate);
             var data = Connection.Query<TEntity>(queryResult.Sql, queryResult.Param, transaction);
