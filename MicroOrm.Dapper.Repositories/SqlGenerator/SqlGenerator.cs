@@ -118,9 +118,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         private void InitProperties()
         {
             var entityType = typeof(TEntity);
-            var entityTypeInfo = entityType.GetTypeInfo();
-            var tableAliasAttribute = entityTypeInfo.GetCustomAttribute<TableAttribute>();
-            TableName = tableAliasAttribute != null ? tableAliasAttribute.Name : entityTypeInfo.Name;
+            TableName = GetTableNameOrAlias(entityType);
 
             AllProperties = entityType.GetProperties().Where(q => q.CanWrite).ToArray();
             var props = AllProperties.Where(ExpressionHelper.GetPrimitivePropertiesPredicate()).ToArray();
@@ -176,6 +174,13 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                 default:
                     throw new ArgumentOutOfRangeException(nameof(SqlConnector));
             }
+        }
+
+        private static string GetTableNameOrAlias(Type t)
+        {
+            var entityTypeInfo = t.GetTypeInfo();
+            var tableAliasAttribute = entityTypeInfo.GetCustomAttribute<TableAttribute>();
+            return tableAliasAttribute != null ? tableAliasAttribute.Name : entityTypeInfo.Name;
         }
 
         private void InitLogicalDeleted()
@@ -325,36 +330,68 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         {
             var joinsBuilder = new StringBuilder();
 
+            List<PropertyInfo> joinedProperties = new List<PropertyInfo>();
             foreach (var include in includes)
             {
-                var propertyName = ExpressionHelper.GetPropertyName(include);
-                var joinProperty = AllProperties.First(x => x.Name == propertyName);
-                var attrJoin = joinProperty.GetCustomAttribute<JoinAttributeBase>();
-                if (attrJoin != null)
+                var propertyName = ExpressionHelper.GetFullPropertyName(include);
+                var joinProperty = AllProperties.Concat(joinedProperties).First(x =>
                 {
-                    var joinString = "";
-                    if (attrJoin is LeftJoinAttribute)
-                    {
-                        joinString = "LEFT JOIN ";
-                    }
-                    else if (attrJoin is InnerJoinAttribute)
-                    {
-                        joinString = "INNER JOIN ";
-                    }
-                    else if (attrJoin is RightJoinAttribute)
-                    {
-                        joinString = "RIGHT JOIN ";
-                    }
+                    if (x.DeclaringType != null)
+                        return $"{x.DeclaringType.FullName}.{x.Name}" == propertyName;
+                    return false;
+                });
+                var tableName = GetTableNameOrAlias(joinProperty.DeclaringType);
 
-                    var joinType = joinProperty.PropertyType.IsGenericType() ? joinProperty.PropertyType.GenericTypeArguments[0] : joinProperty.PropertyType;
+                var attrJoin = joinProperty.GetCustomAttribute<JoinAttributeBase>();
+                if (attrJoin == null) continue;
 
-                    var properties = joinType.GetProperties().Where(ExpressionHelper.GetPrimitivePropertiesPredicate());
-                    var props = properties.Where(p => !p.GetCustomAttributes<NotMappedAttribute>().Any()).Select(p => new SqlPropertyMetadata(p));
-                    originalBuilder.Append(", " + GetFieldsSelect(attrJoin.TableName, props));
-
-
-                    joinsBuilder.Append($"{joinString} {attrJoin.TableName} ON {TableName}.{attrJoin.Key} = {attrJoin.TableName}.{attrJoin.ExternalKey} ");
+                var joinString = "";
+                if (attrJoin is LeftJoinAttribute)
+                {
+                    joinString = "LEFT JOIN";
                 }
+                else if (attrJoin is InnerJoinAttribute)
+                {
+                    joinString = "INNER JOIN";
+                }
+                else if (attrJoin is RightJoinAttribute)
+                {
+                    joinString = "RIGHT JOIN";
+                }
+
+                var joinType = joinProperty.PropertyType.IsGenericType() ? joinProperty.PropertyType.GenericTypeArguments[0] : joinProperty.PropertyType;
+                joinedProperties.AddRange(joinType.GetProperties().Where(p => !p.GetCustomAttributes<NotMappedAttribute>().Any()));
+
+                var properties = joinType.GetProperties().Where(ExpressionHelper.GetPrimitivePropertiesPredicate());
+                var props = properties.Where(p => !p.GetCustomAttributes<NotMappedAttribute>().Any()).Select(p => new SqlPropertyMetadata(p)).ToArray();
+                
+                switch (SqlConnector)
+                {
+                    case ESqlConnector.MSSQL:
+                        if (!tableName.StartsWith("["))
+                            tableName = $"[{tableName}";
+                        if (!tableName.EndsWith("]"))
+                            tableName = $"{tableName}]";
+
+                        attrJoin.TableName = "[" + attrJoin.TableName + "]";
+                        attrJoin.Key = "[" + attrJoin.Key + "]";
+                        attrJoin.ExternalKey = "[" + attrJoin.ExternalKey + "]";
+                        foreach (var prop in props)
+                        {
+                            prop.ColumnName = "[" + prop.ColumnName + "]";
+                        }
+                        break;
+                    case ESqlConnector.MySQL:
+                        break;
+                    case ESqlConnector.PostgreSQL:
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException(nameof(SqlConnector));
+                }
+
+                originalBuilder.Append(", " + GetFieldsSelect(attrJoin.TableName, props));
+
+                joinsBuilder.Append($"{joinString} {attrJoin.TableName} ON {tableName}.{attrJoin.Key} = {attrJoin.TableName}.{attrJoin.ExternalKey} ");
             }
             return joinsBuilder;
         }
