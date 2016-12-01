@@ -39,8 +39,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         /// <inheritdoc />
         protected override Expression VisitMember(MemberExpression expression)
         {
-            if (_stack != null)
-                _stack.Push(expression.Member);
+            _stack?.Push(expression.Member);
             return base.VisitMember(expression);
         }
 
@@ -49,7 +48,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         {
             if (IsLinqOperator(expression.Method))
             {
-                for (int i = expression.Arguments.Count-1; i >= 0; i--)
+                for (var i = expression.Arguments.Count-1; i >= 0; i--)
                 {
                     Visit(expression.Arguments[i]);
                 }

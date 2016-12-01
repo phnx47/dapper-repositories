@@ -324,12 +324,14 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                 var joinProperty = AllProperties.Concat(joinedProperties).First(x =>
                 {
                     if (x.DeclaringType != null)
-                        return $"{x.DeclaringType.FullName}.{x.Name}" == propertyName;
+                        return x.DeclaringType.FullName + "." + x.Name == propertyName;
                     return false;
                 });
+
                 var tableName = GetTableNameOrAlias(joinProperty.DeclaringType);
 
                 var attrJoin = joinProperty.GetCustomAttribute<JoinAttributeBase>();
+
                 if (attrJoin == null) continue;
 
                 var joinString = "";
@@ -348,33 +350,34 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
 
                 var joinType = joinProperty.PropertyType.IsGenericType() ? joinProperty.PropertyType.GenericTypeArguments[0] : joinProperty.PropertyType;
                 joinedProperties.AddRange(joinType.GetProperties().Where(p => !p.GetCustomAttributes<NotMappedAttribute>().Any()));
+                var properties = joinType.GetProperties().Where(ExpressionHelper.GetPrimitivePropertiesPredicate());
+                var props = properties.Where(p => !p.GetCustomAttributes<NotMappedAttribute>().Any()).Select(p => new SqlPropertyMetadata(p)).ToArray();
 
-                    var properties = joinType.GetProperties().Where(ExpressionHelper.GetPrimitivePropertiesPredicate());
-                    var props = properties.Where(p => !p.GetCustomAttributes<NotMappedAttribute>().Any()).Select(p => new SqlPropertyMetadata(p)).ToArray();
-                 
+                switch (SqlConnector)
+                {
+                    case ESqlConnector.MSSQL:
+                        tableName = "[" + tableName + "]";
+                        attrJoin.TableName = "[" + attrJoin.TableName + "]";
+                        attrJoin.Key = "[" + attrJoin.Key + "]";
+                        attrJoin.ExternalKey = "[" + attrJoin.ExternalKey + "]";
+                        foreach (var prop in props)
+                        {
+                            prop.ColumnName = "[" + prop.ColumnName + "]";
+                        }
+                        break;
 
-                    switch (SqlConnector)
-                    {
-                        case ESqlConnector.MSSQL:
-                            attrJoin.TableName = "[" + attrJoin.TableName + "]";
-                            attrJoin.Key = "[" + attrJoin.Key + "]";
-                            attrJoin.ExternalKey = "[" + attrJoin.ExternalKey + "]";
-                            foreach (var prop in props)
-                            {
-                                prop.ColumnName = "[" + prop.ColumnName + "]";
-                            }
-                            break;
-                        case ESqlConnector.MySQL:
-                            break;
-                        case ESqlConnector.PostgreSQL:
-                            break;
-                        default:
-                            throw new ArgumentOutOfRangeException(nameof(SqlConnector));
-                    }
+                    case ESqlConnector.MySQL:
+                        break;
 
-                    originalBuilder.SqlBuilder.Append(", " + GetFieldsSelect(attrJoin.TableName, props));
-                    joinSql += joinString + " " + attrJoin.TableName + " ON " + TableName + "." + attrJoin.Key + " = " + attrJoin.TableName + "." + attrJoin.ExternalKey + " ";
+                    case ESqlConnector.PostgreSQL:
+                        break;
+
+                    default:
+                        throw new ArgumentOutOfRangeException(nameof(SqlConnector));
                 }
+
+                originalBuilder.SqlBuilder.Append(", " + GetFieldsSelect(attrJoin.TableName, props));
+                joinSql += joinString + " " + attrJoin.TableName + " ON " + tableName + "." + attrJoin.Key + " = " + attrJoin.TableName + "." + attrJoin.ExternalKey + " ";
             }
             return joinSql;
         }
@@ -421,12 +424,12 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
 
                     if (item.PropertyValue == null)
                     {
-                        var qOperator = (item.QueryOperator == "=") ? "IS" : "IS NOT";
-                        builder.Append($"{TableName}.{columnName} {qOperator} NULL ");
+                        var qOperator = item.QueryOperator == "=" ? "IS" : "IS NOT";
+                        sqlQuery.SqlBuilder.Append(TableName + "." + columnName + " " + qOperator + " NULL ");
                     }
                     else if (!string.IsNullOrEmpty(item.LinkingOperator) && i > 0)
                     {
-                        builder.Append($"{item.LinkingOperator} {TableName}.{columnName} {item.QueryOperator} @{item.PropertyName} ");
+                        sqlQuery.SqlBuilder.Append(item.LinkingOperator + " " + TableName + "." + columnName + " " + item.QueryOperator + " @" + item.PropertyName + " ");
                     }
                     else
                     {
@@ -464,9 +467,9 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
             var fieldName = ExpressionHelper.GetPropertyName(btwField);
             var columnName = SqlProperties.First(x => x.Name == fieldName).ColumnName;
             var query = GetSelectAll(expression);
-            var op = (expression == null && !LogicalDelete) ? "WHERE" : "AND";
+            var op = expression == null && !LogicalDelete ? "WHERE" : "AND";
 
-            query.SqlBuilder.Append(" " + op + " " + filedName + " BETWEEN '" + from + "' AND '" + to + "'");
+            query.SqlBuilder.Append(op + " " + TableName + "." + columnName + " BETWEEN '" + from + "' AND '" + to + "'");
 
             return query;
         }
