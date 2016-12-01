@@ -53,7 +53,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         public void AppendToSql(string sqlString)
         {
             var sqlBuilder = new StringBuilder(Sql);
-            sqlBuilder.AppendLine(sqlString);
+            sqlBuilder.Append(sqlString);
             Sql = sqlBuilder.ToString();
         }
 
@@ -66,7 +66,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
             var sqlBuilder = new StringBuilder(Sql);
             foreach (var s in sqlStrings)
             {
-                sqlBuilder.AppendLine(s);
+                sqlBuilder.Append(s);
             }
             Sql = sqlBuilder.ToString();
         }

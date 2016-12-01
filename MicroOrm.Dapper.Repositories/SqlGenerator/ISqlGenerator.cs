@@ -79,7 +79,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         /// <param name="btwFiled"></param>
         /// <param name="predicate"></param>
         /// <returns></returns>
-        SqlQuery GetSelectBetween(object from, object to, Expression<Func<TEntity, object>> btwFiled, Expression<Func<TEntity, bool>> predicate);
+        SqlQuery GetSelectBetween(object from, object to, Expression<Func<TEntity, object>> btwFiled, Expression<Func<TEntity, bool>> predicate = null);
 
         /// <summary>
         /// 

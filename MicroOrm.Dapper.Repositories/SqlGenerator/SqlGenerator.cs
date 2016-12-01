@@ -433,13 +433,14 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         /// <summary>
         /// 
         /// </summary>
-        public virtual SqlQuery GetSelectBetween(object from, object to, Expression<Func<TEntity, object>> btwField, Expression<Func<TEntity, bool>> expression)
+        public virtual SqlQuery GetSelectBetween(object from, object to, Expression<Func<TEntity, object>> btwField, Expression<Func<TEntity, bool>> expression = null)
         {
-            var filedName = ExpressionHelper.GetPropertyName(btwField);
+            var fieldName = ExpressionHelper.GetPropertyName(btwField);
+            var columnName = SqlProperties.First(x => x.Name == fieldName).ColumnName;
             var queryResult = GetSelectAll(expression);
-            var op = expression == null ? "WHERE" : "AND";
+            var op = (expression == null && !LogicalDelete) ? "WHERE" : "AND";
 
-            queryResult.AppendToSql($" {op} {filedName} BETWEEN '{from}' AND '{to}'");
+            queryResult.AppendToSql($" {op} {TableName}.{columnName} BETWEEN '{from}' AND '{to}'");
 
             return queryResult;
         }
