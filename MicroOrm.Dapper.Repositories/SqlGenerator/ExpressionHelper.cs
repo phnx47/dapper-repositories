@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Linq.Expressions;
 using System.Reflection;
 using MicroOrm.Dapper.Repositories.Extensions;
@@ -55,6 +56,15 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
             }
 
             return expr.Member.Name;
+        }
+
+        public static string GetFullPropertyName<TSource, TField>(Expression<Func<TSource, TField>> field)
+        {
+            var path = new PropertyPathVisitor().GetPropertyPath(field);
+            if (path.DeclaringType != null)
+                return $"{path.DeclaringType.FullName}.{path.Name}";
+
+            return string.Empty;
         }
 
         public static object GetValue(Expression member)
