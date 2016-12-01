@@ -38,7 +38,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.DatabaseFixture
             dropTable("Users");
             dropTable("Cars");
 
-            Db.Connection.Execute(@"CREATE TABLE Users (Id int IDENTITY(1,1) not null, Name varchar(256) not null, Deleted bit not null, UpdatedAt datetime2,  PRIMARY KEY (Id))");
+            Db.Connection.Execute(@"CREATE TABLE Users (Id int IDENTITY(1,1) not null, Name varchar(256) not null, AddressId int not null, Deleted bit not null, UpdatedAt datetime2,  PRIMARY KEY (Id))");
 
             for (var i = 0; i < 10; i++)
             {

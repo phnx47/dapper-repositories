@@ -94,7 +94,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.Tests
             ISqlGenerator<Car> userSqlGenerator = new SqlGenerator<Car>(ESqlConnector.MSSQL);
             var sqlQuery = userSqlGenerator.GetSelectBetween(1, 10, x => x.Id);
             
-            Assert.Equal("SELECT [Cars].[Id], [Cars].[Name], [Cars].[UserId], [Cars].[Status] FROM [Cars] " +
+            Assert.Equal("SELECT [Cars].[Id], [Cars].[Name], [Cars].[Data], [Cars].[UserId], [Cars].[Status] FROM [Cars] " +
                          "WHERE [Cars].[Status] != -1 AND [Cars].[Id] BETWEEN '1' AND '10'", sqlQuery.Sql);
         }
 
@@ -137,7 +137,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.Tests
             var sqlQuery = userSqlGenerator.GetSelectAll(null, user => user.Cars);
 
             Assert.Equal("SELECT [Users].[Id], [Users].[Name], [Users].[AddressId], [Users].[Deleted], [Users].[UpdatedAt], " +
-                         "[Cars].[Id], [Cars].[Name], [Cars].[UserId], [Cars].[Status] " +
+                         "[Cars].[Id], [Cars].[Name], [Cars].[Data], [Cars].[UserId], [Cars].[Status] " +
                          "FROM [Users] LEFT JOIN [Cars] ON [Users].[Id] = [Cars].[UserId] " +
                          "WHERE [Users].[Deleted] != 1", sqlQuery.Sql);
         }
@@ -149,7 +149,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.Tests
             var sqlQuery = userSqlGenerator.GetSelectAll(null, car => car.User,
                 car => car.User.Address);
 
-            Assert.Equal("SELECT Cars.Id, Cars.Name, Cars.UserId, Cars.Status, " +
+            Assert.Equal("SELECT Cars.Id, Cars.Name, Cars.Data, Cars.UserId, Cars.Status, " +
                          "Users.Id, Users.Name, Users.AddressId, Users.Deleted, Users.UpdatedAt, " +
                          "Addresses.Id, Addresses.Street, Addresses.Number, Addresses.Zipcode, Addresses.City, Addresses.Country " +
                          "FROM Cars LEFT JOIN Users ON Cars.UserId = Users.Id LEFT JOIN Addresses ON Users.AddressId = Addresses.Id " +
@@ -164,7 +164,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.Tests
 
             Assert.Equal("SELECT [Addresses].[Id], [Addresses].[Street], [Addresses].[Number], [Addresses].[Zipcode], [Addresses].[City], [Addresses].[Country], " +
                          "[Users].[Id], [Users].[Name], [Users].[AddressId], [Users].[Deleted], [Users].[UpdatedAt], " +
-                         "[Cars].[Id], [Cars].[Name], [Cars].[UserId], [Cars].[Status] " +
+                         "[Cars].[Id], [Cars].[Name], [Cars].[Data], [Cars].[UserId], [Cars].[Status] " +
                          "FROM [Addresses] LEFT JOIN [Users] ON [Addresses].[Id] = [Users].[AddressId] " +
                          "LEFT JOIN [Cars] ON [Users].[Id] = [Cars].[UserId]", sqlQuery.Sql);
         }

@@ -11,9 +11,10 @@
     "xunit": "2.2.0-beta2-build3300",
     "xunit.runner.console": "2.2.0-beta2-build3300",
     "xunit.runner.visualstudio": "2.2.0-beta2-build1149",
-    "dotnet-test-xunit": "2.2.0-preview2-build1029",
-    "Microsoft.TestPlatform.ObjectModel": "15.0.0-preview-20161101-02"
-    "MicroOrm.Dapper.Repositories": "1.5.0",
+    "Microsoft.TestPlatform.ObjectModel": "15.0.0-preview-20161101-02",
+    "MicroOrm.Dapper.Repositories": {
+      "target": "project"
+    },
     "dotnet-test-xunit": "2.2.0-preview2-build1029"
   },
   "buildOptions": {
