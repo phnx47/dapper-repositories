@@ -435,14 +435,13 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                     var item = queryProperties[i];
                     var columnName = SqlProperties.First(x => x.Name == item.PropertyName).ColumnName;
 
+                    if (!string.IsNullOrEmpty(item.LinkingOperator) && i > 0)
+                        builder.Append(item.LinkingOperator + " ");
+
                     if (item.PropertyValue == null)
                     {
                         var qOperator = (item.QueryOperator == "=") ? "IS" : "IS NOT";
                         builder.Append($"{TableName}.{columnName} {qOperator} NULL ");
-                    }
-                    else if (!string.IsNullOrEmpty(item.LinkingOperator) && i > 0)
-                    {
-                        builder.Append($"{item.LinkingOperator} {TableName}.{columnName} {item.QueryOperator} @{item.PropertyName} ");
                     }
                     else
                     {
