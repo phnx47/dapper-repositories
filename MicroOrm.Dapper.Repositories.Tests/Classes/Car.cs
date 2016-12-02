@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using MicroOrm.Dapper.Repositories.Attributes;
 using MicroOrm.Dapper.Repositories.Attributes.Joins;
@@ -10,11 +11,11 @@ namespace MicroOrm.Dapper.Repositories.Tests.Classes
     public class Car
     {
         [Key, Identity]
-
         public int Id { get; set; }
 
         public string Name { get; set; }
 
+        public byte[] Data { get; set; }
 
         public int UserId { get; set; }
 
@@ -34,6 +35,4 @@ namespace MicroOrm.Dapper.Repositories.Tests.Classes
         [Deleted]
         Deleted = -1
     }
-
-
 }

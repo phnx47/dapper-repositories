@@ -1,9 +1,11 @@
-﻿using MicroOrm.Dapper.Repositories.Tests.Classes;
-using MicroOrm.Dapper.Repositories.Tests.DatabaseFixture;
-using System;
+﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
+using MicroOrm.Dapper.Repositories.Tests.Classes;
+using MicroOrm.Dapper.Repositories.Tests.DatabaseFixture;
+using MicroOrm.Dapper.Repositories.Tests.Extensions;
+
 
 namespace MicroOrm.Dapper.Repositories.Tests.Tests
 {
@@ -91,6 +93,44 @@ namespace MicroOrm.Dapper.Repositories.Tests.Tests
         }
 
         [Fact]
+        public async Task InsertBinaryDataAsync()
+        {
+            var guid = Guid.NewGuid();
+          
+            var car = new Car
+            {
+                Data = guid.ToByteArray(),
+                Name = "NewNew Data",
+                Status = StatusCar.Active
+            };
+
+            var insert = await _sqlDatabaseFixture.Db.Cars.InsertAsync(car);
+            Assert.True(insert);
+            var carFromDb = await _sqlDatabaseFixture.Db.Cars.FindAsync(x => x.Id == car.Id);
+            var guid2 = new Guid(carFromDb.Data);
+            Assert.Equal(guid, guid2);
+        }
+
+        [Fact]
+        public void InsertBinaryData()
+        {
+            var guid = Guid.NewGuid();
+
+            var car = new Car
+            {
+                Data = guid.ToByteArray(),
+                Name = "NewNew Data",
+                Status = StatusCar.Active
+            };
+
+            var insert =  _sqlDatabaseFixture.Db.Cars.Insert(car);
+            Assert.True(insert);
+            var carFromDb =  _sqlDatabaseFixture.Db.Cars.Find(x => x.Id == car.Id);
+            var guid2 = new Guid(carFromDb.Data);
+            Assert.Equal(guid, guid2);
+        }
+
+        [Fact]
         public async Task LogicalDeletedBoolAsync()
         {
             const int id = 10;
@@ -147,7 +187,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.Tests
         [Fact]
         public async Task ChangeDate_InsertAndFind()
         {
-            var diff = 12;
+            const int diff = 12;
             var dateTime = DateTime.UtcNow.AddDays(-diff);
             var user = new User() { Name = "Sergey Phoenix", UpdatedAt = dateTime };
             await _sqlDatabaseFixture.Db.Users.InsertAsync(user);

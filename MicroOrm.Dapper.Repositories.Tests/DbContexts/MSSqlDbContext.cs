@@ -1,10 +1,11 @@
 ﻿using System.Data.SqlClient;
+using MicroOrm.Dapper.Repositories.DbContext;
 using MicroOrm.Dapper.Repositories.SqlGenerator;
 using MicroOrm.Dapper.Repositories.Tests.Classes;
 
 namespace MicroOrm.Dapper.Repositories.Tests.DbContexts
 {
-    public class MSSqlDbContext : DbContext
+    public class MSSqlDbContext : DapperDbContext, IDbContext
     {
         public MSSqlDbContext(string connectionString)
            : base(new SqlConnection(connectionString))

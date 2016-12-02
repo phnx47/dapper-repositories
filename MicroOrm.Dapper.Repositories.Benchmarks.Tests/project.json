@@ -1,0 +1,24 @@
+﻿{
+  "version": "1.0.0-*",
+  "buildOptions": {
+    "emitEntryPoint": true
+  },
+
+  "dependencies": {
+    "BenchmarkDotNet": "0.9.9",
+    "MicroOrm.Dapper.Repositories": "1.5.0",
+    "Microsoft.NETCore.App": {
+      "type": "platform",
+      "version": "1.0.1"
+    }
+  },
+
+  "frameworks": {
+    "netcoreapp1.0": {
+      "imports": "dnxcore50",
+      "dependencies": {
+        "System.ComponentModel.EventBasedAsync": "4.0.11"
+      }
+    }
+  }
+}
