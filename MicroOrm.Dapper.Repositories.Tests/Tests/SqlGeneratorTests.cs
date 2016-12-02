@@ -131,6 +131,22 @@ namespace MicroOrm.Dapper.Repositories.Tests.Tests
         }
 
         [Fact]
+        public void MySQLIsNotNullAND()
+        {
+            ISqlGenerator<User> userSqlGenerator = new SqlGenerator<User>(ESqlConnector.MySQL);
+            var sqlQuery = userSqlGenerator.GetSelectAll(user => user.Name == "Frank" && user.UpdatedAt != null);
+
+            Assert.Equal("SELECT Users.Id, Users.Name, Users.AddressId, Users.Deleted, Users.UpdatedAt FROM Users " +
+                         "WHERE Users.Name = @Name AND Users.UpdatedAt IS NOT NULL AND Users.Deleted != 1", sqlQuery.Sql);
+            Assert.DoesNotContain("!= NULL", sqlQuery.Sql);
+
+            sqlQuery = userSqlGenerator.GetSelectAll(user => user.UpdatedAt != null && user.Name == "Frank");
+            Assert.Equal("SELECT Users.Id, Users.Name, Users.AddressId, Users.Deleted, Users.UpdatedAt FROM Users " +
+                         "WHERE Users.UpdatedAt IS NOT NULL AND Users.Name = @Name AND Users.Deleted != 1", sqlQuery.Sql);
+            Assert.DoesNotContain("!= NULL", sqlQuery.Sql);
+        }
+
+        [Fact]
         public void MSSQLJoinBracelets()
         {
             ISqlGenerator<User> userSqlGenerator = new SqlGenerator<User>(ESqlConnector.MSSQL);
