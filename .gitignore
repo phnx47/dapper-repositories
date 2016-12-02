@@ -9,3 +9,6 @@ bin
 obj
 packages
 TestResults
+BenchmarkDotNet.Artifacts
+MicroOrm.Dapper.Repositories.Tests/Coverage
+Coverage.xml
