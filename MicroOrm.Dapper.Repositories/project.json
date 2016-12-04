@@ -21,7 +21,7 @@
     "optimize": false
   },
   "dependencies": {
-    "Dapper": "1.50.2" 
+    "Dapper": "1.50.2"
   },
   "frameworks": {
     "net45": {
@@ -35,20 +35,8 @@
         "define": [ "COREFX" ]
       },
       "dependencies": {
-        "System.Collections": "4.0.11",
-        "System.Collections.Concurrent": "4.0.12",
-        "System.Data.SqlClient": "4.1.0",
-        "System.Linq": "4.1.0",
-        "System.Reflection": "4.1.0",
-        "System.Reflection.Emit": "4.0.1",
-        "System.Reflection.Emit.Lightweight": "4.0.1",
-        "System.Reflection.TypeExtensions": "4.1.0",
-        "System.Runtime": "4.1.0",
-        "System.Threading": "4.0.11",
         "System.ComponentModel.Annotations": "4.1.0"
-
       }
     }
   }
-
 }
