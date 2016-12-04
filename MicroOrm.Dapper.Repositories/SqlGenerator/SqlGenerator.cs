@@ -154,10 +154,21 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                     break;
 
                 case ESqlConnector.MySQL:
+                    TableName = "`" + TableName + "`";
+
+                    foreach (var propertyMetadata in SqlProperties)
+                    {
+                        propertyMetadata.ColumnName = "`" + propertyMetadata.ColumnName + "`";
+                    }
+
+                    foreach (var propertyMetadata in KeySqlProperties)
+                    {
+                        propertyMetadata.ColumnName = "`" + propertyMetadata.ColumnName + "`";
+                    }
                     break;
 
                 case ESqlConnector.PostgreSQL:
-                    //todo: ковычки
+
                     break;
 
                 default:
@@ -317,7 +328,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         {
             var joinSql = "";
 
-            List<PropertyInfo> joinedProperties = new List<PropertyInfo>();
+            var joinedProperties = new List<PropertyInfo>();
             foreach (var include in includes)
             {
                 var propertyName = ExpressionHelper.GetFullPropertyName(include);
@@ -367,6 +378,14 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                         break;
 
                     case ESqlConnector.MySQL:
+                        tableName = "`" + tableName + "`";
+                        attrJoin.TableName = "`" + attrJoin.TableName + "`";
+                        attrJoin.Key = "`" + attrJoin.Key + "`";
+                        attrJoin.ExternalKey = "`" + attrJoin.ExternalKey + "`";
+                        foreach (var prop in props)
+                        {
+                            prop.ColumnName = "`" + prop.ColumnName + "`";
+                        }
                         break;
 
                     case ESqlConnector.PostgreSQL:

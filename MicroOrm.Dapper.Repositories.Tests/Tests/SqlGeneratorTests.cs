@@ -29,7 +29,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.Tests
         {
             ISqlGenerator<User> userSqlGenerator = new SqlGenerator<User>(ESqlConnector.MySQL);
             var sqlQuery = userSqlGenerator.GetSelectFirst(x => x.Id == 6);
-            Assert.Equal(sqlQuery.Sql, "SELECT Users.Id, Users.Name, Users.AddressId, Users.Deleted, Users.UpdatedAt FROM Users WHERE Users.Id = @Id AND Users.Deleted != 1 LIMIT 1");
+            Assert.Equal(sqlQuery.Sql, "SELECT `Users`.`Id`, `Users`.`Name`, `Users`.`AddressId`, `Users`.`Deleted`, `Users`.`UpdatedAt` FROM `Users` WHERE `Users`.`Id` = @Id AND `Users`.`Deleted` != 1 LIMIT 1");
         }
 
         [Fact]
@@ -104,8 +104,8 @@ namespace MicroOrm.Dapper.Repositories.Tests.Tests
             ISqlGenerator<User> userSqlGenerator = new SqlGenerator<User>(ESqlConnector.MySQL);
             var sqlQuery = userSqlGenerator.GetSelectBetween(1, 10, x => x.Id);
             
-            Assert.Equal("SELECT Users.Id, Users.Name, Users.AddressId, Users.Deleted, Users.UpdatedAt FROM Users " +
-                         "WHERE Users.Deleted != 1 AND Users.Id BETWEEN '1' AND '10'", sqlQuery.Sql);
+            Assert.Equal("SELECT `Users`.`Id`, `Users`.`Name`, `Users`.`AddressId`, `Users`.`Deleted`, `Users`.`UpdatedAt` FROM `Users` " +
+                         "WHERE `Users`.`Deleted` != 1 AND `Users`.`Id` BETWEEN '1' AND '10'", sqlQuery.Sql);
         }
 
         [Fact]
@@ -125,8 +125,8 @@ namespace MicroOrm.Dapper.Repositories.Tests.Tests
             ISqlGenerator<User> userSqlGenerator = new SqlGenerator<User>(ESqlConnector.MySQL);
             var sqlQuery = userSqlGenerator.GetSelectAll(user => user.UpdatedAt != null);
             
-            Assert.Equal("SELECT Users.Id, Users.Name, Users.AddressId, Users.Deleted, Users.UpdatedAt FROM Users " +
-                         "WHERE Users.UpdatedAt IS NOT NULL AND Users.Deleted != 1", sqlQuery.Sql);
+            Assert.Equal("SELECT `Users`.`Id`, `Users`.`Name`, `Users`.`AddressId`, `Users`.`Deleted`, `Users`.`UpdatedAt` FROM `Users` " +
+                         "WHERE `Users`.`UpdatedAt` IS NOT NULL AND `Users`.`Deleted` != 1", sqlQuery.Sql);
             Assert.DoesNotContain("!= NULL", sqlQuery.Sql);
         }
 
@@ -136,13 +136,13 @@ namespace MicroOrm.Dapper.Repositories.Tests.Tests
             ISqlGenerator<User> userSqlGenerator = new SqlGenerator<User>(ESqlConnector.MySQL);
             var sqlQuery = userSqlGenerator.GetSelectAll(user => user.Name == "Frank" && user.UpdatedAt != null);
 
-            Assert.Equal("SELECT Users.Id, Users.Name, Users.AddressId, Users.Deleted, Users.UpdatedAt FROM Users " +
-                         "WHERE Users.Name = @Name AND Users.UpdatedAt IS NOT NULL AND Users.Deleted != 1", sqlQuery.Sql);
+            Assert.Equal("SELECT `Users`.`Id`, `Users`.`Name`, `Users`.`AddressId`, `Users`.`Deleted`, `Users`.`UpdatedAt` FROM `Users` " +
+                         "WHERE `Users`.`Name` = @Name AND `Users`.`UpdatedAt` IS NOT NULL AND `Users`.`Deleted` != 1", sqlQuery.Sql);
             Assert.DoesNotContain("!= NULL", sqlQuery.Sql);
 
             sqlQuery = userSqlGenerator.GetSelectAll(user => user.UpdatedAt != null && user.Name == "Frank");
-            Assert.Equal("SELECT Users.Id, Users.Name, Users.AddressId, Users.Deleted, Users.UpdatedAt FROM Users " +
-                         "WHERE Users.UpdatedAt IS NOT NULL AND Users.Name = @Name AND Users.Deleted != 1", sqlQuery.Sql);
+            Assert.Equal("SELECT `Users`.`Id`, `Users`.`Name`, `Users`.`AddressId`, `Users`.`Deleted`, `Users`.`UpdatedAt` FROM `Users` " +
+                         "WHERE `Users`.`UpdatedAt` IS NOT NULL AND `Users`.`Name` = @Name AND `Users`.`Deleted` != 1", sqlQuery.Sql);
             Assert.DoesNotContain("!= NULL", sqlQuery.Sql);
         }
 
@@ -165,11 +165,11 @@ namespace MicroOrm.Dapper.Repositories.Tests.Tests
             var sqlQuery = userSqlGenerator.GetSelectAll(null, car => car.User,
                 car => car.User.Address);
 
-            Assert.Equal("SELECT Cars.Id, Cars.Name, Cars.Data, Cars.UserId, Cars.Status, " +
-                         "Users.Id, Users.Name, Users.AddressId, Users.Deleted, Users.UpdatedAt, " +
-                         "Addresses.Id, Addresses.Street, Addresses.Number, Addresses.Zipcode, Addresses.City, Addresses.Country " +
-                         "FROM Cars LEFT JOIN Users ON Cars.UserId = Users.Id LEFT JOIN Addresses ON Users.AddressId = Addresses.Id " +
-                         "WHERE Cars.Status != -1", sqlQuery.Sql);
+            Assert.Equal("SELECT `Cars`.`Id`, `Cars`.`Name`, `Cars`.`Data`, `Cars`.`UserId`, `Cars`.`Status`, " +
+                         "`Users`.`Id`, `Users`.`Name`, `Users`.`AddressId`, `Users`.`Deleted`, `Users`.`UpdatedAt`, " +
+                         "`Addresses`.`Id`, `Addresses`.`Street`, `Addresses`.`Number`, `Addresses`.`Zipcode`, `Addresses`.`City`, `Addresses`.`Country` " +
+                         "FROM `Cars` LEFT JOIN `Users` ON `Cars`.`UserId` = `Users`.`Id` LEFT JOIN `Addresses` ON `Users`.`AddressId` = `Addresses`.`Id` " +
+                         "WHERE `Cars`.`Status` != -1", sqlQuery.Sql);
         }
 
         [Fact]
