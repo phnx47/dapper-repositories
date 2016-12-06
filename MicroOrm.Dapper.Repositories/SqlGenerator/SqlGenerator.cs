@@ -498,7 +498,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         public virtual SqlQuery GetDelete(TEntity entity)
         {
             var sqlQuery = new SqlQuery(entity);
-            var whereSql = " WHERE " + string.Join("AND ", KeySqlProperties.Select(p => p.ColumnName + " = @" + p.Name));
+            var whereSql = " WHERE " + string.Join(" AND ", KeySqlProperties.Select(p => p.ColumnName + " = @" + p.Name));
             if (!LogicalDelete)
             {
                 sqlQuery.SqlBuilder.Append("DELETE FROM " + TableName + whereSql);
