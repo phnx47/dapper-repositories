@@ -49,7 +49,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                 }
                 else
                 {
-                    string message = "Expression" + field + " is not supported.";
+                    var message = "Expression" + field + " is not supported.";
 
                     throw new ArgumentException(message, nameof(field));
                 }
@@ -61,10 +61,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         public static string GetFullPropertyName<TSource, TField>(Expression<Func<TSource, TField>> field)
         {
             var path = new PropertyPathVisitor().GetPropertyPath(field);
-            if (path.DeclaringType != null)
-                return $"{path.DeclaringType.FullName}.{path.Name}";
-
-            return string.Empty;
+            return path.DeclaringType != null ? path.DeclaringType.FullName + "." + path.Name : string.Empty;
         }
 
         public static object GetValue(Expression member)
@@ -122,7 +119,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
 
         public static Func<PropertyInfo, bool> GetPrimitivePropertiesPredicate()
         {
-            return p => p.CanWrite && (p.PropertyType.IsValueType() || p.PropertyType.Name.Equals("String", StringComparison.OrdinalIgnoreCase)  || p.PropertyType == typeof(byte[]) );
+            return p => p.CanWrite && (p.PropertyType.IsValueType() || p.PropertyType.Name.Equals("String", StringComparison.OrdinalIgnoreCase) || p.PropertyType == typeof(byte[]));
         }
     }
 }

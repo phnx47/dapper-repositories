@@ -3,7 +3,6 @@
   "description": "MicroOrm.Dapper.Repositories.Tests",
   "authors": [ "Sergey Kuznetsov" ],
   "dependencies": {
-
     "MySql.Data": "7.0.6-IR31",
     "CoreCompat.System.Drawing": "1.0.0-beta006",
     "OpenCover": "4.6.519",

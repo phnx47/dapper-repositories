@@ -6,7 +6,9 @@
 
   "dependencies": {
     "BenchmarkDotNet": "0.9.9",
-    "MicroOrm.Dapper.Repositories": "1.5.0",
+    "MicroOrm.Dapper.Repositories": {
+      "target": "project"
+    },
     "Microsoft.NETCore.App": {
       "type": "platform",
       "version": "1.0.1"
