@@ -1,31 +1,27 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.CompilerServices;
-using System.Text;
 
 namespace MicroOrm.Dapper.Repositories.SqlGenerator
 {
-
     /*
-     * 
-     *  taken from : 
+     *
+     *  taken from :
      *      http://www.thomaslevesque.com/2010/10/03/entity-framework-using-include-with-lambda-expressions/
-     * 
+     *
      * */
 
     /// <summary>
-    /// 
+    ///
     /// </summary>
     public class PropertyPathVisitor : ExpressionVisitor
     {
         private Stack<MemberInfo> _stack;
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="expression"></param>
         /// <returns></returns>
@@ -46,15 +42,14 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         /// <inheritdoc />
         protected override Expression VisitMethodCall(MethodCallExpression expression)
         {
-            if (IsLinqOperator(expression.Method))
+            if (!IsLinqOperator(expression.Method))
+                return base.VisitMethodCall(expression);
+
+            for (var i = expression.Arguments.Count - 1; i >= 0; i--)
             {
-                for (var i = expression.Arguments.Count-1; i >= 0; i--)
-                {
-                    Visit(expression.Arguments[i]);
-                }
-                return expression;
+                Visit(expression.Arguments[i]);
             }
-            return base.VisitMethodCall(expression);
+            return expression;
         }
 
         private static bool IsLinqOperator(MethodInfo method)

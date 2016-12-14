@@ -18,7 +18,7 @@
   "buildOptions": {
     "xmlDoc": true,
     "warningsAsErrors": true,
-    "optimize": false
+    "optimize": true
   },
   "dependencies": {
     "Dapper": "1.50.2"
