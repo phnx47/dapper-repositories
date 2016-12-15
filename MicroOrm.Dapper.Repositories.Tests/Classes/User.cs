@@ -17,6 +17,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.Classes
 
         public string ReadOnly => "test";
 
+        [Column(Order = 1)]
         public string Name { get; set; }
 
         public int AddressId { get; set; }
