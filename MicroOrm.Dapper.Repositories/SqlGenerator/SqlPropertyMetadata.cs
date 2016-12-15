@@ -37,9 +37,8 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         {
             PropertyInfo = propertyInfo;
             var alias = PropertyInfo.GetCustomAttribute<ColumnAttribute>();
-            if (alias != null)
+            if (!string.IsNullOrEmpty(alias?.Name))
             {
-
                 Alias = alias.Name;
                 ColumnName = Alias;
             }
