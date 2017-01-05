@@ -16,30 +16,5 @@ namespace MicroOrm.Dapper.Repositories.Tests.Tests
         {
             _sqlDatabaseFixture = msSqlDatabaseFixture;
         }
-
-
-        //[Fact]
-        //public void Insert()
-        //{
-        //    var t = _sqlDatabaseFixture.Db.Cars.Find();
-        //    var image = ByteArrayToImage(t.Data);
-        //    image.Save("test.jpg");
-
-        //    var car = new Car
-        //    {
-        //        Name = "test",
-        //        Status = StatusCar.Active,
-        //        UserId = 1
-        //    };
-
-
-        //    Image image = Image.FromFile("image.jpg");
-        //    car.Image = ImageToByteArray(image);
-
-        //    _sqlDatabaseFixture.Db.Cars.Insert(car);
-        //}
-
-
-       
     }
 }

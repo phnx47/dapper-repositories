@@ -31,7 +31,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.Classes
         [Status, Deleted]
         public bool Deleted { get; set; }
 
-        [DateChanged]
+        [UpdatedAt]
         public DateTime? UpdatedAt { get; set; }
     }
 }

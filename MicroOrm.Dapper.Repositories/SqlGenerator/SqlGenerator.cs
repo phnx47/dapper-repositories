@@ -75,12 +75,12 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         /// <summary>
         /// Has Date of changed
         /// </summary>
-        public bool HasDateChanged => DateChangedProperty != null;
+        public bool HasUpdatedAt => UpdatedAtProperty != null;
 
         /// <summary>
         /// Date of Changed Property
         /// </summary>
-        public PropertyInfo DateChangedProperty { get; protected set; }
+        public PropertyInfo UpdatedAtProperty { get; protected set; }
 
         #region Init
 
@@ -123,9 +123,9 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
             var identityProperty = props.FirstOrDefault(p => p.GetCustomAttributes<IdentityAttribute>().Any());
             IdentitySqlProperty = identityProperty != null ? new SqlPropertyMetadata(identityProperty) : null;
 
-            var dateChangedProperty = props.FirstOrDefault(p => p.GetCustomAttributes<DateChangedAttribute>().Count() == 1);
+            var dateChangedProperty = props.FirstOrDefault(p => p.GetCustomAttributes<UpdatedAtAttribute>().Count() == 1);
             if (dateChangedProperty != null && (dateChangedProperty.PropertyType == typeof(DateTime) || dateChangedProperty.PropertyType == typeof(DateTime?)))
-                DateChangedProperty = props.FirstOrDefault(p => p.GetCustomAttributes<DateChangedAttribute>().Any());
+                UpdatedAtProperty = props.FirstOrDefault(p => p.GetCustomAttributes<UpdatedAtAttribute>().Any());
         }
 
         /// <summary>
@@ -227,16 +227,17 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         {
             var properties = (IsIdentity ? SqlProperties.Where(p => !p.PropertyName.Equals(IdentitySqlProperty.PropertyName, StringComparison.OrdinalIgnoreCase)) : SqlProperties).ToList();
 
-            if (HasDateChanged)
+            if (HasUpdatedAt)
             {
-                DateChangedProperty.SetValue(entity, DateTime.UtcNow);
+                UpdatedAtProperty.SetValue(entity, DateTime.UtcNow);
             }
 
-            var columNames = string.Join(", ", properties.Select(p => p.ColumnName));
-            var values = string.Join(", ", properties.Select(p => "@" + p.PropertyName));
-
             var query = new SqlQuery(entity);
-            query.SqlBuilder.Append("INSERT INTO " + TableName + (string.IsNullOrEmpty(columNames) ? "" : "(" + columNames + ")") + (string.IsNullOrEmpty(values) ? "" : " VALUES  (" + values + ")"));
+
+            query.SqlBuilder.Append(
+                "INSERT INTO " + TableName
+                + "(" + string.Join(", ", properties.Select(p => p.ColumnName)) + ")"  // columNames
+                + " VALUES  (" + string.Join(", ", properties.Select(p => "@" + p.PropertyName)) + ")"); // values
 
             if (IsIdentity)
             {
@@ -273,9 +274,9 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         {
             var properties = SqlProperties.Where(p => !KeySqlProperties.Any(k => k.PropertyName.Equals(p.PropertyName, StringComparison.OrdinalIgnoreCase)));
 
-            if (HasDateChanged)
+            if (HasUpdatedAt)
             {
-                DateChangedProperty.SetValue(entity, DateTime.UtcNow);
+                UpdatedAtProperty.SetValue(entity, DateTime.UtcNow);
             }
 
             var query = new SqlQuery(entity);
@@ -313,20 +314,13 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         private SqlQuery InitBuilderSelect(bool firstOnly)
         {
             var query = new SqlQuery();
-
-            var select = "SELECT ";
-
-            if (firstOnly && SqlConnector == ESqlConnector.MSSQL)
-                select += "TOP 1 ";
-
-            query.SqlBuilder.Append(select + GetFieldsSelect(TableName, SqlProperties));
-
+            query.SqlBuilder.Append("SELECT " + (firstOnly && SqlConnector == ESqlConnector.MSSQL ? "TOP 1 " : "") + GetFieldsSelect(TableName, SqlProperties));
             return query;
         }
 
         private string AppendJoinToSelect(SqlQuery originalBuilder, params Expression<Func<TEntity, object>>[] includes)
         {
-            var joinSql = "";
+            var joinSql = ""; // todo: Builder
 
             var joinedProperties = new List<PropertyInfo>();
             foreach (var include in includes)
@@ -505,9 +499,9 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
             }
             else
             {
-                if (HasDateChanged)
+                if (HasUpdatedAt)
                 {
-                    DateChangedProperty.SetValue(entity, DateTime.UtcNow);
+                    UpdatedAtProperty.SetValue(entity, DateTime.UtcNow);
                 }
                 sqlQuery.SqlBuilder.Append("UPDATE " + TableName + " SET " + StatusPropertyName + " = " + LogicalDeleteValue + whereSql);
             }

@@ -37,21 +37,29 @@ namespace MicroOrm.Dapper.Repositories.Tests.DatabaseFixture
             Action<string> dropTable = name => Db.Connection.Execute($@"IF OBJECT_ID('{name}', 'U') IS NOT NULL DROP TABLE [{name}]; ");
             dropTable("Users");
             dropTable("Cars");
+            dropTable("Addresses");
 
             Db.Connection.Execute(@"CREATE TABLE Users (Id int IDENTITY(1,1) not null, Name varchar(256) not null, AddressId int not null, Deleted bit not null, UpdatedAt datetime2,  PRIMARY KEY (Id))");
+            Db.Connection.Execute(@"CREATE TABLE Cars (Id int IDENTITY(1,1) not null, Name varchar(256) not null, UserId int not null, Status int not null, Data binary(16) null, PRIMARY KEY (Id))");
+
+            Db.Connection.Execute(@"CREATE TABLE Addresses (Id int IDENTITY(1,1) not null, Street varchar(256) not null,  PRIMARY KEY (Id))");
+
+            Db.Address.Insert(new Classes.Address { Street = "Street0" });
 
             for (var i = 0; i < 10; i++)
             {
-                Db.Users.Insert(new Classes.User()
+                Db.Users.Insert(new Classes.User
                 {
-                    Name = $"TestName{i}"
+                    Name = $"TestName{i}",
+                    AddressId = 1
                 });
             }
-            Db.Users.Insert(new Classes.User() { Name = "TestName0" });
 
-            Db.Connection.Execute(@"CREATE TABLE Cars (Id int IDENTITY(1,1) not null, Name varchar(256) not null, UserId int not null, Status int not null, Data binary(16) null, PRIMARY KEY (Id))");
+            Db.Users.Insert(new Classes.User { Name = "TestName0" });
+            Db.Cars.Insert(new Classes.Car { Name = "TestCar0", UserId = 1 });
 
-            Db.Cars.Insert(new Classes.Car() { Name = "TestCar0", UserId = 1 });
+
+          
         }
     }
 }

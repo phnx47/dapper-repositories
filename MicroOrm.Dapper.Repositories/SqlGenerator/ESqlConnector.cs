@@ -9,7 +9,7 @@
         /// MSSQL
         /// </summary>
         MSSQL,
-        
+
         /// <summary>
         /// MySQL
         /// </summary>
@@ -20,5 +20,4 @@
         /// </summary>
         PostgreSQL
     }
-
 }
