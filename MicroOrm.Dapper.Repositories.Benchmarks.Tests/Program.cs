@@ -8,7 +8,7 @@ namespace MicroOrm.Dapper.Repositories.Benchmarks
         public static void Main(string[] args)
         {
             BenchmarkRunner.Run<Benchmark_InterpolationFormat>();
-           // BenchmarkRunner.Run<Benchmark_TableName>();
+            BenchmarkRunner.Run<Benchmark_TableName>();
         }
     }
 }
