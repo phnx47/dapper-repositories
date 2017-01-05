@@ -6,7 +6,7 @@
     "MySql.Data": "7.0.6-IR31",
     "CoreCompat.System.Drawing": "1.0.0-beta006",
     "OpenCover": "4.6.519",
-    "ReportGenerator": "2.5.0",
+    "ReportGenerator": "2.5.2",
     "xunit": "2.2.0-beta2-build3300",
     "xunit.runner.console": "2.2.0-beta2-build3300",
     "xunit.runner.visualstudio": "2.2.0-beta2-build1149",
@@ -23,7 +23,7 @@
   },
   "testRunner": "xunit",
   "frameworks": {
-    "netcoreapp1.0": {
+    "netcoreapp1.1": {
       "imports": [
         "dnxcore50"
       ],
@@ -33,7 +33,7 @@
       "dependencies": {
         "Microsoft.NETCore.App": {
           "type": "platform",
-          "version": "1.0.1"
+          "version": "1.1.0"
         }
       }
 

@@ -1,4 +1,5 @@
 ﻿using BenchmarkDotNet.Configs;
+using BenchmarkDotNet.Environments;
 using BenchmarkDotNet.Jobs;
 
 namespace MicroOrm.Dapper.Repositories.Benchmarks
@@ -7,14 +8,20 @@ namespace MicroOrm.Dapper.Repositories.Benchmarks
     {
         public Config()
         {
-            IJob job = new Job
+            var job = new Job
             {
-                TargetCount = 5,
-                WarmupCount = 3,
-                LaunchCount = 2,
-                Runtime = Runtime.Core,
-                Jit = Jit.RyuJit,
-                Platform = Platform.X64
+                Run =
+                {
+                    TargetCount = 5,
+                    WarmupCount = 3,
+                    LaunchCount = 2,
+                },
+                Env =
+                {
+                    Platform = Platform.X64,
+                    Jit = Jit.RyuJit,
+                    Runtime = Runtime.Core
+               }
             };
 
             Add(job);

@@ -6,25 +6,18 @@ using System.Runtime.CompilerServices;
 
 namespace MicroOrm.Dapper.Repositories.SqlGenerator
 {
-    /*
-     *
-     *  taken from :
-     *      http://www.thomaslevesque.com/2010/10/03/entity-framework-using-include-with-lambda-expressions/
-     *
-     * */
+    //  http://www.thomaslevesque.com/2010/10/03/entity-framework-using-include-with-lambda-expressions/
 
     /// <summary>
-    ///
+    /// Property path visitor
     /// </summary>
     public class PropertyPathVisitor : ExpressionVisitor
     {
         private Stack<MemberInfo> _stack;
 
         /// <summary>
-        ///
+        /// GetPropertyPath
         /// </summary>
-        /// <param name="expression"></param>
-        /// <returns></returns>
         public MemberInfo GetPropertyPath(Expression expression)
         {
             _stack = new Stack<MemberInfo>();
@@ -49,10 +42,11 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
             {
                 Visit(expression.Arguments[i]);
             }
+
             return expression;
         }
 
-        private static bool IsLinqOperator(MethodInfo method)
+        private static bool IsLinqOperator(MemberInfo method)
         {
             if (method.DeclaringType != typeof(Enumerable))
                 return false;

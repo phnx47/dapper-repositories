@@ -35,7 +35,7 @@
         "define": [ "COREFX" ]
       },
       "dependencies": {
-        "System.ComponentModel.Annotations": "4.1.0"
+        "System.ComponentModel.Annotations": "4.3.0"
       }
     }
   }
