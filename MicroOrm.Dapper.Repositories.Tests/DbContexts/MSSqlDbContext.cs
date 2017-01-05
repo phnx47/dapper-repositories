@@ -17,5 +17,8 @@ namespace MicroOrm.Dapper.Repositories.Tests.DbContexts
 
         private IDapperRepository<Car> _cars;
         public IDapperRepository<Car> Cars => _cars ?? (_cars = new DapperRepository<Car>(Connection, ESqlConnector.MSSQL));
+
+        private IDapperRepository<Address> _address;
+        public IDapperRepository<Address> Address => _address ?? (_address = new DapperRepository<Address>(Connection, ESqlConnector.MSSQL));
     }
 }

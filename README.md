@@ -1,6 +1,6 @@
 # MicroOrm.Dapper.Repositories
 
-[![NuGet](https://img.shields.io/nuget/vpre/MicroOrm.Dapper.Repositories.svg)](https://www.nuget.org/packages/MicroOrm.Dapper.Repositories/1.6.0-beta2) [![NuGet](https://img.shields.io/nuget/v/MicroOrm.Dapper.Repositories.svg)](https://www.nuget.org/packages/MicroOrm.Dapper.Repositories) [![License MIT](https://img.shields.io/badge/license-MIT-green.svg)](https://opensource.org/licenses/MIT) [![Build status](https://ci.appveyor.com/api/projects/status/5v68lbhwc9d4948g?svg=true)](https://ci.appveyor.com/project/phnx47/microorm-dapper-repositories) [![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=sergey%2ekuznetsov%40hotmail%2ecom&lc=US&item_name=MicroOrm%2eDapper%2eRepositories&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_SM%2egif%3aNonHosted)
+[![NuGet](https://img.shields.io/nuget/vpre/MicroOrm.Dapper.Repositories.svg)](https://www.nuget.org/packages/MicroOrm.Dapper.Repositories/1.6.0-beta5) [![NuGet](https://img.shields.io/nuget/v/MicroOrm.Dapper.Repositories.svg)](https://www.nuget.org/packages/MicroOrm.Dapper.Repositories) [![License MIT](https://img.shields.io/badge/license-MIT-green.svg)](https://opensource.org/licenses/MIT) [![Build status](https://ci.appveyor.com/api/projects/status/5v68lbhwc9d4948g?svg=true)](https://ci.appveyor.com/project/phnx47/microorm-dapper-repositories) [![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=sergey%2ekuznetsov%40hotmail%2ecom&lc=US&item_name=MicroOrm%2eDapper%2eRepositories&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_SM%2egif%3aNonHosted)
 
 If you like your code to run fast, you probably know about Micro ORMs.
 They are simple and one of their main goals is to be the fastest execution of your SQL sentences in you data repository.
@@ -76,8 +76,7 @@ Let's see some SQL sentences examples that this tool will create. "Users" POCO:
 		[Status]
 		public UserStatus Status { get; set; }
 		
-		[NotMapped]
-		public string FullName
+		public string FullName // not mapped, because don't have 'set'
 		{
 			get
 			{
@@ -108,32 +107,6 @@ Implements the repository:
 
         }
     }
-    
-Simple as that, we have defined a fully functional data repository for the "User" POCO. Because of the inheritance pattern here, both contract and implementation repositories contain this function:
-
-        bool Delete(TEntity instance);
-        
-        Task<bool> DeleteAsync(TEntity instance);
-        
-        TEntity Find(Expression<Func<TEntity, bool>> expression);
-        
-        IEnumerable<TEntity> FindAll();
-        
-        IEnumerable<TEntity> FindAll(Expression<Func<TEntity, bool>> expression);
-        
-        Task<IEnumerable<TEntity>> FindAllAsync();
-        
-        Task<IEnumerable<TEntity>> FindAllAsync(Expression<Func<TEntity, bool>> expression);
-        
-        Task<TEntity> FindAsync(Expression<Func<TEntity, bool>> expression);
-        
-        bool Insert(TEntity instance);
-        
-        Task<bool> InsertAsync(TEntity instance);
-        
-        bool Update(TEntity instance);
-        
-        Task<bool> UpdateAsync(TEntity instance);
 
 Example:
 

@@ -26,11 +26,6 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         }
 
         /// <summary>
-        /// Gets the SQL.
-        /// </summary>
-        public string Sql => SqlBuilder.ToString().TrimEnd();
-
-        /// <summary>
         /// SqlBuilder
         /// </summary>
         public StringBuilder SqlBuilder { get; }
@@ -39,6 +34,14 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         /// Gets the param
         /// </summary>
         public object Param { get; private set; }
+
+        /// <summary>
+        /// Gets the SQL.
+        /// </summary>
+        public string GetSql()
+        {
+            return SqlBuilder.ToString().TrimEnd();
+        }
 
         /// <summary>
         /// Set alternative param

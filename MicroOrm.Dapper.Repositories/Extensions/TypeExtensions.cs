@@ -5,15 +5,6 @@ namespace MicroOrm.Dapper.Repositories.Extensions
 {
     internal static class TypeExtensions
     {
-        public static PropertyInfo GetProperty(this Type type, string name)
-        {
-#if COREFX
-            return System.Reflection.TypeExtensions.GetProperty(type, name);
-#else
-            return type.GetProperty(name);
-#endif
-        }
-
         public static bool IsGenericType(this Type type)
         {
 #if COREFX

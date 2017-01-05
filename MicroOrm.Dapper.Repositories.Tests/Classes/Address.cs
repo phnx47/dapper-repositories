@@ -13,10 +13,6 @@ namespace MicroOrm.Dapper.Repositories.Tests.Classes
         public int Id { get; set; }
 
         public string Street { get; set; }
-        public string Number { get; set; }
-        public string Zipcode { get; set; }
-        public string City { get; set; }
-        public string Country { get; set; }
 
         [LeftJoin("Users", "Id", "AddressId")]
         public List<User> Users { get; set; }

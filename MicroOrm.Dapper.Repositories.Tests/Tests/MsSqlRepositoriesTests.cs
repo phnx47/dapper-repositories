@@ -72,6 +72,15 @@ namespace MicroOrm.Dapper.Repositories.Tests.Tests
         }
 
         [Fact]
+        public async Task FindAllJoin2TableAsync()
+        {
+            var user = (await _sqlDatabaseFixture.Db.Users.FindAllAsync<Car, Address>(x => x.Id == 1, q => q.Cars, q => q.Address)).First();
+            Assert.Equal(user.Cars.Count, 1);
+            Assert.Equal(user.Cars.First().Name, "TestCar0");
+            Assert.Equal(user.Address.Street, "Street0");
+        }
+
+        [Fact]
         public async Task InsertAndUpdateAsync()
         {
             var user = new User()
@@ -96,7 +105,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.Tests
         public async Task InsertBinaryDataAsync()
         {
             var guid = Guid.NewGuid();
-          
+
             var car = new Car
             {
                 Data = guid.ToByteArray(),
@@ -123,9 +132,9 @@ namespace MicroOrm.Dapper.Repositories.Tests.Tests
                 Status = StatusCar.Active
             };
 
-            var insert =  _sqlDatabaseFixture.Db.Cars.Insert(car);
+            var insert = _sqlDatabaseFixture.Db.Cars.Insert(car);
             Assert.True(insert);
-            var carFromDb =  _sqlDatabaseFixture.Db.Cars.Find(x => x.Id == car.Id);
+            var carFromDb = _sqlDatabaseFixture.Db.Cars.Find(x => x.Id == car.Id);
             var guid2 = new Guid(carFromDb.Data);
             Assert.Equal(guid, guid2);
         }

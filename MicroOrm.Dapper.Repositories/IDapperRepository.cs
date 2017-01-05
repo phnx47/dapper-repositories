@@ -91,14 +91,50 @@ namespace MicroOrm.Dapper.Repositories
         Task<IEnumerable<TEntity>> FindAllAsync(Expression<Func<TEntity, bool>> predicate, IDbTransaction transaction = null);
 
         /// <summary>
-        ///
+        /// Get all objects with join objects
         /// </summary>
         Task<IEnumerable<TEntity>> FindAllAsync<TChild1>(Expression<Func<TEntity, object>> tChild1, IDbTransaction transaction = null);
 
         /// <summary>
-        ///
+        /// Get all objects with join objects
         /// </summary>
         Task<IEnumerable<TEntity>> FindAllAsync<TChild1>(Expression<Func<TEntity, bool>> predicate, Expression<Func<TEntity, object>> tChild1, IDbTransaction transaction = null);
+
+        /// <summary>
+        /// Get all objects with join objects
+        /// </summary>
+        Task<IEnumerable<TEntity>> FindAllAsync<TChild1, TChild2>(
+            Expression<Func<TEntity, object>> tChild1,
+            Expression<Func<TEntity, object>> tChild2,
+            IDbTransaction transaction = null);
+
+        /// <summary>
+        /// Get all objects with join objects
+        /// </summary>
+        Task<IEnumerable<TEntity>> FindAllAsync<TChild1, TChild2>(
+            Expression<Func<TEntity, bool>> predicate,
+            Expression<Func<TEntity, object>> tChild1,
+            Expression<Func<TEntity, object>> tChild2,
+            IDbTransaction transaction = null);
+
+        /// <summary>
+        /// Get all objects with join objects
+        /// </summary>
+        Task<IEnumerable<TEntity>> FindAllAsync<TChild1, TChild2, TChild3>(
+            Expression<Func<TEntity, object>> tChild1,
+            Expression<Func<TEntity, object>> tChild2,
+            Expression<Func<TEntity, object>> tChild3,
+            IDbTransaction transaction = null);
+
+        /// <summary>
+        /// Get all objects with join objects
+        /// </summary>
+        Task<IEnumerable<TEntity>> FindAllAsync<TChild1, TChild2, TChild3>(
+            Expression<Func<TEntity, bool>> predicate,
+            Expression<Func<TEntity, object>> tChild1,
+            Expression<Func<TEntity, object>> tChild2,
+            Expression<Func<TEntity, object>> tChild3,
+            IDbTransaction transaction = null);
 
         /// <summary>
         ///
@@ -138,7 +174,7 @@ namespace MicroOrm.Dapper.Repositories
         /// <summary>
         ///
         /// </summary>
-        IEnumerable<TEntity> FindAllBetween(object from, object to, Expression<Func<TEntity, object>> btwField, Expression<Func<TEntity, bool>> predicate, IDbTransaction transaction = null);
+        IEnumerable<TEntity> FindAllBetween(object from, object to, Expression<Func<TEntity, object>> btwField, Expression<Func<TEntity, bool>> predicate = null, IDbTransaction transaction = null);
 
         /// <summary>
         ///
