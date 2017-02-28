@@ -82,24 +82,18 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         SqlQuery GetSelectBetween(object from, object to, Expression<Func<TEntity, object>> btwFiled, Expression<Func<TEntity, bool>> predicate = null);
 
         /// <summary>
-        /// 
+        /// Get SQL for INSERT Query
         /// </summary>
-        /// <param name="entity"></param>
-        /// <returns></returns>
         SqlQuery GetInsert(TEntity entity);
 
         /// <summary>
-        /// 
+        /// Get SQL for UPDATE Query
         /// </summary>
-        /// <param name="entity"></param>
-        /// <returns></returns>
         SqlQuery GetUpdate(TEntity entity);
 
         /// <summary>
-        /// 
+        /// Get SQL for DELETE Query
         /// </summary>
-        /// <param name="entity"></param>
-        /// <returns></returns>
         SqlQuery GetDelete(TEntity entity);
 
 

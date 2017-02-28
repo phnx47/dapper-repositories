@@ -49,9 +49,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                 }
                 else
                 {
-                    var message = "Expression" + field + " is not supported.";
-
-                    throw new ArgumentException(message, nameof(field));
+                    throw new ArgumentException("Expression" + field + " is not supported.", nameof(field));
                 }
             }
 
@@ -119,7 +117,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
 
         public static Func<PropertyInfo, bool> GetPrimitivePropertiesPredicate()
         {
-            return p => p.CanWrite && (p.PropertyType.IsValueType() || p.PropertyType.Name.Equals("String", StringComparison.OrdinalIgnoreCase) || p.PropertyType == typeof(byte[]));
+            return p => p.CanWrite && (p.PropertyType.IsValueType() || p.PropertyType == typeof(string) || p.PropertyType == typeof(byte[]));
         }
     }
 }

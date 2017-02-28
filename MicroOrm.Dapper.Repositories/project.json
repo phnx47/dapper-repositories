@@ -3,6 +3,8 @@
     "summary": "CRUD for Dapper, implement Data Repository",
     "tags": [ "dapper", "micro-orm", "repositories", "crud" ],
     "owners": [ "phnx47" ],
+    "iconUrl": "https://cdn.audsp.com/images/database-icon.png",
+    "releaseNotes": "https://github.com/phnx47/MicroOrm.Dapper.Repositories/releases",
     "projectUrl": "https://github.com/phnx47/MicroOrm.Dapper.Repositories",
     "licenseUrl": "https://opensource.org/licenses/MIT",
     "repository": {

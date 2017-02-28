@@ -218,11 +218,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
 
         #region Insert
 
-        /// <summary>
-        ///
-        /// </summary>
-        /// <param name="entity"></param>
-        /// <returns></returns>
+        /// <inheritdoc />
         public virtual SqlQuery GetInsert(TEntity entity)
         {
             var properties = (IsIdentity ? SqlProperties.Where(p => !p.PropertyName.Equals(IdentitySqlProperty.PropertyName, StringComparison.OrdinalIgnoreCase)) : SqlProperties).ToList();
@@ -267,9 +263,8 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
 
         #region Update
 
-        /// <summary>
-        /// Get SQL for UPDATE Query
-        /// </summary>
+
+        /// <inheritdoc />
         public virtual SqlQuery GetUpdate(TEntity entity)
         {
             var properties = SqlProperties.Where(p => !KeySqlProperties.Any(k => k.PropertyName.Equals(p.PropertyName, StringComparison.OrdinalIgnoreCase)));
@@ -289,23 +284,13 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
 
         #region Select
 
-        /// <summary>
-        ///
-        /// </summary>
-        /// <param name="predicate"></param>
-        /// <param name="includes"></param>
-        /// <returns></returns>
+        /// <inheritdoc />
         public virtual SqlQuery GetSelectFirst(Expression<Func<TEntity, bool>> predicate, params Expression<Func<TEntity, object>>[] includes)
         {
             return GetSelect(predicate, true, includes);
         }
 
-        /// <summary>
-        ///
-        /// </summary>
-        /// <param name="predicate"></param>
-        /// <param name="includes"></param>
-        /// <returns></returns>
+        /// <inheritdoc />
         public virtual SqlQuery GetSelectAll(Expression<Func<TEntity, bool>> predicate, params Expression<Func<TEntity, object>>[] includes)
         {
             return GetSelect(predicate, false, includes);
@@ -471,24 +456,20 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
             return sqlQuery;
         }
 
-        /// <summary>
-        ///
-        /// </summary>
+        /// <inheritdoc />
         public virtual SqlQuery GetSelectBetween(object from, object to, Expression<Func<TEntity, object>> btwField, Expression<Func<TEntity, bool>> expression = null)
         {
             var fieldName = ExpressionHelper.GetPropertyName(btwField);
             var columnName = SqlProperties.First(x => x.PropertyName == fieldName).ColumnName;
             var query = GetSelectAll(expression);
-            var op = expression == null && !LogicalDelete ? "WHERE" : "AND";
 
-            query.SqlBuilder.Append(op + " " + TableName + "." + columnName + " BETWEEN '" + from + "' AND '" + to + "'");
+            query.SqlBuilder.Append(expression == null && !LogicalDelete ? "WHERE" : "AND" + 
+                " " + TableName + "." + columnName + " BETWEEN '" + from + "' AND '" + to + "'");
 
             return query;
         }
 
-        /// <summary>
-        ///
-        /// </summary>
+        /// <inheritdoc />
         public virtual SqlQuery GetDelete(TEntity entity)
         {
             var sqlQuery = new SqlQuery(entity);

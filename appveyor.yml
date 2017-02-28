@@ -6,26 +6,10 @@ configuration: Release
 platform: Any CPU
 clone_folder: c:\projects\microorm.dapper.repositories
 services: mssql2016
-install:
-- cmd: 
-nuget:
-  account_feed: true
-  project_feed: true
-  disable_publish_on_pr: true
-before_build:
-- ps: dotnet restore
-build:
-  verbosity: normal
-after_build:
-- ps: >-
-    cd MicroOrm.Dapper.Repositories
-
-    dotnet pack -c Release --no-build
+build_script:
+- cmd: dotnet restore && dotnet pack MicroOrm.Dapper.Repositories -c Release
 test_script:
-- ps: >-
-    cd ../MicroOrm.Dapper.Repositories.Tests
-
-    dotnet test
+- cmd: dotnet test MicroOrm.Dapper.Repositories.Tests
 artifacts:
 - path: '**\*.nupkg'
   name: All Nupkg
