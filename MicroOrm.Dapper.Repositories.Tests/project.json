@@ -6,11 +6,9 @@
     "MySql.Data": "7.0.6-IR31",
     "CoreCompat.System.Drawing": "1.0.0-beta006",
     "OpenCover": "4.6.519",
-    "ReportGenerator": "2.5.2",
-    "xunit": "2.2.0-beta2-build3300",
-    "xunit.runner.console": "2.2.0-beta2-build3300",
-    "xunit.runner.visualstudio": "2.2.0-beta2-build1149",
-    "Microsoft.TestPlatform.ObjectModel": "15.0.0-preview-20161101-02",
+    "ReportGenerator": "2.5.3",
+    "xunit": "2.2.0",
+    "xunit.runner.console": "2.2.0",
     "MicroOrm.Dapper.Repositories": {
       "target": "project"
     },

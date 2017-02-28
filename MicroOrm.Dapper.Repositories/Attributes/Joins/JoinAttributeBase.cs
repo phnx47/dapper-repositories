@@ -25,17 +25,17 @@ namespace MicroOrm.Dapper.Repositories.Attributes.Joins
         }
 
         /// <summary>
-        /// Current TableName
+        /// Name of external table
         /// </summary>
         public string TableName { get; set; }
 
         /// <summary>
-        /// Property for ForeignKey
+        /// ForeignKey of this table
         /// </summary>
         public string Key { get; set; }
 
         /// <summary>
-        /// External TableName
+        /// Key of external table
         /// </summary>
         public string ExternalKey { get; set; }
     }
