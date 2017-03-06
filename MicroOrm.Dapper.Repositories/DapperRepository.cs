@@ -23,7 +23,7 @@ namespace MicroOrm.Dapper.Repositories
         /// Dummy type for excluding from multi-map
         /// </summary>
         // ReSharper disable once ClassNeverInstantiated.Local
-        private class DontMapClass
+        private class DontMap
         {
         }
 
@@ -71,29 +71,82 @@ namespace MicroOrm.Dapper.Repositories
         /// <inheritdoc />
         public virtual TEntity Find(Expression<Func<TEntity, bool>> predicate, IDbTransaction transaction = null)
         {
-            var queryResult = SqlGenerator.GetSelectFirst(predicate);
-            return Connection.QueryFirstOrDefault<TEntity>(queryResult.GetSql(), queryResult.Param);
+            return FindAll(predicate, transaction).FirstOrDefault();
         }
 
         /// <inheritdoc />
         public virtual TEntity Find<TChild1>(Expression<Func<TEntity, bool>> predicate, Expression<Func<TEntity, object>> tChild1, IDbTransaction transaction = null)
         {
-            var queryResult = SqlGenerator.GetSelectFirst(predicate);
-            return FindAll<TChild1>(queryResult, tChild1).FirstOrDefault();
+            var queryResult = SqlGenerator.GetSelectFirst(predicate, tChild1);
+            return ExecuteJoinQuery<TChild1, DontMap, DontMap, DontMap, DontMap, DontMap>(queryResult, transaction, tChild1).FirstOrDefault();
+        }
+
+        /// <inheritdoc />
+        public virtual TEntity Find<TChild1, TChild2>(Expression<Func<TEntity, bool>> predicate,
+            Expression<Func<TEntity, object>> tChild1,
+            Expression<Func<TEntity, object>> tChild2,
+            IDbTransaction transaction = null)
+        {
+            var queryResult = SqlGenerator.GetSelectFirst(predicate, tChild1, tChild2);
+            return ExecuteJoinQuery<TChild1, TChild2, DontMap, DontMap, DontMap, DontMap>(queryResult, transaction, tChild1, tChild2).FirstOrDefault();
+        }
+
+        /// <inheritdoc />
+        public virtual TEntity Find<TChild1, TChild2, TChild3>(Expression<Func<TEntity, bool>> predicate,
+            Expression<Func<TEntity, object>> tChild1,
+            Expression<Func<TEntity, object>> tChild2,
+            Expression<Func<TEntity, object>> tChild3,
+            IDbTransaction transaction = null)
+        {
+            var queryResult = SqlGenerator.GetSelectFirst(predicate, tChild1, tChild2, tChild3);
+            return ExecuteJoinQuery<TChild1, TChild2, TChild3, DontMap, DontMap, DontMap>(queryResult, transaction, tChild1, tChild2, tChild3).FirstOrDefault();
+        }
+
+
+        /// <inheritdoc />
+        public virtual TEntity Find<TChild1, TChild2, TChild3, TChild4>(Expression<Func<TEntity, bool>> predicate,
+            Expression<Func<TEntity, object>> tChild1,
+            Expression<Func<TEntity, object>> tChild2,
+            Expression<Func<TEntity, object>> tChild3,
+            Expression<Func<TEntity, object>> tChild4,
+            IDbTransaction transaction = null)
+        {
+            var queryResult = SqlGenerator.GetSelectFirst(predicate, tChild1, tChild2, tChild3, tChild4);
+            return ExecuteJoinQuery<TChild1, TChild2, TChild3, TChild4, DontMap, DontMap>(queryResult, transaction, tChild1, tChild2, tChild3, tChild4).FirstOrDefault();
+        }
+
+        /// <inheritdoc />
+        public virtual TEntity Find<TChild1, TChild2, TChild3, TChild4, TChild5>(Expression<Func<TEntity, bool>> predicate,
+            Expression<Func<TEntity, object>> tChild1,
+            Expression<Func<TEntity, object>> tChild2,
+            Expression<Func<TEntity, object>> tChild3,
+            Expression<Func<TEntity, object>> tChild4,
+            Expression<Func<TEntity, object>> tChild5,
+            IDbTransaction transaction = null)
+        {
+            var queryResult = SqlGenerator.GetSelectFirst(predicate, tChild1, tChild2, tChild3, tChild4, tChild5);
+            return ExecuteJoinQuery<TChild1, TChild2, TChild3, TChild4, TChild5, DontMap>(queryResult, transaction, tChild1, tChild2, tChild3, tChild4, tChild5).FirstOrDefault();
+        }
+
+        /// <inheritdoc />
+        public virtual TEntity Find<TChild1, TChild2, TChild3, TChild4, TChild5, TChild6>(Expression<Func<TEntity, bool>> predicate,
+            Expression<Func<TEntity, object>> tChild1,
+            Expression<Func<TEntity, object>> tChild2,
+            Expression<Func<TEntity, object>> tChild3,
+            Expression<Func<TEntity, object>> tChild4,
+            Expression<Func<TEntity, object>> tChild5,
+            Expression<Func<TEntity, object>> tChild6,
+            IDbTransaction transaction = null)
+        {
+            var queryResult = SqlGenerator.GetSelectFirst(predicate, tChild1, tChild2, tChild3, tChild4, tChild5, tChild6);
+            return ExecuteJoinQuery<TChild1, TChild2, TChild3, TChild4, TChild5, DontMap>(queryResult, transaction, tChild1, tChild2, tChild3, tChild4, tChild5, tChild6).FirstOrDefault();
         }
 
         /// <inheritdoc />
         public virtual async Task<TEntity> FindAsync<TChild1>(Expression<Func<TEntity, object>> tChild1, IDbTransaction transaction = null)
         {
             var queryResult = SqlGenerator.GetSelectFirst(null, tChild1);
-            return (await ExecuteJoinQueryAsync<TChild1, DontMapClass, DontMapClass, DontMapClass, DontMapClass, DontMapClass>(queryResult, transaction, tChild1)).FirstOrDefault();
-        }
-
-        /// <inheritdoc />
-        public virtual async Task<TEntity> FindAsync<TChild1>(Expression<Func<TEntity, bool>> predicate, Expression<Func<TEntity, object>> tChild1, IDbTransaction transaction = null)
-        {
-            var queryResult = SqlGenerator.GetSelectFirst(predicate, tChild1);
-            return (await ExecuteJoinQueryAsync<TChild1, DontMapClass, DontMapClass, DontMapClass, DontMapClass, DontMapClass>(queryResult, transaction, tChild1)).FirstOrDefault();
+            return (await ExecuteJoinQueryAsync<TChild1, DontMap, DontMap, DontMap, DontMap, DontMap>(queryResult, transaction, tChild1)).FirstOrDefault();
         }
 
         /// <inheritdoc />
@@ -108,6 +161,73 @@ namespace MicroOrm.Dapper.Repositories
         {
             var queryResult = SqlGenerator.GetSelectFirst(null);
             return (await FindAllAsync(queryResult, transaction)).FirstOrDefault();
+        }
+
+        /// <inheritdoc />
+        public virtual async Task<TEntity> FindAsync<TChild1>(Expression<Func<TEntity, bool>> predicate, Expression<Func<TEntity, object>> tChild1, IDbTransaction transaction = null)
+        {
+            var queryResult = SqlGenerator.GetSelectFirst(predicate, tChild1);
+            return (await ExecuteJoinQueryAsync<TChild1, DontMap, DontMap, DontMap, DontMap, DontMap>(queryResult, transaction, tChild1)).FirstOrDefault();
+        }
+
+        /// <inheritdoc />
+        public virtual async Task<TEntity> FindAsync<TChild1, TChild2>(Expression<Func<TEntity, bool>> predicate,
+            Expression<Func<TEntity, object>> tChild1,
+            Expression<Func<TEntity, object>> tChild2,
+            IDbTransaction transaction = null)
+        {
+            var queryResult = SqlGenerator.GetSelectFirst(predicate, tChild1, tChild2);
+            return (await ExecuteJoinQueryAsync<TChild1, TChild2, DontMap, DontMap, DontMap, DontMap>(queryResult, transaction, tChild1, tChild2)).FirstOrDefault();
+        }
+
+        /// <inheritdoc />
+        public virtual async Task<TEntity> FindAsync<TChild1, TChild2, TChild3>(Expression<Func<TEntity, bool>> predicate,
+            Expression<Func<TEntity, object>> tChild1,
+            Expression<Func<TEntity, object>> tChild2,
+            Expression<Func<TEntity, object>> tChild3,
+            IDbTransaction transaction = null)
+        {
+            var queryResult = SqlGenerator.GetSelectFirst(predicate, tChild1, tChild2, tChild3);
+            return (await ExecuteJoinQueryAsync<TChild1, TChild2, TChild3, DontMap, DontMap, DontMap>(queryResult, transaction, tChild1, tChild2, tChild3)).FirstOrDefault();
+        }
+
+        /// <inheritdoc />
+        public virtual async Task<TEntity> FindAsync<TChild1, TChild2, TChild3, TChild4>(Expression<Func<TEntity, bool>> predicate,
+            Expression<Func<TEntity, object>> tChild1,
+            Expression<Func<TEntity, object>> tChild2,
+            Expression<Func<TEntity, object>> tChild3,
+            Expression<Func<TEntity, object>> tChild4,
+            IDbTransaction transaction = null)
+        {
+            var queryResult = SqlGenerator.GetSelectFirst(predicate, tChild1, tChild2, tChild3, tChild4);
+            return (await ExecuteJoinQueryAsync<TChild1, TChild2, TChild3, TChild4, DontMap, DontMap>(queryResult, transaction, tChild1, tChild2, tChild3, tChild4)).FirstOrDefault();
+        }
+
+        /// <inheritdoc />
+        public virtual async Task<TEntity> FindAsync<TChild1, TChild2, TChild3, TChild4, TChild5>(Expression<Func<TEntity, bool>> predicate,
+            Expression<Func<TEntity, object>> tChild1,
+            Expression<Func<TEntity, object>> tChild2,
+            Expression<Func<TEntity, object>> tChild3,
+            Expression<Func<TEntity, object>> tChild4,
+            Expression<Func<TEntity, object>> tChild5,
+            IDbTransaction transaction = null)
+        {
+            var queryResult = SqlGenerator.GetSelectFirst(predicate, tChild1, tChild2, tChild3, tChild4, tChild5);
+            return (await ExecuteJoinQueryAsync<TChild1, TChild2, TChild3, TChild4, TChild5, DontMap>(queryResult, transaction, tChild1, tChild2, tChild3, tChild4, tChild5)).FirstOrDefault();
+        }
+
+        /// <inheritdoc />
+        public virtual async Task<TEntity> FindAsync<TChild1, TChild2, TChild3, TChild4, TChild5, TChild6>(Expression<Func<TEntity, bool>> predicate,
+            Expression<Func<TEntity, object>> tChild1,
+            Expression<Func<TEntity, object>> tChild2,
+            Expression<Func<TEntity, object>> tChild3,
+            Expression<Func<TEntity, object>> tChild4,
+            Expression<Func<TEntity, object>> tChild5,
+            Expression<Func<TEntity, object>> tChild6,
+            IDbTransaction transaction = null)
+        {
+            var queryResult = SqlGenerator.GetSelectFirst(predicate, tChild1, tChild2, tChild3, tChild4, tChild5, tChild6);
+            return (await ExecuteJoinQueryAsync<TChild1, TChild2, TChild3, TChild4, TChild5, TChild6>(queryResult, transaction, tChild1, tChild2, tChild3, tChild4, tChild5, tChild6)).FirstOrDefault();
         }
 
         #endregion Find
@@ -133,70 +253,77 @@ namespace MicroOrm.Dapper.Repositories
             return Connection.Query<TEntity>(sqlQuery.GetSql(), sqlQuery.Param, transaction);
         }
 
-        /// <inheritdoc />
-        public virtual IEnumerable<TEntity> FindAll<TChild1>(Expression<Func<TEntity, object>> tChild1, IDbTransaction transaction = null)
-        {
-            var queryResult = SqlGenerator.GetSelectAll(null, tChild1);
-            return FindAll<TChild1>(queryResult, tChild1, transaction);
-        }
 
         /// <inheritdoc />
         public virtual IEnumerable<TEntity> FindAll<TChild1>(Expression<Func<TEntity, bool>> predicate, Expression<Func<TEntity, object>> tChild1, IDbTransaction transaction = null)
         {
             var queryResult = SqlGenerator.GetSelectAll(predicate, tChild1);
-            return FindAll<TChild1>(queryResult, tChild1, transaction);
+            return ExecuteJoinQuery<TChild1, DontMap, DontMap, DontMap, DontMap, DontMap>(queryResult, transaction, tChild1);
         }
 
         /// <inheritdoc />
-        private IEnumerable<TEntity> FindAll<TChild1>(SqlQuery sqlQuery, Expression<Func<TEntity, object>> tChild1, IDbTransaction transaction = null)
+        public virtual IEnumerable<TEntity> FindAll<TChild1, TChild2>(
+            Expression<Func<TEntity, bool>> predicate,
+            Expression<Func<TEntity, object>> tChild1,
+            Expression<Func<TEntity, object>> tChild2,
+            IDbTransaction transaction = null)
         {
-            var type = typeof(TEntity);
-            IEnumerable<TEntity> result;
-            var propertyName = ExpressionHelper.GetPropertyName(tChild1);
-            var tj1Property = type.GetProperty(propertyName);
-            if (tj1Property.PropertyType.IsGenericType())
-            {
-                var lookup = new Dictionary<object, TEntity>();
-                if (SqlGenerator.KeySqlProperties.Length > 1)
-                    throw new Exception("Joining with CompositeKeys isn't supported");
+            var sqlQuery = new SqlGenerator<TEntity>().GetSelectAll(predicate, tChild1, tChild2);
+            return ExecuteJoinQuery<TChild1, TChild2, DontMap, DontMap, DontMap, DontMap>(sqlQuery, transaction, tChild1, tChild2);
+        }
 
-                var keyPropertyMeta = SqlGenerator.KeySqlProperties.FirstOrDefault();
-                if (keyPropertyMeta == null)
-                    throw new Exception("key not found");
+        /// <inheritdoc />
+        public virtual IEnumerable<TEntity> FindAll<TChild1, TChild2, TChild3>(
+            Expression<Func<TEntity, bool>> predicate,
+            Expression<Func<TEntity, object>> tChild1,
+            Expression<Func<TEntity, object>> tChild2,
+            Expression<Func<TEntity, object>> tChild3,
+            IDbTransaction transaction = null)
+        {
+            var sqlQuery = new SqlGenerator<TEntity>().GetSelectAll(predicate, tChild1, tChild2, tChild3);
+            return ExecuteJoinQuery<TChild1, TChild2, TChild3, DontMap, DontMap, DontMap>(sqlQuery, transaction, tChild1, tChild2, tChild3);
+        }
 
-                var keyProperty = keyPropertyMeta.PropertyInfo;
+        /// <inheritdoc />
+        public virtual IEnumerable<TEntity> FindAll<TChild1, TChild2, TChild3>(
+            Expression<Func<TEntity, bool>> predicate,
+            Expression<Func<TEntity, object>> tChild1,
+            Expression<Func<TEntity, object>> tChild2,
+            Expression<Func<TEntity, object>> tChild3,
+            Expression<Func<TEntity, object>> tChild4,
+            IDbTransaction transaction = null)
+        {
+            var sqlQuery = new SqlGenerator<TEntity>().GetSelectAll(predicate, tChild1, tChild2, tChild3, tChild4);
+            return ExecuteJoinQuery<TChild1, TChild2, TChild3, DontMap, DontMap, DontMap>(sqlQuery, transaction, tChild1, tChild2, tChild3, tChild4);
+        }
 
-                Connection.Query<TEntity, TChild1, TEntity>(sqlQuery.GetSql(), (entity, j1) =>
-                {
-                    var key = keyProperty.GetValue(entity);
+        /// <inheritdoc />
+        public virtual IEnumerable<TEntity> FindAll<TChild1, TChild2, TChild3>(
+            Expression<Func<TEntity, bool>> predicate,
+            Expression<Func<TEntity, object>> tChild1,
+            Expression<Func<TEntity, object>> tChild2,
+            Expression<Func<TEntity, object>> tChild3,
+            Expression<Func<TEntity, object>> tChild4,
+            Expression<Func<TEntity, object>> tChild5,
+            IDbTransaction transaction = null)
+        {
+            var sqlQuery = new SqlGenerator<TEntity>().GetSelectAll(predicate, tChild1, tChild2, tChild3, tChild4, tChild5);
+            return ExecuteJoinQuery<TChild1, TChild2, TChild3, DontMap, DontMap, DontMap>(sqlQuery, transaction, tChild1, tChild2, tChild3, tChild4, tChild5);
+        }
 
-                    TEntity en;
-                    if (!lookup.TryGetValue(key, out en))
-                    {
-                        lookup.Add(key, en = entity);
-                    }
-
-                    var list = (List<TChild1>)tj1Property.GetValue(en) ?? new List<TChild1>();
-                    if (j1 != null)
-                        list.Add(j1);
-
-                    tj1Property.SetValue(en, list);
-
-                    return en;
-                }, sqlQuery.Param, transaction);
-
-                result = lookup.Values;
-            }
-            else
-            {
-                result = Connection.Query<TEntity, TChild1, TEntity>(sqlQuery.GetSql(), (entity, j1) =>
-                {
-                    type.GetProperty(propertyName).SetValue(entity, j1);
-                    return entity;
-                }, sqlQuery.Param, transaction);
-            }
-
-            return result;
+        /// <inheritdoc />
+        public virtual IEnumerable<TEntity> FindAll<TChild1, TChild2, TChild3>(
+            Expression<Func<TEntity, bool>> predicate,
+            Expression<Func<TEntity, object>> tChild1,
+            Expression<Func<TEntity, object>> tChild2,
+            Expression<Func<TEntity, object>> tChild3,
+            Expression<Func<TEntity, object>> tChild4,
+            Expression<Func<TEntity, object>> tChild5,
+            Expression<Func<TEntity, object>> tChild6,
+            IDbTransaction transaction = null)
+        {
+            var sqlQuery = new SqlGenerator<TEntity>().GetSelectAll(predicate, tChild1, tChild2, tChild3, tChild4, tChild5, tChild6);
+            return ExecuteJoinQuery<TChild1, TChild2, TChild3, DontMap, DontMap, DontMap>(sqlQuery, transaction, tChild1, tChild2, tChild3, tChild4, tChild5, tChild6);
         }
 
         /// <inheritdoc />
@@ -219,64 +346,82 @@ namespace MicroOrm.Dapper.Repositories
         }
 
         /// <inheritdoc />
-        public virtual Task<IEnumerable<TEntity>> FindAllAsync<TChild1>(Expression<Func<TEntity, object>> tChild1, IDbTransaction transaction = null)
-        {
-            return FindAllAsync<TChild1>(null, tChild1, transaction);
-        }
-
-        /// <inheritdoc />
         public virtual Task<IEnumerable<TEntity>> FindAllAsync<TChild1>(Expression<Func<TEntity, bool>> predicate, Expression<Func<TEntity, object>> tChild1, IDbTransaction transaction = null)
         {
             var queryResult = SqlGenerator.GetSelectAll(predicate, tChild1);
-            return ExecuteJoinQueryAsync<TChild1, DontMapClass, DontMapClass, DontMapClass, DontMapClass, DontMapClass>(queryResult, transaction, tChild1);
+            return ExecuteJoinQueryAsync<TChild1, DontMap, DontMap, DontMap, DontMap, DontMap>(queryResult, transaction, tChild1);
         }
+
 
         /// <inheritdoc />
         public virtual Task<IEnumerable<TEntity>> FindAllAsync<TChild1, TChild2>(
-           Expression<Func<TEntity, object>> tChild1,
-           Expression<Func<TEntity, object>> tChild2,
-           IDbTransaction transaction = null)
-        {
-            return FindAllAsync<TChild1, TChild2>(null, tChild1, tChild2, transaction);
-        }
-
-        /// <inheritdoc />
-        public virtual Task<IEnumerable<TEntity>> FindAllAsync<TChild1, TChild2>(
-           Expression<Func<TEntity, bool>> predicate,
-           Expression<Func<TEntity, object>> tChild1,
-           Expression<Func<TEntity, object>> tChild2,
-           IDbTransaction transaction = null)
+            Expression<Func<TEntity, bool>> predicate,
+            Expression<Func<TEntity, object>> tChild1,
+            Expression<Func<TEntity, object>> tChild2,
+            IDbTransaction transaction = null)
         {
             var sqlQuery = new SqlGenerator<TEntity>().GetSelectAll(predicate, tChild1, tChild2);
-            return ExecuteJoinQueryAsync<TChild1, TChild2, DontMapClass, DontMapClass, DontMapClass, DontMapClass>(sqlQuery, transaction, tChild1, tChild2);
+            return ExecuteJoinQueryAsync<TChild1, TChild2, DontMap, DontMap, DontMap, DontMap>(sqlQuery, transaction, tChild1, tChild2);
         }
 
         /// <inheritdoc />
         public virtual Task<IEnumerable<TEntity>> FindAllAsync<TChild1, TChild2, TChild3>(
-           Expression<Func<TEntity, object>> tChild1,
-           Expression<Func<TEntity, object>> tChild2,
-           Expression<Func<TEntity, object>> tChild3,
-           IDbTransaction transaction = null)
-        {
-            return FindAllAsync<TChild1, TChild2, TChild3>(null, tChild1, tChild2, tChild3, transaction);
-        }
-
-        /// <inheritdoc />
-        public virtual Task<IEnumerable<TEntity>> FindAllAsync<TChild1, TChild2, TChild3>(
-           Expression<Func<TEntity, bool>> predicate,
-           Expression<Func<TEntity, object>> tChild1,
-           Expression<Func<TEntity, object>> tChild2,
-           Expression<Func<TEntity, object>> tChild3,
-           IDbTransaction transaction = null)
+            Expression<Func<TEntity, bool>> predicate,
+            Expression<Func<TEntity, object>> tChild1,
+            Expression<Func<TEntity, object>> tChild2,
+            Expression<Func<TEntity, object>> tChild3,
+            IDbTransaction transaction = null)
         {
             var sqlQuery = new SqlGenerator<TEntity>().GetSelectAll(predicate, tChild1, tChild2, tChild3);
-            return ExecuteJoinQueryAsync<TChild1, TChild2, TChild3, DontMapClass, DontMapClass, DontMapClass>(sqlQuery, transaction, tChild1, tChild2, tChild3);
+            return ExecuteJoinQueryAsync<TChild1, TChild2, TChild3, DontMap, DontMap, DontMap>(sqlQuery, transaction, tChild1, tChild2, tChild3);
         }
 
-        private async Task<IEnumerable<TEntity>> ExecuteJoinQueryAsync<TChild1, TChild2, TChild3, TChild4, TChild5, TChild6>(
-             SqlQuery sqlQuery,
-             IDbTransaction transaction,
-             params Expression<Func<TEntity, object>>[] includes)
+        /// <inheritdoc />
+        public virtual Task<IEnumerable<TEntity>> FindAllAsync<TChild1, TChild2, TChild3>(
+            Expression<Func<TEntity, bool>> predicate,
+            Expression<Func<TEntity, object>> tChild1,
+            Expression<Func<TEntity, object>> tChild2,
+            Expression<Func<TEntity, object>> tChild3,
+            Expression<Func<TEntity, object>> tChild4,
+            IDbTransaction transaction = null)
+        {
+            var sqlQuery = new SqlGenerator<TEntity>().GetSelectAll(predicate, tChild1, tChild2, tChild3, tChild4);
+            return ExecuteJoinQueryAsync<TChild1, TChild2, TChild3, DontMap, DontMap, DontMap>(sqlQuery, transaction, tChild1, tChild2, tChild3, tChild4);
+        }
+
+        /// <inheritdoc />
+        public virtual Task<IEnumerable<TEntity>> FindAllAsync<TChild1, TChild2, TChild3>(
+            Expression<Func<TEntity, bool>> predicate,
+            Expression<Func<TEntity, object>> tChild1,
+            Expression<Func<TEntity, object>> tChild2,
+            Expression<Func<TEntity, object>> tChild3,
+            Expression<Func<TEntity, object>> tChild4,
+            Expression<Func<TEntity, object>> tChild5,
+            IDbTransaction transaction = null)
+        {
+            var sqlQuery = new SqlGenerator<TEntity>().GetSelectAll(predicate, tChild1, tChild2, tChild3, tChild4, tChild5);
+            return ExecuteJoinQueryAsync<TChild1, TChild2, TChild3, DontMap, DontMap, DontMap>(sqlQuery, transaction, tChild1, tChild2, tChild3, tChild4, tChild5);
+        }
+
+        /// <inheritdoc />
+        public virtual Task<IEnumerable<TEntity>> FindAllAsync<TChild1, TChild2, TChild3>(
+            Expression<Func<TEntity, bool>> predicate,
+            Expression<Func<TEntity, object>> tChild1,
+            Expression<Func<TEntity, object>> tChild2,
+            Expression<Func<TEntity, object>> tChild3,
+            Expression<Func<TEntity, object>> tChild4,
+            Expression<Func<TEntity, object>> tChild5,
+            Expression<Func<TEntity, object>> tChild6,
+            IDbTransaction transaction = null)
+        {
+            var sqlQuery = new SqlGenerator<TEntity>().GetSelectAll(predicate, tChild1, tChild2, tChild3, tChild4, tChild5, tChild6);
+            return ExecuteJoinQueryAsync<TChild1, TChild2, TChild3, DontMap, DontMap, DontMap>(sqlQuery, transaction, tChild1, tChild2, tChild3, tChild4, tChild5, tChild6);
+        }
+
+        private IEnumerable<TEntity> ExecuteJoinQuery<TChild1, TChild2, TChild3, TChild4, TChild5, TChild6>(
+            SqlQuery sqlQuery,
+            IDbTransaction transaction,
+            params Expression<Func<TEntity, object>>[] includes)
         {
             var type = typeof(TEntity);
 
@@ -313,27 +458,109 @@ namespace MicroOrm.Dapper.Repositories
             switch (includes.Length)
             {
                 case 1:
-                    await Connection.QueryAsync<TEntity, TChild1, TEntity>(sqlQuery.GetSql(), (entity, child1) => EntityJoinMapping<TChild1, TChild2, TChild3, TChild4, TChild5, TChild6>(lookup, keyProperty, childKeyProperties, childProperties, childPropertyNames, type, entity, child1), sqlQuery.Param, transaction, buffered, spiltOn);
+                    Connection.Query<TEntity, TChild1, TEntity>(sqlQuery.GetSql(), (entity, child1) =>
+                    EntityJoinMapping<TChild1, TChild2, TChild3, TChild4, TChild5, TChild6>(lookup, keyProperty, childKeyProperties, childProperties, childPropertyNames, type, entity, child1), sqlQuery.Param, transaction, buffered, spiltOn);
                     break;
 
                 case 2:
-                    await Connection.QueryAsync<TEntity, TChild1, TChild2, TEntity>(sqlQuery.GetSql(), (entity, child1, child2) => EntityJoinMapping<TChild1, TChild2, TChild3, TChild4, TChild5, TChild6>(lookup, keyProperty, childKeyProperties, childProperties, childPropertyNames, type, entity, child1, child2), sqlQuery.Param, transaction, buffered, spiltOn);
+                    Connection.Query<TEntity, TChild1, TChild2, TEntity>(sqlQuery.GetSql(), (entity, child1, child2) =>
+                    EntityJoinMapping<TChild1, TChild2, TChild3, TChild4, TChild5, TChild6>(lookup, keyProperty, childKeyProperties, childProperties, childPropertyNames, type, entity, child1, child2), sqlQuery.Param, transaction, buffered, spiltOn);
                     break;
 
                 case 3:
-                    await Connection.QueryAsync<TEntity, TChild1, TChild2, TChild3, TEntity>(sqlQuery.GetSql(), (entity, child1, child2, child3) => EntityJoinMapping<TChild1, TChild2, TChild3, TChild4, TChild5, TChild6>(lookup, keyProperty, childKeyProperties, childProperties, childPropertyNames, type, entity, child1, child2, child3), sqlQuery.Param, transaction, buffered, spiltOn);
+                    Connection.Query<TEntity, TChild1, TChild2, TChild3, TEntity>(sqlQuery.GetSql(), (entity, child1, child2, child3) => 
+                    EntityJoinMapping<TChild1, TChild2, TChild3, TChild4, TChild5, TChild6>(lookup, keyProperty, childKeyProperties, childProperties, childPropertyNames, type, entity, child1, child2, child3), sqlQuery.Param, transaction, buffered, spiltOn);
                     break;
 
                 case 4:
-                    await Connection.QueryAsync<TEntity, TChild1, TChild2, TChild3, TChild4, TEntity>(sqlQuery.GetSql(), (entity, child1, child2, child3, child4) => EntityJoinMapping<TChild1, TChild2, TChild3, TChild4, TChild5, TChild6>(lookup, keyProperty, childKeyProperties, childProperties, childPropertyNames, type, entity, child1, child2, child3, child4), sqlQuery.Param, transaction, buffered, spiltOn);
+                    Connection.Query<TEntity, TChild1, TChild2, TChild3, TChild4, TEntity>(sqlQuery.GetSql(), (entity, child1, child2, child3, child4) => 
+                    EntityJoinMapping<TChild1, TChild2, TChild3, TChild4, TChild5, TChild6>(lookup, keyProperty, childKeyProperties, childProperties, childPropertyNames, type, entity, child1, child2, child3, child4), sqlQuery.Param, transaction, buffered, spiltOn);
                     break;
 
                 case 5:
-                    await Connection.QueryAsync<TEntity, TChild1, TChild2, TChild3, TChild4, TChild5, TEntity>(sqlQuery.GetSql(), (entity, child1, child2, child3, child4, child5) => EntityJoinMapping<TChild1, TChild2, TChild3, TChild4, TChild5, TChild6>(lookup, keyProperty, childKeyProperties, childProperties, childPropertyNames, type, entity, child1, child2, child3, child4, child5), sqlQuery.Param, transaction, buffered, spiltOn);
+                    Connection.Query<TEntity, TChild1, TChild2, TChild3, TChild4, TChild5, TEntity>(sqlQuery.GetSql(), (entity, child1, child2, child3, child4, child5) => 
+                    EntityJoinMapping<TChild1, TChild2, TChild3, TChild4, TChild5, TChild6>(lookup, keyProperty, childKeyProperties, childProperties, childPropertyNames, type, entity, child1, child2, child3, child4, child5), sqlQuery.Param, transaction, buffered, spiltOn);
                     break;
 
                 case 6:
-                    await Connection.QueryAsync<TEntity, TChild1, TChild2, TChild3, TChild4, TChild5, TChild6, TEntity>(sqlQuery.GetSql(), (entity, child1, child2, child3, child4, child5, child6) => EntityJoinMapping<TChild1, TChild2, TChild3, TChild4, TChild5, TChild6>(lookup, keyProperty, childKeyProperties, childProperties, childPropertyNames, type, entity, child1, child2, child3, child4, child5, child6), sqlQuery.Param, transaction, buffered, spiltOn);
+                    Connection.Query<TEntity, TChild1, TChild2, TChild3, TChild4, TChild5, TChild6, TEntity>(sqlQuery.GetSql(), (entity, child1, child2, child3, child4, child5, child6) => 
+                    EntityJoinMapping<TChild1, TChild2, TChild3, TChild4, TChild5, TChild6>(lookup, keyProperty, childKeyProperties, childProperties, childPropertyNames, type, entity, child1, child2, child3, child4, child5, child6), sqlQuery.Param, transaction, buffered, spiltOn);
+                    break;
+
+                default:
+                    throw new NotSupportedException();
+            }
+
+            return lookup.Values;
+        }
+
+        private async Task<IEnumerable<TEntity>> ExecuteJoinQueryAsync<TChild1, TChild2, TChild3, TChild4, TChild5, TChild6>(
+            SqlQuery sqlQuery,
+            IDbTransaction transaction,
+            params Expression<Func<TEntity, object>>[] includes)
+        {
+            var type = typeof(TEntity);
+
+            var childPropertyNames = includes.Select(ExpressionHelper.GetPropertyName).ToList();
+            var childProperties = childPropertyNames.Select(p => type.GetProperty(p)).ToList();
+
+            if (SqlGenerator.KeySqlProperties.Length > 1)
+                throw new Exception("Joining with CompositeKeys isn't supported");
+
+            var keyPropertyMeta = SqlGenerator.KeySqlProperties.FirstOrDefault();
+            if (keyPropertyMeta == null)
+                throw new Exception("key not found");
+
+            var keyProperty = keyPropertyMeta.PropertyInfo;
+            var childKeyProperties = new List<PropertyInfo>();
+
+            foreach (var property in childProperties)
+            {
+                var childType = property.PropertyType.IsGenericType() ? property.PropertyType.GenericTypeArguments[0] : property.PropertyType;
+                var properties = childType.GetProperties().Where(ExpressionHelper.GetPrimitivePropertiesPredicate());
+                childKeyProperties.Add(properties.First(p => p.GetCustomAttributes<KeyAttribute>().Any()));
+            }
+
+            var lookup = new Dictionary<object, TEntity>();
+            const bool buffered = true;
+
+            var spiltOn = "Id";
+            var childKeyNames = childKeyProperties.Select(p => p.Name).ToList();
+            if (childKeyNames.Any(p => p != spiltOn))
+            {
+                spiltOn = string.Join(",", childKeyNames);
+            }
+
+            switch (includes.Length)
+            {
+                case 1:
+                    await Connection.QueryAsync<TEntity, TChild1, TEntity>(sqlQuery.GetSql(), (entity, child1) => 
+                    EntityJoinMapping<TChild1, TChild2, TChild3, TChild4, TChild5, TChild6>(lookup, keyProperty, childKeyProperties, childProperties, childPropertyNames, type, entity, child1), sqlQuery.Param, transaction, buffered, spiltOn);
+                    break;
+
+                case 2:
+                    await Connection.QueryAsync<TEntity, TChild1, TChild2, TEntity>(sqlQuery.GetSql(), (entity, child1, child2) => 
+                    EntityJoinMapping<TChild1, TChild2, TChild3, TChild4, TChild5, TChild6>(lookup, keyProperty, childKeyProperties, childProperties, childPropertyNames, type, entity, child1, child2), sqlQuery.Param, transaction, buffered, spiltOn);
+                    break;
+
+                case 3:
+                    await Connection.QueryAsync<TEntity, TChild1, TChild2, TChild3, TEntity>(sqlQuery.GetSql(), (entity, child1, child2, child3) => 
+                    EntityJoinMapping<TChild1, TChild2, TChild3, TChild4, TChild5, TChild6>(lookup, keyProperty, childKeyProperties, childProperties, childPropertyNames, type, entity, child1, child2, child3), sqlQuery.Param, transaction, buffered, spiltOn);
+                    break;
+
+                case 4:
+                    await Connection.QueryAsync<TEntity, TChild1, TChild2, TChild3, TChild4, TEntity>(sqlQuery.GetSql(), (entity, child1, child2, child3, child4) => 
+                    EntityJoinMapping<TChild1, TChild2, TChild3, TChild4, TChild5, TChild6>(lookup, keyProperty, childKeyProperties, childProperties, childPropertyNames, type, entity, child1, child2, child3, child4), sqlQuery.Param, transaction, buffered, spiltOn);
+                    break;
+
+                case 5:
+                    await Connection.QueryAsync<TEntity, TChild1, TChild2, TChild3, TChild4, TChild5, TEntity>(sqlQuery.GetSql(), (entity, child1, child2, child3, child4, child5) => 
+                    EntityJoinMapping<TChild1, TChild2, TChild3, TChild4, TChild5, TChild6>(lookup, keyProperty, childKeyProperties, childProperties, childPropertyNames, type, entity, child1, child2, child3, child4, child5), sqlQuery.Param, transaction, buffered, spiltOn);
+                    break;
+
+                case 6:
+                    await Connection.QueryAsync<TEntity, TChild1, TChild2, TChild3, TChild4, TChild5, TChild6, TEntity>(sqlQuery.GetSql(), (entity, child1, child2, child3, child4, child5, child6) => 
+                    EntityJoinMapping<TChild1, TChild2, TChild3, TChild4, TChild5, TChild6>(lookup, keyProperty, childKeyProperties, childProperties, childPropertyNames, type, entity, child1, child2, child3, child4, child5, child6), sqlQuery.Param, transaction, buffered, spiltOn);
                     break;
 
                 default:
@@ -362,7 +589,7 @@ namespace MicroOrm.Dapper.Repositories
 
                 if (childProperty.PropertyType.IsGenericType())
                 {
-                    var list = (IList)childProperty.GetValue(target);
+                    var list = (IList) childProperty.GetValue(target);
                     if (list == null)
                     {
                         switch (i)
@@ -398,14 +625,14 @@ namespace MicroOrm.Dapper.Repositories
                         childProperty.SetValue(target, list);
                     }
 
-                    if (child != null)
+                    if (child == null)
+                        continue;
+
+                    var childKey = childKeyProperty.GetValue(child);
+                    var exist = (from object item in list select childKeyProperty.GetValue(item)).Contains(childKey);
+                    if (!exist)
                     {
-                        var childKey = childKeyProperty.GetValue(child);
-                        var exist = (from object item in list select childKeyProperty.GetValue(item)).Contains(childKey);
-                        if (!exist)
-                        {
-                            list.Add(child);
-                        }
+                        list.Add(child);
                     }
                 }
                 else
@@ -548,9 +775,9 @@ namespace MicroOrm.Dapper.Repositories
         }
 
         /// <inheritdoc />
-        public async Task<IEnumerable<TEntity>> FindAllBetweenAsync(object from, object to, Expression<Func<TEntity, object>> btwField, IDbTransaction transaction = null)
+        public Task<IEnumerable<TEntity>> FindAllBetweenAsync(object from, object to, Expression<Func<TEntity, object>> btwField, IDbTransaction transaction = null)
         {
-            return await FindAllBetweenAsync(from, to, btwField, null, transaction);
+            return FindAllBetweenAsync(from, to, btwField, null, transaction);
         }
 
         /// <inheritdoc />
@@ -562,17 +789,17 @@ namespace MicroOrm.Dapper.Repositories
         }
 
         /// <inheritdoc />
-        public async Task<IEnumerable<TEntity>> FindAllBetweenAsync(DateTime from, DateTime to, Expression<Func<TEntity, object>> btwField, IDbTransaction transaction = null)
+        public Task<IEnumerable<TEntity>> FindAllBetweenAsync(DateTime from, DateTime to, Expression<Func<TEntity, object>> btwField, IDbTransaction transaction = null)
         {
-            return await FindAllBetweenAsync(from, to, btwField, null, transaction);
+            return FindAllBetweenAsync(from, to, btwField, null, transaction);
         }
 
         /// <inheritdoc />
-        public async Task<IEnumerable<TEntity>> FindAllBetweenAsync(DateTime from, DateTime to, Expression<Func<TEntity, object>> btwField, Expression<Func<TEntity, bool>> predicate, IDbTransaction transaction = null)
+        public Task<IEnumerable<TEntity>> FindAllBetweenAsync(DateTime from, DateTime to, Expression<Func<TEntity, object>> btwField, Expression<Func<TEntity, bool>> predicate, IDbTransaction transaction = null)
         {
             var fromString = from.ToString(DateTimeFormat);
             var toString = to.ToString(DateTimeFormat);
-            return await FindAllBetweenAsync(fromString, toString, btwField, predicate, transaction);
+            return FindAllBetweenAsync(fromString, toString, btwField, predicate, transaction);
         }
 
         #endregion Beetwen
