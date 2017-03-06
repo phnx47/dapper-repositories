@@ -1,22 +1,22 @@
 ﻿namespace MicroOrm.Dapper.Repositories.SqlGenerator
 {
     /// <summary>
-    /// Type Sql provider
+    ///     Type Sql provider
     /// </summary>
     public enum ESqlConnector
     {
         /// <summary>
-        /// MSSQL
+        ///     MSSQL
         /// </summary>
         MSSQL,
 
         /// <summary>
-        /// MySQL
+        ///     MySQL
         /// </summary>
         MySQL,
 
         /// <summary>
-        /// PostgreSQL
+        ///     PostgreSQL
         /// </summary>
         PostgreSQL
     }

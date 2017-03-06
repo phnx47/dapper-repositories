@@ -1,21 +1,20 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio 15
+VisualStudioVersion = 15.0.26228.4
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{BC29F662-3E4D-411F-A4DA-93BE1BF81012}"
 	ProjectSection(SolutionItems) = preProject
 		appveyor.yml = appveyor.yml
-		global.json = global.json
 		LICENSE = LICENSE
 		README.md = README.md
 	EndProjectSection
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "MicroOrm.Dapper.Repositories", "MicroOrm.Dapper.Repositories\MicroOrm.Dapper.Repositories.xproj", "{425E810E-A9F5-4DD8-AF4D-DDDB962A166B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MicroOrm.Dapper.Repositories", "MicroOrm.Dapper.Repositories\MicroOrm.Dapper.Repositories.csproj", "{425E810E-A9F5-4DD8-AF4D-DDDB962A166B}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "MicroOrm.Dapper.Repositories.Tests", "MicroOrm.Dapper.Repositories.Tests\MicroOrm.Dapper.Repositories.Tests.xproj", "{D00403A7-3E87-449F-8486-5F7CE9A9D731}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MicroOrm.Dapper.Repositories.Tests", "MicroOrm.Dapper.Repositories.Tests\MicroOrm.Dapper.Repositories.Tests.csproj", "{D00403A7-3E87-449F-8486-5F7CE9A9D731}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "MicroOrm.Dapper.Repositories.Benchmarks.Tests", "MicroOrm.Dapper.Repositories.Benchmarks.Tests\MicroOrm.Dapper.Repositories.Benchmarks.Tests.xproj", "{0E54214E-ACB4-40AE-9FD1-F2F1A1973610}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MicroOrm.Dapper.Repositories.Benchmarks.Tests", "MicroOrm.Dapper.Repositories.Benchmarks.Tests\MicroOrm.Dapper.Repositories.Benchmarks.Tests.csproj", "{0E54214E-ACB4-40AE-9FD1-F2F1A1973610}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -2,12 +2,12 @@
 *.user
 *.suo
 *.exe
-*.lock.json
-
 .vs
 bin
 obj
 packages
 TestResults
+BenchmarkDotNet.Artifacts
+BDN.Generated
 MicroOrm.Dapper.Repositories.Tests/Coverage
 Coverage.xml

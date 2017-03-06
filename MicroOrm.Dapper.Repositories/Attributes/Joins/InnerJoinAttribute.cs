@@ -1,19 +1,19 @@
 ﻿namespace MicroOrm.Dapper.Repositories.Attributes.Joins
 {
     /// <summary>
-    /// Generate INNER JOIN
+    ///     Generate INNER JOIN
     /// </summary>
     public class InnerJoinAttribute : JoinAttributeBase
     {
         /// <summary>
-        /// Constructor
+        ///     Constructor
         /// </summary>
         public InnerJoinAttribute()
         {
         }
 
         /// <summary>
-        /// Constructor
+        ///     Constructor
         /// </summary>
         /// <param name="tableName">Name of external table</param>
         /// <param name="key">ForeignKey of this table</param>

@@ -3,12 +3,12 @@
 namespace MicroOrm.Dapper.Repositories.SqlGenerator
 {
     /// <summary>
-    /// A object with the generated sql and dynamic params.
+    ///     A object with the generated sql and dynamic params.
     /// </summary>
     public class SqlQuery
     {
         /// <summary>
-        /// Initializes a new instance of the class.
+        ///     Initializes a new instance of the class.
         /// </summary>
         public SqlQuery()
         {
@@ -16,7 +16,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         }
 
         /// <summary>
-        /// Initializes a new instance of the class.
+        ///     Initializes a new instance of the class.
         /// </summary>
         /// <param name="param">The param.</param>
         public SqlQuery(object param)
@@ -26,17 +26,17 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         }
 
         /// <summary>
-        /// SqlBuilder
+        ///     SqlBuilder
         /// </summary>
         public StringBuilder SqlBuilder { get; }
 
         /// <summary>
-        /// Gets the param
+        ///     Gets the param
         /// </summary>
         public object Param { get; private set; }
 
         /// <summary>
-        /// Gets the SQL.
+        ///     Gets the SQL.
         /// </summary>
         public string GetSql()
         {
@@ -44,7 +44,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         }
 
         /// <summary>
-        /// Set alternative param
+        ///     Set alternative param
         /// </summary>
         /// <param name="param">The param.</param>
         public void SetParam(object param)

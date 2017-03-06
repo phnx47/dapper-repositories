@@ -1,10 +1,5 @@
-﻿using System.Drawing;
-using System.Drawing.Imaging;
-using System.IO;
+﻿using MicroOrm.Dapper.Repositories.Tests.DatabaseFixture;
 using Xunit;
-using MicroOrm.Dapper.Repositories.Tests.Classes;
-using MicroOrm.Dapper.Repositories.Tests.DatabaseFixture;
-
 
 namespace MicroOrm.Dapper.Repositories.Tests.Tests
 {
