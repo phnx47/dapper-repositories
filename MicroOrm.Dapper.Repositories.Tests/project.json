@@ -6,7 +6,7 @@
     "MySql.Data": "7.0.6-IR31",
     "CoreCompat.System.Drawing": "1.0.0-beta006",
     "OpenCover": "4.6.519",
-    "ReportGenerator": "2.5.3",
+    "ReportGenerator": "2.5.5",
     "xunit": "2.2.0",
     "xunit.runner.console": "2.2.0",
     "MicroOrm.Dapper.Repositories": {

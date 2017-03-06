@@ -1,6 +1,6 @@
 # MicroOrm.Dapper.Repositories
 
-[![NuGet](https://img.shields.io/nuget/vpre/MicroOrm.Dapper.Repositories.svg)](https://www.nuget.org/packages/MicroOrm.Dapper.Repositories/1.6.0-beta5) [![NuGet](https://img.shields.io/nuget/v/MicroOrm.Dapper.Repositories.svg)](https://www.nuget.org/packages/MicroOrm.Dapper.Repositories) [![License MIT](https://img.shields.io/badge/license-MIT-green.svg)](https://opensource.org/licenses/MIT) [![Build status](https://ci.appveyor.com/api/projects/status/5v68lbhwc9d4948g?svg=true)](https://ci.appveyor.com/project/phnx47/microorm-dapper-repositories) [![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=sergey%2ekuznetsov%40hotmail%2ecom&lc=US&item_name=MicroOrm%2eDapper%2eRepositories&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_SM%2egif%3aNonHosted)
+[![NuGet](https://img.shields.io/nuget/v/MicroOrm.Dapper.Repositories.svg)](https://www.nuget.org/packages/MicroOrm.Dapper.Repositories) [![License MIT](https://img.shields.io/badge/license-MIT-green.svg)](https://opensource.org/licenses/MIT) [![Build status](https://ci.appveyor.com/api/projects/status/5v68lbhwc9d4948g?svg=true)](https://ci.appveyor.com/project/phnx47/microorm-dapper-repositories) [![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=sergey%2ekuznetsov%40hotmail%2ecom&lc=US&item_name=MicroOrm%2eDapper%2eRepositories&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_SM%2egif%3aNonHosted)
 
 If you like your code to run fast, you probably know about Micro ORMs.
 They are simple and one of their main goals is to be the fastest execution of your SQL sentences in you data repository.
@@ -14,7 +14,7 @@ The original idea was taken from [Yoinbol](https://github.com/Yoinbol/MicroOrm.P
 
 I tested this with MSSQL, PostgreSQL and MySQL.
 
-	PM> Install-Package MicroOrm.Dapper.Repositories
+    PM> Install-Package MicroOrm.Dapper.Repositories
 
 
 Metadata attributes
@@ -59,7 +59,7 @@ Examples
 
 "Users" POCO:
 
-	[Table("Users")]
+    [Table("Users")]
     public class User
     {
         [Key, Identity]
@@ -86,7 +86,7 @@ Examples
 
 "Cars" POCO:
 
-	[Table("Cars")]
+    [Table("Cars")]
     public class Car
     {
         [Key, Identity]
@@ -114,7 +114,7 @@ Examples
         [Deleted]
         Deleted = -1
     }
-	
+    
 Implements the repository:
 
     public class UserRepository : DapperRepository<User>

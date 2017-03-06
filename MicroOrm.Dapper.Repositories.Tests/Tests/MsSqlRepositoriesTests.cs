@@ -61,6 +61,17 @@ namespace MicroOrm.Dapper.Repositories.Tests.Tests
         }
 
         [Fact]
+        public void FindJoin()
+        {
+            var user = _sqlDatabaseFixture.Db.Users.Find<Car>(x => x.Id == 1, q => q.Cars);
+            Assert.Equal(user.Cars.Count, 1);
+            Assert.Equal(user.Cars.First().Name, "TestCar0");
+
+            var car = _sqlDatabaseFixture.Db.Cars.Find<User>(x => x.Id == 1, q => q.User);
+            Assert.Equal(car.User.Name, "TestName0");
+        }
+
+        [Fact]
         public async Task FindJoinAsync()
         {
             var user = await _sqlDatabaseFixture.Db.Users.FindAsync<Car>(x => x.Id == 1, q => q.Cars);
@@ -69,6 +80,15 @@ namespace MicroOrm.Dapper.Repositories.Tests.Tests
 
             var car = await _sqlDatabaseFixture.Db.Cars.FindAsync<User>(x => x.Id == 1, q => q.User);
             Assert.Equal(car.User.Name, "TestName0");
+        }
+
+        [Fact]
+        public void FindAllJoin2Table()
+        {
+            var user = _sqlDatabaseFixture.Db.Users.FindAll<Car, Address>(x => x.Id == 1, q => q.Cars, q => q.Address).First();
+            Assert.Equal(user.Cars.Count, 1);
+            Assert.Equal(user.Cars.First().Name, "TestCar0");
+            Assert.Equal(user.Address.Street, "Street0");
         }
 
         [Fact]
