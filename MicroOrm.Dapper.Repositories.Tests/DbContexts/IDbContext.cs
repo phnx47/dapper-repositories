@@ -1,5 +1,4 @@
-﻿using MicroOrm.Dapper.Repositories.DbContext;
-using MicroOrm.Dapper.Repositories.Tests.Classes;
+﻿using MicroOrm.Dapper.Repositories.Tests.Classes;
 
 namespace MicroOrm.Dapper.Repositories.Tests.DbContexts
 {

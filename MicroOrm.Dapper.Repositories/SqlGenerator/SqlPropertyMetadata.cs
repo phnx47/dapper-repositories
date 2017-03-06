@@ -4,12 +4,12 @@ using System.Reflection;
 namespace MicroOrm.Dapper.Repositories.SqlGenerator
 {
     /// <summary>
-    /// Metadata from PropertyInfo
+    ///     Metadata from PropertyInfo
     /// </summary>
     public class SqlPropertyMetadata
     {
         /// <summary>
-        /// Constructor
+        ///     Constructor
         /// </summary>
         public SqlPropertyMetadata(PropertyInfo propertyInfo)
         {
@@ -27,22 +27,22 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         }
 
         /// <summary>
-        /// Original PropertyInfo
+        ///     Original PropertyInfo
         /// </summary>
         public PropertyInfo PropertyInfo { get; }
 
         /// <summary>
-        /// Alias for ColumnName,
+        ///     Alias for ColumnName,
         /// </summary>
         public string Alias { get; set; }
 
         /// <summary>
-        /// ColumnName
+        ///     ColumnName
         /// </summary>
         public string ColumnName { get; set; }
 
         /// <summary>
-        /// PropertyName
+        ///     PropertyName
         /// </summary>
         public string PropertyName => PropertyInfo.Name;
     }

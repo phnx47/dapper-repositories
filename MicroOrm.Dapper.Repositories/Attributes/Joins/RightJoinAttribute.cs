@@ -1,19 +1,19 @@
 ﻿namespace MicroOrm.Dapper.Repositories.Attributes.Joins
 {
     /// <summary>
-    /// Generate RIGHT JOIN
+    ///     Generate RIGHT JOIN
     /// </summary>
     public class RightJoinAttribute : JoinAttributeBase
     {
         /// <summary>
-        /// Constructor
+        ///     Constructor
         /// </summary>
         public RightJoinAttribute()
         {
         }
 
         /// <summary>
-        /// Constructor
+        ///     Constructor
         /// </summary>
         /// <param name="tableName">Name of external table</param>
         /// <param name="key">ForeignKey of this table</param>

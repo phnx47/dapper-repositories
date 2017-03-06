@@ -3,7 +3,7 @@
 namespace MicroOrm.Dapper.Repositories.Attributes
 {
     /// <summary>
-    /// Identity key
+    ///     Identity key
     /// </summary>
     public class IdentityAttribute : Attribute
     {

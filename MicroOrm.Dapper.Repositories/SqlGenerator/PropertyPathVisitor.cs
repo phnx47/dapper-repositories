@@ -9,14 +9,14 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
     //  http://www.thomaslevesque.com/2010/10/03/entity-framework-using-include-with-lambda-expressions/
 
     /// <summary>
-    /// Property path visitor
+    ///     Property path visitor
     /// </summary>
     public class PropertyPathVisitor : ExpressionVisitor
     {
         private Stack<MemberInfo> _stack;
 
         /// <summary>
-        /// GetPropertyPath
+        ///     GetPropertyPath
         /// </summary>
         public MemberInfo GetPropertyPath(Expression expression)
         {
@@ -39,9 +39,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                 return base.VisitMethodCall(expression);
 
             for (var i = expression.Arguments.Count - 1; i >= 0; i--)
-            {
                 Visit(expression.Arguments[i]);
-            }
 
             return expression;
         }

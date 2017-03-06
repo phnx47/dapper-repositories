@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Linq.Expressions;
 using System.Reflection;
 using MicroOrm.Dapper.Repositories.Extensions;
@@ -9,7 +8,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
     internal static class ExpressionHelper
     {
         /// <summary>
-        /// Gets the name of the property.
+        ///     Gets the name of the property.
         /// </summary>
         /// <param name="body">The body.</param>
         /// <returns>The property name for the property expression.</returns>
@@ -18,10 +17,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
             var propertyName = body.Left.ToString().Split('.')[1];
 
             if (body.Left.NodeType == ExpressionType.Convert)
-            {
-                // remove the trailing ) when convering.
                 propertyName = propertyName.Replace(")", string.Empty);
-            }
 
             return propertyName;
         }
@@ -29,9 +25,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         public static string GetPropertyName<TSource, TField>(Expression<Func<TSource, TField>> field)
         {
             if (Equals(field, null))
-            {
                 throw new NullReferenceException("Field is required");
-            }
 
             MemberExpression expr;
 
@@ -44,13 +38,9 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
             {
                 var expression = field.Body as UnaryExpression;
                 if (expression != null)
-                {
-                    expr = (MemberExpression)expression.Operand;
-                }
+                    expr = (MemberExpression) expression.Operand;
                 else
-                {
                     throw new ArgumentException("Expression" + field + " is not supported.", nameof(field));
-                }
             }
 
             return expr.Member.Name;

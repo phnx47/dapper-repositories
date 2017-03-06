@@ -1,5 +1,4 @@
 ﻿using System;
-using Dapper;
 using MicroOrm.Dapper.Repositories.Tests.DbContexts;
 
 namespace MicroOrm.Dapper.Repositories.Tests.DatabaseFixture
@@ -15,16 +14,14 @@ namespace MicroOrm.Dapper.Repositories.Tests.DatabaseFixture
             Db = new MySqlDbContext(connString);
         }
 
+        public MySqlDbContext Db { get; }
+
         public void Dispose()
         {
-
         }
-
-        public MySqlDbContext Db { get; }
 
         private void InitDb()
         {
-
         }
     }
 }

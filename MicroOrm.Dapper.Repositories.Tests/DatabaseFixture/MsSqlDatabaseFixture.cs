@@ -1,5 +1,6 @@
 ﻿using System;
 using Dapper;
+using MicroOrm.Dapper.Repositories.Tests.Classes;
 using MicroOrm.Dapper.Repositories.Tests.DbContexts;
 
 namespace MicroOrm.Dapper.Repositories.Tests.DatabaseFixture
@@ -13,22 +14,20 @@ namespace MicroOrm.Dapper.Repositories.Tests.DatabaseFixture
             var connString = "Server=(local);Initial Catalog=master;Integrated Security=True";
 
             if (Environments.IsAppVeyor)
-            {
                 connString = "Server=(local)\\SQL2016;Database=master;User ID=sa;Password=Password12!";
-            }
 
             Db = new MSSqlDbContext(connString);
 
             InitDb();
         }
 
+        public MSSqlDbContext Db { get; }
+
         public void Dispose()
         {
             Db.Connection.Execute($"USE master; DROP DATABASE {DbName}");
             Db.Dispose();
         }
-
-        public MSSqlDbContext Db { get; }
 
         private void InitDb()
         {
@@ -44,22 +43,17 @@ namespace MicroOrm.Dapper.Repositories.Tests.DatabaseFixture
 
             Db.Connection.Execute(@"CREATE TABLE Addresses (Id int IDENTITY(1,1) not null, Street varchar(256) not null,  PRIMARY KEY (Id))");
 
-            Db.Address.Insert(new Classes.Address { Street = "Street0" });
+            Db.Address.Insert(new Address {Street = "Street0"});
 
             for (var i = 0; i < 10; i++)
-            {
-                Db.Users.Insert(new Classes.User
+                Db.Users.Insert(new User
                 {
                     Name = $"TestName{i}",
                     AddressId = 1
                 });
-            }
 
-            Db.Users.Insert(new Classes.User { Name = "TestName0" });
-            Db.Cars.Insert(new Classes.Car { Name = "TestCar0", UserId = 1 });
-
-
-          
+            Db.Users.Insert(new User {Name = "TestName0"});
+            Db.Cars.Insert(new Car {Name = "TestCar0", UserId = 1});
         }
     }
 }

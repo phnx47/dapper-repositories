@@ -9,7 +9,8 @@ namespace MicroOrm.Dapper.Repositories.Tests.Classes
     [Table("Addresses")]
     public class Address
     {
-        [Key, Identity]
+        [Key]
+        [Identity]
         public int Id { get; set; }
 
         public string Street { get; set; }

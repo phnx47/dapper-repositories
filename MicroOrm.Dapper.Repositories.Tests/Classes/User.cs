@@ -1,18 +1,18 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using MicroOrm.Dapper.Repositories.Attributes;
 using MicroOrm.Dapper.Repositories.Attributes.Joins;
 using MicroOrm.Dapper.Repositories.Attributes.LogicalDelete;
-using System;
 
 namespace MicroOrm.Dapper.Repositories.Tests.Classes
 {
     [Table("Users")]
     public class User
     {
-        [Key, Identity]
-
+        [Key]
+        [Identity]
         public int Id { get; set; }
 
         public string ReadOnly => "test";
@@ -28,7 +28,8 @@ namespace MicroOrm.Dapper.Repositories.Tests.Classes
         [LeftJoin("Addresses", "AddressId", "Id")]
         public Address Address { get; set; }
 
-        [Status, Deleted]
+        [Status]
+        [Deleted]
         public bool Deleted { get; set; }
 
         [UpdatedAt]
