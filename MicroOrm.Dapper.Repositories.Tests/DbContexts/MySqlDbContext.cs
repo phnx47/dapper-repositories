@@ -7,6 +7,12 @@ namespace MicroOrm.Dapper.Repositories.Tests.DbContexts
 {
     public class MySqlDbContext : DapperDbContext, IDbContext
     {
+        private SqlGeneratorConfig config = new SqlGeneratorConfig()
+        {
+            SqlConnector = ESqlConnector.MySQL,
+            UseQuotationMarks = true
+        };
+
         private IDapperRepository<Car> _cars;
 
         private IDapperRepository<User> _users;
@@ -16,7 +22,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.DbContexts
         {
         }
 
-        public IDapperRepository<User> Users => _users ?? (_users = new DapperRepository<User>(Connection, ESqlConnector.MySQL));
-        public IDapperRepository<Car> Cars => _cars ?? (_cars = new DapperRepository<Car>(Connection, ESqlConnector.MySQL));
+        public IDapperRepository<User> Users => _users ?? (_users = new DapperRepository<User>(Connection, config));
+        public IDapperRepository<Car> Cars => _cars ?? (_cars = new DapperRepository<Car>(Connection, config));
     }
 }
