@@ -9,7 +9,7 @@ services: mssql2016
 build_script:
 - cmd: dotnet restore && dotnet pack MicroOrm.Dapper.Repositories -c Release
 test_script:
-- cmd: dotnet test MicroOrm.Dapper.Repositories.Tests
+- cmd: dotnet test MicroOrm.Dapper.Repositories.Tests\MicroOrm.Dapper.Repositories.Tests.csproj -c Release
 artifacts:
 - path: '**\*.nupkg'
   name: All Nupkg
