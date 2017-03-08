@@ -12,7 +12,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.Tests
         [Fact]
         public void ChangeDate_Insert()
         {
-            ISqlGenerator<User> userSqlGenerator = new SqlGenerator<User>(ESqlConnector.MSSQL);
+            ISqlGenerator<User> userSqlGenerator = new SqlGenerator<User>(ESqlConnector.MSSQL, true);
 
             var user = new User {Name = "Dude"};
             userSqlGenerator.GetInsert(user);
@@ -22,7 +22,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.Tests
         [Fact]
         public void ChangeDate_Update()
         {
-            ISqlGenerator<User> userSqlGenerator = new SqlGenerator<User>(ESqlConnector.MSSQL);
+            ISqlGenerator<User> userSqlGenerator = new SqlGenerator<User>(ESqlConnector.MSSQL, true);
 
             var user = new User {Name = "Dude"};
             userSqlGenerator.GetUpdate(user);
@@ -37,7 +37,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.Tests
                 6, 12
             };
 
-            ISqlGenerator<User> userSqlGenerator = new SqlGenerator<User>(ESqlConnector.MSSQL);
+            ISqlGenerator<User> userSqlGenerator = new SqlGenerator<User>(ESqlConnector.MSSQL, true);
 
             var isExceptions = false;
 
@@ -57,7 +57,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.Tests
         [Fact]
         public void MSSQLIsNull()
         {
-            ISqlGenerator<User> userSqlGenerator = new SqlGenerator<User>(ESqlConnector.MSSQL);
+            ISqlGenerator<User> userSqlGenerator = new SqlGenerator<User>(ESqlConnector.MSSQL, true);
             var sqlQuery = userSqlGenerator.GetSelectAll(user => user.UpdatedAt == null);
 
             Assert.Equal("SELECT [Users].[Id], [Users].[Name], [Users].[AddressId], [Users].[Deleted], [Users].[UpdatedAt] FROM [Users] " +
@@ -68,7 +68,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.Tests
         [Fact]
         public void MSSQLJoinBracelets()
         {
-            ISqlGenerator<User> userSqlGenerator = new SqlGenerator<User>(ESqlConnector.MSSQL);
+            ISqlGenerator<User> userSqlGenerator = new SqlGenerator<User>(ESqlConnector.MSSQL, true);
             var sqlQuery = userSqlGenerator.GetSelectAll(null, user => user.Cars);
 
             Assert.Equal("SELECT [Users].[Id], [Users].[Name], [Users].[AddressId], [Users].[Deleted], [Users].[UpdatedAt], " +
@@ -80,7 +80,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.Tests
         [Fact]
         public void MSSQLJoinOnJoin()
         {
-            ISqlGenerator<Address> userSqlGenerator = new SqlGenerator<Address>(ESqlConnector.MSSQL);
+            ISqlGenerator<Address> userSqlGenerator = new SqlGenerator<Address>(ESqlConnector.MSSQL, true);
             var sqlQuery = userSqlGenerator.GetSelectAll(null, address => address.Users, address => address.Users.Select(user => user.Cars));
 
             Assert.Equal("SELECT [Addresses].[Id], [Addresses].[Street], " +
@@ -93,7 +93,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.Tests
         [Fact]
         public void MSSQLSelectBetweenWithLogicalDelete()
         {
-            ISqlGenerator<User> userSqlGenerator = new SqlGenerator<User>(ESqlConnector.MSSQL);
+            ISqlGenerator<User> userSqlGenerator = new SqlGenerator<User>(ESqlConnector.MSSQL, true);
             var sqlQuery = userSqlGenerator.GetSelectBetween(1, 10, x => x.Id);
 
             Assert.Equal("SELECT [Users].[Id], [Users].[Name], [Users].[AddressId], [Users].[Deleted], [Users].[UpdatedAt] FROM [Users] " +
@@ -103,7 +103,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.Tests
         [Fact]
         public void MSSQLSelectBetweenWithoutLogicalDelete()
         {
-            ISqlGenerator<Car> userSqlGenerator = new SqlGenerator<Car>(ESqlConnector.MSSQL);
+            ISqlGenerator<Car> userSqlGenerator = new SqlGenerator<Car>(ESqlConnector.MSSQL, true);
             var sqlQuery = userSqlGenerator.GetSelectBetween(1, 10, x => x.Id);
 
             Assert.Equal("SELECT [Cars].[Id], [Cars].[Name], [Cars].[Data], [Cars].[UserId], [Cars].[Status] FROM [Cars] " +
@@ -114,7 +114,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.Tests
         [Fact]
         public void MSSQLSelectFirst()
         {
-            ISqlGenerator<User> userSqlGenerator = new SqlGenerator<User>(ESqlConnector.MSSQL);
+            ISqlGenerator<User> userSqlGenerator = new SqlGenerator<User>(ESqlConnector.MSSQL, true);
             var sqlQuery = userSqlGenerator.GetSelectFirst(x => x.Id == 2);
             Assert.Equal(sqlQuery.GetSql(), "SELECT TOP 1 [Users].[Id], [Users].[Name], [Users].[AddressId], [Users].[Deleted], [Users].[UpdatedAt] FROM [Users] WHERE [Users].[Id] = @Id AND [Users].[Deleted] != 1");
         }
@@ -122,7 +122,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.Tests
         [Fact]
         public void MySQLIsNotNull()
         {
-            ISqlGenerator<User> userSqlGenerator = new SqlGenerator<User>(ESqlConnector.MySQL);
+            ISqlGenerator<User> userSqlGenerator = new SqlGenerator<User>(ESqlConnector.MySQL, true);
             var sqlQuery = userSqlGenerator.GetSelectAll(user => user.UpdatedAt != null);
 
             Assert.Equal("SELECT `Users`.`Id`, `Users`.`Name`, `Users`.`AddressId`, `Users`.`Deleted`, `Users`.`UpdatedAt` FROM `Users` " +
@@ -133,7 +133,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.Tests
         [Fact]
         public void MySQLIsNotNullAND()
         {
-            ISqlGenerator<User> userSqlGenerator = new SqlGenerator<User>(ESqlConnector.MySQL);
+            ISqlGenerator<User> userSqlGenerator = new SqlGenerator<User>(ESqlConnector.MySQL, true);
             var sqlQuery = userSqlGenerator.GetSelectAll(user => user.Name == "Frank" && user.UpdatedAt != null);
 
             Assert.Equal("SELECT `Users`.`Id`, `Users`.`Name`, `Users`.`AddressId`, `Users`.`Deleted`, `Users`.`UpdatedAt` FROM `Users` " +
@@ -149,7 +149,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.Tests
         [Fact]
         public void MySQLJoinOnJoin()
         {
-            ISqlGenerator<Car> userSqlGenerator = new SqlGenerator<Car>(ESqlConnector.MySQL);
+            ISqlGenerator<Car> userSqlGenerator = new SqlGenerator<Car>(ESqlConnector.MySQL, true);
             var sqlQuery = userSqlGenerator.GetSelectAll(null, car => car.User,
                 car => car.User.Address);
 
@@ -163,7 +163,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.Tests
         [Fact]
         public void MySQLSelectBetween()
         {
-            ISqlGenerator<User> userSqlGenerator = new SqlGenerator<User>(ESqlConnector.MySQL);
+            ISqlGenerator<User> userSqlGenerator = new SqlGenerator<User>(ESqlConnector.MySQL, true);
             var sqlQuery = userSqlGenerator.GetSelectBetween(1, 10, x => x.Id);
 
             Assert.Equal("SELECT `Users`.`Id`, `Users`.`Name`, `Users`.`AddressId`, `Users`.`Deleted`, `Users`.`UpdatedAt` FROM `Users` " +
@@ -173,7 +173,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.Tests
         [Fact]
         public void MySQLSelectFirst()
         {
-            ISqlGenerator<User> userSqlGenerator = new SqlGenerator<User>(ESqlConnector.MySQL);
+            ISqlGenerator<User> userSqlGenerator = new SqlGenerator<User>(ESqlConnector.MySQL, true);
             var sqlQuery = userSqlGenerator.GetSelectFirst(x => x.Id == 6);
             Assert.Equal(sqlQuery.GetSql(), "SELECT `Users`.`Id`, `Users`.`Name`, `Users`.`AddressId`, `Users`.`Deleted`, `Users`.`UpdatedAt` FROM `Users` WHERE `Users`.`Id` = @Id AND `Users`.`Deleted` != 1 LIMIT 1");
         }

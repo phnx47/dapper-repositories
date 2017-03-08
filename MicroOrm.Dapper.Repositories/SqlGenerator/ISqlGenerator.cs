@@ -25,11 +25,6 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         PropertyInfo UpdatedAtProperty { get; }
 
         /// <summary>
-        ///     Sql provider
-        /// </summary>
-        ESqlConnector SqlConnector { get; set; }
-
-        /// <summary>
         ///     Is Autoincrement table
         /// </summary>
         bool IsIdentity { get; }
@@ -53,6 +48,11 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         ///     Metadata sql properties
         /// </summary>
         SqlPropertyMetadata[] SqlProperties { get; }
+
+        /// <summary>
+        ///     Config for queries
+        /// </summary>
+        SqlGeneratorConfig Config { get; }
 
         /// <summary>
         ///     Has Logical delete

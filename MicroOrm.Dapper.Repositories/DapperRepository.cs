@@ -45,6 +45,15 @@ namespace MicroOrm.Dapper.Repositories
             SqlGenerator = sqlGenerator;
         }
 
+        /// <summary>
+        ///     Constructor
+        /// </summary>
+        public DapperRepository(IDbConnection connection, SqlGeneratorConfig config)
+        {
+            Connection = connection;
+            SqlGenerator = new SqlGenerator<TEntity>(config);
+        }
+
         /// <inheritdoc />
         public IDbConnection Connection { get; }
 

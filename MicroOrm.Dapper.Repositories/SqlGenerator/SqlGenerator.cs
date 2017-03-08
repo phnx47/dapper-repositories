@@ -26,9 +26,6 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         public PropertyInfo UpdatedAtProperty { get; protected set; }
 
         /// <inheritdoc />
-        public ESqlConnector SqlConnector { get; set; }
-
-        /// <inheritdoc />
         public bool IsIdentity => IdentitySqlProperty != null;
 
         /// <inheritdoc />
@@ -42,6 +39,9 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
 
         /// <inheritdoc />
         public SqlPropertyMetadata[] SqlProperties { get; protected set; }
+
+        /// <inheritdoc />
+        public SqlGeneratorConfig Config { get; protected set; }
 
         #region Insert
 
@@ -61,7 +61,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                 + " VALUES  (" + string.Join(", ", properties.Select(p => "@" + p.PropertyName)) + ")"); // values
 
             if (IsIdentity)
-                switch (SqlConnector)
+                switch (Config.SqlConnector)
                 {
                     case ESqlConnector.MSSQL:
                         query.SqlBuilder.Append("SELECT SCOPE_IDENTITY() AS " + IdentitySqlProperty.ColumnName);
@@ -127,21 +127,27 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         ///     Constructor
         /// </summary>
         public SqlGenerator()
-            : this(ESqlConnector.MSSQL)
+            : this(new SqlGeneratorConfig { SqlConnector = ESqlConnector.MSSQL, UseQuotationMarks = false })
         {
         }
 
         /// <summary>
         ///     Constructor
         /// </summary>
-        public SqlGenerator(ESqlConnector sqlConnector)
+        public SqlGenerator(ESqlConnector sqlConnector, bool useQuotationMarks = false)
+            : this(new SqlGeneratorConfig { SqlConnector = sqlConnector, UseQuotationMarks = useQuotationMarks })
         {
+        }
+
+        /// <summary>
+        ///     Constructor
+        /// </summary>
+        public SqlGenerator(SqlGeneratorConfig sqlGeneratorConfig)
+        {
+            // Order is important
             InitProperties();
-
-            InitSqlConnector(sqlConnector);
+            InitConfig(sqlGeneratorConfig);
             InitLogicalDeleted();
-
-            //todo: init joins
         }
 
         private void InitProperties()
@@ -170,40 +176,46 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         /// <summary>
         ///     Init type Sql provider
         /// </summary>
-        private void InitSqlConnector(ESqlConnector sqlConnector)
+        private void InitConfig(SqlGeneratorConfig sqlGeneratorConfig)
         {
-            SqlConnector = sqlConnector;
-            switch (SqlConnector)
-            {
-                case ESqlConnector.MSSQL:
+            Config = sqlGeneratorConfig;
 
-                    TableName = "[" + TableName + "]";
+            if (Config.UseQuotationMarks)
+                switch (Config.SqlConnector)
+                {
+                    case ESqlConnector.MSSQL:
+                        TableName = "[" + TableName + "]";
 
-                    foreach (var propertyMetadata in SqlProperties)
-                        propertyMetadata.ColumnName = "[" + propertyMetadata.ColumnName + "]";
+                        foreach (var propertyMetadata in SqlProperties)
+                            propertyMetadata.ColumnName = "[" + propertyMetadata.ColumnName + "]";
 
-                    foreach (var propertyMetadata in KeySqlProperties)
-                        propertyMetadata.ColumnName = "[" + propertyMetadata.ColumnName + "]";
+                        foreach (var propertyMetadata in KeySqlProperties)
+                            propertyMetadata.ColumnName = "[" + propertyMetadata.ColumnName + "]";
+                        break;
 
-                    break;
+                    case ESqlConnector.MySQL:
+                        TableName = "`" + TableName + "`";
 
-                case ESqlConnector.MySQL:
-                    TableName = "`" + TableName + "`";
+                        foreach (var propertyMetadata in SqlProperties)
+                            propertyMetadata.ColumnName = "`" + propertyMetadata.ColumnName + "`";
 
-                    foreach (var propertyMetadata in SqlProperties)
-                        propertyMetadata.ColumnName = "`" + propertyMetadata.ColumnName + "`";
+                        foreach (var propertyMetadata in KeySqlProperties)
+                            propertyMetadata.ColumnName = "`" + propertyMetadata.ColumnName + "`";
+                        break;
 
-                    foreach (var propertyMetadata in KeySqlProperties)
-                        propertyMetadata.ColumnName = "`" + propertyMetadata.ColumnName + "`";
-                    break;
+                    case ESqlConnector.PostgreSQL:
+                        TableName = "\"" + TableName + "\"";
 
-                case ESqlConnector.PostgreSQL:
+                        foreach (var propertyMetadata in SqlProperties)
+                            propertyMetadata.ColumnName = "\"" + propertyMetadata.ColumnName + "\"";
 
-                    break;
+                        foreach (var propertyMetadata in KeySqlProperties)
+                            propertyMetadata.ColumnName = "\"" + propertyMetadata.ColumnName + "\"";
+                        break;
 
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(SqlConnector));
-            }
+                    default:
+                        throw new ArgumentOutOfRangeException(nameof(Config.SqlConnector));
+                }
         }
 
         private static string GetTableNameOrAlias(Type type)
@@ -251,7 +263,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         private SqlQuery InitBuilderSelect(bool firstOnly)
         {
             var query = new SqlQuery();
-            query.SqlBuilder.Append("SELECT " + (firstOnly && SqlConnector == ESqlConnector.MSSQL ? "TOP 1 " : "") + GetFieldsSelect(TableName, SqlProperties));
+            query.SqlBuilder.Append("SELECT " + (firstOnly && Config.SqlConnector == ESqlConnector.MSSQL ? "TOP 1 " : "") + GetFieldsSelect(TableName, SqlProperties));
             return query;
         }
 
@@ -301,32 +313,39 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                 var properties = joinType.GetProperties().Where(ExpressionHelper.GetPrimitivePropertiesPredicate());
                 var props = properties.Where(p => !p.GetCustomAttributes<NotMappedAttribute>().Any()).Select(p => new SqlPropertyMetadata(p)).ToArray();
 
-                switch (SqlConnector)
-                {
-                    case ESqlConnector.MSSQL:
-                        tableName = "[" + tableName + "]";
-                        attrJoin.TableName = "[" + attrJoin.TableName + "]";
-                        attrJoin.Key = "[" + attrJoin.Key + "]";
-                        attrJoin.ExternalKey = "[" + attrJoin.ExternalKey + "]";
-                        foreach (var prop in props)
-                            prop.ColumnName = "[" + prop.ColumnName + "]";
-                        break;
+                if (Config.UseQuotationMarks)
+                    switch (Config.SqlConnector)
+                    {
+                        case ESqlConnector.MSSQL:
+                            tableName = "[" + tableName + "]";
+                            attrJoin.TableName = "[" + attrJoin.TableName + "]";
+                            attrJoin.Key = "[" + attrJoin.Key + "]";
+                            attrJoin.ExternalKey = "[" + attrJoin.ExternalKey + "]";
+                            foreach (var prop in props)
+                                prop.ColumnName = "[" + prop.ColumnName + "]";
+                            break;
 
-                    case ESqlConnector.MySQL:
-                        tableName = "`" + tableName + "`";
-                        attrJoin.TableName = "`" + attrJoin.TableName + "`";
-                        attrJoin.Key = "`" + attrJoin.Key + "`";
-                        attrJoin.ExternalKey = "`" + attrJoin.ExternalKey + "`";
-                        foreach (var prop in props)
-                            prop.ColumnName = "`" + prop.ColumnName + "`";
-                        break;
+                        case ESqlConnector.MySQL:
+                            tableName = "`" + tableName + "`";
+                            attrJoin.TableName = "`" + attrJoin.TableName + "`";
+                            attrJoin.Key = "`" + attrJoin.Key + "`";
+                            attrJoin.ExternalKey = "`" + attrJoin.ExternalKey + "`";
+                            foreach (var prop in props)
+                                prop.ColumnName = "`" + prop.ColumnName + "`";
+                            break;
 
-                    case ESqlConnector.PostgreSQL:
-                        break;
+                        case ESqlConnector.PostgreSQL:
+                            tableName = "\"" + tableName + "\"";
+                            attrJoin.TableName = "\"" + attrJoin.TableName + "\"";
+                            attrJoin.Key = "\"" + attrJoin.Key + "\"";
+                            attrJoin.ExternalKey = "\"" + attrJoin.ExternalKey + "\"";
+                            foreach (var prop in props)
+                                prop.ColumnName = "\"" + prop.ColumnName + "\"";
+                            break;
 
-                    default:
-                        throw new ArgumentOutOfRangeException(nameof(SqlConnector));
-                }
+                        default:
+                            throw new ArgumentOutOfRangeException(nameof(Config.SqlConnector));
+                    }
 
                 originalBuilder.SqlBuilder.Append(", " + GetFieldsSelect(attrJoin.TableName, props));
                 joinBuilder.Append(joinString + " " + attrJoin.TableName + " ON " + tableName + "." + attrJoin.Key + " = " + attrJoin.TableName + "." + attrJoin.ExternalKey + " ");
@@ -395,7 +414,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                     sqlQuery.SqlBuilder.Append("WHERE " + TableName + "." + StatusPropertyName + " != " + LogicalDeleteValue + " ");
             }
 
-            if (firstOnly && (SqlConnector == ESqlConnector.MySQL || SqlConnector == ESqlConnector.PostgreSQL))
+            if (firstOnly && (Config.SqlConnector == ESqlConnector.MySQL || Config.SqlConnector == ESqlConnector.PostgreSQL))
                 sqlQuery.SqlBuilder.Append("LIMIT 1");
 
             sqlQuery.SetParam(dictionary);
