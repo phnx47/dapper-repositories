@@ -1,6 +1,7 @@
 version: '{build}-{branch}'
 pull_requests:
   do_not_increment_build_number: true
+skip_tags: true
 image: Visual Studio 2017
 configuration: Release
 platform: Any CPU
@@ -16,7 +17,7 @@ artifacts:
 deploy:
 - provider: NuGet
   api_key:
-    secure: PeRs5xRiZsDi4Emb58DmbMCUE8pnMH/996TrY6a8VL4StqV+A4ShF8balmrVxFqm
+    secure: ZWN99UOlUq7ILlVxQmWxn5+FzwDAIdyYYnPc/WBDTVzklrgX+jOzs2UHJOruyvrf
   skip_symbols: false
   on:
     branch: master
