@@ -744,7 +744,7 @@ namespace MicroOrm.Dapper.Repositories
 
         #region Beetwen
 
-        private const string DateTimeFormat = "yyyy-MM-dd HH:mm:ss";
+        private const string _dateTimeFormat = "yyyy-MM-dd HH:mm:ss";
 
         /// <inheritdoc />
         public IEnumerable<TEntity> FindAllBetween(object from, object to, Expression<Func<TEntity, object>> btwField, IDbTransaction transaction = null)
@@ -756,8 +756,7 @@ namespace MicroOrm.Dapper.Repositories
         public IEnumerable<TEntity> FindAllBetween(object from, object to, Expression<Func<TEntity, object>> btwField, Expression<Func<TEntity, bool>> predicate = null, IDbTransaction transaction = null)
         {
             var queryResult = SqlGenerator.GetSelectBetween(from, to, btwField, predicate);
-            var data = Connection.Query<TEntity>(queryResult.GetSql(), queryResult.Param, transaction);
-            return data;
+            return Connection.Query<TEntity>(queryResult.GetSql(), queryResult.Param, transaction);
         }
 
         /// <inheritdoc />
@@ -769,8 +768,8 @@ namespace MicroOrm.Dapper.Repositories
         /// <inheritdoc />
         public IEnumerable<TEntity> FindAllBetween(DateTime from, DateTime to, Expression<Func<TEntity, object>> btwField, Expression<Func<TEntity, bool>> predicate, IDbTransaction transaction = null)
         {
-            var fromString = from.ToString(DateTimeFormat);
-            var toString = to.ToString(DateTimeFormat);
+            var fromString = from.ToString(_dateTimeFormat);
+            var toString = to.ToString(_dateTimeFormat);
             return FindAllBetween(fromString, toString, btwField, predicate);
         }
 
@@ -781,11 +780,10 @@ namespace MicroOrm.Dapper.Repositories
         }
 
         /// <inheritdoc />
-        public async Task<IEnumerable<TEntity>> FindAllBetweenAsync(object from, object to, Expression<Func<TEntity, object>> btwField, Expression<Func<TEntity, bool>> predicate, IDbTransaction transaction = null)
+        public Task<IEnumerable<TEntity>> FindAllBetweenAsync(object from, object to, Expression<Func<TEntity, object>> btwField, Expression<Func<TEntity, bool>> predicate, IDbTransaction transaction = null)
         {
             var queryResult = SqlGenerator.GetSelectBetween(from, to, btwField, predicate);
-            var data = await Connection.QueryAsync<TEntity>(queryResult.GetSql(), queryResult.Param, transaction);
-            return data;
+            return Connection.QueryAsync<TEntity>(queryResult.GetSql(), queryResult.Param, transaction);
         }
 
         /// <inheritdoc />
@@ -797,9 +795,7 @@ namespace MicroOrm.Dapper.Repositories
         /// <inheritdoc />
         public Task<IEnumerable<TEntity>> FindAllBetweenAsync(DateTime from, DateTime to, Expression<Func<TEntity, object>> btwField, Expression<Func<TEntity, bool>> predicate, IDbTransaction transaction = null)
         {
-            var fromString = from.ToString(DateTimeFormat);
-            var toString = to.ToString(DateTimeFormat);
-            return FindAllBetweenAsync(fromString, toString, btwField, predicate, transaction);
+            return FindAllBetweenAsync(from.ToString(_dateTimeFormat), to.ToString(_dateTimeFormat), btwField, predicate, transaction);
         }
 
         #endregion Beetwen

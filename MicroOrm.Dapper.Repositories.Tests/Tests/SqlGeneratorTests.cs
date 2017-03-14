@@ -91,7 +91,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.Tests
         }
 
         [Fact]
-        public void MSSQLSelectBetweenWithLogicalDelete()
+        public void MSSQLSelectBetweenWithLogicalDeleteBraclets()
         {
             ISqlGenerator<User> userSqlGenerator = new SqlGenerator<User>(ESqlConnector.MSSQL, true);
             var sqlQuery = userSqlGenerator.GetSelectBetween(1, 10, x => x.Id);
@@ -100,18 +100,38 @@ namespace MicroOrm.Dapper.Repositories.Tests.Tests
                          "WHERE [Users].[Deleted] != 1 AND [Users].[Id] BETWEEN '1' AND '10'", sqlQuery.GetSql());
         }
 
-        [Fact]
-        public void MSSQLSelectBetweenWithoutLogicalDelete()
+		[Fact]
+		public void MSSQLSelectBetweenWithLogicalDelete()
+		{
+			ISqlGenerator<User> userSqlGenerator = new SqlGenerator<User>(ESqlConnector.MSSQL, false);
+			var sqlQuery = userSqlGenerator.GetSelectBetween(1, 10, x => x.Id);
+
+			Assert.Equal("SELECT Users.Id, Users.Name, Users.AddressId, Users.Deleted, Users.UpdatedAt FROM Users " +
+						 "WHERE Users.Deleted != 1 AND Users.Id BETWEEN '1' AND '10'", sqlQuery.GetSql());
+		}
+
+		[Fact]
+        public void MSSQLSelectBetweenWithoutLogicalDeleteBraclets()
         {
-            ISqlGenerator<Car> userSqlGenerator = new SqlGenerator<Car>(ESqlConnector.MSSQL, true);
+            ISqlGenerator<Address> userSqlGenerator = new SqlGenerator<Address>(ESqlConnector.MSSQL, true);
             var sqlQuery = userSqlGenerator.GetSelectBetween(1, 10, x => x.Id);
 
-            Assert.Equal("SELECT [Cars].[Id], [Cars].[Name], [Cars].[Data], [Cars].[UserId], [Cars].[Status] FROM [Cars] " +
-                         "WHERE [Cars].[Status] != -1 AND [Cars].[Id] BETWEEN '1' AND '10'", sqlQuery.GetSql());
-        }
+			Assert.Equal("SELECT [Addresses].[Id], [Addresses].[Street] FROM [Addresses] " +
+						  "WHERE [Addresses].[Id] BETWEEN '1' AND '10'", sqlQuery.GetSql());
+		}
 
 
-        [Fact]
+		[Fact]
+		public void MSSQLSelectBetweenWithoutLogicalDelete()
+		{
+			ISqlGenerator<Address> userSqlGenerator = new SqlGenerator<Address>(ESqlConnector.MSSQL, false);
+			var sqlQuery = userSqlGenerator.GetSelectBetween(1, 10, x => x.Id);
+
+			Assert.Equal("SELECT Addresses.Id, Addresses.Street FROM Addresses " +
+						 "WHERE Addresses.Id BETWEEN '1' AND '10'", sqlQuery.GetSql());
+		}
+
+		[Fact]
         public void MSSQLSelectFirst()
         {
             ISqlGenerator<User> userSqlGenerator = new SqlGenerator<User>(ESqlConnector.MSSQL, true);
