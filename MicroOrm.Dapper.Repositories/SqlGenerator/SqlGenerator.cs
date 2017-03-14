@@ -428,7 +428,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
             var columnName = SqlProperties.First(x => x.PropertyName == fieldName).ColumnName;
             var query = GetSelectAll(expression);
 
-            query.SqlBuilder.Append(expression == null && !LogicalDelete ? "WHERE" : "AND" + " " + TableName + "." + columnName + " BETWEEN '" + from + "' AND '" + to + "'");
+            query.SqlBuilder.Append((expression == null && !LogicalDelete ? "WHERE" : "AND") + " " + TableName + "." + columnName + " BETWEEN '" + from + "' AND '" + to + "'");
 
             return query;
         }
