@@ -15,10 +15,8 @@ artifacts:
 - path: '**\*.nupkg'
   name: All Nupkg
 deploy:
-- provider: NuGet
-  api_key:
-    secure: ZWN99UOlUq7ILlVxQmWxn5+FzwDAIdyYYnPc/WBDTVzklrgX+jOzs2UHJOruyvrf
-  skip_symbols: false
+- provider: Environment
+  name: NuGet
   on:
     branch: master
     appveyor_repo_tag: true
