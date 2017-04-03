@@ -408,7 +408,7 @@ namespace MicroOrm.Dapper.Repositories
             IDbTransaction transaction = null)
         {
             var sqlQuery = new SqlGenerator<TEntity>().GetSelectAll(predicate, tChild1, tChild2, tChild3, tChild4, tChild5);
-            return ExecuteJoinQueryAsync<TChild1, TChild2, TChild3, TChild4, TChild5, DontMap>(sqlQuery, transaction, tChild1, tChild2, tChild3, tChild4, tChild5);
+            return ExecuteJoinQueryAsync<TChild1, TChild2, TChild3, TChild4, TChild5, DontMap >(sqlQuery, transaction, tChild1, tChild2, tChild3, tChild4, tChild5);
         }
 
         /// <inheritdoc />
@@ -423,7 +423,7 @@ namespace MicroOrm.Dapper.Repositories
             IDbTransaction transaction = null)
         {
             var sqlQuery = new SqlGenerator<TEntity>().GetSelectAll(predicate, tChild1, tChild2, tChild3, tChild4, tChild5, tChild6);
-            return ExecuteJoinQueryAsync<TChild1, TChild2, TChild3, TChild4, TChild5, TChild6>(sqlQuery, transaction, tChild1, tChild2, tChild3, tChild4, tChild5, tChild6);
+            return ExecuteJoinQueryAsync<TChild1, TChild2, TChild3, TChild4, TChild5, TChild6 > (sqlQuery, transaction, tChild1, tChild2, tChild3, tChild4, tChild5, tChild6);
         }
 
         private IEnumerable<TEntity> ExecuteJoinQuery<TChild1, TChild2, TChild3, TChild4, TChild5, TChild6>(
@@ -450,7 +450,7 @@ namespace MicroOrm.Dapper.Repositories
             {
                 var childType = property.PropertyType.IsGenericType() ? property.PropertyType.GenericTypeArguments[0] : property.PropertyType;
                 var properties = childType.GetProperties().Where(ExpressionHelper.GetPrimitivePropertiesPredicate());
-                childKeyProperties.Add(properties.First(p => p.GetCustomAttributes<KeyAttribute>().Any()));
+                childKeyProperties.Add(properties.First(p => p.GetCustomAttributes<KeyAttribute>().Any() || p.Name.Equals("Id",StringComparison.OrdinalIgnoreCase)));
             }
 
             var lookup = new Dictionary<object, TEntity>();
@@ -524,7 +524,7 @@ namespace MicroOrm.Dapper.Repositories
             {
                 var childType = property.PropertyType.IsGenericType() ? property.PropertyType.GenericTypeArguments[0] : property.PropertyType;
                 var properties = childType.GetProperties().Where(ExpressionHelper.GetPrimitivePropertiesPredicate());
-                childKeyProperties.Add(properties.First(p => p.GetCustomAttributes<KeyAttribute>().Any()));
+                childKeyProperties.Add(properties.First(p => p.GetCustomAttributes<KeyAttribute>().Any() || p.Name.Equals("Id", StringComparison.OrdinalIgnoreCase)));
             }
 
             var lookup = new Dictionary<object, TEntity>();

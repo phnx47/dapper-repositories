@@ -164,6 +164,17 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
             // Filter key properties
             KeySqlProperties = props.Where(p => p.GetCustomAttributes<KeyAttribute>().Any()).Select(p => new SqlPropertyMetadata(p)).ToArray();
 
+            if (!KeySqlProperties.Any())
+            {
+                var prop = props.SingleOrDefault(p => p.Name.Equals("Id", StringComparison.OrdinalIgnoreCase));
+                //skip adding key if prop is null, which means the model doesn't have Id property....
+                if (prop != null)
+                {
+                    KeySqlProperties = new SqlPropertyMetadata[1];
+                    KeySqlProperties[0] = new SqlPropertyMetadata(prop);
+                }
+            }
+
             // Use identity as key pattern
             var identityProperty = props.FirstOrDefault(p => p.GetCustomAttributes<IdentityAttribute>().Any());
             IdentitySqlProperty = identityProperty != null ? new SqlPropertyMetadata(identityProperty) : null;
@@ -354,14 +365,22 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         }
 
 
-        private static string GetFieldsSelect(string tableName, IEnumerable<SqlPropertyMetadata> properties)
+        private string GetFieldsSelect(string tableName, IEnumerable<SqlPropertyMetadata> properties)
         {
             //Projection function
             Func<SqlPropertyMetadata, string> projectionFunction = p => !string.IsNullOrEmpty(p.Alias)
                 ? tableName + "." + p.ColumnName + " AS " + p.PropertyName
                 : tableName + "." + p.ColumnName;
 
-            return string.Join(", ", properties.Select(projectionFunction));
+            //for joins to work properly keys need to be first
+            var kprop = properties.SingleOrDefault(e => this.KeySqlProperties.Any(a => a.ColumnName.Equals(e.ColumnName)));
+            var cprop = properties.Where(e => this.KeySqlProperties.Any(a => !a.ColumnName.Equals(e.ColumnName)));
+
+            var sqlstatement = projectionFunction(kprop) + ", ";
+            sqlstatement += string.Join(", ", cprop.Select(projectionFunction));
+
+            //return string.Join(", ", properties.Select(projectionFunction));
+            return sqlstatement;
         }
 
         private SqlQuery GetSelect(Expression<Func<TEntity, bool>> predicate, bool firstOnly, params Expression<Func<TEntity, object>>[] includes)
