@@ -196,7 +196,7 @@ namespace MicroOrm.Dapper.Repositories
         /// <summary>
         ///     Get all objects with join objects
         /// </summary>
-        IEnumerable<TEntity> FindAll<TChild1, TChild2, TChild3, TChild4>(
+        IEnumerable<TEntity> FindAll<TChild1, TChild2, TChild3>(
             Expression<Func<TEntity, bool>> predicate,
             Expression<Func<TEntity, object>> tChild1,
             Expression<Func<TEntity, object>> tChild2,
@@ -207,7 +207,7 @@ namespace MicroOrm.Dapper.Repositories
         /// <summary>
         ///     Get all objects with join objects
         /// </summary>
-        IEnumerable<TEntity> FindAll<TChild1, TChild2, TChild3, TChild4, TChild5>(
+        IEnumerable<TEntity> FindAll<TChild1, TChild2, TChild3>(
             Expression<Func<TEntity, bool>> predicate,
             Expression<Func<TEntity, object>> tChild1,
             Expression<Func<TEntity, object>> tChild2,
@@ -219,7 +219,7 @@ namespace MicroOrm.Dapper.Repositories
         /// <summary>
         ///     Get all objects with join objects
         /// </summary>
-        IEnumerable<TEntity> FindAll<TChild1, TChild2, TChild3, TChild4, TChild5, TChild6>(
+        IEnumerable<TEntity> FindAll<TChild1, TChild2, TChild3>(
             Expression<Func<TEntity, bool>> predicate,
             Expression<Func<TEntity, object>> tChild1,
             Expression<Func<TEntity, object>> tChild2,
@@ -270,7 +270,7 @@ namespace MicroOrm.Dapper.Repositories
         /// <summary>
         ///     Get all objects with join objects
         /// </summary>
-        Task<IEnumerable<TEntity>> FindAllAsync<TChild1, TChild2, TChild3, TChild4>(
+        Task<IEnumerable<TEntity>> FindAllAsync<TChild1, TChild2, TChild3>(
             Expression<Func<TEntity, bool>> predicate,
             Expression<Func<TEntity, object>> tChild1,
             Expression<Func<TEntity, object>> tChild2,
@@ -281,7 +281,7 @@ namespace MicroOrm.Dapper.Repositories
         /// <summary>
         ///     Get all objects with join objects
         /// </summary>
-        Task<IEnumerable<TEntity>> FindAllAsync<TChild1, TChild2, TChild3, TChild4, TChild5>(
+        Task<IEnumerable<TEntity>> FindAllAsync<TChild1, TChild2, TChild3>(
             Expression<Func<TEntity, bool>> predicate,
             Expression<Func<TEntity, object>> tChild1,
             Expression<Func<TEntity, object>> tChild2,
@@ -293,7 +293,7 @@ namespace MicroOrm.Dapper.Repositories
         /// <summary>
         ///     Get all objects with join objects
         /// </summary>
-        Task<IEnumerable<TEntity>> FindAllAsync<TChild1, TChild2, TChild3, TChild4, TChild5, TChild6>(
+        Task<IEnumerable<TEntity>> FindAllAsync<TChild1, TChild2, TChild3>(
             Expression<Func<TEntity, bool>> predicate,
             Expression<Func<TEntity, object>> tChild1,
             Expression<Func<TEntity, object>> tChild2,

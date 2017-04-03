@@ -293,7 +293,7 @@ namespace MicroOrm.Dapper.Repositories
         }
 
         /// <inheritdoc />
-        public virtual IEnumerable<TEntity> FindAll<TChild1, TChild2, TChild3, TChild4>(
+        public virtual IEnumerable<TEntity> FindAll<TChild1, TChild2, TChild3>(
             Expression<Func<TEntity, bool>> predicate,
             Expression<Func<TEntity, object>> tChild1,
             Expression<Func<TEntity, object>> tChild2,
@@ -302,11 +302,11 @@ namespace MicroOrm.Dapper.Repositories
             IDbTransaction transaction = null)
         {
             var sqlQuery = new SqlGenerator<TEntity>().GetSelectAll(predicate, tChild1, tChild2, tChild3, tChild4);
-            return ExecuteJoinQuery<TChild1, TChild2, TChild3, TChild4, DontMap, DontMap>(sqlQuery, transaction, tChild1, tChild2, tChild3, tChild4);
+            return ExecuteJoinQuery<TChild1, TChild2, TChild3, DontMap, DontMap, DontMap>(sqlQuery, transaction, tChild1, tChild2, tChild3, tChild4);
         }
 
         /// <inheritdoc />
-        public virtual IEnumerable<TEntity> FindAll<TChild1, TChild2, TChild3, TChild4, TChild5>(
+        public virtual IEnumerable<TEntity> FindAll<TChild1, TChild2, TChild3>(
             Expression<Func<TEntity, bool>> predicate,
             Expression<Func<TEntity, object>> tChild1,
             Expression<Func<TEntity, object>> tChild2,
@@ -316,11 +316,11 @@ namespace MicroOrm.Dapper.Repositories
             IDbTransaction transaction = null)
         {
             var sqlQuery = new SqlGenerator<TEntity>().GetSelectAll(predicate, tChild1, tChild2, tChild3, tChild4, tChild5);
-            return ExecuteJoinQuery<TChild1, TChild2, TChild3, TChild4, TChild5, DontMap>(sqlQuery, transaction, tChild1, tChild2, tChild3, tChild4, tChild5);
+            return ExecuteJoinQuery<TChild1, TChild2, TChild3, DontMap, DontMap, DontMap>(sqlQuery, transaction, tChild1, tChild2, tChild3, tChild4, tChild5);
         }
 
         /// <inheritdoc />
-        public virtual IEnumerable<TEntity> FindAll<TChild1, TChild2, TChild3, TChild4, TChild5, TChild6>(
+        public virtual IEnumerable<TEntity> FindAll<TChild1, TChild2, TChild3>(
             Expression<Func<TEntity, bool>> predicate,
             Expression<Func<TEntity, object>> tChild1,
             Expression<Func<TEntity, object>> tChild2,
@@ -331,7 +331,7 @@ namespace MicroOrm.Dapper.Repositories
             IDbTransaction transaction = null)
         {
             var sqlQuery = new SqlGenerator<TEntity>().GetSelectAll(predicate, tChild1, tChild2, tChild3, tChild4, tChild5, tChild6);
-            return ExecuteJoinQuery<TChild1, TChild2, TChild3, TChild4, TChild5, TChild6>(sqlQuery, transaction, tChild1, tChild2, tChild3, tChild4, tChild5, tChild6);
+            return ExecuteJoinQuery<TChild1, TChild2, TChild3, DontMap, DontMap, DontMap>(sqlQuery, transaction, tChild1, tChild2, tChild3, tChild4, tChild5, tChild6);
         }
 
         /// <inheritdoc />
@@ -385,7 +385,7 @@ namespace MicroOrm.Dapper.Repositories
         }
 
         /// <inheritdoc />
-        public virtual Task<IEnumerable<TEntity>> FindAllAsync<TChild1, TChild2, TChild3, TChild4>(
+        public virtual Task<IEnumerable<TEntity>> FindAllAsync<TChild1, TChild2, TChild3>(
             Expression<Func<TEntity, bool>> predicate,
             Expression<Func<TEntity, object>> tChild1,
             Expression<Func<TEntity, object>> tChild2,
@@ -394,11 +394,11 @@ namespace MicroOrm.Dapper.Repositories
             IDbTransaction transaction = null)
         {
             var sqlQuery = new SqlGenerator<TEntity>().GetSelectAll(predicate, tChild1, tChild2, tChild3, tChild4);
-            return ExecuteJoinQueryAsync<TChild1, TChild2, TChild3, TChild4, DontMap, DontMap>(sqlQuery, transaction, tChild1, tChild2, tChild3, tChild4);
+            return ExecuteJoinQueryAsync<TChild1, TChild2, TChild3, DontMap, DontMap, DontMap>(sqlQuery, transaction, tChild1, tChild2, tChild3, tChild4);
         }
 
         /// <inheritdoc />
-        public virtual Task<IEnumerable<TEntity>> FindAllAsync<TChild1, TChild2, TChild3, TChild4, TChild5>(
+        public virtual Task<IEnumerable<TEntity>> FindAllAsync<TChild1, TChild2, TChild3>(
             Expression<Func<TEntity, bool>> predicate,
             Expression<Func<TEntity, object>> tChild1,
             Expression<Func<TEntity, object>> tChild2,
@@ -408,11 +408,11 @@ namespace MicroOrm.Dapper.Repositories
             IDbTransaction transaction = null)
         {
             var sqlQuery = new SqlGenerator<TEntity>().GetSelectAll(predicate, tChild1, tChild2, tChild3, tChild4, tChild5);
-            return ExecuteJoinQueryAsync<TChild1, TChild2, TChild3, TChild4, TChild5, DontMap>(sqlQuery, transaction, tChild1, tChild2, tChild3, tChild4, tChild5);
+            return ExecuteJoinQueryAsync<TChild1, TChild2, TChild3, DontMap, DontMap, DontMap>(sqlQuery, transaction, tChild1, tChild2, tChild3, tChild4, tChild5);
         }
 
         /// <inheritdoc />
-        public virtual Task<IEnumerable<TEntity>> FindAllAsync<TChild1, TChild2, TChild3, TChild4, TChild5, TChild6>(
+        public virtual Task<IEnumerable<TEntity>> FindAllAsync<TChild1, TChild2, TChild3>(
             Expression<Func<TEntity, bool>> predicate,
             Expression<Func<TEntity, object>> tChild1,
             Expression<Func<TEntity, object>> tChild2,
@@ -423,7 +423,7 @@ namespace MicroOrm.Dapper.Repositories
             IDbTransaction transaction = null)
         {
             var sqlQuery = new SqlGenerator<TEntity>().GetSelectAll(predicate, tChild1, tChild2, tChild3, tChild4, tChild5, tChild6);
-            return ExecuteJoinQueryAsync<TChild1, TChild2, TChild3, TChild4, TChild5, TChild6>(sqlQuery, transaction, tChild1, tChild2, tChild3, tChild4, tChild5, tChild6);
+            return ExecuteJoinQueryAsync<TChild1, TChild2, TChild3, DontMap, DontMap, DontMap>(sqlQuery, transaction, tChild1, tChild2, tChild3, tChild4, tChild5, tChild6);
         }
 
         private IEnumerable<TEntity> ExecuteJoinQuery<TChild1, TChild2, TChild3, TChild4, TChild5, TChild6>(
@@ -450,7 +450,7 @@ namespace MicroOrm.Dapper.Repositories
             {
                 var childType = property.PropertyType.IsGenericType() ? property.PropertyType.GenericTypeArguments[0] : property.PropertyType;
                 var properties = childType.GetProperties().Where(ExpressionHelper.GetPrimitivePropertiesPredicate());
-                childKeyProperties.Add(properties.First(p => p.GetCustomAttributes<KeyAttribute>().Any()));
+                childKeyProperties.Add(properties.First(p => p.GetCustomAttributes<KeyAttribute>().Any() || p.Name.Equals("Id",StringComparison.OrdinalIgnoreCase)));
             }
 
             var lookup = new Dictionary<object, TEntity>();
@@ -524,7 +524,7 @@ namespace MicroOrm.Dapper.Repositories
             {
                 var childType = property.PropertyType.IsGenericType() ? property.PropertyType.GenericTypeArguments[0] : property.PropertyType;
                 var properties = childType.GetProperties().Where(ExpressionHelper.GetPrimitivePropertiesPredicate());
-                childKeyProperties.Add(properties.First(p => p.GetCustomAttributes<KeyAttribute>().Any()));
+                childKeyProperties.Add(properties.First(p => p.GetCustomAttributes<KeyAttribute>().Any() || p.Name.Equals("Id", StringComparison.OrdinalIgnoreCase)));
             }
 
             var lookup = new Dictionary<object, TEntity>();
