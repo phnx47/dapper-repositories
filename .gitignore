@@ -9,5 +9,5 @@ packages
 TestResults
 BenchmarkDotNet.Artifacts
 BDN.Generated
-MicroOrm.Dapper.Repositories.Tests/Coverage
+Coverage
 Coverage.xml
