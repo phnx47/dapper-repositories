@@ -10,11 +10,15 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		README.md = README.md
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MicroOrm.Dapper.Repositories", "MicroOrm.Dapper.Repositories\MicroOrm.Dapper.Repositories.csproj", "{425E810E-A9F5-4DD8-AF4D-DDDB962A166B}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{E409731D-9AB4-4389-B611-53A3AF8324A4}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MicroOrm.Dapper.Repositories.Tests", "MicroOrm.Dapper.Repositories.Tests\MicroOrm.Dapper.Repositories.Tests.csproj", "{D00403A7-3E87-449F-8486-5F7CE9A9D731}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MicroOrm.Dapper.Repositories", "src\MicroOrm.Dapper.Repositories\MicroOrm.Dapper.Repositories.csproj", "{EC3073B6-AD9A-491D-A117-8A3C771DD634}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MicroOrm.Dapper.Repositories.Benchmarks.Tests", "MicroOrm.Dapper.Repositories.Benchmarks.Tests\MicroOrm.Dapper.Repositories.Benchmarks.Tests.csproj", "{0E54214E-ACB4-40AE-9FD1-F2F1A1973610}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{4EAE3A6B-35A5-4C95-AAB6-1D977F63184B}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MicroOrm.Dapper.Repositories.Tests", "test\MicroOrm.Dapper.Repositories.Tests\MicroOrm.Dapper.Repositories.Tests.csproj", "{C1FDB39A-B2B9-4561-B38F-AB95783AEAD3}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MicroOrm.Dapper.Repositories.Benchmarks.Tests", "test\MicroOrm.Dapper.Repositories.Benchmarks.Tests\MicroOrm.Dapper.Repositories.Benchmarks.Tests.csproj", "{9747DDB8-C9A5-4DEE-B037-91E365C426B1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -22,20 +26,25 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{425E810E-A9F5-4DD8-AF4D-DDDB962A166B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{425E810E-A9F5-4DD8-AF4D-DDDB962A166B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{425E810E-A9F5-4DD8-AF4D-DDDB962A166B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{425E810E-A9F5-4DD8-AF4D-DDDB962A166B}.Release|Any CPU.Build.0 = Release|Any CPU
-		{D00403A7-3E87-449F-8486-5F7CE9A9D731}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D00403A7-3E87-449F-8486-5F7CE9A9D731}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D00403A7-3E87-449F-8486-5F7CE9A9D731}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D00403A7-3E87-449F-8486-5F7CE9A9D731}.Release|Any CPU.Build.0 = Release|Any CPU
-		{0E54214E-ACB4-40AE-9FD1-F2F1A1973610}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{0E54214E-ACB4-40AE-9FD1-F2F1A1973610}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{0E54214E-ACB4-40AE-9FD1-F2F1A1973610}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{0E54214E-ACB4-40AE-9FD1-F2F1A1973610}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EC3073B6-AD9A-491D-A117-8A3C771DD634}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EC3073B6-AD9A-491D-A117-8A3C771DD634}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EC3073B6-AD9A-491D-A117-8A3C771DD634}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EC3073B6-AD9A-491D-A117-8A3C771DD634}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C1FDB39A-B2B9-4561-B38F-AB95783AEAD3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C1FDB39A-B2B9-4561-B38F-AB95783AEAD3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C1FDB39A-B2B9-4561-B38F-AB95783AEAD3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C1FDB39A-B2B9-4561-B38F-AB95783AEAD3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9747DDB8-C9A5-4DEE-B037-91E365C426B1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9747DDB8-C9A5-4DEE-B037-91E365C426B1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9747DDB8-C9A5-4DEE-B037-91E365C426B1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9747DDB8-C9A5-4DEE-B037-91E365C426B1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{EC3073B6-AD9A-491D-A117-8A3C771DD634} = {E409731D-9AB4-4389-B611-53A3AF8324A4}
+		{C1FDB39A-B2B9-4561-B38F-AB95783AEAD3} = {4EAE3A6B-35A5-4C95-AAB6-1D977F63184B}
+		{9747DDB8-C9A5-4DEE-B037-91E365C426B1} = {4EAE3A6B-35A5-4C95-AAB6-1D977F63184B}
 	EndGlobalSection
 EndGlobal

@@ -12,12 +12,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\MicroOrm.Dapper.Repositories\MicroOrm.Dapper.Repositories.csproj" />
+    <PackageReference Include="BenchmarkDotNet" Version="0.10.3" />
+    <PackageReference Include="System.ComponentModel.EventBasedAsync" Version="4.3.0" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="BenchmarkDotNet" Version="0.10.3" />
-    <PackageReference Include="System.ComponentModel.EventBasedAsync" Version="4.3.0" />
+    <ProjectReference Include="..\..\src\MicroOrm.Dapper.Repositories\MicroOrm.Dapper.Repositories.csproj" />
   </ItemGroup>
 
 </Project>
