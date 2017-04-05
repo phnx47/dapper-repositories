@@ -13,7 +13,7 @@ Docs
 
 A more detailed description:
 
-[MicroOrm.Dapper.Repositories](http://phnx47.github.io/MicroOrm.Dapper.Repositories/)
+[MicroOrm.Dapper.Repositories](http://dapper.phnx47.net)
 
 Authors
 -------
