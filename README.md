@@ -28,7 +28,7 @@ Contribute
 Contributions to the package are always welcome!
 
 * Report any bugs or issues you find on the [issue tracker](https://github.com/phnx47/MicroOrm.Dapper.Repositories/issues).
-* You can grab the source code at the package's [git repository](http://phnx47.github.io/MicroOrm.Dapper.Repositories/).
+* You can grab the source code at the package's [git repository](https://github.com/phnx47/MicroOrm.Dapper.Repositories).
 
 Support
 -------
