@@ -8,6 +8,7 @@ using System.Linq.Expressions;
 using System.Reflection;
 using System.Threading.Tasks;
 using Dapper;
+using MicroOrm.Dapper.Repositories.Attributes.Joins;
 using MicroOrm.Dapper.Repositories.Extensions;
 using MicroOrm.Dapper.Repositories.SqlGenerator;
 
@@ -18,6 +19,24 @@ namespace MicroOrm.Dapper.Repositories
     /// </summary>
     public class DapperRepository<TEntity> : IDapperRepository<TEntity> where TEntity : class
     {
+        /// <summary>
+        ///     Dummy type for excluding from multi-map
+        /// </summary>
+        // ReSharper disable once ClassNeverInstantiated.Local
+        private class DontMap
+        {
+        }
+
+
+        private const string DateTimeFormat = "yyyy-MM-dd HH:mm:ss";
+
+        /// <inheritdoc />
+        public IDbConnection Connection { get; }
+
+        /// <inheritdoc />
+        public ISqlGenerator<TEntity> SqlGenerator { get; }
+
+
         /// <summary>
         ///     Constructor
         /// </summary>
@@ -54,21 +73,6 @@ namespace MicroOrm.Dapper.Repositories
             SqlGenerator = new SqlGenerator<TEntity>(config);
         }
 
-        /// <inheritdoc />
-        public IDbConnection Connection { get; }
-
-        /// <inheritdoc />
-        public ISqlGenerator<TEntity> SqlGenerator { get; }
-
-        /// <summary>
-        ///     Dummy type for excluding from multi-map
-        /// </summary>
-        // ReSharper disable once ClassNeverInstantiated.Local
-        private class DontMap
-        {
-        }
-
-        #region Find
 
         /// <inheritdoc />
         public virtual TEntity Find(IDbTransaction transaction = null)
@@ -237,10 +241,6 @@ namespace MicroOrm.Dapper.Repositories
             var queryResult = SqlGenerator.GetSelectFirst(predicate, tChild1, tChild2, tChild3, tChild4, tChild5, tChild6);
             return (await ExecuteJoinQueryAsync<TChild1, TChild2, TChild3, TChild4, TChild5, TChild6>(queryResult, transaction, tChild1, tChild2, tChild3, tChild4, tChild5, tChild6)).FirstOrDefault();
         }
-
-        #endregion Find
-
-        #region FindAll
 
         /// <inheritdoc />
         public virtual IEnumerable<TEntity> FindAll(IDbTransaction transaction = null)
@@ -436,61 +436,57 @@ namespace MicroOrm.Dapper.Repositories
             var childPropertyNames = includes.Select(ExpressionHelper.GetPropertyName).ToList();
             var childProperties = childPropertyNames.Select(p => type.GetProperty(p)).ToList();
 
-            if (SqlGenerator.KeySqlProperties.Length > 1)
-                throw new Exception("Joining with CompositeKeys isn't supported");
+            if (!SqlGenerator.KeySqlProperties.Any())
+                throw new NotSupportedException("Join doesn't support without [Key] attribute");
 
-            var keyPropertyMeta = SqlGenerator.KeySqlProperties.FirstOrDefault();
-            if (keyPropertyMeta == null)
-                throw new Exception("key not found");
-
-            var keyProperty = keyPropertyMeta.PropertyInfo;
+            var keyProperties = SqlGenerator.KeySqlProperties.Select(q => q.PropertyInfo).ToArray();
             var childKeyProperties = new List<PropertyInfo>();
 
             foreach (var property in childProperties)
             {
                 var childType = property.PropertyType.IsGenericType() ? property.PropertyType.GenericTypeArguments[0] : property.PropertyType;
                 var properties = childType.GetProperties().Where(ExpressionHelper.GetPrimitivePropertiesPredicate());
-                childKeyProperties.Add(properties.First(p => p.GetCustomAttributes<KeyAttribute>().Any()));
+                childKeyProperties.AddRange(properties.Where(p => p.GetCustomAttributes<KeyAttribute>().Any()));
             }
+
+            if(!childKeyProperties.Any())
+                throw new NotSupportedException("Join doesn't support without [Key] attribute");
 
             var lookup = new Dictionary<object, TEntity>();
             const bool buffered = true;
 
-            var spiltOn = "Id";
-            var childKeyNames = childKeyProperties.Select(p => p.Name).ToList();
-            if (childKeyNames.Any(p => p != spiltOn))
-                spiltOn = string.Join(",", childKeyNames);
+            var spiltOn = string.Join(",", childKeyProperties.Select(q => q.Name));
 
             switch (includes.Length)
             {
                 case 1:
                     Connection.Query<TEntity, TChild1, TEntity>(sqlQuery.GetSql(), (entity, child1) =>
-                        EntityJoinMapping<TChild1, TChild2, TChild3, TChild4, TChild5, TChild6>(lookup, keyProperty, childKeyProperties, childProperties, childPropertyNames, type, entity, child1), sqlQuery.Param, transaction, buffered, spiltOn);
+                        EntityJoinMapping<TChild1, TChild2, TChild3, TChild4, TChild5, TChild6>(lookup, keyProperties, childKeyProperties, childProperties, childPropertyNames, type, entity, child1), sqlQuery.Param, transaction, buffered, spiltOn);
                     break;
 
                 case 2:
                     Connection.Query<TEntity, TChild1, TChild2, TEntity>(sqlQuery.GetSql(), (entity, child1, child2) =>
-                        EntityJoinMapping<TChild1, TChild2, TChild3, TChild4, TChild5, TChild6>(lookup, keyProperty, childKeyProperties, childProperties, childPropertyNames, type, entity, child1, child2), sqlQuery.Param, transaction, buffered, spiltOn);
+                        EntityJoinMapping<TChild1, TChild2, TChild3, TChild4, TChild5, TChild6>(lookup, keyProperties, childKeyProperties, childProperties, childPropertyNames, type, entity, child1, child2), sqlQuery.Param, transaction, buffered, spiltOn);
                     break;
 
                 case 3:
                     Connection.Query<TEntity, TChild1, TChild2, TChild3, TEntity>(sqlQuery.GetSql(), (entity, child1, child2, child3) =>
-                        EntityJoinMapping<TChild1, TChild2, TChild3, TChild4, TChild5, TChild6>(lookup, keyProperty, childKeyProperties, childProperties, childPropertyNames, type, entity, child1, child2, child3), sqlQuery.Param, transaction, buffered, spiltOn);
+                        EntityJoinMapping<TChild1, TChild2, TChild3, TChild4, TChild5, TChild6>(lookup, keyProperties, childKeyProperties, childProperties, childPropertyNames, type, entity, child1, child2, child3), sqlQuery.Param, transaction, buffered, spiltOn);
                     break;
 
                 case 4:
                     Connection.Query<TEntity, TChild1, TChild2, TChild3, TChild4, TEntity>(sqlQuery.GetSql(), (entity, child1, child2, child3, child4) =>
-                        EntityJoinMapping<TChild1, TChild2, TChild3, TChild4, TChild5, TChild6>(lookup, keyProperty, childKeyProperties, childProperties, childPropertyNames, type, entity, child1, child2, child3, child4), sqlQuery.Param, transaction, buffered, spiltOn);
+                        EntityJoinMapping<TChild1, TChild2, TChild3, TChild4, TChild5, TChild6>(lookup, keyProperties, childKeyProperties, childProperties, childPropertyNames, type, entity, child1, child2, child3, child4), sqlQuery.Param, transaction, buffered, spiltOn);
                     break;
 
                 case 5:
                     Connection.Query<TEntity, TChild1, TChild2, TChild3, TChild4, TChild5, TEntity>(sqlQuery.GetSql(), (entity, child1, child2, child3, child4, child5) =>
-                        EntityJoinMapping<TChild1, TChild2, TChild3, TChild4, TChild5, TChild6>(lookup, keyProperty, childKeyProperties, childProperties, childPropertyNames, type, entity, child1, child2, child3, child4, child5), sqlQuery.Param, transaction, buffered, spiltOn);
+                        EntityJoinMapping<TChild1, TChild2, TChild3, TChild4, TChild5, TChild6>(lookup, keyProperties, childKeyProperties, childProperties, childPropertyNames, type, entity, child1, child2, child3, child4, child5), sqlQuery.Param, transaction, buffered, spiltOn);
                     break;
 
                 case 6:
                     Connection.Query<TEntity, TChild1, TChild2, TChild3, TChild4, TChild5, TChild6, TEntity>(sqlQuery.GetSql(), (entity, child1, child2, child3, child4, child5, child6) =>
-                        EntityJoinMapping<TChild1, TChild2, TChild3, TChild4, TChild5, TChild6>(lookup, keyProperty, childKeyProperties, childProperties, childPropertyNames, type, entity, child1, child2, child3, child4, child5, child6), sqlQuery.Param, transaction, buffered, spiltOn);
+                        EntityJoinMapping<TChild1, TChild2, TChild3, TChild4, TChild5, TChild6>(lookup, keyProperties, childKeyProperties, childProperties, childPropertyNames, type, entity, child1, child2, child3, child4, child5, child6), sqlQuery.Param, transaction, buffered, spiltOn);
                     break;
 
                 default:
@@ -510,61 +506,63 @@ namespace MicroOrm.Dapper.Repositories
             var childPropertyNames = includes.Select(ExpressionHelper.GetPropertyName).ToList();
             var childProperties = childPropertyNames.Select(p => type.GetProperty(p)).ToList();
 
-            if (SqlGenerator.KeySqlProperties.Length > 1)
-                throw new Exception("Joining with CompositeKeys isn't supported");
+            if (!SqlGenerator.KeySqlProperties.Any())
+                throw new NotSupportedException("Join doesn't support without [Key] attribute");
 
-            var keyPropertyMeta = SqlGenerator.KeySqlProperties.FirstOrDefault();
-            if (keyPropertyMeta == null)
-                throw new Exception("key not found");
-
-            var keyProperty = keyPropertyMeta.PropertyInfo;
+            var keyProperties = SqlGenerator.KeySqlProperties.Select(q => q.PropertyInfo).ToArray();
             var childKeyProperties = new List<PropertyInfo>();
 
             foreach (var property in childProperties)
             {
                 var childType = property.PropertyType.IsGenericType() ? property.PropertyType.GenericTypeArguments[0] : property.PropertyType;
                 var properties = childType.GetProperties().Where(ExpressionHelper.GetPrimitivePropertiesPredicate());
-                childKeyProperties.Add(properties.First(p => p.GetCustomAttributes<KeyAttribute>().Any()));
+                childKeyProperties.AddRange(properties.Where(p => p.GetCustomAttributes<KeyAttribute>().Any()));
             }
+
+            if (!childKeyProperties.Any())
+                throw new NotSupportedException("Join doesn't support without [Key] attribute");
 
             var lookup = new Dictionary<object, TEntity>();
             const bool buffered = true;
 
-            var spiltOn = "Id";
-            var childKeyNames = childKeyProperties.Select(p => p.Name).ToList();
-            if (childKeyNames.Any(p => p != spiltOn))
-                spiltOn = string.Join(",", childKeyNames);
-
+            var spiltOn = string.Join(",", childKeyProperties.Select(q => q.Name));
+            var sql = sqlQuery.GetSql();
             switch (includes.Length)
             {
                 case 1:
                     await Connection.QueryAsync<TEntity, TChild1, TEntity>(sqlQuery.GetSql(), (entity, child1) =>
-                        EntityJoinMapping<TChild1, TChild2, TChild3, TChild4, TChild5, TChild6>(lookup, keyProperty, childKeyProperties, childProperties, childPropertyNames, type, entity, child1), sqlQuery.Param, transaction, buffered, spiltOn);
+                            EntityJoinMapping<TChild1, TChild2, TChild3, TChild4, TChild5, TChild6>(lookup, keyProperties, childKeyProperties, childProperties, childPropertyNames, type, entity, child1),
+                        sqlQuery.Param, transaction, buffered, spiltOn);
                     break;
 
                 case 2:
                     await Connection.QueryAsync<TEntity, TChild1, TChild2, TEntity>(sqlQuery.GetSql(), (entity, child1, child2) =>
-                        EntityJoinMapping<TChild1, TChild2, TChild3, TChild4, TChild5, TChild6>(lookup, keyProperty, childKeyProperties, childProperties, childPropertyNames, type, entity, child1, child2), sqlQuery.Param, transaction, buffered, spiltOn);
+                            EntityJoinMapping<TChild1, TChild2, TChild3, TChild4, TChild5, TChild6>(lookup, keyProperties, childKeyProperties, childProperties, childPropertyNames, type, entity, child1, child2),
+                        sqlQuery.Param, transaction, buffered, spiltOn);
                     break;
 
                 case 3:
                     await Connection.QueryAsync<TEntity, TChild1, TChild2, TChild3, TEntity>(sqlQuery.GetSql(), (entity, child1, child2, child3) =>
-                        EntityJoinMapping<TChild1, TChild2, TChild3, TChild4, TChild5, TChild6>(lookup, keyProperty, childKeyProperties, childProperties, childPropertyNames, type, entity, child1, child2, child3), sqlQuery.Param, transaction, buffered, spiltOn);
+                            EntityJoinMapping<TChild1, TChild2, TChild3, TChild4, TChild5, TChild6>(lookup, keyProperties, childKeyProperties, childProperties, childPropertyNames, type, entity, child1, child2, child3),
+                        sqlQuery.Param, transaction, buffered, spiltOn);
                     break;
 
                 case 4:
                     await Connection.QueryAsync<TEntity, TChild1, TChild2, TChild3, TChild4, TEntity>(sqlQuery.GetSql(), (entity, child1, child2, child3, child4) =>
-                        EntityJoinMapping<TChild1, TChild2, TChild3, TChild4, TChild5, TChild6>(lookup, keyProperty, childKeyProperties, childProperties, childPropertyNames, type, entity, child1, child2, child3, child4), sqlQuery.Param, transaction, buffered, spiltOn);
+                            EntityJoinMapping<TChild1, TChild2, TChild3, TChild4, TChild5, TChild6>(lookup, keyProperties, childKeyProperties, childProperties, childPropertyNames, type, entity, child1, child2, child3, child4),
+                        sqlQuery.Param, transaction, buffered, spiltOn);
                     break;
 
                 case 5:
                     await Connection.QueryAsync<TEntity, TChild1, TChild2, TChild3, TChild4, TChild5, TEntity>(sqlQuery.GetSql(), (entity, child1, child2, child3, child4, child5) =>
-                        EntityJoinMapping<TChild1, TChild2, TChild3, TChild4, TChild5, TChild6>(lookup, keyProperty, childKeyProperties, childProperties, childPropertyNames, type, entity, child1, child2, child3, child4, child5), sqlQuery.Param, transaction, buffered, spiltOn);
+                            EntityJoinMapping<TChild1, TChild2, TChild3, TChild4, TChild5, TChild6>(lookup, keyProperties, childKeyProperties, childProperties, childPropertyNames, type, entity, child1, child2, child3, child4, child5),
+                        sqlQuery.Param, transaction, buffered, spiltOn);
                     break;
 
                 case 6:
                     await Connection.QueryAsync<TEntity, TChild1, TChild2, TChild3, TChild4, TChild5, TChild6, TEntity>(sqlQuery.GetSql(), (entity, child1, child2, child3, child4, child5, child6) =>
-                        EntityJoinMapping<TChild1, TChild2, TChild3, TChild4, TChild5, TChild6>(lookup, keyProperty, childKeyProperties, childProperties, childPropertyNames, type, entity, child1, child2, child3, child4, child5, child6), sqlQuery.Param, transaction, buffered, spiltOn);
+                            EntityJoinMapping<TChild1, TChild2, TChild3, TChild4, TChild5, TChild6>(lookup, keyProperties, childKeyProperties, childProperties, childPropertyNames, type, entity, child1, child2, child3, child4, child5, child6),
+                        sqlQuery.Param, transaction, buffered, spiltOn);
                     break;
 
                 default:
@@ -574,13 +572,15 @@ namespace MicroOrm.Dapper.Repositories
             return lookup.Values;
         }
 
-        private static TEntity EntityJoinMapping<TChild1, TChild2, TChild3, TChild4, TChild5, TChild6>(IDictionary<object, TEntity> lookup, PropertyInfo keyProperty, IList<PropertyInfo> childKeyProperties, IList<PropertyInfo> childProperties, IList<string> propertyNames, Type entityType, TEntity entity, params object[] childs)
-        {
-            var key = keyProperty.GetValue(entity);
 
+        private static TEntity EntityJoinMapping<TChild1, TChild2, TChild3, TChild4, TChild5, TChild6>(IDictionary<object, TEntity> lookup, PropertyInfo[] keyProperties,
+            IList<PropertyInfo> childKeyProperties, IList<PropertyInfo> childProperties, IList<string> propertyNames, Type entityType, TEntity entity, params object[] childs)
+        {
             TEntity target;
-            if (!lookup.TryGetValue(key, out target))
-                lookup.Add(key, target = entity);
+            var compositeKeyProperty = string.Join("|", keyProperties.Select(q => q.GetValue(entity).ToString()));
+
+            if (!lookup.TryGetValue(compositeKeyProperty, out target))
+                lookup.Add(compositeKeyProperty, target = entity);
 
             for (var i = 0; i < childs.Length; i++)
             {
@@ -591,7 +591,7 @@ namespace MicroOrm.Dapper.Repositories
 
                 if (childProperty.PropertyType.IsGenericType())
                 {
-                    var list = (IList) childProperty.GetValue(target);
+                    var list = (IList)childProperty.GetValue(target);
                     if (list == null)
                     {
                         switch (i)
@@ -643,10 +643,6 @@ namespace MicroOrm.Dapper.Repositories
 
             return target;
         }
-
-        #endregion FindAll
-
-        #region Insert
 
         /// <inheritdoc />
         public virtual bool Insert(TEntity instance, IDbTransaction transaction = null)
@@ -700,10 +696,6 @@ namespace MicroOrm.Dapper.Repositories
             return added;
         }
 
-        #endregion Insert
-
-        #region Delete
-
         /// <inheritdoc />
         public virtual bool Delete(TEntity instance, IDbTransaction transaction = null)
         {
@@ -719,10 +711,6 @@ namespace MicroOrm.Dapper.Repositories
             var deleted = await Connection.ExecuteAsync(queryResult.GetSql(), queryResult.Param, transaction) > 0;
             return deleted;
         }
-
-        #endregion Delete
-
-        #region Update
 
         /// <inheritdoc />
         public virtual bool Update(TEntity instance, IDbTransaction transaction = null)
@@ -740,11 +728,6 @@ namespace MicroOrm.Dapper.Repositories
             return updated;
         }
 
-        #endregion Update
-
-        #region Beetwen
-
-        private const string _dateTimeFormat = "yyyy-MM-dd HH:mm:ss";
 
         /// <inheritdoc />
         public IEnumerable<TEntity> FindAllBetween(object from, object to, Expression<Func<TEntity, object>> btwField, IDbTransaction transaction = null)
@@ -768,8 +751,8 @@ namespace MicroOrm.Dapper.Repositories
         /// <inheritdoc />
         public IEnumerable<TEntity> FindAllBetween(DateTime from, DateTime to, Expression<Func<TEntity, object>> btwField, Expression<Func<TEntity, bool>> predicate, IDbTransaction transaction = null)
         {
-            var fromString = from.ToString(_dateTimeFormat);
-            var toString = to.ToString(_dateTimeFormat);
+            var fromString = from.ToString(DateTimeFormat);
+            var toString = to.ToString(DateTimeFormat);
             return FindAllBetween(fromString, toString, btwField, predicate);
         }
 
@@ -795,9 +778,7 @@ namespace MicroOrm.Dapper.Repositories
         /// <inheritdoc />
         public Task<IEnumerable<TEntity>> FindAllBetweenAsync(DateTime from, DateTime to, Expression<Func<TEntity, object>> btwField, Expression<Func<TEntity, bool>> predicate, IDbTransaction transaction = null)
         {
-            return FindAllBetweenAsync(from.ToString(_dateTimeFormat), to.ToString(_dateTimeFormat), btwField, predicate, transaction);
+            return FindAllBetweenAsync(from.ToString(DateTimeFormat), to.ToString(DateTimeFormat), btwField, predicate, transaction);
         }
-
-        #endregion Beetwen
     }
 }

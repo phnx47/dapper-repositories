@@ -37,23 +37,28 @@ namespace MicroOrm.Dapper.Repositories.Tests.DatabaseFixture
             dropTable("Users");
             dropTable("Cars");
             dropTable("Addresses");
+            dropTable("Cities");
+            dropTable("Reports");
 
             Db.Connection.Execute(@"CREATE TABLE Users (Id int IDENTITY(1,1) not null, Name varchar(256) not null, AddressId int not null, Deleted bit not null, UpdatedAt datetime2,  PRIMARY KEY (Id))");
             Db.Connection.Execute(@"CREATE TABLE Cars (Id int IDENTITY(1,1) not null, Name varchar(256) not null, UserId int not null, Status int not null, Data binary(16) null, PRIMARY KEY (Id))");
 
-            Db.Connection.Execute(@"CREATE TABLE Addresses (Id int IDENTITY(1,1) not null, Street varchar(256) not null,  PRIMARY KEY (Id))");
+            Db.Connection.Execute(@"CREATE TABLE Addresses (Id int IDENTITY(1,1) not null, Street varchar(256) not null, CityId varchar(256) not null,  PRIMARY KEY (Id))");
+            Db.Connection.Execute(@"CREATE TABLE Cities (Identifier varchar(256) not null, Name varchar(256) not null)");
+            Db.Connection.Execute(@"CREATE TABLE Reports (Id int not null, AnotherId int not null, UserId int not null,  PRIMARY KEY (Id, AnotherId))");
 
-            Db.Address.Insert(new Address {Street = "Street0"});
+            Db.Address.Insert(new Address { Street = "Street0", CityId = "MSK" });
+            Db.Cities.Insert(new City { Identifier = "MSK", Name = "Moscow" });
 
             for (var i = 0; i < 10; i++)
                 Db.Users.Insert(new User
                 {
                     Name = $"TestName{i}",
-                    AddressId = 1
+                    AddressId = 1,
                 });
 
-            Db.Users.Insert(new User {Name = "TestName0"});
-            Db.Cars.Insert(new Car {Name = "TestCar0", UserId = 1});
+            Db.Users.Insert(new User { Name = "TestName0" });
+            Db.Cars.Insert(new Car { Name = "TestCar0", UserId = 1 });
         }
     }
 }

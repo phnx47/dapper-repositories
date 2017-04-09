@@ -47,7 +47,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.Tests
             }
             catch (NotImplementedException ex)
             {
-                Assert.Contains(ex.Message, "predicate can't parse");
+                Assert.Contains("predicate can't parse", ex.Message);
                 isExceptions = true;
             }
 
@@ -77,17 +77,15 @@ namespace MicroOrm.Dapper.Repositories.Tests.Tests
                          "WHERE [Users].[Deleted] != 1", sqlQuery.GetSql());
         }
 
-        [Fact]
-        public void MSSQLJoinOnJoin()
-        {
-            ISqlGenerator<Address> userSqlGenerator = new SqlGenerator<Address>(ESqlConnector.MSSQL, true);
-            var sqlQuery = userSqlGenerator.GetSelectAll(null, address => address.Users, address => address.Users.Select(user => user.Cars));
 
-            Assert.Equal("SELECT [Addresses].[Id], [Addresses].[Street], " +
-                         "[Users].[Id], [Users].[Name], [Users].[AddressId], [Users].[Deleted], [Users].[UpdatedAt], " +
-                         "[Cars].[Id], [Cars].[Name], [Cars].[Data], [Cars].[UserId], [Cars].[Status] " +
-                         "FROM [Addresses] LEFT JOIN [Users] ON [Addresses].[Id] = [Users].[AddressId] " +
-                         "LEFT JOIN [Cars] ON [Users].[Id] = [Cars].[UserId]", sqlQuery.GetSql());
+        [Fact]
+        public void MSSQLSelectBetweenWithLogicalDelete()
+        {
+            ISqlGenerator<User> userSqlGenerator = new SqlGenerator<User>(ESqlConnector.MSSQL, false);
+            var sqlQuery = userSqlGenerator.GetSelectBetween(1, 10, x => x.Id);
+
+            Assert.Equal("SELECT Users.Id, Users.Name, Users.AddressId, Users.Deleted, Users.UpdatedAt FROM Users " +
+                         "WHERE Users.Deleted != 1 AND Users.Id BETWEEN '1' AND '10'", sqlQuery.GetSql());
         }
 
         [Fact]
@@ -100,43 +98,33 @@ namespace MicroOrm.Dapper.Repositories.Tests.Tests
                          "WHERE [Users].[Deleted] != 1 AND [Users].[Id] BETWEEN '1' AND '10'", sqlQuery.GetSql());
         }
 
-		[Fact]
-		public void MSSQLSelectBetweenWithLogicalDelete()
-		{
-			ISqlGenerator<User> userSqlGenerator = new SqlGenerator<User>(ESqlConnector.MSSQL, false);
-			var sqlQuery = userSqlGenerator.GetSelectBetween(1, 10, x => x.Id);
 
-			Assert.Equal("SELECT Users.Id, Users.Name, Users.AddressId, Users.Deleted, Users.UpdatedAt FROM Users " +
-						 "WHERE Users.Deleted != 1 AND Users.Id BETWEEN '1' AND '10'", sqlQuery.GetSql());
-		}
+        [Fact]
+        public void MSSQLSelectBetweenWithoutLogicalDelete()
+        {
+            ISqlGenerator<Address> userSqlGenerator = new SqlGenerator<Address>(ESqlConnector.MSSQL, false);
+            var sqlQuery = userSqlGenerator.GetSelectBetween(1, 10, x => x.Id);
 
-		[Fact]
+            Assert.Equal("SELECT Addresses.Id, Addresses.Street, Addresses.CityId FROM Addresses " +
+                         "WHERE Addresses.Id BETWEEN '1' AND '10'", sqlQuery.GetSql());
+        }
+
+        [Fact]
         public void MSSQLSelectBetweenWithoutLogicalDeleteBraclets()
         {
             ISqlGenerator<Address> userSqlGenerator = new SqlGenerator<Address>(ESqlConnector.MSSQL, true);
             var sqlQuery = userSqlGenerator.GetSelectBetween(1, 10, x => x.Id);
 
-			Assert.Equal("SELECT [Addresses].[Id], [Addresses].[Street] FROM [Addresses] " +
-						  "WHERE [Addresses].[Id] BETWEEN '1' AND '10'", sqlQuery.GetSql());
-		}
+            Assert.Equal("SELECT [Addresses].[Id], [Addresses].[Street], [Addresses].[CityId] FROM [Addresses] " +
+                         "WHERE [Addresses].[Id] BETWEEN '1' AND '10'", sqlQuery.GetSql());
+        }
 
-
-		[Fact]
-		public void MSSQLSelectBetweenWithoutLogicalDelete()
-		{
-			ISqlGenerator<Address> userSqlGenerator = new SqlGenerator<Address>(ESqlConnector.MSSQL, false);
-			var sqlQuery = userSqlGenerator.GetSelectBetween(1, 10, x => x.Id);
-
-			Assert.Equal("SELECT Addresses.Id, Addresses.Street FROM Addresses " +
-						 "WHERE Addresses.Id BETWEEN '1' AND '10'", sqlQuery.GetSql());
-		}
-
-		[Fact]
+        [Fact]
         public void MSSQLSelectFirst()
         {
             ISqlGenerator<User> userSqlGenerator = new SqlGenerator<User>(ESqlConnector.MSSQL, true);
             var sqlQuery = userSqlGenerator.GetSelectFirst(x => x.Id == 2);
-            Assert.Equal(sqlQuery.GetSql(), "SELECT TOP 1 [Users].[Id], [Users].[Name], [Users].[AddressId], [Users].[Deleted], [Users].[UpdatedAt] FROM [Users] WHERE [Users].[Id] = @Id AND [Users].[Deleted] != 1");
+            Assert.Equal("SELECT TOP 1 [Users].[Id], [Users].[Name], [Users].[AddressId], [Users].[Deleted], [Users].[UpdatedAt] FROM [Users] WHERE [Users].[Id] = @Id AND [Users].[Deleted] != 1", sqlQuery.GetSql());
         }
 
         [Fact]
@@ -166,19 +154,6 @@ namespace MicroOrm.Dapper.Repositories.Tests.Tests
             Assert.DoesNotContain("!= NULL", sqlQuery.GetSql());
         }
 
-        [Fact]
-        public void MySQLJoinOnJoin()
-        {
-            ISqlGenerator<Car> userSqlGenerator = new SqlGenerator<Car>(ESqlConnector.MySQL, true);
-            var sqlQuery = userSqlGenerator.GetSelectAll(null, car => car.User,
-                car => car.User.Address);
-
-            Assert.Equal("SELECT `Cars`.`Id`, `Cars`.`Name`, `Cars`.`Data`, `Cars`.`UserId`, `Cars`.`Status`, " +
-                         "`Users`.`Id`, `Users`.`Name`, `Users`.`AddressId`, `Users`.`Deleted`, `Users`.`UpdatedAt`, " +
-                         "`Addresses`.`Id`, `Addresses`.`Street` " +
-                         "FROM `Cars` LEFT JOIN `Users` ON `Cars`.`UserId` = `Users`.`Id` LEFT JOIN `Addresses` ON `Users`.`AddressId` = `Addresses`.`Id` " +
-                         "WHERE `Cars`.`Status` != -1", sqlQuery.GetSql());
-        }
 
         [Fact]
         public void MySQLSelectBetween()
@@ -195,7 +170,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.Tests
         {
             ISqlGenerator<User> userSqlGenerator = new SqlGenerator<User>(ESqlConnector.MySQL, true);
             var sqlQuery = userSqlGenerator.GetSelectFirst(x => x.Id == 6);
-            Assert.Equal(sqlQuery.GetSql(), "SELECT `Users`.`Id`, `Users`.`Name`, `Users`.`AddressId`, `Users`.`Deleted`, `Users`.`UpdatedAt` FROM `Users` WHERE `Users`.`Id` = @Id AND `Users`.`Deleted` != 1 LIMIT 1");
+            Assert.Equal("SELECT `Users`.`Id`, `Users`.`Name`, `Users`.`AddressId`, `Users`.`Deleted`, `Users`.`UpdatedAt` FROM `Users` WHERE `Users`.`Id` = @Id AND `Users`.`Deleted` != 1 LIMIT 1", sqlQuery.GetSql());
         }
     }
 }

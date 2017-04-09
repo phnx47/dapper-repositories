@@ -17,5 +17,10 @@ namespace MicroOrm.Dapper.Repositories.Tests.Classes
 
         [LeftJoin("Users", "Id", "AddressId")]
         public List<User> Users { get; set; }
+
+        public string CityId { get; set; }
+
+        [InnerJoin("Cities", "CityId", "Identifier")]
+        public City City { get; set; }
     }
 }

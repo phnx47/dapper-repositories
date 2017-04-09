@@ -17,15 +17,16 @@ namespace MicroOrm.Dapper.Repositories.Tests.Tests
         private readonly MsSqlDatabaseFixture _sqlDatabaseFixture;
 
         [Fact]
-        public async Task ChangeDate_InsertAndFind()
+        public async Task ChangeDateInsertAndFind()
         {
             const int diff = 12;
-            var dateTime = DateTime.UtcNow.AddDays(-diff);
-            var user = new User {Name = "Sergey Phoenix", UpdatedAt = dateTime};
+            var dateTime = DateTime.Now.AddDays(-diff);
+            var user = new User { Name = "Sergey Phoenix", UpdatedAt = dateTime };
             await _sqlDatabaseFixture.Db.Users.InsertAsync(user);
             var userFromDb = await _sqlDatabaseFixture.Db.Users.FindAsync(q => q.Id == user.Id);
-            var resultDiff = (userFromDb.UpdatedAt.Value.Date - dateTime.Date).Days;
-            Assert.Equal(diff, resultDiff);
+
+
+            Assert.Equal(1, userFromDb.UpdatedAt.Value.CompareTo(dateTime));
         }
 
         [Fact]
@@ -33,14 +34,14 @@ namespace MicroOrm.Dapper.Repositories.Tests.Tests
         {
             var user = _sqlDatabaseFixture.Db.Users.Find(x => x.Id == 2);
             Assert.False(user.Deleted);
-            Assert.Equal(user.Name, "TestName1");
+            Assert.Equal("TestName1", user.Name);
         }
 
         [Fact]
         public async Task FindAllAsync()
         {
             var users = (await _sqlDatabaseFixture.Db.Users.FindAllAsync(x => x.Name == "TestName0")).ToArray();
-            Assert.Equal(users.Count(), 2);
+            Assert.Equal(2, users.Length);
 
             var user1 = users.FirstOrDefault(x => x.Id == 1);
             Assert.NotNull(user1);
@@ -55,19 +56,19 @@ namespace MicroOrm.Dapper.Repositories.Tests.Tests
         [Fact]
         public void FindAllJoin2Table()
         {
-            var user = _sqlDatabaseFixture.Db.Users.FindAll<Car, Address>(x => x.Id == 1, q => q.Cars, q => q.Address).First();
-            Assert.Equal(user.Cars.Count, 1);
-            Assert.Equal(user.Cars.First().Name, "TestCar0");
-            Assert.Equal(user.Address.Street, "Street0");
+            var user = _sqlDatabaseFixture.Db.Users.FindAll<Car, Address>(x => x.Id == 1, q => q.Cars, q => q.Addresses).First();
+            Assert.Equal(1, user.Cars.Count);
+            Assert.Equal("TestCar0", user.Cars.First().Name);
+            Assert.Equal("Street0", user.Addresses.Street);
         }
 
         [Fact]
         public async Task FindAllJoin2TableAsync()
         {
-            var user = (await _sqlDatabaseFixture.Db.Users.FindAllAsync<Car, Address>(x => x.Id == 1, q => q.Cars, q => q.Address)).First();
-            Assert.Equal(user.Cars.Count, 1);
-            Assert.Equal(user.Cars.First().Name, "TestCar0");
-            Assert.Equal(user.Address.Street, "Street0");
+            var user = (await _sqlDatabaseFixture.Db.Users.FindAllAsync<Car, Address>(x => x.Id == 1, q => q.Cars, q => q.Addresses)).First();
+            Assert.Equal(1, user.Cars.Count);
+            Assert.Equal("TestCar0", user.Cars.First().Name);
+            Assert.Equal("Street0", user.Addresses.Street);
         }
 
         [Fact]
@@ -78,11 +79,11 @@ namespace MicroOrm.Dapper.Repositories.Tests.Tests
             {
                 var user = await _sqlDatabaseFixture.Db.Users.FindAsync(x => x.Id == id);
                 Assert.False(user.Deleted);
-                Assert.Equal(user.Name, name);
+                Assert.Equal(name, user.Name);
             }
             {
                 var user = await _sqlDatabaseFixture.Db.Users.FindAsync(x => x.Name == name);
-                Assert.Equal(user.Id, id);
+                Assert.Equal(id, user.Id);
 
                 Assert.Null(user.Cars);
             }
@@ -92,22 +93,22 @@ namespace MicroOrm.Dapper.Repositories.Tests.Tests
         public void FindJoin()
         {
             var user = _sqlDatabaseFixture.Db.Users.Find<Car>(x => x.Id == 1, q => q.Cars);
-            Assert.Equal(user.Cars.Count, 1);
-            Assert.Equal(user.Cars.First().Name, "TestCar0");
+            Assert.Equal(1, user.Cars.Count);
+            Assert.Equal("TestCar0", user.Cars.First().Name);
 
             var car = _sqlDatabaseFixture.Db.Cars.Find<User>(x => x.Id == 1, q => q.User);
-            Assert.Equal(car.User.Name, "TestName0");
+            Assert.Equal("TestName0", car.User.Name);
         }
 
         [Fact]
         public async Task FindJoinAsync()
         {
             var user = await _sqlDatabaseFixture.Db.Users.FindAsync<Car>(x => x.Id == 1, q => q.Cars);
-            Assert.Equal(user.Cars.Count, 1);
-            Assert.Equal(user.Cars.First().Name, "TestCar0");
+            Assert.Equal(1, user.Cars.Count);
+            Assert.Equal("TestCar0", user.Cars.First().Name);
 
             var car = await _sqlDatabaseFixture.Db.Cars.FindAsync<User>(x => x.Id == 1, q => q.User);
-            Assert.Equal(car.User.Name, "TestName0");
+            Assert.Equal("TestName0", car.User.Name);
         }
 
         [Fact]
@@ -122,13 +123,13 @@ namespace MicroOrm.Dapper.Repositories.Tests.Tests
             Assert.True(insert);
 
             var userFromDb = await _sqlDatabaseFixture.Db.Users.FindAsync(q => q.Id == user.Id);
-            Assert.Equal(userFromDb.Name, user.Name);
+            Assert.Equal(user.Name, userFromDb.Name);
             user.Name = "Sergey1";
 
             var update = await _sqlDatabaseFixture.Db.Users.UpdateAsync(user);
             Assert.True(update);
             userFromDb = await _sqlDatabaseFixture.Db.Users.FindAsync(q => q.Id == user.Id);
-            Assert.Equal(userFromDb.Name, "Sergey1");
+            Assert.Equal("Sergey1", userFromDb.Name);
         }
 
         [Fact]
@@ -221,6 +222,49 @@ namespace MicroOrm.Dapper.Repositories.Tests.Tests
             }
             userFromDb = await _sqlDatabaseFixture.Db.Users.FindAsync(x => x.Name == "Sergey_Transaction");
             Assert.NotNull(userFromDb);
+        }
+
+        [Fact]
+        public void FindAllJoinWithoutKeyTable()
+        {
+            try
+            {
+                var address = _sqlDatabaseFixture.Db.Address.FindAll<City>(x => x.Id == 1, q => q.City).First();
+            }
+            catch (NotSupportedException e)
+            {
+                Assert.Equal("Join doesn't support without [Key] attribute", e.Message);
+            }
+        }
+
+        [Fact]
+        public async Task FindAsyncJoinCompositeKey()
+        {
+            await _sqlDatabaseFixture.Db.Reports.InsertAsync(new Report
+            {
+                Id = 20,
+                AnotherId = 20000,
+                UserId = 1
+            });
+
+            var reportOne = await _sqlDatabaseFixture.Db.Reports.FindAsync<User>(x => x.Id == 20, q => q.User);
+            Assert.Equal("TestName0", reportOne.User.Name);
+
+            await _sqlDatabaseFixture.Db.Reports.InsertAsync(new Report
+            {
+                Id = 30,
+                AnotherId = 20000,
+                UserId = 1
+            });
+
+            var reportAll = (await _sqlDatabaseFixture.Db.Reports.FindAllAsync<User>(x => x.AnotherId == 20000, q => q.User)).ToArray();
+            Assert.Equal(2, reportAll.Length);
+
+            foreach (var report in reportAll)
+            {
+                Assert.Equal("TestName0", report.User.Name);
+            }
+
         }
     }
 }

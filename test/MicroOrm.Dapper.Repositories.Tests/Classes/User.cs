@@ -26,7 +26,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.Classes
         public List<Car> Cars { get; set; }
 
         [LeftJoin("Addresses", "AddressId", "Id")]
-        public Address Address { get; set; }
+        public Address Addresses { get; set; }
 
         [Status]
         [Deleted]
