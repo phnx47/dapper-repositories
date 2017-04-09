@@ -426,7 +426,10 @@ namespace MicroOrm.Dapper.Repositories
             return ExecuteJoinQueryAsync<TChild1, TChild2, TChild3, TChild4, TChild5, TChild6>(sqlQuery, transaction, tChild1, tChild2, tChild3, tChild4, tChild5, tChild6);
         }
 
-        private IEnumerable<TEntity> ExecuteJoinQuery<TChild1, TChild2, TChild3, TChild4, TChild5, TChild6>(
+        /// <summary>
+        ///     Execute Join query
+        /// </summary>
+        protected virtual IEnumerable<TEntity> ExecuteJoinQuery<TChild1, TChild2, TChild3, TChild4, TChild5, TChild6>(
             SqlQuery sqlQuery,
             IDbTransaction transaction,
             params Expression<Func<TEntity, object>>[] includes)
@@ -496,7 +499,11 @@ namespace MicroOrm.Dapper.Repositories
             return lookup.Values;
         }
 
-        private async Task<IEnumerable<TEntity>> ExecuteJoinQueryAsync<TChild1, TChild2, TChild3, TChild4, TChild5, TChild6>(
+
+        /// <summary>
+        ///     Execute Join query
+        /// </summary>
+        protected virtual async Task<IEnumerable<TEntity>> ExecuteJoinQueryAsync<TChild1, TChild2, TChild3, TChild4, TChild5, TChild6>(
             SqlQuery sqlQuery,
             IDbTransaction transaction,
             params Expression<Func<TEntity, object>>[] includes)
