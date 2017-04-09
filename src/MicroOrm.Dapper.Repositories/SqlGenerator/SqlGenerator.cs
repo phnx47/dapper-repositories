@@ -43,85 +43,14 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         /// <inheritdoc />
         public SqlGeneratorConfig Config { get; protected set; }
 
-        #region Insert
-
         /// <inheritdoc />
-        public virtual SqlQuery GetInsert(TEntity entity)
-        {
-            var properties = (IsIdentity ? SqlProperties.Where(p => !p.PropertyName.Equals(IdentitySqlProperty.PropertyName, StringComparison.OrdinalIgnoreCase)) : SqlProperties).ToList();
-
-            if (HasUpdatedAt)
-                UpdatedAtProperty.SetValue(entity, DateTime.UtcNow);
-
-            var query = new SqlQuery(entity);
-
-            query.SqlBuilder.Append(
-                "INSERT INTO " + TableName
-                + "(" + string.Join(", ", properties.Select(p => p.ColumnName)) + ")" // columNames
-                + " VALUES  (" + string.Join(", ", properties.Select(p => "@" + p.PropertyName)) + ")"); // values
-
-            if (IsIdentity)
-                switch (Config.SqlConnector)
-                {
-                    case ESqlConnector.MSSQL:
-                        query.SqlBuilder.Append("SELECT SCOPE_IDENTITY() AS " + IdentitySqlProperty.ColumnName);
-                        break;
-
-                    case ESqlConnector.MySQL:
-                        query.SqlBuilder.Append("; SELECT CONVERT(LAST_INSERT_ID(), SIGNED INTEGER) AS " + IdentitySqlProperty.ColumnName);
-                        break;
-
-                    case ESqlConnector.PostgreSQL:
-                        query.SqlBuilder.Append("RETURNING " + IdentitySqlProperty.ColumnName);
-                        break;
-
-                    default:
-                        throw new ArgumentOutOfRangeException();
-                }
-
-            return query;
-        }
-
-        #endregion Insert
-
-        #region Update
-
-        /// <inheritdoc />
-        public virtual SqlQuery GetUpdate(TEntity entity)
-        {
-            var properties = SqlProperties.Where(p => !KeySqlProperties.Any(k => k.PropertyName.Equals(p.PropertyName, StringComparison.OrdinalIgnoreCase)));
-
-            if (HasUpdatedAt)
-                UpdatedAtProperty.SetValue(entity, DateTime.UtcNow);
-
-            var query = new SqlQuery(entity);
-            query.SqlBuilder.Append("UPDATE " + TableName + " SET " + string.Join(", ", properties.Select(p => p.ColumnName + " = @" + p.PropertyName)) + " WHERE " + string.Join(" AND ", KeySqlProperties.Select(p => p.ColumnName + " = @" + p.PropertyName)));
-
-            return query;
-        }
-
-        #endregion Update
-
-        #region Logic delete
-
-        /// <summary>
-        ///     Has Logical delete
-        /// </summary>
         public bool LogicalDelete { get; protected set; }
 
-        /// <summary>
-        ///     PropertyName of Status
-        /// </summary>
+        /// <inheritdoc />
         public string StatusPropertyName { get; protected set; }
 
-        /// <summary>
-        ///     Logical delete Value
-        /// </summary>
+        /// <inheritdoc />
         public object LogicalDeleteValue { get; protected set; }
-
-        #endregion Logic delete
-
-        #region Init
 
         /// <summary>
         ///     Constructor
@@ -230,13 +159,15 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
             var statusProperty =
                 SqlProperties.FirstOrDefault(x => x.PropertyInfo.GetCustomAttributes<StatusAttribute>().Any());
 
-            if (statusProperty == null) return;
+            if (statusProperty == null)
+                return;
             StatusPropertyName = statusProperty.ColumnName;
 
             if (statusProperty.PropertyInfo.PropertyType.IsBool())
             {
                 var deleteProperty = AllProperties.FirstOrDefault(p => p.GetCustomAttributes<DeletedAttribute>().Any());
-                if (deleteProperty == null) return;
+                if (deleteProperty == null)
+                    return;
 
                 LogicalDelete = true;
                 LogicalDeleteValue = 1; // true
@@ -245,7 +176,8 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
             {
                 var deleteOption = statusProperty.PropertyInfo.PropertyType.GetFields().FirstOrDefault(f => f.GetCustomAttribute<DeletedAttribute>() != null);
 
-                if (deleteOption == null) return;
+                if (deleteOption == null)
+                    return;
 
                 var enumValue = Enum.Parse(statusProperty.PropertyInfo.PropertyType, deleteOption.Name);
 
@@ -255,10 +187,6 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                 LogicalDelete = true;
             }
         }
-
-        #endregion Init
-
-        #region Select
 
         private SqlQuery InitBuilderSelect(bool firstOnly)
         {
@@ -283,22 +211,14 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         {
             var joinBuilder = new StringBuilder();
 
-            var joinedProperties = new List<PropertyInfo>();
             foreach (var include in includes)
             {
-                var propertyName = ExpressionHelper.GetFullPropertyName(include);
-                var joinProperty = AllProperties.Concat(joinedProperties).First(x =>
-                {
-                    if (x.DeclaringType != null)
-                        return x.DeclaringType.FullName + "." + x.Name == propertyName;
-                    return false;
-                });
-
+                var joinProperty = AllProperties.First(q => q.Name == ExpressionHelper.GetPropertyName(include));
                 var tableName = GetTableNameOrAlias(joinProperty.DeclaringType);
-
                 var attrJoin = joinProperty.GetCustomAttribute<JoinAttributeBase>();
 
-                if (attrJoin == null) continue;
+                if (attrJoin == null)
+                    continue;
 
                 var joinString = "";
                 if (attrJoin is LeftJoinAttribute)
@@ -309,7 +229,6 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                     joinString = "RIGHT JOIN";
 
                 var joinType = joinProperty.PropertyType.IsGenericType() ? joinProperty.PropertyType.GenericTypeArguments[0] : joinProperty.PropertyType;
-                joinedProperties.AddRange(joinType.GetProperties().Where(p => !p.GetCustomAttributes<NotMappedAttribute>().Any()));
                 var properties = joinType.GetProperties().Where(ExpressionHelper.GetPrimitivePropertiesPredicate());
                 var props = properties.Where(p => !p.GetCustomAttributes<NotMappedAttribute>().Any()).Select(p => new SqlPropertyMetadata(p)).ToArray();
 
@@ -480,6 +399,55 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
             }
         }
 
-        #endregion Select
+        /// <inheritdoc />
+        public virtual SqlQuery GetInsert(TEntity entity)
+        {
+            var properties = (IsIdentity ? SqlProperties.Where(p => !p.PropertyName.Equals(IdentitySqlProperty.PropertyName, StringComparison.OrdinalIgnoreCase)) : SqlProperties).ToList();
+
+            if (HasUpdatedAt)
+                UpdatedAtProperty.SetValue(entity, DateTime.UtcNow);
+
+            var query = new SqlQuery(entity);
+
+            query.SqlBuilder.Append(
+                "INSERT INTO " + TableName
+                + "(" + string.Join(", ", properties.Select(p => p.ColumnName)) + ")" // columNames
+                + " VALUES  (" + string.Join(", ", properties.Select(p => "@" + p.PropertyName)) + ")"); // values
+
+            if (IsIdentity)
+                switch (Config.SqlConnector)
+                {
+                    case ESqlConnector.MSSQL:
+                        query.SqlBuilder.Append("SELECT SCOPE_IDENTITY() AS " + IdentitySqlProperty.ColumnName);
+                        break;
+
+                    case ESqlConnector.MySQL:
+                        query.SqlBuilder.Append("; SELECT CONVERT(LAST_INSERT_ID(), SIGNED INTEGER) AS " + IdentitySqlProperty.ColumnName);
+                        break;
+
+                    case ESqlConnector.PostgreSQL:
+                        query.SqlBuilder.Append("RETURNING " + IdentitySqlProperty.ColumnName);
+                        break;
+
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
+
+            return query;
+        }
+
+        /// <inheritdoc />
+        public virtual SqlQuery GetUpdate(TEntity entity)
+        {
+            var properties = SqlProperties.Where(p => !KeySqlProperties.Any(k => k.PropertyName.Equals(p.PropertyName, StringComparison.OrdinalIgnoreCase)));
+
+            if (HasUpdatedAt)
+                UpdatedAtProperty.SetValue(entity, DateTime.UtcNow);
+
+            var query = new SqlQuery(entity);
+            query.SqlBuilder.Append("UPDATE " + TableName + " SET " + string.Join(", ", properties.Select(p => p.ColumnName + " = @" + p.PropertyName)) + " WHERE " + string.Join(" AND ", KeySqlProperties.Select(p => p.ColumnName + " = @" + p.PropertyName)));
+
+            return query;
+        }
     }
 }

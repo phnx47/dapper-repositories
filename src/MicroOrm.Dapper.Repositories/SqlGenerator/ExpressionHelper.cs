@@ -38,18 +38,12 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
             {
                 var expression = field.Body as UnaryExpression;
                 if (expression != null)
-                    expr = (MemberExpression) expression.Operand;
+                    expr = (MemberExpression)expression.Operand;
                 else
                     throw new ArgumentException("Expression" + field + " is not supported.", nameof(field));
             }
 
             return expr.Member.Name;
-        }
-
-        public static string GetFullPropertyName<TSource, TField>(Expression<Func<TSource, TField>> field)
-        {
-            var path = new PropertyPathVisitor().GetPropertyPath(field);
-            return path.DeclaringType != null ? path.DeclaringType.FullName + "." + path.Name : string.Empty;
         }
 
         public static object GetValue(Expression member)
