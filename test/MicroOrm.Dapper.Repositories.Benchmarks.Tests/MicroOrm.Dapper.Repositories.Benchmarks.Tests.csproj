@@ -13,6 +13,7 @@
 
   <ItemGroup>
     <PackageReference Include="BenchmarkDotNet" Version="0.10.3" />
+    <PackageReference Include="Dapper.FastCrud" Version="2.4.1" />
     <PackageReference Include="System.ComponentModel.EventBasedAsync" Version="4.3.0" />
   </ItemGroup>
 

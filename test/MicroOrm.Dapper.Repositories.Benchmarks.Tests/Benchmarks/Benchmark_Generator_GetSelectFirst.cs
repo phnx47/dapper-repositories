@@ -1,7 +1,6 @@
 ﻿using BenchmarkDotNet.Attributes;
-using BenchmarkDotNet.Configs;
-using BenchmarkDotNet.Jobs;
 using MicroOrm.Dapper.Repositories.Benchmarks.Tests.Classes;
+using MicroOrm.Dapper.Repositories.Benchmarks.Tests.Configs;
 using MicroOrm.Dapper.Repositories.SqlGenerator;
 
 namespace MicroOrm.Dapper.Repositories.Benchmarks.Tests.Benchmarks
@@ -30,13 +29,5 @@ namespace MicroOrm.Dapper.Repositories.Benchmarks.Tests.Benchmarks
             sqlGenerator.GetSelectFirst(q => q.Id == 2, q => q.Cars);
         }
 
-        private class BenchmarkDotNetConfig : ManualConfig
-        {
-            public BenchmarkDotNetConfig()
-            {
-                var job = new Job();
-                Add(job);
-            }
-        }
     }
 }
