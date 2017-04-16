@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Data;
+﻿using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
 using BenchmarkDotNet.Attributes;
@@ -8,7 +7,7 @@ using Dapper.FastCrud;
 using MicroOrm.Dapper.Repositories.Benchmarks.Tests.Classes;
 using MicroOrm.Dapper.Repositories.Benchmarks.Tests.Configs;
 using MicroOrm.Dapper.Repositories.Benchmarks.Tests.Orm;
-using MicroOrm.Dapper.Repositories.SqlGenerator;
+using Microsoft.EntityFrameworkCore;
 
 namespace MicroOrm.Dapper.Repositories.Benchmarks.Tests.Benchmarks
 {
@@ -49,6 +48,21 @@ namespace MicroOrm.Dapper.Repositories.Benchmarks.Tests.Benchmarks
         }
 
         [Benchmark]
+        public void FindAll_Entity()
+        {
+            using (var entityContext = new EntityContext())
+            {
+                for (int i = 0; i < CountQueries; i++)
+                {
+                    var users = entityContext.Users.AsNoTracking().ToArray();
+                }
+            }
+
+
+        }
+
+
+        [Benchmark]
         public void FindAll_FastCrud()
         {
             using (IDbConnection connection = new SqlConnection(Consts.ConnectionString))
@@ -67,7 +81,7 @@ namespace MicroOrm.Dapper.Repositories.Benchmarks.Tests.Benchmarks
             {
                 for (int i = 0; i < CountQueries; i++)
                 {
-                    var user = connection.Query<User>("SELECT Id, Name FROM Users WHERE Id > @value", new { value = 50 }).FirstOrDefault();
+                    var user = connection.Query<User>("SELECT Id, Name FROM Users WHERE Name = @value", new { value = "name50" }).FirstOrDefault();
                 }
             }
         }
@@ -80,9 +94,23 @@ namespace MicroOrm.Dapper.Repositories.Benchmarks.Tests.Benchmarks
                 var repository = new DapperRepository<User>(connection);
                 for (int i = 0; i < CountQueries; i++)
                 {
-                    var user = repository.Find(q => q.Id > 50);
+                    var user = repository.Find(q => q.Name == "name50");
                 }
             }
+        }
+
+        [Benchmark]
+        public void FindWhereOperator_Entity()
+        {
+            using (var entityContext = new EntityContext())
+            {
+                for (int i = 0; i < CountQueries; i++)
+                {
+                    var user = entityContext.Users.AsNoTracking().FirstOrDefault(q => q.Name == "name50");
+                }
+            }
+
+
         }
 
         [Benchmark]
@@ -93,8 +121,8 @@ namespace MicroOrm.Dapper.Repositories.Benchmarks.Tests.Benchmarks
                 for (int i = 0; i < CountQueries; i++)
                 {
                     var user = connection.Find<User>(statement => statement
-                        .Where($"{nameof(User.Id):C} > @Id")
-                        .WithParameters(new { Id = 50 })).FirstOrDefault();
+                        .Where($"{nameof(User.Name):C} = @Name")
+                        .WithParameters(new { Name = "name50" })).FirstOrDefault();
                 }
             }
         }

@@ -72,7 +72,6 @@ namespace MicroOrm.Dapper.Repositories
             SqlGenerator = new SqlGenerator<TEntity>(config);
         }
 
-
         /// <inheritdoc />
         public virtual TEntity Find(IDbTransaction transaction = null)
         {

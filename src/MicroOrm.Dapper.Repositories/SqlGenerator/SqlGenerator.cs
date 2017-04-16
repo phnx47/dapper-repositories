@@ -340,6 +340,39 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
             return sqlQuery;
         }
 
+        private SqlQuery GetSelectById(object id, params Expression<Func<TEntity, object>>[] includes)
+        {
+            if (KeySqlProperties.Length != 1)
+                throw new NotSupportedException("This method support only 1 key");
+
+            var keyProperty = KeySqlProperties[0];
+
+            var sqlQuery = InitBuilderSelect(true);
+
+            if (includes.Any())
+            {
+                var joinsBuilder = AppendJoinToSelect(sqlQuery, includes);
+                sqlQuery.SqlBuilder.Append(" FROM " + TableName + " ");
+                sqlQuery.SqlBuilder.Append(joinsBuilder);
+            }
+            else
+            {
+                sqlQuery.SqlBuilder.Append(" FROM " + TableName + " ");
+            }
+
+            IDictionary<string, object> dictionary = new Dictionary<string, object>
+            {
+                { keyProperty.ColumnName, id }
+            };
+            sqlQuery.SqlBuilder.Append("WHERE " + keyProperty.ColumnName + " = @" + keyProperty.PropertyName);
+
+            if (Config.SqlConnector == ESqlConnector.MySQL || Config.SqlConnector == ESqlConnector.PostgreSQL)
+                sqlQuery.SqlBuilder.Append("LIMIT 1");
+
+            sqlQuery.SetParam(dictionary);
+            return sqlQuery;
+        }
+
         /// <inheritdoc />
         public virtual SqlQuery GetSelectBetween(object from, object to, Expression<Func<TEntity, object>> btwField, Expression<Func<TEntity, bool>> expression = null)
         {

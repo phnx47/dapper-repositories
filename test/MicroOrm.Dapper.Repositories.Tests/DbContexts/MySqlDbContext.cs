@@ -10,7 +10,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.DbContexts
         private IDapperRepository<Car> _cars;
 
         private IDapperRepository<User> _users;
-        private readonly SqlGeneratorConfig config = new SqlGeneratorConfig
+        private readonly SqlGeneratorConfig _config = new SqlGeneratorConfig
         {
             SqlConnector = ESqlConnector.MySQL,
             UseQuotationMarks = true
@@ -21,7 +21,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.DbContexts
         {
         }
 
-        public IDapperRepository<User> Users => _users ?? (_users = new DapperRepository<User>(Connection, config));
-        public IDapperRepository<Car> Cars => _cars ?? (_cars = new DapperRepository<Car>(Connection, config));
+        public IDapperRepository<User> Users => _users ?? (_users = new DapperRepository<User>(Connection, _config));
+        public IDapperRepository<Car> Cars => _cars ?? (_cars = new DapperRepository<Car>(Connection, _config));
     }
 }
