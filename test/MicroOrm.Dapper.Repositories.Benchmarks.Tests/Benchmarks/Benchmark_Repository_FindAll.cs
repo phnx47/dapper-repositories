@@ -15,7 +15,7 @@ namespace MicroOrm.Dapper.Repositories.Benchmarks.Tests.Benchmarks
     [Config(typeof(BenchmarkDotNetConfig))]
     public class Benchmark_Repository_FindAll
     {
-        private const int CountQueries = 100;
+        private const int CountQueries = 300;
 
         [Setup]
         public void Setup()

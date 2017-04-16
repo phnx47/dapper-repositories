@@ -8,7 +8,6 @@ using System.Linq.Expressions;
 using System.Reflection;
 using System.Threading.Tasks;
 using Dapper;
-using MicroOrm.Dapper.Repositories.Attributes.Joins;
 using MicroOrm.Dapper.Repositories.Extensions;
 using MicroOrm.Dapper.Repositories.SqlGenerator;
 
@@ -441,7 +440,7 @@ namespace MicroOrm.Dapper.Repositories
             foreach (var property in childProperties)
             {
                 var childType = property.PropertyType.IsGenericType() ? property.PropertyType.GenericTypeArguments[0] : property.PropertyType;
-                var properties = childType.GetProperties().Where(ExpressionHelper.GetPrimitivePropertiesPredicate());
+                var properties = childType.FindClassProperties().Where(ExpressionHelper.GetPrimitivePropertiesPredicate());
                 childKeyProperties.AddRange(properties.Where(p => p.GetCustomAttributes<KeyAttribute>().Any()));
             }
 
@@ -521,7 +520,7 @@ namespace MicroOrm.Dapper.Repositories
             foreach (var property in childProperties)
             {
                 var childType = property.PropertyType.IsGenericType() ? property.PropertyType.GenericTypeArguments[0] : property.PropertyType;
-                var properties = childType.GetProperties().Where(ExpressionHelper.GetPrimitivePropertiesPredicate());
+                var properties = childType.FindClassProperties().Where(ExpressionHelper.GetPrimitivePropertiesPredicate());
                 childKeyProperties.AddRange(properties.Where(p => p.GetCustomAttributes<KeyAttribute>().Any()));
             }
 

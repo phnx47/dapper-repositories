@@ -84,7 +84,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
             var entityType = typeof(TEntity);
             TableName = GetTableNameOrAlias(entityType);
 
-            AllProperties = entityType.GetProperties().Where(q => q.CanWrite).ToArray();
+            AllProperties = entityType.FindClassProperties().Where(q => q.CanWrite).ToArray();
             var props = AllProperties.Where(ExpressionHelper.GetPrimitivePropertiesPredicate()).ToArray();
 
             // Filter the non stored properties
@@ -229,7 +229,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                     joinString = "RIGHT JOIN";
 
                 var joinType = joinProperty.PropertyType.IsGenericType() ? joinProperty.PropertyType.GenericTypeArguments[0] : joinProperty.PropertyType;
-                var properties = joinType.GetProperties().Where(ExpressionHelper.GetPrimitivePropertiesPredicate());
+                var properties = joinType.FindClassProperties().Where(ExpressionHelper.GetPrimitivePropertiesPredicate());
                 var props = properties.Where(p => !p.GetCustomAttributes<NotMappedAttribute>().Any()).Select(p => new SqlPropertyMetadata(p)).ToArray();
 
                 if (Config.UseQuotationMarks)
