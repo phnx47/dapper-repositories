@@ -32,6 +32,9 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         public string TableName { get; protected set; }
 
         /// <inheritdoc />
+        public string TableSchema { get; protected set; }
+
+        /// <inheritdoc />
         public SqlPropertyMetadata IdentitySqlProperty { get; protected set; }
 
         /// <inheritdoc />
@@ -83,6 +86,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         {
             var entityType = typeof(TEntity);
             TableName = GetTableNameOrAlias(entityType);
+            TableSchema = GetTableSchema(entityType);
 
             AllProperties = entityType.GetProperties().Where(q => q.CanWrite).ToArray();
             var props = AllProperties.Where(ExpressionHelper.GetPrimitivePropertiesPredicate()).ToArray();
@@ -113,7 +117,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                 switch (Config.SqlConnector)
                 {
                     case ESqlConnector.MSSQL:
-                        TableName = "[" + TableName + "]";
+                        TableName = GetTableNameWithSchemaPrefix(TableName, TableSchema, "[", "]");
 
                         foreach (var propertyMetadata in SqlProperties)
                             propertyMetadata.ColumnName = "[" + propertyMetadata.ColumnName + "]";
@@ -123,7 +127,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                         break;
 
                     case ESqlConnector.MySQL:
-                        TableName = "`" + TableName + "`";
+                        TableName = GetTableNameWithSchemaPrefix(TableName, TableSchema, "`", "`");
 
                         foreach (var propertyMetadata in SqlProperties)
                             propertyMetadata.ColumnName = "`" + propertyMetadata.ColumnName + "`";
@@ -133,7 +137,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                         break;
 
                     case ESqlConnector.PostgreSQL:
-                        TableName = "\"" + TableName + "\"";
+                        TableName = GetTableNameWithSchemaPrefix(TableName, TableSchema, "\"", "\"");
 
                         foreach (var propertyMetadata in SqlProperties)
                             propertyMetadata.ColumnName = "\"" + propertyMetadata.ColumnName + "\"";
@@ -145,6 +149,17 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                     default:
                         throw new ArgumentOutOfRangeException(nameof(Config.SqlConnector));
                 }
+            else
+            {
+                TableName = GetTableNameWithSchemaPrefix(TableName, TableSchema);
+            }
+        }
+
+        private string GetTableNameWithSchemaPrefix(string tableName, string tableSchema, string startQuotationMark = "", string endQuotationMark = "")
+        {
+            if (!String.IsNullOrEmpty(tableSchema))
+                return String.Format("{0}{2}{1}.{0}{3}{1}", startQuotationMark, endQuotationMark , tableSchema, tableName);
+            return String.Format("{0}{2}{1}", startQuotationMark, endQuotationMark, tableName);
         }
 
         private static string GetTableNameOrAlias(Type type)
@@ -152,6 +167,13 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
             var entityTypeInfo = type.GetTypeInfo();
             var tableAliasAttribute = entityTypeInfo.GetCustomAttribute<TableAttribute>();
             return tableAliasAttribute != null ? tableAliasAttribute.Name : entityTypeInfo.Name;
+        }
+
+        private static string GetTableSchema(Type type)
+        {
+            var entityTypeInfo = type.GetTypeInfo();
+            var tableAttribute = entityTypeInfo.GetCustomAttribute<TableAttribute>();
+            return tableAttribute != null ? tableAttribute.Schema : String.Empty;
         }
 
         private void InitLogicalDeleted()
@@ -216,7 +238,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                 var joinProperty = AllProperties.First(q => q.Name == ExpressionHelper.GetPropertyName(include));
                 var tableName = GetTableNameOrAlias(joinProperty.DeclaringType);
                 var attrJoin = joinProperty.GetCustomAttribute<JoinAttributeBase>();
-
+               
                 if (attrJoin == null)
                     continue;
 
@@ -237,7 +259,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                     {
                         case ESqlConnector.MSSQL:
                             tableName = "[" + tableName + "]";
-                            attrJoin.TableName = "[" + attrJoin.TableName + "]";
+                            attrJoin.TableName = GetTableNameWithSchemaPrefix(attrJoin.TableName, attrJoin.TableSchema, "[", "]");
                             attrJoin.Key = "[" + attrJoin.Key + "]";
                             attrJoin.ExternalKey = "[" + attrJoin.ExternalKey + "]";
                             foreach (var prop in props)
@@ -246,7 +268,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
 
                         case ESqlConnector.MySQL:
                             tableName = "`" + tableName + "`";
-                            attrJoin.TableName = "`" + attrJoin.TableName + "`";
+                            attrJoin.TableName = GetTableNameWithSchemaPrefix(attrJoin.TableName, attrJoin.TableSchema, "`", "`");
                             attrJoin.Key = "`" + attrJoin.Key + "`";
                             attrJoin.ExternalKey = "`" + attrJoin.ExternalKey + "`";
                             foreach (var prop in props)
@@ -255,7 +277,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
 
                         case ESqlConnector.PostgreSQL:
                             tableName = "\"" + tableName + "\"";
-                            attrJoin.TableName = "\"" + attrJoin.TableName + "\"";
+                            attrJoin.TableName = GetTableNameWithSchemaPrefix(attrJoin.TableName, attrJoin.TableSchema, "\"", "\"");
                             attrJoin.Key = "\"" + attrJoin.Key + "\"";
                             attrJoin.ExternalKey = "\"" + attrJoin.ExternalKey + "\"";
                             foreach (var prop in props)
@@ -265,7 +287,11 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                         default:
                             throw new ArgumentOutOfRangeException(nameof(Config.SqlConnector));
                     }
-
+                else
+                {
+                    attrJoin.TableName = GetTableNameWithSchemaPrefix(attrJoin.TableName, attrJoin.TableSchema);
+                }
+                
                 originalBuilder.SqlBuilder.Append(", " + GetFieldsSelect(attrJoin.TableName, props));
                 joinBuilder.Append(joinString + " " + attrJoin.TableName + " ON " + tableName + "." + attrJoin.Key + " = " + attrJoin.TableName + "." + attrJoin.ExternalKey + " ");
             }
