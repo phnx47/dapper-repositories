@@ -22,11 +22,16 @@ namespace MicroOrm.Dapper.Repositories.Tests.Classes
 
         public int AddressId { get; set; }
 
+        public int PhoneId { get; set; }
+
         [LeftJoin("Cars", "Id", "UserId")]
         public List<Car> Cars { get; set; }
 
         [LeftJoin("Addresses", "AddressId", "Id")]
         public Address Addresses { get; set; }
+
+        [InnerJoin("Phones", "PhoneId", "Id", "DAB")]
+        public Phone Phone { get; set; }
 
         [Status]
         [Deleted]
