@@ -33,28 +33,36 @@ namespace MicroOrm.Dapper.Repositories.Tests.DatabaseFixture
         {
             Db.Connection.Execute($"IF NOT EXISTS (SELECT name FROM master.dbo.sysdatabases WHERE name = '{DbName}') CREATE DATABASE [{DbName}];");
             Db.Connection.Execute($"USE [{DbName}]");
-            Action<string> dropTable = name => Db.Connection.Execute($@"IF OBJECT_ID('{name}', 'U') IS NOT NULL DROP TABLE [{name}]; ");
-            dropTable("Users");
-            dropTable("Cars");
-            dropTable("Addresses");
-            dropTable("Cities");
-            dropTable("Reports");
 
-            Db.Connection.Execute(@"CREATE TABLE Users (Id int IDENTITY(1,1) not null, Name varchar(256) not null, AddressId int not null, Deleted bit not null, UpdatedAt datetime2,  PRIMARY KEY (Id))");
+            Action<string, string> dropTable = (schema, name) => Db.Connection.Execute($@"IF OBJECT_ID('{schema}.{name}', 'U') IS NOT NULL DROP TABLE [{schema}].[{name}]; ");
+            dropTable("dbo", "Users");
+            dropTable("dbo", "Cars");
+            dropTable("dbo","Addresses");
+            dropTable("dbo","Cities");
+            dropTable("dbo", "Reports");
+            dropTable("DAB", "Phones");
+
+            Action<string> createSchema = DbSchema => Db.Connection.Execute($@"IF schema_id('{DbSchema}') IS NULL EXECUTE('CREATE SCHEMA {DbSchema}') ");
+            createSchema("DAB");
+
+            Db.Connection.Execute(@"CREATE TABLE Users (Id int IDENTITY(1,1) not null, Name varchar(256) not null, AddressId int not null, PhoneId int not null, Deleted bit not null, UpdatedAt datetime2,  PRIMARY KEY (Id))");
             Db.Connection.Execute(@"CREATE TABLE Cars (Id int IDENTITY(1,1) not null, Name varchar(256) not null, UserId int not null, Status int not null, Data binary(16) null, PRIMARY KEY (Id))");
 
             Db.Connection.Execute(@"CREATE TABLE Addresses (Id int IDENTITY(1,1) not null, Street varchar(256) not null, CityId varchar(256) not null,  PRIMARY KEY (Id))");
             Db.Connection.Execute(@"CREATE TABLE Cities (Identifier varchar(256) not null, Name varchar(256) not null)");
             Db.Connection.Execute(@"CREATE TABLE Reports (Id int not null, AnotherId int not null, UserId int not null,  PRIMARY KEY (Id, AnotherId))");
+            Db.Connection.Execute(@"CREATE TABLE DAB.Phones (Id int IDENTITY(1,1) not null, Number varchar(256) not null, PRIMARY KEY (Id))");
 
             Db.Address.Insert(new Address { Street = "Street0", CityId = "MSK" });
             Db.Cities.Insert(new City { Identifier = "MSK", Name = "Moscow" });
+            Db.Phones.Insert(new Phone { Number = "123" });
 
             for (var i = 0; i < 10; i++)
                 Db.Users.Insert(new User
                 {
                     Name = $"TestName{i}",
                     AddressId = 1,
+                    PhoneId = 1
                 });
 
             Db.Users.Insert(new User { Name = "TestName0" });
