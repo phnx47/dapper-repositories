@@ -35,6 +35,11 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         string TableName { get; }
 
         /// <summary>
+        ///     Table Schema
+        /// </summary>
+        string TableSchema { get; }
+
+        /// <summary>
         ///     Identity Metadata property
         /// </summary>
         SqlPropertyMetadata IdentitySqlProperty { get; }
