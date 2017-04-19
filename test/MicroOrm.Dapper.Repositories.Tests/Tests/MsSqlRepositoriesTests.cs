@@ -72,6 +72,26 @@ namespace MicroOrm.Dapper.Repositories.Tests.Tests
         }
 
         [Fact]
+        public void FindAllJoin3Table()
+        {
+            var user = _sqlDatabaseFixture.Db.Users.FindAll<Car, Address, Phone>(x => x.Id == 1, q => q.Cars, q => q.Addresses, q => q.Phone).First();
+            Assert.Equal(1, user.Cars.Count);
+            Assert.Equal("TestCar0", user.Cars.First().Name);
+            Assert.Equal("Street0", user.Addresses.Street);
+            Assert.Equal("123", user.Phone.Number);
+        }
+
+        [Fact]
+        public async Task FindAllJoin3TableAsync()
+        {
+            var user = (await _sqlDatabaseFixture.Db.Users.FindAllAsync<Car, Address, Phone>(x => x.Id == 1, q => q.Cars, q => q.Addresses, q => q.Phone)).First();
+            Assert.Equal(1, user.Cars.Count);
+            Assert.Equal("TestCar0", user.Cars.First().Name);
+            Assert.Equal("Street0", user.Addresses.Street);
+            Assert.Equal("123", user.Phone.Number);
+        }
+
+        [Fact]
         public async Task FindAsync()
         {
             const int id = 4;
