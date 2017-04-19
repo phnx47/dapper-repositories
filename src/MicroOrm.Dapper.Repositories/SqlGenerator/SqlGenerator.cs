@@ -155,11 +155,11 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
             }
         }
 
-        private string GetTableNameWithSchemaPrefix(string tableName, string tableSchema, string startQuotationMark = "", string endQuotationMark = "")
+        private static string GetTableNameWithSchemaPrefix(string tableName, string tableSchema, string startQuotationMark = "", string endQuotationMark = "")
         {
-            if (!String.IsNullOrEmpty(tableSchema))
-                return String.Format("{0}{2}{1}.{0}{3}{1}", startQuotationMark, endQuotationMark , tableSchema, tableName);
-            return String.Format("{0}{2}{1}", startQuotationMark, endQuotationMark, tableName);
+            return !string.IsNullOrEmpty(tableSchema)
+                ? startQuotationMark  + tableSchema + endQuotationMark + "." + startQuotationMark + tableName + endQuotationMark
+                : startQuotationMark + tableName + endQuotationMark;
         }
 
         private static string GetTableNameOrAlias(Type type)
@@ -173,7 +173,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         {
             var entityTypeInfo = type.GetTypeInfo();
             var tableAttribute = entityTypeInfo.GetCustomAttribute<TableAttribute>();
-            return tableAttribute != null ? tableAttribute.Schema : String.Empty;
+            return tableAttribute != null ? tableAttribute.Schema : string.Empty;
         }
 
         private void InitLogicalDeleted()
