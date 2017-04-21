@@ -51,11 +51,12 @@ namespace MicroOrm.Dapper.Repositories.Tests.DatabaseFixture
             Db.Connection.Execute(@"CREATE TABLE Addresses (Id int IDENTITY(1,1) not null, Street varchar(256) not null, CityId varchar(256) not null,  PRIMARY KEY (Id))");
             Db.Connection.Execute(@"CREATE TABLE Cities (Identifier varchar(256) not null, Name varchar(256) not null)");
             Db.Connection.Execute(@"CREATE TABLE Reports (Id int not null, AnotherId int not null, UserId int not null,  PRIMARY KEY (Id, AnotherId))");
-            Db.Connection.Execute(@"CREATE TABLE DAB.Phones (Id int IDENTITY(1,1) not null, Number varchar(256) not null, PRIMARY KEY (Id))");
+            Db.Connection.Execute(@"CREATE TABLE DAB.Phones (Id int IDENTITY(1,1) not null, Number varchar(256) not null, IsActive bit not null, PRIMARY KEY (Id))");
 
             Db.Address.Insert(new Address { Street = "Street0", CityId = "MSK" });
             Db.Cities.Insert(new City { Identifier = "MSK", Name = "Moscow" });
-            Db.Phones.Insert(new Phone { Number = "123" });
+            Db.Phones.Insert(new Phone { Number = "123", IsActive = true });
+            Db.Phones.Insert(new Phone { Number = "333", IsActive = false });
 
             for (var i = 0; i < 10; i++)
                 Db.Users.Insert(new User
