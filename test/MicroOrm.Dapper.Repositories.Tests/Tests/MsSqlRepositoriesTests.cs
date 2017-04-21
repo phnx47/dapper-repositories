@@ -64,6 +64,29 @@ namespace MicroOrm.Dapper.Repositories.Tests.Tests
         }
 
         [Fact]
+        public async Task FindPhoneAsyncDifferentBoolQuery()
+        {
+            var phones = await _sqlDatabaseFixture.Db.Phones.FindAllAsync();
+            Assert.Equal(2, phones.Count());
+
+            var phone = await _sqlDatabaseFixture.Db.Phones.FindAsync(x => x.Id == 1);
+            Assert.NotNull(phone);
+
+            var phone1 = await _sqlDatabaseFixture.Db.Phones.FindAsync(x => x.IsActive);
+            Assert.NotNull(phone1);
+
+            var phone2 = await _sqlDatabaseFixture.Db.Phones.FindAsync(x => x.Number == "123" && !x.IsActive);
+            Assert.Null(phone2);
+
+            var phone3 = await _sqlDatabaseFixture.Db.Phones.FindAsync(x => x.Id == 1 && x.IsActive);
+            Assert.NotNull(phone3);
+
+            var phone4 = await _sqlDatabaseFixture.Db.Phones.FindAsync(x => x.Number == "333" && !x.IsActive);
+            Assert.NotNull(phone4);
+        }
+
+
+        [Fact]
         public void FindAllJoin2Table()
         {
             var user = _sqlDatabaseFixture.Db.Users.FindAll<Car, Address>(x => x.Id == 1, q => q.Cars, q => q.Addresses).First();

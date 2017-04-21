@@ -27,7 +27,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
             if (propertyNameArray.Length == 2)
                 isNested = true;
 
-            if (body.Left.NodeType == ExpressionType.Convert)
+            if (body.Left.NodeType == ExpressionType.Convert || body.Left.NodeType == ExpressionType.Not)
                 propertyName = propertyName.Replace(")", string.Empty);
 
             return propertyName;
@@ -106,7 +106,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         public static BinaryExpression GetBinaryExpression(Expression expression)
         {
             var binaryExpression = expression as BinaryExpression;
-            var body = binaryExpression ?? Expression.MakeBinary(ExpressionType.Equal, expression, Expression.Constant(true));
+            var body = binaryExpression ?? Expression.MakeBinary(ExpressionType.Equal, expression, expression.NodeType == ExpressionType.Not ? Expression.Constant(false) : Expression.Constant(true));
             return body;
         }
 
