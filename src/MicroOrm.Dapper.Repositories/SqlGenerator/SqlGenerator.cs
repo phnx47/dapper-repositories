@@ -115,7 +115,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         }
 
         /// <summary>
-        /// 
+        ///     Get join/nested properties
         /// </summary>
         /// <returns></returns>
         private SqlJoinPropertyMetadata[] GetJoinPropertyMetadata(PropertyInfo[] joinPropertiesInfo)
