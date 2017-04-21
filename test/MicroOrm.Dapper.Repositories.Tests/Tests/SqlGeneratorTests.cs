@@ -55,7 +55,6 @@ namespace MicroOrm.Dapper.Repositories.Tests.Tests
         }
 
         [Fact]
-
         public void MSSQLNavigationPredicate()
         {
             ISqlGenerator<User> userSqlGenerator = new SqlGenerator<User>(ESqlConnector.MSSQL, true);
@@ -65,7 +64,9 @@ namespace MicroOrm.Dapper.Repositories.Tests.Tests
                          "[DAB].[Phones].[Id], [DAB].[Phones].[Number], [DAB].[Phones].[IsActive] " +
                          "FROM [Users] INNER JOIN [DAB].[Phones] ON [Users].[PhoneId] = [DAB].[Phones].[Id] " +
                          "WHERE [DAB].[Phones].[Number] = @PhoneNumber AND [Users].[Deleted] != 1", sqlQuery.GetSql());
+        }
 
+        [Fact]
         public void MSSQLBoolTruePredicate()
         {
             ISqlGenerator<Phone> userSqlGenerator = new SqlGenerator<Phone>(ESqlConnector.MSSQL, true);
