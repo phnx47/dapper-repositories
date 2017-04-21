@@ -55,6 +55,54 @@ namespace MicroOrm.Dapper.Repositories.Tests.Tests
         }
 
         [Fact]
+        public void MSSQLBoolTruePredicate()
+        {
+            ISqlGenerator<Phone> userSqlGenerator = new SqlGenerator<Phone>(ESqlConnector.MSSQL, true);
+            var sqlQuery = userSqlGenerator.GetSelectFirst(x => x.IsActive);
+
+            var parameters = sqlQuery.Param as IDictionary<string, object>;
+            Assert.Equal(true, parameters["IsActive"]);
+
+            Assert.Equal("SELECT TOP 1 [DAB].[Phones].[Id], [DAB].[Phones].[Number], [DAB].[Phones].[IsActive] FROM [DAB].[Phones] WHERE [DAB].[Phones].[IsActive] = @IsActive", sqlQuery.GetSql());
+        }
+
+        [Fact]
+        public void MSSQLBoolFalsePredicate()
+        {
+            ISqlGenerator<Phone> userSqlGenerator = new SqlGenerator<Phone>(ESqlConnector.MSSQL, true);
+            var sqlQuery = userSqlGenerator.GetSelectFirst(x => !x.IsActive);
+
+            var parameters = sqlQuery.Param as IDictionary<string, object>;
+            Assert.Equal(false, parameters["IsActive"]);
+
+            Assert.Equal("SELECT TOP 1 [DAB].[Phones].[Id], [DAB].[Phones].[Number], [DAB].[Phones].[IsActive] FROM [DAB].[Phones] WHERE [DAB].[Phones].[IsActive] = @IsActive", sqlQuery.GetSql());
+        }
+
+        [Fact]
+        public void MSSQLBoolFalseEqualNotPredicate()
+        {
+            ISqlGenerator<Phone> userSqlGenerator = new SqlGenerator<Phone>(ESqlConnector.MSSQL, true);
+            var sqlQuery = userSqlGenerator.GetSelectFirst(x => x.IsActive != true);
+
+            var parameters = sqlQuery.Param as IDictionary<string, object>;
+            Assert.Equal(true, parameters["IsActive"]);
+
+            Assert.Equal("SELECT TOP 1 [DAB].[Phones].[Id], [DAB].[Phones].[Number], [DAB].[Phones].[IsActive] FROM [DAB].[Phones] WHERE [DAB].[Phones].[IsActive] != @IsActive", sqlQuery.GetSql());
+        }
+
+        [Fact]
+        public void MSSQLBoolFalseEqualPredicate()
+        {
+            ISqlGenerator<Phone> userSqlGenerator = new SqlGenerator<Phone>(ESqlConnector.MSSQL, true);
+            var sqlQuery = userSqlGenerator.GetSelectFirst(x => x.IsActive == false);
+
+            var parameters = sqlQuery.Param as IDictionary<string, object>;
+            Assert.Equal(false, parameters["IsActive"]);
+
+            Assert.Equal("SELECT TOP 1 [DAB].[Phones].[Id], [DAB].[Phones].[Number], [DAB].[Phones].[IsActive] FROM [DAB].[Phones] WHERE [DAB].[Phones].[IsActive] = @IsActive", sqlQuery.GetSql());
+        }
+
+        [Fact]
         public void MSSQLIsNull()
         {
             ISqlGenerator<User> userSqlGenerator = new SqlGenerator<User>(ESqlConnector.MSSQL, true);
