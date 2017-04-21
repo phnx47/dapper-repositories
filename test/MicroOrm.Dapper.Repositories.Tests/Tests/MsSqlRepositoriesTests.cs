@@ -38,6 +38,16 @@ namespace MicroOrm.Dapper.Repositories.Tests.Tests
         }
 
         [Fact]
+        public async Task FindThroughtNavigationProperty()
+        {
+            var user = await _sqlDatabaseFixture.Db.Users.FindAsync<Phone>(x => x.Phone.Number == "123", x => x.Phone);
+            Assert.Equal("TestName0", user.Name);
+
+            var user1 = await _sqlDatabaseFixture.Db.Users.FindAsync<Phone>(x => x.Phone.Number == "2223", x => x.Phone);
+            Assert.Null(user1);
+        }
+
+        [Fact]
         public async Task FindAllAsync()
         {
             var users = (await _sqlDatabaseFixture.Db.Users.FindAllAsync(x => x.Name == "TestName0")).ToArray();
