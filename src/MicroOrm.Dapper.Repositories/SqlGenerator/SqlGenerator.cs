@@ -44,6 +44,9 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         public SqlPropertyMetadata[] SqlProperties { get; protected set; }
 
         /// <inheritdoc />
+        public SqlJoinPropertyMetadata[] SqlJoinProperties { get; protected set; }
+
+        /// <inheritdoc />
         public SqlGeneratorConfig Config { get; protected set; }
 
         /// <inheritdoc />
@@ -89,7 +92,12 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
             TableSchema = GetTableSchema(entityType);
 
             AllProperties = entityType.FindClassProperties().Where(q => q.CanWrite).ToArray();
+
             var props = AllProperties.Where(ExpressionHelper.GetPrimitivePropertiesPredicate()).ToArray();
+
+            var joinProperties = AllProperties.Where(p => p.GetCustomAttributes<JoinAttributeBase>().Any()).ToArray();
+
+            SqlJoinProperties = GetJoinPropertyMetadata(joinProperties);
 
             // Filter the non stored properties
             SqlProperties = props.Where(p => !p.GetCustomAttributes<NotMappedAttribute>().Any()).Select(p => new SqlPropertyMetadata(p)).ToArray();
@@ -104,6 +112,28 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
             var dateChangedProperty = props.FirstOrDefault(p => p.GetCustomAttributes<UpdatedAtAttribute>().Count() == 1);
             if (dateChangedProperty != null && (dateChangedProperty.PropertyType == typeof(DateTime) || dateChangedProperty.PropertyType == typeof(DateTime?)))
                 UpdatedAtProperty = props.FirstOrDefault(p => p.GetCustomAttributes<UpdatedAtAttribute>().Any());
+        }
+
+        /// <summary>
+        ///     Get join/nested properties
+        /// </summary>
+        /// <returns></returns>
+        private SqlJoinPropertyMetadata[] GetJoinPropertyMetadata(PropertyInfo[] joinPropertiesInfo)
+        {
+            // Filter and get only non collection nested properties
+            PropertyInfo[] singleJoinTypes = joinPropertiesInfo.Where(p => !p.PropertyType.IsConstructedGenericType).ToArray();
+
+            var joinPropertyMetadatas = new List<SqlJoinPropertyMetadata>();
+
+            foreach (PropertyInfo propertyInfo in singleJoinTypes)
+            {
+                var joinInnerProperties = propertyInfo.PropertyType.GetProperties().Where(q => q.CanWrite).Where(ExpressionHelper.GetPrimitivePropertiesPredicate()).ToArray();
+
+                joinPropertyMetadatas.AddRange(joinInnerProperties.Where(p => !p.GetCustomAttributes<NotMappedAttribute>().Any()).
+                    Select(p => new SqlJoinPropertyMetadata(propertyInfo, p)).ToArray());
+            }
+
+            return joinPropertyMetadatas.ToArray();
         }
 
         /// <summary>
@@ -124,6 +154,12 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
 
                         foreach (var propertyMetadata in KeySqlProperties)
                             propertyMetadata.ColumnName = "[" + propertyMetadata.ColumnName + "]";
+
+                        foreach (var propertyMetadata in SqlJoinProperties)
+                        {
+                            propertyMetadata.TableName = GetTableNameWithSchemaPrefix(propertyMetadata.TableName, propertyMetadata.TableSchema, "[", "]");
+                            propertyMetadata.ColumnName = "[" + propertyMetadata.ColumnName + "]";
+                        }
                         break;
 
                     case ESqlConnector.MySQL:
@@ -134,6 +170,12 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
 
                         foreach (var propertyMetadata in KeySqlProperties)
                             propertyMetadata.ColumnName = "`" + propertyMetadata.ColumnName + "`";
+
+                        foreach (var propertyMetadata in SqlJoinProperties)
+                        {
+                            propertyMetadata.TableName = GetTableNameWithSchemaPrefix(propertyMetadata.TableName, propertyMetadata.TableSchema, "`", "`");
+                            propertyMetadata.ColumnName = "`" + propertyMetadata.ColumnName + "`";
+                        }
                         break;
 
                     case ESqlConnector.PostgreSQL:
@@ -144,6 +186,12 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
 
                         foreach (var propertyMetadata in KeySqlProperties)
                             propertyMetadata.ColumnName = "\"" + propertyMetadata.ColumnName + "\"";
+
+                        foreach (var propertyMetadata in SqlJoinProperties)
+                        { 
+                            propertyMetadata.TableName = GetTableNameWithSchemaPrefix(propertyMetadata.TableName, propertyMetadata.TableSchema, "\"", "\"");
+                            propertyMetadata.ColumnName = "\"" + propertyMetadata.ColumnName + "\"";
+                        }
                         break;
 
                     default:
@@ -337,15 +385,24 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                 for (var i = 0; i < queryProperties.Count; i++)
                 {
                     var item = queryProperties[i];
-                    var columnName = SqlProperties.First(x => x.PropertyName == item.PropertyName).ColumnName;
+                    string tableName = TableName;
+                    string columnName;
+                    if (item.NestedProperty)
+                    {
+                        var joinProperty = SqlJoinProperties.First(x => x.PropertyName == item.PropertyName);
+                        tableName = joinProperty.TableName;
+                        columnName = joinProperty.ColumnName;
+                    }        
+                    else
+                        columnName = SqlProperties.First(x => x.PropertyName == item.PropertyName).ColumnName;
 
                     if (!string.IsNullOrEmpty(item.LinkingOperator) && i > 0)
                         sqlQuery.SqlBuilder.Append(item.LinkingOperator + " ");
 
                     if (item.PropertyValue == null)
-                        sqlQuery.SqlBuilder.Append(TableName + "." + columnName + " " + (item.QueryOperator == "=" ? "IS" : "IS NOT") + " NULL ");
+                        sqlQuery.SqlBuilder.Append(tableName + "." + columnName + " " + (item.QueryOperator == "=" ? "IS" : "IS NOT") + " NULL ");
                     else
-                        sqlQuery.SqlBuilder.Append(TableName + "." + columnName + " " + item.QueryOperator + " @" + item.PropertyName + " ");
+                        sqlQuery.SqlBuilder.Append(tableName + "." + columnName + " " + item.QueryOperator + " @" + item.PropertyName + " ");
 
                     dictionary[item.PropertyName] = item.PropertyValue;
                 }
@@ -440,16 +497,17 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         {
             if (body.NodeType != ExpressionType.AndAlso && body.NodeType != ExpressionType.OrElse)
             {
-                var propertyName = ExpressionHelper.GetPropertyName(body);
+                bool isNested;
+                string propertyName = ExpressionHelper.GetPropertyName(body, out isNested);
 
-                if (!SqlProperties.Select(x => x.PropertyName).Contains(propertyName))
+                if (!SqlProperties.Select(x => x.PropertyName).Contains(propertyName) && !SqlJoinProperties.Select(x => x.PropertyName).Contains(propertyName))
                     throw new NotImplementedException("predicate can't parse");
 
                 var propertyValue = ExpressionHelper.GetValue(body.Right);
                 var opr = ExpressionHelper.GetSqlOperator(body.NodeType);
                 var link = ExpressionHelper.GetSqlOperator(linkingType);
 
-                queryProperties.Add(new QueryParameter(link, propertyName, propertyValue, opr));
+                queryProperties.Add(new QueryParameter(link, propertyName, propertyValue, opr, isNested));
             }
             else
             {

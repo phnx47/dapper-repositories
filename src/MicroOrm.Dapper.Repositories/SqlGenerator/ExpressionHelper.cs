@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using MicroOrm.Dapper.Repositories.Extensions;
@@ -11,10 +12,20 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         ///     Gets the name of the property.
         /// </summary>
         /// <param name="body">The body.</param>
+        /// <param name="isNested">Out. Is nested property.</param>
         /// <returns>The property name for the property expression.</returns>
-        public static string GetPropertyName(BinaryExpression body)
+        public static string GetPropertyName(BinaryExpression body, out bool isNested)
         {
-            var propertyName = body.Left.ToString().Split('.')[1];
+            isNested = false;
+
+            var propertyNameArray = body.Left.ToString().Split('.').Skip(1).ToArray();
+            var propertyName = string.Join("", propertyNameArray);
+
+            if (propertyNameArray.Length > 2)
+                throw new ArgumentException("Only one degree of nesting is supported");
+
+            if (propertyNameArray.Length == 2)
+                isNested = true;
 
             if (body.Left.NodeType == ExpressionType.Convert || body.Left.NodeType == ExpressionType.Not)
                 propertyName = propertyName.Replace(")", string.Empty);

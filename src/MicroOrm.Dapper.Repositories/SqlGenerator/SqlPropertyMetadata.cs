@@ -32,7 +32,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         public PropertyInfo PropertyInfo { get; }
 
         /// <summary>
-        ///     Alias for ColumnName,
+        ///     Alias for ColumnName
         /// </summary>
         public string Alias { get; set; }
 
@@ -44,6 +44,6 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         /// <summary>
         ///     PropertyName
         /// </summary>
-        public string PropertyName => PropertyInfo.Name;
+        public virtual string PropertyName => PropertyInfo.Name;
     }
 }

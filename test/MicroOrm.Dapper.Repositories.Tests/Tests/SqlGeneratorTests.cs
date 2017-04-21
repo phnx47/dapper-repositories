@@ -30,7 +30,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.Tests
         }
 
         [Fact]
-        public void ContainsExpression()
+        public void ExpressionArgumentException()
         {
             var list = new List<int>
             {
@@ -45,13 +45,25 @@ namespace MicroOrm.Dapper.Repositories.Tests.Tests
             {
                 userSqlGenerator.GetSelectAll(x => list.Contains(x.Id));
             }
-            catch (NotImplementedException ex)
+            catch (ArgumentException ex)
             {
-                Assert.Contains("predicate can't parse", ex.Message);
+                Assert.Contains("Only one degree of nesting is supported", ex.Message);
                 isExceptions = true;
             }
 
             Assert.True(isExceptions, "Contains no cast exception");
+        }
+
+        [Fact]
+        public void MSSQLNavigationPredicate()
+        {
+            ISqlGenerator<User> userSqlGenerator = new SqlGenerator<User>(ESqlConnector.MSSQL, true);
+            var sqlQuery = userSqlGenerator.GetSelectFirst(x => x.Phone.Number == "123", user => user.Phone);
+
+            Assert.Equal("SELECT TOP 1 [Users].[Id], [Users].[Name], [Users].[AddressId], [Users].[PhoneId], [Users].[Deleted], [Users].[UpdatedAt], " +
+                         "[DAB].[Phones].[Id], [DAB].[Phones].[Number], [DAB].[Phones].[IsActive] " +
+                         "FROM [Users] INNER JOIN [DAB].[Phones] ON [Users].[PhoneId] = [DAB].[Phones].[Id] " +
+                         "WHERE [DAB].[Phones].[Number] = @PhoneNumber AND [Users].[Deleted] != 1", sqlQuery.GetSql());
         }
 
         [Fact]
@@ -100,6 +112,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.Tests
             Assert.Equal(false, parameters["IsActive"]);
 
             Assert.Equal("SELECT TOP 1 [DAB].[Phones].[Id], [DAB].[Phones].[Number], [DAB].[Phones].[IsActive] FROM [DAB].[Phones] WHERE [DAB].[Phones].[IsActive] = @IsActive", sqlQuery.GetSql());
+
         }
 
         [Fact]

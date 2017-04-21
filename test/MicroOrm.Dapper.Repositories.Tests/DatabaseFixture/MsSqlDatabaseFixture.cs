@@ -66,7 +66,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.DatabaseFixture
                     PhoneId = 1
                 });
 
-            Db.Users.Insert(new User { Name = "TestName0" });
+            Db.Users.Insert(new User { Name = "TestName0", PhoneId = 1 });
             Db.Cars.Insert(new Car { Name = "TestCar0", UserId = 1 });
         }
     }
