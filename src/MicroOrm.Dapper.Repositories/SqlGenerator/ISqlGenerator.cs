@@ -55,6 +55,11 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         SqlPropertyMetadata[] SqlProperties { get; }
 
         /// <summary>
+        ///     Metadata sql join properties
+        /// </summary>
+        SqlJoinPropertyMetadata[] SqlJoinProperties { get; }
+
+        /// <summary>
         ///     Config for queries
         /// </summary>
         SqlGeneratorConfig Config { get; }
