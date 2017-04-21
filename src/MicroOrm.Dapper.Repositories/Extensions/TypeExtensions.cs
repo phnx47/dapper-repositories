@@ -1,10 +1,27 @@
 ﻿using System;
+using System.Collections.Concurrent;
+using System.Linq;
 using System.Reflection;
 
 namespace MicroOrm.Dapper.Repositories.Extensions
 {
     internal static class TypeExtensions
     {
+        private static readonly ConcurrentDictionary<Type, PropertyInfo[]> ReflectionPropertyCache = new ConcurrentDictionary<Type, PropertyInfo[]>();
+
+        public static PropertyInfo[] FindClassProperties(this Type objectType)
+        {
+            if (ReflectionPropertyCache.ContainsKey(objectType))
+                return ReflectionPropertyCache[objectType];
+
+            var result = objectType.GetProperties().ToArray();
+
+            ReflectionPropertyCache.TryAdd(objectType, result);
+
+            return result;
+        }
+
+
         public static bool IsGenericType(this Type type)
         {
 #if COREFX
@@ -37,4 +54,7 @@ namespace MicroOrm.Dapper.Repositories.Extensions
             return type == typeof(bool);
         }
     }
+
+  
+  
 }

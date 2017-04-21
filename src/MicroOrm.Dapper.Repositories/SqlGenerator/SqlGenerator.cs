@@ -88,7 +88,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
             TableName = GetTableNameOrAlias(entityType);
             TableSchema = GetTableSchema(entityType);
 
-            AllProperties = entityType.GetProperties().Where(q => q.CanWrite).ToArray();
+            AllProperties = entityType.FindClassProperties().Where(q => q.CanWrite).ToArray();
             var props = AllProperties.Where(ExpressionHelper.GetPrimitivePropertiesPredicate()).ToArray();
 
             // Filter the non stored properties
@@ -251,7 +251,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                     joinString = "RIGHT JOIN";
 
                 var joinType = joinProperty.PropertyType.IsGenericType() ? joinProperty.PropertyType.GenericTypeArguments[0] : joinProperty.PropertyType;
-                var properties = joinType.GetProperties().Where(ExpressionHelper.GetPrimitivePropertiesPredicate());
+                var properties = joinType.FindClassProperties().Where(ExpressionHelper.GetPrimitivePropertiesPredicate());
                 var props = properties.Where(p => !p.GetCustomAttributes<NotMappedAttribute>().Any()).Select(p => new SqlPropertyMetadata(p)).ToArray();
 
                 if (Config.UseQuotationMarks)
@@ -360,6 +360,39 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
             }
 
             if (firstOnly && (Config.SqlConnector == ESqlConnector.MySQL || Config.SqlConnector == ESqlConnector.PostgreSQL))
+                sqlQuery.SqlBuilder.Append("LIMIT 1");
+
+            sqlQuery.SetParam(dictionary);
+            return sqlQuery;
+        }
+
+        private SqlQuery GetSelectById(object id, params Expression<Func<TEntity, object>>[] includes)
+        {
+            if (KeySqlProperties.Length != 1)
+                throw new NotSupportedException("This method support only 1 key");
+
+            var keyProperty = KeySqlProperties[0];
+
+            var sqlQuery = InitBuilderSelect(true);
+
+            if (includes.Any())
+            {
+                var joinsBuilder = AppendJoinToSelect(sqlQuery, includes);
+                sqlQuery.SqlBuilder.Append(" FROM " + TableName + " ");
+                sqlQuery.SqlBuilder.Append(joinsBuilder);
+            }
+            else
+            {
+                sqlQuery.SqlBuilder.Append(" FROM " + TableName + " ");
+            }
+
+            IDictionary<string, object> dictionary = new Dictionary<string, object>
+            {
+                { keyProperty.ColumnName, id }
+            };
+            sqlQuery.SqlBuilder.Append("WHERE " + keyProperty.ColumnName + " = @" + keyProperty.PropertyName);
+
+            if (Config.SqlConnector == ESqlConnector.MySQL || Config.SqlConnector == ESqlConnector.PostgreSQL)
                 sqlQuery.SqlBuilder.Append("LIMIT 1");
 
             sqlQuery.SetParam(dictionary);
