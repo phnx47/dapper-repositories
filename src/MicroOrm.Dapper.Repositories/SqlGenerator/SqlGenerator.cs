@@ -88,8 +88,11 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         private void InitProperties()
         {
             var entityType = typeof(TEntity);
-            TableName = GetTableNameOrAlias(entityType);
-            TableSchema = GetTableSchema(entityType);
+            var entityTypeInfo = entityType.GetTypeInfo();
+            var tableAttribute = entityTypeInfo.GetCustomAttribute<TableAttribute>();
+
+            TableName = tableAttribute != null ? tableAttribute.Name : entityTypeInfo.Name;
+            TableSchema = tableAttribute != null ? tableAttribute.Schema : string.Empty;
 
             AllProperties = entityType.FindClassProperties().Where(q => q.CanWrite).ToArray();
 
@@ -210,19 +213,6 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                 : startQuotationMark + tableName + endQuotationMark;
         }
 
-        private static string GetTableNameOrAlias(Type type)
-        {
-            var entityTypeInfo = type.GetTypeInfo();
-            var tableAliasAttribute = entityTypeInfo.GetCustomAttribute<TableAttribute>();
-            return tableAliasAttribute != null ? tableAliasAttribute.Name : entityTypeInfo.Name;
-        }
-
-        private static string GetTableSchema(Type type)
-        {
-            var entityTypeInfo = type.GetTypeInfo();
-            var tableAttribute = entityTypeInfo.GetCustomAttribute<TableAttribute>();
-            return tableAttribute != null ? tableAttribute.Schema : string.Empty;
-        }
 
         private void InitLogicalDeleted()
         {
@@ -284,7 +274,10 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
             foreach (var include in includes)
             {
                 var joinProperty = AllProperties.First(q => q.Name == ExpressionHelper.GetPropertyName(include));
-                var tableName = GetTableNameOrAlias(joinProperty.DeclaringType);
+                var declaringType = joinProperty.DeclaringType.GetTypeInfo();
+                var tableAttribute = declaringType.GetCustomAttribute<TableAttribute>();
+                var tableName = tableAttribute != null ? tableAttribute.Name : declaringType.Name;
+
                 var attrJoin = joinProperty.GetCustomAttribute<JoinAttributeBase>();
                
                 if (attrJoin == null)
