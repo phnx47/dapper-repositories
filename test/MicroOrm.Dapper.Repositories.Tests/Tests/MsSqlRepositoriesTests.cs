@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using MicroOrm.Dapper.Repositories.Tests.Classes;
@@ -38,6 +39,34 @@ namespace MicroOrm.Dapper.Repositories.Tests.Tests
         }
 
         [Fact]
+        public void FindById()
+        {
+            var user = _sqlDatabaseFixture.Db.Users.FindById(2);
+            Assert.False(user.Deleted);
+            Assert.Equal("TestName1", user.Name);
+        }
+
+        [Fact]
+        public async void FindByIdAsync()
+        {
+            var user = await  _sqlDatabaseFixture.Db.Users.FindByIdAsync(2);
+            Assert.False(user.Deleted);
+            Assert.Equal("TestName1", user.Name);
+        }
+
+        [Fact]
+        public async void FindByIdWithJoinAsync()
+        {
+            var user = await _sqlDatabaseFixture.Db.Users.FindByIdAsync<Car, Phone, Address>(1, x => x.Cars, x => x.Phone, x => x.Addresses);
+            Assert.False(user.Deleted);
+            Assert.Equal("TestName0", user.Name);
+
+            Assert.NotNull(user.Phone);
+            Assert.NotNull(user.Cars);
+            Assert.NotNull(user.Addresses);
+        }
+
+        [Fact]
         public async Task FindThroughtNavigationProperty()
         {
             var user = await _sqlDatabaseFixture.Db.Users.FindAsync<Phone>(x => x.Phone.Number == "123", x => x.Phone);
@@ -45,6 +74,26 @@ namespace MicroOrm.Dapper.Repositories.Tests.Tests
 
             var user1 = await _sqlDatabaseFixture.Db.Users.FindAsync<Phone>(x => x.Phone.Number == "2223", x => x.Phone);
             Assert.Null(user1);
+        }
+
+        [Fact]
+        public async Task FindAllByContainsMultipleList()
+        {
+            List<int> keyList = new List<int> { 2, 3, 4 };
+            var users = (await _sqlDatabaseFixture.Db.Users.FindAllAsync(x => keyList.Contains(x.Id))).ToArray();
+            var usersArray = users.ToArray();
+            Assert.Equal(3, usersArray.Length);
+            Assert.Equal("TestName1", usersArray[0].Name);
+            Assert.Equal("TestName2", usersArray[1].Name);
+            Assert.Equal("TestName3", usersArray[2].Name);
+        }
+
+        [Fact]
+        public async Task FindAllByContainsEmptyList()
+        {
+            List<int> keyList = new List<int>();
+            var users = (await _sqlDatabaseFixture.Db.Users.FindAllAsync(x => keyList.Contains(x.Id))).ToArray();
+            Assert.Equal(0, users.Length);
         }
 
         [Fact]
