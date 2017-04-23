@@ -203,6 +203,10 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
             else
             {
                 TableName = GetTableNameWithSchemaPrefix(TableName, TableSchema);
+                foreach (var propertyMetadata in SqlJoinProperties)
+                {
+                    propertyMetadata.TableName = GetTableNameWithSchemaPrefix(propertyMetadata.TableName, propertyMetadata.TableSchema);
+                }
             }
         }
 
@@ -371,7 +375,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
             {
                 // WHERE
                 var queryProperties = new List<QueryParameter>();
-                FillQueryProperties(ExpressionHelper.GetBinaryExpression(predicate.Body), ExpressionType.Default, ref queryProperties);
+                FillQueryProperties(predicate.Body, ExpressionType.Default, ref queryProperties);
 
                 sqlQuery.SqlBuilder.Append("WHERE ");
 
@@ -396,6 +400,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                         sqlQuery.SqlBuilder.Append(tableName + "." + columnName + " " + (item.QueryOperator == "=" ? "IS" : "IS NOT") + " NULL ");
                     else
                         sqlQuery.SqlBuilder.Append(tableName + "." + columnName + " " + item.QueryOperator + " @" + item.PropertyName + " ");
+                       
 
                     dictionary[item.PropertyName] = item.PropertyValue;
                 }
@@ -416,8 +421,8 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
             return sqlQuery;
         }
 
-        // not tested
-        private SqlQuery GetSelectById(object id, params Expression<Func<TEntity, object>>[] includes)
+        /// <inheritdoc />
+        public SqlQuery GetSelectById(object id, params Expression<Func<TEntity, object>>[] includes)
         {
             if (KeySqlProperties.Length != 1)
                 throw new NotSupportedException("This method support only 1 key");
@@ -439,9 +444,12 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
 
             IDictionary<string, object> dictionary = new Dictionary<string, object>
             {
-                { keyProperty.ColumnName, id }
+                { keyProperty.PropertyName, id }
             };
-            sqlQuery.SqlBuilder.Append("WHERE " + keyProperty.ColumnName + " = @" + keyProperty.PropertyName);
+            sqlQuery.SqlBuilder.Append("WHERE " + TableName + "." + keyProperty.ColumnName + " = @" + keyProperty.PropertyName);
+
+            if (LogicalDelete)
+                sqlQuery.SqlBuilder.Append(" AND " + TableName + "." + StatusPropertyName + " != " + LogicalDeleteValue + " ");
 
             if (Config.SqlConnector == ESqlConnector.MySQL || Config.SqlConnector == ESqlConnector.PostgreSQL)
                 sqlQuery.SqlBuilder.Append("LIMIT 1");
@@ -484,30 +492,61 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         /// <summary>
         ///     Fill query properties
         /// </summary>
-        /// <param name="body">The body.</param>
+        /// <param name="expr">The expression.</param>
         /// <param name="linkingType">Type of the linking.</param>
         /// <param name="queryProperties">The query properties.</param>
-        private void FillQueryProperties(BinaryExpression body, ExpressionType linkingType, ref List<QueryParameter> queryProperties)
+        private void FillQueryProperties(Expression expr, ExpressionType linkingType, ref List<QueryParameter> queryProperties)
         {
-            if (body.NodeType != ExpressionType.AndAlso && body.NodeType != ExpressionType.OrElse)
+            if (expr is MethodCallExpression)
             {
-                bool isNested;
-                string propertyName = ExpressionHelper.GetPropertyName(body, out isNested);
+                MethodCallExpression innerBody = expr as MethodCallExpression;
+                string methodName = innerBody.Method.Name;
+                switch (methodName)
+                {
+                    case "Contains":
+                    {
+                        bool isNested;
+                        string propertyName = ExpressionHelper.GetPropertyNamePath(innerBody, out isNested);
 
-                if (!SqlProperties.Select(x => x.PropertyName).Contains(propertyName) && !SqlJoinProperties.Select(x => x.PropertyName).Contains(propertyName))
-                    throw new NotImplementedException("predicate can't parse");
+                        if (!SqlProperties.Select(x => x.PropertyName).Contains(propertyName) && !SqlJoinProperties.Select(x => x.PropertyName).Contains(propertyName))
+                            throw new NotImplementedException("predicate can't parse");
 
-                var propertyValue = ExpressionHelper.GetValue(body.Right);
-                var opr = ExpressionHelper.GetSqlOperator(body.NodeType);
-                var link = ExpressionHelper.GetSqlOperator(linkingType);
+                        object propertyValue = ExpressionHelper.GetValuesFromCollection(innerBody);
+                        var opr = ExpressionHelper.GetSqlOperator(methodName);
+                        var link = ExpressionHelper.GetSqlOperator(linkingType);
+                        queryProperties.Add(new QueryParameter(link, propertyName, propertyValue, opr, isNested));
+                        break;
+                    }
 
-                queryProperties.Add(new QueryParameter(link, propertyName, propertyValue, opr, isNested));
+                    default:
+                        throw new NotImplementedException($"'{methodName}' method is not implemented");
+                }
+            }
+            else if (expr is BinaryExpression)
+            {
+                BinaryExpression innerbody = expr as BinaryExpression;
+                if (innerbody.NodeType != ExpressionType.AndAlso && innerbody.NodeType != ExpressionType.OrElse)
+                {
+                    bool isNested;
+                    string propertyName = ExpressionHelper.GetPropertyNamePath(innerbody, out isNested);
+
+                    if (!SqlProperties.Select(x => x.PropertyName).Contains(propertyName) && !SqlJoinProperties.Select(x => x.PropertyName).Contains(propertyName))
+                        throw new NotImplementedException("predicate can't parse");
+
+                    var propertyValue = ExpressionHelper.GetValue(innerbody.Right);
+                    var opr = ExpressionHelper.GetSqlOperator(innerbody.NodeType);
+                    var link = ExpressionHelper.GetSqlOperator(linkingType);
+
+                    queryProperties.Add(new QueryParameter(link, propertyName, propertyValue, opr, isNested));
+                }
+                else
+                {
+                    FillQueryProperties(innerbody.Left, innerbody.NodeType, ref queryProperties);
+                    FillQueryProperties(innerbody.Right, innerbody.NodeType, ref queryProperties);
+                }
             }
             else
-            {
-                FillQueryProperties(ExpressionHelper.GetBinaryExpression(body.Left), body.NodeType, ref queryProperties);
-                FillQueryProperties(ExpressionHelper.GetBinaryExpression(body.Right), body.NodeType, ref queryProperties);
-            }
+                FillQueryProperties(ExpressionHelper.GetBinaryExpression(expr), linkingType, ref queryProperties);
         }
 
         /// <inheritdoc />
