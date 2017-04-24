@@ -89,6 +89,129 @@ namespace MicroOrm.Dapper.Repositories
             Expression<Func<TEntity, object>> tChild6,
             IDbTransaction transaction = null);
 
+        /// <summary>
+        ///     Get object by Id
+        /// </summary>
+        TEntity FindById(object id, IDbTransaction transaction = null);
+
+        /// <summary>
+        ///     Get object by Id with join objects
+        /// </summary>
+        TEntity FindById<TChild1>(object id,
+            Expression<Func<TEntity, object>> tChild1,
+            IDbTransaction transaction = null);
+
+        /// <summary>
+        ///     Get object by Id with join objects
+        /// </summary>
+        TEntity FindById<TChild1, TChild2>(object id,
+            Expression<Func<TEntity, object>> tChild1,
+            Expression<Func<TEntity, object>> tChild2,
+            IDbTransaction transaction = null);
+
+        /// <summary>
+        ///     Get object by Id with join objects
+        /// </summary>
+        TEntity FindById<TChild1, TChild2, TChild3>(object id,
+            Expression<Func<TEntity, object>> tChild1,
+            Expression<Func<TEntity, object>> tChild2,
+            Expression<Func<TEntity, object>> tChild3,
+            IDbTransaction transaction = null);
+
+        /// <summary>
+        ///     Get object by Id with join objects
+        /// </summary>
+        TEntity FindById<TChild1, TChild2, TChild3, TChild4>(object id,
+            Expression<Func<TEntity, object>> tChild1,
+            Expression<Func<TEntity, object>> tChild2,
+            Expression<Func<TEntity, object>> tChild3,
+            Expression<Func<TEntity, object>> tChild4,
+            IDbTransaction transaction = null);
+
+        /// <summary>
+        ///     Get object by Id with join objects
+        /// </summary>
+        TEntity FindById<TChild1, TChild2, TChild3, TChild4, TChild5>(object id,
+            Expression<Func<TEntity, object>> tChild1,
+            Expression<Func<TEntity, object>> tChild2,
+            Expression<Func<TEntity, object>> tChild3,
+            Expression<Func<TEntity, object>> tChild4,
+            Expression<Func<TEntity, object>> tChild5,
+            IDbTransaction transaction = null);
+
+        /// <summary>
+        ///     Get object by Id with join objects
+        /// </summary>
+        TEntity FindById<TChild1, TChild2, TChild3, TChild4, TChild5, TChild6>(object id,
+            Expression<Func<TEntity, object>> tChild1,
+            Expression<Func<TEntity, object>> tChild2,
+            Expression<Func<TEntity, object>> tChild3,
+            Expression<Func<TEntity, object>> tChild4,
+            Expression<Func<TEntity, object>> tChild5,
+            Expression<Func<TEntity, object>> tChild6,
+            IDbTransaction transaction = null);
+
+        /// <summary>
+        ///     Get object by Id
+        /// </summary>
+        Task<TEntity> FindByIdAsync(object id, IDbTransaction transaction = null);
+
+        /// <summary>
+        ///     Get object by Id with join objects
+        /// </summary>
+        Task<TEntity> FindByIdAsync<TChild1>(object id,
+            Expression<Func<TEntity, object>> tChild1,
+            IDbTransaction transaction = null);
+
+        /// <summary>
+        ///     Get object by Id with join objects
+        /// </summary>
+        Task<TEntity> FindByIdAsync<TChild1, TChild2>(object id,
+            Expression<Func<TEntity, object>> tChild1,
+            Expression<Func<TEntity, object>> tChild2,
+            IDbTransaction transaction = null);
+
+        /// <summary>
+        ///     Get object by Id with join objects
+        /// </summary>
+        Task<TEntity> FindByIdAsync<TChild1, TChild2, TChild3>(object id,
+            Expression<Func<TEntity, object>> tChild1,
+            Expression<Func<TEntity, object>> tChild2,
+            Expression<Func<TEntity, object>> tChild3,
+            IDbTransaction transaction = null);
+
+        /// <summary>
+        ///     Get object by Id with join objects
+        /// </summary>
+        Task<TEntity> FindByIdAsync<TChild1, TChild2, TChild3, TChild4>(object id,
+            Expression<Func<TEntity, object>> tChild1,
+            Expression<Func<TEntity, object>> tChild2,
+            Expression<Func<TEntity, object>> tChild3,
+            Expression<Func<TEntity, object>> tChild4,
+            IDbTransaction transaction = null);
+
+        /// <summary>
+        ///     Get object by Id with join objects
+        /// </summary>
+        Task<TEntity> FindByIdAsync<TChild1, TChild2, TChild3, TChild4, TChild5>(object id,
+            Expression<Func<TEntity, object>> tChild1,
+            Expression<Func<TEntity, object>> tChild2,
+            Expression<Func<TEntity, object>> tChild3,
+            Expression<Func<TEntity, object>> tChild4,
+            Expression<Func<TEntity, object>> tChild5,
+            IDbTransaction transaction = null);
+
+        /// <summary>
+        ///     Get object by Id with join objects
+        /// </summary>
+        Task<TEntity> FindByIdAsync<TChild1, TChild2, TChild3, TChild4, TChild5, TChild6>(object id,
+            Expression<Func<TEntity, object>> tChild1,
+            Expression<Func<TEntity, object>> tChild2,
+            Expression<Func<TEntity, object>> tChild3,
+            Expression<Func<TEntity, object>> tChild4,
+            Expression<Func<TEntity, object>> tChild5,
+            Expression<Func<TEntity, object>> tChild6,
+            IDbTransaction transaction = null);
 
         /// <summary>
         ///     Get first object
