@@ -42,16 +42,50 @@ namespace MicroOrm.Dapper.Repositories.Tests.Tests
             var isExceptions = false;
 
             try
-            {
-                userSqlGenerator.GetSelectAll(x => list.Contains(x.Id));
+            {   
+                List<int> sumAr = new List<int>(){1,2,3};
+                userSqlGenerator.GetSelectAll(x => sumAr.All(z => x.Id == z));
             }
-            catch (ArgumentException ex)
+            catch (NotImplementedException ex)
             {
-                Assert.Contains("Only one degree of nesting is supported", ex.Message);
+                Assert.Contains("'All' method is not implemented", ex.Message);
                 isExceptions = true;
             }
 
             Assert.True(isExceptions, "Contains no cast exception");
+        }
+
+        [Fact]
+        public void MSSQLSelectById()
+        {
+            ISqlGenerator<User> userSqlGenerator = new SqlGenerator<User>(ESqlConnector.MSSQL, true);
+            var sqlQuery = userSqlGenerator.GetSelectById(1);
+
+            Assert.Equal("SELECT TOP 1 [Users].[Id], [Users].[Name], [Users].[AddressId], [Users].[PhoneId], [Users].[Deleted], [Users].[UpdatedAt] " +
+                         "FROM [Users] WHERE [Users].[Id] = @Id AND [Users].[Deleted] != 1", sqlQuery.GetSql());
+        }
+
+        [Fact]
+        public void MSSQLContainsPredicate()
+        {
+            ISqlGenerator<User> userSqlGenerator = new SqlGenerator<User>(ESqlConnector.MSSQL, true);
+            List<int> ids = new List<int>(); 
+            var sqlQuery = userSqlGenerator.GetSelectAll(x => ids.Contains(x.Id));
+
+            Assert.Equal("SELECT [Users].[Id], [Users].[Name], [Users].[AddressId], [Users].[PhoneId], [Users].[Deleted], [Users].[UpdatedAt] " +
+                         "FROM [Users] WHERE [Users].[Id] IN @Id AND [Users].[Deleted] != 1", sqlQuery.GetSql());
+        }
+
+        [Fact]
+        public void MSSQLNavigationPredicateNoQuotationMarks()
+        {
+            ISqlGenerator<User> userSqlGenerator = new SqlGenerator<User>(ESqlConnector.MSSQL, false);
+            var sqlQuery = userSqlGenerator.GetSelectFirst(x => x.Phone.Number == "123", user => user.Phone);
+
+            Assert.Equal("SELECT TOP 1 Users.Id, Users.Name, Users.AddressId, Users.PhoneId, Users.Deleted, Users.UpdatedAt, " +
+                         "DAB.Phones.Id, DAB.Phones.Number, DAB.Phones.IsActive " +
+                         "FROM Users INNER JOIN DAB.Phones ON Users.PhoneId = DAB.Phones.Id " +
+                         "WHERE DAB.Phones.Number = @PhoneNumber AND Users.Deleted != 1", sqlQuery.GetSql());
         }
 
         [Fact]
