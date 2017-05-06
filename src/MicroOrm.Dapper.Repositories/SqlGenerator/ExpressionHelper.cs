@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
@@ -26,7 +24,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
             {
                 var expression = field.Body as UnaryExpression;
                 if (expression != null)
-                    expr = (MemberExpression) expression.Operand;
+                    expr = (MemberExpression)expression.Operand;
                 else
                     throw new ArgumentException("Expression" + field + " is not supported.", nameof(field));
             }
@@ -36,9 +34,9 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
 
         public static object GetValue(Expression member)
         {
-            UnaryExpression objectMember = Expression.Convert(member, typeof(object));
-            Expression<Func<object>> getterLambda = Expression.Lambda<Func<object>>(objectMember);
-            Func<object> getter = getterLambda.Compile();
+            var objectMember = Expression.Convert(member, typeof(object));
+            var getterLambda = Expression.Lambda<Func<object>>(objectMember);
+            var getter = getterLambda.Compile();
             return getter();
         }
 
@@ -82,7 +80,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
             }
         }
 
-        public static string GetSqlOperator(string methodName)
+        public static string GetMethodCallSqlOperator(string methodName)
         {
             switch (methodName)
             {
@@ -90,10 +88,8 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                     return "IN";
 
                 case "Any":
-                    return "ANY";
-
                 case "All":
-                    return "ALL";
+                    return methodName.ToUpper();
 
                 default:
                     throw new NotImplementedException();
@@ -103,7 +99,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         public static BinaryExpression GetBinaryExpression(Expression expression)
         {
             var binaryExpression = expression as BinaryExpression;
-            BinaryExpression body = binaryExpression ?? Expression.MakeBinary(ExpressionType.Equal, expression, expression.NodeType == ExpressionType.Not ? Expression.Constant(false) : Expression.Constant(true));
+            var body = binaryExpression ?? Expression.MakeBinary(ExpressionType.Equal, expression, expression.NodeType == ExpressionType.Not ? Expression.Constant(false) : Expression.Constant(true));
             return body;
         }
 
@@ -114,50 +110,59 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
 
         public static object GetValuesFromCollection(MethodCallExpression callExpr)
         {
-            MemberExpression expr = callExpr.Object as MemberExpression;
+            var expr = callExpr.Object as MemberExpression;
 
-            if (expr != null && expr.Expression is ConstantExpression)
-            {
-                ConstantExpression constExpr = (ConstantExpression) expr.Expression;
+            if (!(expr?.Expression is ConstantExpression))
+                throw new NotImplementedException($"{callExpr.Method.Name} is not implemented");
 
-                Type constExprType = constExpr.Value.GetType();
-                return constExprType.GetField(expr.Member.Name).GetValue(constExpr.Value);
-            }
+            var constExpr = (ConstantExpression)expr.Expression;
 
-            throw new NotImplementedException($"{callExpr.Method.Name} is not implemented");
+            var constExprType = constExpr.Value.GetType();
+            return constExprType.GetField(expr.Member.Name).GetValue(constExpr.Value);
         }
 
 
         public static MemberExpression GetMemberExpression(Expression expression)
         {
-            if (expression is MethodCallExpression)
+            var expr = expression as MethodCallExpression;
+            if (expr != null)
+                return (MemberExpression)expr.Arguments[0];
+            
+            var memberExpression = expression as MemberExpression;
+            if (memberExpression != null)
+                return memberExpression;
+
+            var unaryExpression = expression as UnaryExpression;
+            if (unaryExpression != null)
+                return (MemberExpression)unaryExpression.Operand;
+
+            var binaryExpression = expression as BinaryExpression;
+            if (binaryExpression != null)
             {
-                var methodExpr = (MethodCallExpression) expression;
-                return (MemberExpression) methodExpr.Arguments[0];
-            }
-               
-            if (expression is MemberExpression)
-                return (MemberExpression) expression;
-            if (expression is UnaryExpression)
-                return (MemberExpression)((UnaryExpression)expression).Operand;
-            if (expression is BinaryExpression)
-            {
-                var binaryExpr = (BinaryExpression) expression;
-                if (binaryExpr.Left is UnaryExpression)
-                    return (MemberExpression)((UnaryExpression)binaryExpr.Left).Operand;
+                var binaryExpr = binaryExpression;
+
+                var left = binaryExpr.Left as UnaryExpression;
+                if (left != null)
+                    return (MemberExpression)left.Operand;
 
                 //should we take care if right operation is memberaccess, not left ?
                 return (MemberExpression)binaryExpr.Left;
             }
-            if (expression is LambdaExpression)
+
+            var expression1 = expression as LambdaExpression;
+            if (expression1 != null)
             {
-                var lambdaExpression = expression as LambdaExpression;
-                if (lambdaExpression.Body is MemberExpression)
-                    return (MemberExpression) lambdaExpression.Body;
-                if (lambdaExpression.Body is UnaryExpression)
-                    return (MemberExpression) ((UnaryExpression) lambdaExpression.Body).Operand;
+                var lambdaExpression = expression1;
+
+                var body = lambdaExpression.Body as MemberExpression;
+                if (body != null)
+                    return body;
+
+                var expressionBody = lambdaExpression.Body as UnaryExpression;
+                if (expressionBody != null)
+                    return (MemberExpression)expressionBody.Operand;
             }
-           
+
             return null;
         }
 
@@ -170,8 +175,8 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         public static string GetPropertyNamePath(Expression expr, out bool nested)
         {
             var path = new StringBuilder();
-            MemberExpression memberExpression = GetMemberExpression(expr);
-            int count = 0;  
+            var memberExpression = GetMemberExpression(expr);
+            var count = 0;
             do
             {
                 count++;
@@ -181,7 +186,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                 memberExpression = GetMemberExpression(memberExpression.Expression);
             } while (memberExpression != null);
 
-            if(count > 2)
+            if (count > 2)
                 throw new ArgumentException("Only one degree of nesting is supported");
 
             nested = count == 2;

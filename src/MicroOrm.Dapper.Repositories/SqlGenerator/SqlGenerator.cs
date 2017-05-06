@@ -191,7 +191,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                             propertyMetadata.ColumnName = "\"" + propertyMetadata.ColumnName + "\"";
 
                         foreach (var propertyMetadata in SqlJoinProperties)
-                        { 
+                        {
                             propertyMetadata.TableName = GetTableNameWithSchemaPrefix(propertyMetadata.TableName, propertyMetadata.TableSchema, "\"", "\"");
                             propertyMetadata.ColumnName = "\"" + propertyMetadata.ColumnName + "\"";
                         }
@@ -213,7 +213,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         private static string GetTableNameWithSchemaPrefix(string tableName, string tableSchema, string startQuotationMark = "", string endQuotationMark = "")
         {
             return !string.IsNullOrEmpty(tableSchema)
-                ? startQuotationMark  + tableSchema + endQuotationMark + "." + startQuotationMark + tableName + endQuotationMark
+                ? startQuotationMark + tableSchema + endQuotationMark + "." + startQuotationMark + tableName + endQuotationMark
                 : startQuotationMark + tableName + endQuotationMark;
         }
 
@@ -283,7 +283,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                 var tableName = tableAttribute != null ? tableAttribute.Name : declaringType.Name;
 
                 var attrJoin = joinProperty.GetCustomAttribute<JoinAttributeBase>();
-               
+
                 if (attrJoin == null)
                     continue;
 
@@ -336,7 +336,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                 {
                     attrJoin.TableName = GetTableNameWithSchemaPrefix(attrJoin.TableName, attrJoin.TableSchema);
                 }
-                
+
                 originalBuilder.SqlBuilder.Append(", " + GetFieldsSelect(attrJoin.TableName, props));
                 joinBuilder.Append(joinString + " " + attrJoin.TableName + " ON " + tableName + "." + attrJoin.Key + " = " + attrJoin.TableName + "." + attrJoin.ExternalKey + " ");
             }
@@ -347,11 +347,11 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         private static string GetFieldsSelect(string tableName, IEnumerable<SqlPropertyMetadata> properties)
         {
             //Projection function
-            Func<SqlPropertyMetadata, string> projectionFunction = p => !string.IsNullOrEmpty(p.Alias)
+            string ProjectionFunction(SqlPropertyMetadata p) => !string.IsNullOrEmpty(p.Alias)
                 ? tableName + "." + p.ColumnName + " AS " + p.PropertyName
                 : tableName + "." + p.ColumnName;
 
-            return string.Join(", ", properties.Select(projectionFunction));
+            return string.Join(", ", properties.Select(ProjectionFunction));
         }
 
         private SqlQuery GetSelect(Expression<Func<TEntity, bool>> predicate, bool firstOnly, params Expression<Func<TEntity, object>>[] includes)
@@ -382,14 +382,14 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                 for (var i = 0; i < queryProperties.Count; i++)
                 {
                     var item = queryProperties[i];
-                    string tableName = TableName;
+                    var tableName = TableName;
                     string columnName;
                     if (item.NestedProperty)
                     {
                         var joinProperty = SqlJoinProperties.First(x => x.PropertyName == item.PropertyName);
                         tableName = joinProperty.TableName;
                         columnName = joinProperty.ColumnName;
-                    }        
+                    }
                     else
                         columnName = SqlProperties.First(x => x.PropertyName == item.PropertyName).ColumnName;
 
@@ -400,7 +400,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                         sqlQuery.SqlBuilder.Append(tableName + "." + columnName + " " + (item.QueryOperator == "=" ? "IS" : "IS NOT") + " NULL ");
                     else
                         sqlQuery.SqlBuilder.Append(tableName + "." + columnName + " " + item.QueryOperator + " @" + item.PropertyName + " ");
-                       
+
 
                     dictionary[item.PropertyName] = item.PropertyValue;
                 }
@@ -497,26 +497,26 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         /// <param name="queryProperties">The query properties.</param>
         private void FillQueryProperties(Expression expr, ExpressionType linkingType, ref List<QueryParameter> queryProperties)
         {
-            if (expr is MethodCallExpression)
+            var body = expr as MethodCallExpression;
+            if (body != null)
             {
-                MethodCallExpression innerBody = expr as MethodCallExpression;
-                string methodName = innerBody.Method.Name;
+                var innerBody = body;
+                var methodName = innerBody.Method.Name;
                 switch (methodName)
                 {
                     case "Contains":
-                    {
-                        bool isNested;
-                        string propertyName = ExpressionHelper.GetPropertyNamePath(innerBody, out isNested);
+                        {
+                            var propertyName = ExpressionHelper.GetPropertyNamePath(innerBody, out bool isNested);
 
-                        if (!SqlProperties.Select(x => x.PropertyName).Contains(propertyName) && !SqlJoinProperties.Select(x => x.PropertyName).Contains(propertyName))
-                            throw new NotImplementedException("predicate can't parse");
+                            if (!SqlProperties.Select(x => x.PropertyName).Contains(propertyName) && !SqlJoinProperties.Select(x => x.PropertyName).Contains(propertyName))
+                                throw new NotImplementedException("predicate can't parse");
 
-                        object propertyValue = ExpressionHelper.GetValuesFromCollection(innerBody);
-                        var opr = ExpressionHelper.GetSqlOperator(methodName);
-                        var link = ExpressionHelper.GetSqlOperator(linkingType);
-                        queryProperties.Add(new QueryParameter(link, propertyName, propertyValue, opr, isNested));
-                        break;
-                    }
+                            var propertyValue = ExpressionHelper.GetValuesFromCollection(innerBody);
+                            var opr = ExpressionHelper.GetMethodCallSqlOperator(methodName);
+                            var link = ExpressionHelper.GetSqlOperator(linkingType);
+                            queryProperties.Add(new QueryParameter(link, propertyName, propertyValue, opr, isNested));
+                            break;
+                        }
 
                     default:
                         throw new NotImplementedException($"'{methodName}' method is not implemented");
@@ -524,11 +524,10 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
             }
             else if (expr is BinaryExpression)
             {
-                BinaryExpression innerbody = expr as BinaryExpression;
+                var innerbody = (BinaryExpression)expr;
                 if (innerbody.NodeType != ExpressionType.AndAlso && innerbody.NodeType != ExpressionType.OrElse)
                 {
-                    bool isNested;
-                    string propertyName = ExpressionHelper.GetPropertyNamePath(innerbody, out isNested);
+                    var propertyName = ExpressionHelper.GetPropertyNamePath(innerbody, out bool isNested);
 
                     if (!SqlProperties.Select(x => x.PropertyName).Contains(propertyName) && !SqlJoinProperties.Select(x => x.PropertyName).Contains(propertyName))
                         throw new NotImplementedException("predicate can't parse");
