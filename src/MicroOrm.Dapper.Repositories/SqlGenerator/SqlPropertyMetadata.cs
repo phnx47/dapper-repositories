@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.Reflection;
+using MicroOrm.Dapper.Repositories.Attributes;
 
 namespace MicroOrm.Dapper.Repositories.SqlGenerator
 {
@@ -24,6 +25,9 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
             {
                 ColumnName = PropertyInfo.Name;
             }
+            var ignoreUpdate = PropertyInfo.GetCustomAttribute<IgnoreUpdateAttribute>();
+            if (ignoreUpdate != null)
+                IgnoreUpdate = true;
         }
 
         /// <summary>
@@ -40,6 +44,11 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         ///     ColumnName
         /// </summary>
         public string ColumnName { get; set; }
+
+        /// <summary>
+        ///     Exclude property from update
+        /// </summary>
+        public bool IgnoreUpdate { get; set; }
 
         /// <summary>
         ///     PropertyName
