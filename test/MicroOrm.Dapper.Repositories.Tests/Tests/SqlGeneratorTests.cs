@@ -293,7 +293,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.Tests
             ISqlGenerator<Address> userSqlGenerator = new SqlGenerator<Address>(ESqlConnector.MySQL, true);
             var sqlQuery = userSqlGenerator.GetInsert(new Address());
 
-            Assert.Equal("INSERT INTO Addresses]([Street], [CityId]) VALUES  (@Street, @CityId)SELECT SCOPE_IDENTITY() AS [Id]", sqlQuery.GetSql());
+            Assert.Equal("INSERT INTO `Addresses`(`Street`, `CityId`) VALUES  (@Street, @CityId); SELECT CONVERT(LAST_INSERT_ID(), SIGNED INTEGER) AS `Id`", sqlQuery.GetSql());
         }
     }
 }
