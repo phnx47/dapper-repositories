@@ -19,7 +19,8 @@ Authors
 -------
 
 * [Sergey Kuznetsov](https://github.com/phnx47)
-* [The Community Contributors](https://github.com/phnx47/MicroOrm.Dapper.Repositories/graphs/contributors)
+* [Borys Iermakov](https://github.com/borisermakof)
+* [Other Community Contributors](https://github.com/phnx47/MicroOrm.Dapper.Repositories/graphs/contributors)
 
 Contribute
 -------
@@ -33,7 +34,7 @@ Contributions to the package are always welcome!
 Support
 -------
 
-If you are having problems, send a mail to sergey.kuznetsov@hotmail.com. I will try to help you.
+If you are having problems, send a mail to [dapper@phnx47.net](mailto://dapper@phnx47.net). We will try to help you.
 
 License
 -------
