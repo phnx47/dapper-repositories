@@ -277,5 +277,23 @@ namespace MicroOrm.Dapper.Repositories.Tests.Tests
             var sqlQuery = userSqlGenerator.GetSelectFirst(x => x.Id == 6);
             Assert.Equal("SELECT `Users`.`Id`, `Users`.`Name`, `Users`.`AddressId`, `Users`.`PhoneId`, `Users`.`Deleted`, `Users`.`UpdatedAt` FROM `Users` WHERE `Users`.`Id` = @Id AND `Users`.`Deleted` != 1 LIMIT 1", sqlQuery.GetSql());
         }
+
+        [Fact]
+        public void MSSQLInsertQuoMarks()
+        {
+            ISqlGenerator<Address> userSqlGenerator = new SqlGenerator<Address>(ESqlConnector.MSSQL, true);
+            var sqlQuery = userSqlGenerator.GetInsert(new Address());
+
+            Assert.Equal("INSERT INTO [Addresses]([Street], [CityId]) VALUES  (@Street, @CityId)SELECT SCOPE_IDENTITY() AS [Id]", sqlQuery.GetSql());
+        }
+
+        [Fact]
+        public void MySQLInsertQuoMarks()
+        {
+            ISqlGenerator<Address> userSqlGenerator = new SqlGenerator<Address>(ESqlConnector.MySQL, true);
+            var sqlQuery = userSqlGenerator.GetInsert(new Address());
+
+            Assert.Equal("INSERT INTO Addresses]([Street], [CityId]) VALUES  (@Street, @CityId)SELECT SCOPE_IDENTITY() AS [Id]", sqlQuery.GetSql());
+        }
     }
 }

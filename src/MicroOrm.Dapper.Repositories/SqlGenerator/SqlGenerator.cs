@@ -163,6 +163,10 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                             propertyMetadata.TableName = GetTableNameWithSchemaPrefix(propertyMetadata.TableName, propertyMetadata.TableSchema, "[", "]");
                             propertyMetadata.ColumnName = "[" + propertyMetadata.ColumnName + "]";
                         }
+
+                        if(IdentitySqlProperty != null)
+                            IdentitySqlProperty.ColumnName = "[" + IdentitySqlProperty.ColumnName + "]";
+
                         break;
 
                     case ESqlConnector.MySQL:
@@ -179,6 +183,10 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                             propertyMetadata.TableName = GetTableNameWithSchemaPrefix(propertyMetadata.TableName, propertyMetadata.TableSchema, "`", "`");
                             propertyMetadata.ColumnName = "`" + propertyMetadata.ColumnName + "`";
                         }
+
+                        if (IdentitySqlProperty != null)
+                            IdentitySqlProperty.ColumnName = "`" + IdentitySqlProperty.ColumnName + "`";
+
                         break;
 
                     case ESqlConnector.PostgreSQL:
@@ -195,6 +203,10 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                             propertyMetadata.TableName = GetTableNameWithSchemaPrefix(propertyMetadata.TableName, propertyMetadata.TableSchema, "\"", "\"");
                             propertyMetadata.ColumnName = "\"" + propertyMetadata.ColumnName + "\"";
                         }
+
+                        if (IdentitySqlProperty != null)
+                            IdentitySqlProperty.ColumnName = "\"" + IdentitySqlProperty.ColumnName + "\"";
+
                         break;
 
                     default:
