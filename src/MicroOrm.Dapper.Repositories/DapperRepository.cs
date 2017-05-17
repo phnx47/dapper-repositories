@@ -845,7 +845,7 @@ namespace MicroOrm.Dapper.Repositories
             }
             else
             {
-                added = Connection.Execute(queryResult.GetSql(), instance, transaction) > 0;
+                added = await Connection.ExecuteAsync(queryResult.GetSql(), instance, transaction) > 0;
             }
 
             return added;
