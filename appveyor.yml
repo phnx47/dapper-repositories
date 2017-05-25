@@ -1,28 +1,19 @@
 version: '{build}-{branch}'
-pull_requests:
-  do_not_increment_build_number: true
 image: Visual Studio 2017
 configuration: Release
 platform: Any CPU
 clone_folder: c:\projects\microorm.dapper.repositories
 services: mssql2016
 build_script:
-- cmd: dotnet restore && dotnet pack src\MicroOrm.Dapper.Repositories -c Release
+- cmd: dotnet restore && dotnet pack src\MicroOrm.Dapper.Repositories -c Release --include-symbols
 test_script:
 - cmd: dotnet test test\MicroOrm.Dapper.Repositories.Tests\MicroOrm.Dapper.Repositories.Tests.csproj -c Release
 artifacts:
 - path: '**\*.nupkg'
   name: All Nupkg
 deploy:
-- provider: Environment
-  name: NuGet
+- provider: NuGet
+  api_key:
+    secure: ZWN99UOlUq7ILlVxQmWxn5+FzwDAIdyYYnPc/WBDTVzklrgX+jOzs2UHJOruyvrf
   on:
     appveyor_repo_tag: true
-notifications:
-- provider: Email
-  to:
-  - sergey.kuznetsov@hotmail.com
-  subject: 'Build {{status}}: {{projectName}} {{buildVersion}}'
-  on_build_success: false
-  on_build_failure: true
-  on_build_status_changed: true
