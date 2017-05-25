@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Reflection;
 
@@ -83,6 +84,13 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         ///     Get SQL for INSERT Query
         /// </summary>
         SqlQuery GetInsert(TEntity entity);
+
+        /// <summary>
+        ///     Get SQL for bulk INSERT Query
+        /// </summary>
+        /// <param name="entities"></param>
+        /// <returns></returns>
+        SqlQuery GetBulkInsert(IEnumerable<TEntity> entities);
 
         /// <summary>
         ///     Get SQL for UPDATE Query
