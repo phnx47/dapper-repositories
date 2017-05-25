@@ -366,7 +366,44 @@ namespace MicroOrm.Dapper.Repositories.Tests.Tests
             {
                 Assert.Equal("TestName0", report.User.Name);
             }
+        }
 
+        [Fact]
+        public async Task BulkInsertAsync()
+        {
+            List<Address> adresses = new List<Address>
+            {
+                new Address { Street = "aaa0" , CityId = "10"},
+                new Address { Street = "aaa1" , CityId = "11"}
+            };
+
+            int inserted = await _sqlDatabaseFixture.Db.Address.BulkInsertAsync(adresses);
+            Assert.Equal(2, inserted);
+
+            var adresses0 = await _sqlDatabaseFixture.Db.Address.FindAsync(x => x.CityId == "10");
+            var adresses1 = await _sqlDatabaseFixture.Db.Address.FindAsync(x => x.CityId == "11");
+
+            Assert.Equal("aaa0", adresses0.Street);
+            Assert.Equal("aaa1", adresses1.Street);
+        }
+
+        [Fact]
+        public void BulkInsert()
+        {
+            List<Address> adresses = new List<Address>
+            {
+                new Address { Street = "aaa0" , CityId = "10"},
+                new Address { Street = "aaa1" , CityId = "11"}
+            };
+
+            int inserted =  _sqlDatabaseFixture.Db.Address.BulkInsert(adresses);
+            Assert.Equal(2, inserted);
+
+            var adresses0 =  _sqlDatabaseFixture.Db.Address.Find(x => x.CityId == "10");
+            var adresses1 =  _sqlDatabaseFixture.Db.Address.Find(x => x.CityId == "11");
+
+            Assert.Equal("aaa0", adresses0.Street);
+            Assert.Equal("aaa1", adresses1.Street);
         }
     }
 }

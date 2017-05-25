@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -593,6 +594,45 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                     default:
                         throw new ArgumentOutOfRangeException();
                 }
+
+            return query;
+        }
+
+        /// <inheritdoc />
+        public virtual SqlQuery GetBulkInsert(IEnumerable<TEntity> entities)
+        {
+            if (!entities.Any())
+                throw new ArgumentException("collection is empty");
+
+            TEntity[] arrayEntities = entities.ToArray();
+            Type entityType = arrayEntities[0].GetType();
+
+            var properties = (IsIdentity ? SqlProperties.Where(p => !p.PropertyName.Equals(IdentitySqlProperty.PropertyName, StringComparison.OrdinalIgnoreCase)) : SqlProperties).ToList();
+
+            var query = new SqlQuery();
+
+            List<string> values = new List<string>();
+            Dictionary<string, object> parameters = new Dictionary<string, object>();
+
+            for (int i = 0; i < arrayEntities.Length; i++)
+            {
+                if (HasUpdatedAt)
+                    UpdatedAtProperty.SetValue(arrayEntities[i], DateTime.UtcNow);
+
+                foreach (SqlPropertyMetadata property in properties)
+                {
+                    parameters.Add(property.PropertyName + i, entityType.GetProperty(property.PropertyName).GetValue(arrayEntities[i], null));
+                }
+
+                values.Add("(" + string.Join(", ", properties.Select(p => "@" + p.PropertyName + i)) + ")");
+            }
+
+            query.SqlBuilder.Append(
+                "INSERT INTO " + TableName
+                + "(" + string.Join(", ", properties.Select(p => p.ColumnName)) + ")" // columNames
+                + " VALUES  " + string.Join(",", values)); // values
+
+            query.SetParam(parameters);
 
             return query;
         }

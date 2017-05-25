@@ -852,6 +852,22 @@ namespace MicroOrm.Dapper.Repositories
         }
 
         /// <inheritdoc />
+        public virtual int BulkInsert(IEnumerable<TEntity> instances, IDbTransaction transaction = null)
+        {
+            var queryResult = SqlGenerator.GetBulkInsert(instances);
+            int count = Connection.Execute(queryResult.GetSql(), queryResult.Param, transaction);
+            return count;
+        }
+
+        /// <inheritdoc />
+        public virtual async Task<int> BulkInsertAsync(IEnumerable<TEntity> instances, IDbTransaction transaction = null)
+        {
+            var queryResult = SqlGenerator.GetBulkInsert(instances);
+            int count = await Connection.ExecuteAsync(queryResult.GetSql(), queryResult.Param, transaction);
+            return count;
+        }
+
+        /// <inheritdoc />
         public virtual bool Delete(TEntity instance, IDbTransaction transaction = null)
         {
             var queryResult = SqlGenerator.GetDelete(instance);

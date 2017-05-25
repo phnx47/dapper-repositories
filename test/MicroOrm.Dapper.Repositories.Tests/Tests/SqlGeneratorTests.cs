@@ -295,5 +295,23 @@ namespace MicroOrm.Dapper.Repositories.Tests.Tests
 
             Assert.Equal("INSERT INTO `Addresses`(`Street`, `CityId`) VALUES  (@Street, @CityId); SELECT CONVERT(LAST_INSERT_ID(), SIGNED INTEGER) AS `Id`", sqlQuery.GetSql());
         }
+
+        [Fact]
+        public void MsSqlBulkInsertMultiple()
+        {
+            ISqlGenerator<Address> userSqlGenerator = new SqlGenerator<Address>(ESqlConnector.MSSQL, true);
+            var sqlQuery = userSqlGenerator.GetBulkInsert(new List<Address>{ new Address(), new Address() } );
+
+            Assert.Equal("INSERT INTO [Addresses]([Street], [CityId]) VALUES  (@Street0, @CityId0),(@Street1, @CityId1)", sqlQuery.GetSql());
+        }
+
+        [Fact]
+        public void MsSqlBulkInsertOne()
+        {
+            ISqlGenerator<Address> userSqlGenerator = new SqlGenerator<Address>(ESqlConnector.MSSQL, true);
+            var sqlQuery = userSqlGenerator.GetBulkInsert(new List<Address> { new Address() });
+
+            Assert.Equal("INSERT INTO [Addresses]([Street], [CityId]) VALUES  (@Street0, @CityId0)", sqlQuery.GetSql());
+        }
     }
 }

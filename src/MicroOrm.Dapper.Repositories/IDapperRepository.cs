@@ -437,6 +437,16 @@ namespace MicroOrm.Dapper.Repositories
         Task<bool> InsertAsync(TEntity instance, IDbTransaction transaction = null);
 
         /// <summary>
+        ///     Bulk Insert objects to DB
+        /// </summary>
+        int BulkInsert(IEnumerable<TEntity> instances, IDbTransaction transaction = null);
+
+        /// <summary>
+        ///     Bulk Insert objects to DB
+        /// </summary>
+        Task<int> BulkInsertAsync(IEnumerable<TEntity> instances, IDbTransaction transaction = null);
+
+        /// <summary>
         ///     Delete object from DB
         /// </summary>
         bool Delete(TEntity instance, IDbTransaction transaction = null);
