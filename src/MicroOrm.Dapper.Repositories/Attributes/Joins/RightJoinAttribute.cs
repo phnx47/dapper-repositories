@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace MicroOrm.Dapper.Repositories.Attributes.Joins
+﻿namespace MicroOrm.Dapper.Repositories.Attributes.Joins
 {
     /// <summary>
     ///     Generate RIGHT JOIN
@@ -21,7 +19,7 @@ namespace MicroOrm.Dapper.Repositories.Attributes.Joins
         /// <param name="key">ForeignKey of this table</param>
         /// <param name="externalKey">Key of external table</param>
         public RightJoinAttribute(string tableName, string key, string externalKey)
-            : base(tableName, key, externalKey, String.Empty)
+            : base(tableName, key, externalKey, string.Empty)
         {
         }
 

@@ -1,5 +1,6 @@
 ﻿namespace MicroOrm.Dapper.Repositories.SqlGenerator
 {
+    // ReSharper disable InconsistentNaming
     /// <summary>
     ///     Type Sql provider
     /// </summary>

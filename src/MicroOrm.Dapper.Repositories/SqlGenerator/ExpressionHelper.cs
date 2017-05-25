@@ -127,7 +127,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
             var expr = expression as MethodCallExpression;
             if (expr != null)
                 return (MemberExpression)expr.Arguments[0];
-            
+
             var memberExpression = expression as MemberExpression;
             if (memberExpression != null)
                 return memberExpression;

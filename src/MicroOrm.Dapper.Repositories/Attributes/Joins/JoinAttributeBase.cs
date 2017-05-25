@@ -31,7 +31,7 @@ namespace MicroOrm.Dapper.Repositories.Attributes.Joins
         public string TableName { get; set; }
 
         /// <summary>
-        ///     Name of external table schema 
+        ///     Name of external table schema
         /// </summary>
         public string TableSchema { get; set; }
 

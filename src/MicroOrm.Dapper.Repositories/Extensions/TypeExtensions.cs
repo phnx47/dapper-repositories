@@ -54,7 +54,4 @@ namespace MicroOrm.Dapper.Repositories.Extensions
             return type == typeof(bool);
         }
     }
-
-  
-  
 }
