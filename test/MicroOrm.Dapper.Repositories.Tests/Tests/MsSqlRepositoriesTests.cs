@@ -405,5 +405,34 @@ namespace MicroOrm.Dapper.Repositories.Tests.Tests
             Assert.Equal("aaa0", adresses0.Street);
             Assert.Equal("aaa1", adresses1.Street);
         }
+
+        [Fact]
+        public void Delete()
+        {
+            List<Address> adresses = new List<Address>
+            {
+                new Address { Street = "aaa10" , CityId = "110"},
+                new Address { Street = "aaa10" , CityId = "111"},
+                new Address { Street = "aaa10" , CityId = "112"}
+            };
+
+            int inserted = _sqlDatabaseFixture.Db.Address.BulkInsert(adresses);
+            Assert.Equal(3, inserted);
+
+            var adresses0 = _sqlDatabaseFixture.Db.Address.Find(x => x.CityId == "110");
+            var adresses1 = _sqlDatabaseFixture.Db.Address.Find(x => x.CityId == "111");
+            var objectsCount = _sqlDatabaseFixture.Db.Address.FindAll(x => x.Street == "aaa10").Count();
+
+            Assert.Equal(3 , objectsCount);
+
+            Assert.Equal("aaa10", adresses0.Street);
+            Assert.Equal("aaa10", adresses1.Street);
+
+            _sqlDatabaseFixture.Db.Address.Delete(x => x.Street == "aaa10" && x.CityId != "112");
+
+            objectsCount = _sqlDatabaseFixture.Db.Address.FindAll(x => x.Street == "aaa10").Count();
+
+            Assert.Equal(1, objectsCount);
+        }
     }
 }
