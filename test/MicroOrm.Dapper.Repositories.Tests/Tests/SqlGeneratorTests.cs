@@ -339,5 +339,34 @@ namespace MicroOrm.Dapper.Repositories.Tests.Tests
             var sqlQuery = sqlGenerator.GetSelectFirst(x => x.Identifier == "");
             Assert.Equal("SELECT \"Cities\".\"Identifier\", \"Cities\".\"Name\" FROM \"Cities\" WHERE \"Cities\".\"Identifier\" = @Identifier LIMIT 1", sqlQuery.GetSql());
         }
+
+        [Fact]
+        public void MsSqlDelete()
+        {
+            ISqlGenerator<Phone> userSqlGenerator = new SqlGenerator<Phone>(ESqlConnector.MSSQL, true);
+            var phone = new Phone { Id = 10, Code = "ZZZ", IsActive = true, Number = "111" };
+            var sqlQuery = userSqlGenerator.GetDelete(phone);
+
+            Assert.Equal("DELETE FROM [DAB].[Phones] WHERE [Id] = @Id", sqlQuery.GetSql());
+        }
+
+        [Fact]
+        public void MsSqlDeleteWithSinglePredicate()
+        {
+            ISqlGenerator<Phone> userSqlGenerator = new SqlGenerator<Phone>(ESqlConnector.MSSQL, true);
+            var sqlQuery = userSqlGenerator.GetDeleteAll(x => x.IsActive);
+
+            Assert.Equal("DELETE FROM [DAB].[Phones] WHERE [DAB].[Phones].[IsActive] = @IsActive", sqlQuery.GetSql());
+        }
+
+
+        [Fact]
+        public void MsSqlDeleteWithMultiplePredicate()
+        {
+            ISqlGenerator<Phone> userSqlGenerator = new SqlGenerator<Phone>(ESqlConnector.MSSQL, true);
+            var sqlQuery = userSqlGenerator.GetDeleteAll(x => x.IsActive && x.Number == "111");
+
+            Assert.Equal("DELETE FROM [DAB].[Phones] WHERE [DAB].[Phones].[IsActive] = @IsActive AND [DAB].[Phones].[Number] = @Number", sqlQuery.GetSql());
+        }
     }
 }
