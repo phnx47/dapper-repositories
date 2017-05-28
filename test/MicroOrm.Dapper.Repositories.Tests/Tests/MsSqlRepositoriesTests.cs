@@ -411,26 +411,26 @@ namespace MicroOrm.Dapper.Repositories.Tests.Tests
         {
             List<Address> adresses = new List<Address>
             {
-                new Address { Street = "aaa0" , CityId = "10"},
-                new Address { Street = "aaa0" , CityId = "11"},
-                new Address { Street = "aaa0" , CityId = "12"}
+                new Address { Street = "aaa10" , CityId = "110"},
+                new Address { Street = "aaa10" , CityId = "111"},
+                new Address { Street = "aaa10" , CityId = "112"}
             };
 
             int inserted = _sqlDatabaseFixture.Db.Address.BulkInsert(adresses);
             Assert.Equal(3, inserted);
 
-            var adresses0 = _sqlDatabaseFixture.Db.Address.Find(x => x.CityId == "10");
-            var adresses1 = _sqlDatabaseFixture.Db.Address.Find(x => x.CityId == "11");
-            var objectsCount = _sqlDatabaseFixture.Db.Address.FindAll(x => x.Street == "aaa0").Count();
+            var adresses0 = _sqlDatabaseFixture.Db.Address.Find(x => x.CityId == "110");
+            var adresses1 = _sqlDatabaseFixture.Db.Address.Find(x => x.CityId == "111");
+            var objectsCount = _sqlDatabaseFixture.Db.Address.FindAll(x => x.Street == "aaa10").Count();
 
             Assert.Equal(3 , objectsCount);
 
-            Assert.Equal("aaa0", adresses0.Street);
-            Assert.Equal("aaa0", adresses1.Street);
+            Assert.Equal("aaa10", adresses0.Street);
+            Assert.Equal("aaa10", adresses1.Street);
 
-            _sqlDatabaseFixture.Db.Address.Delete(x => x.Street == "aaa0" && x.CityId != "12");
+            _sqlDatabaseFixture.Db.Address.Delete(x => x.Street == "aaa10" && x.CityId != "112");
 
-            objectsCount = _sqlDatabaseFixture.Db.Address.FindAll(x => x.Street == "aaa0").Count();
+            objectsCount = _sqlDatabaseFixture.Db.Address.FindAll(x => x.Street == "aaa10").Count();
 
             Assert.Equal(1, objectsCount);
         }
