@@ -166,6 +166,16 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         }
 
         /// <inheritdoc />
+        public virtual SqlQuery GetDeleteAll(Expression<Func<TEntity, bool>> predicate)
+        {
+            var sqlQuery = new SqlQuery();
+
+            sqlQuery.SqlBuilder.Append("DELETE FROM " + TableName + " ");
+
+            return AppendWhereQuery(sqlQuery, predicate);
+        }
+
+        /// <inheritdoc />
         public virtual SqlQuery GetInsert(TEntity entity)
         {
             var properties = (IsIdentity ? SqlProperties.Where(p => !p.PropertyName.Equals(IdentitySqlProperty.PropertyName, StringComparison.OrdinalIgnoreCase)) : SqlProperties).ToList();
@@ -252,6 +262,60 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
             query.SqlBuilder.Append("UPDATE " + TableName + " SET " + string.Join(", ", properties.Select(p => p.ColumnName + " = @" + p.PropertyName)) + " WHERE " + string.Join(" AND ", KeySqlProperties.Select(p => p.ColumnName + " = @" + p.PropertyName)));
 
             return query;
+        }
+
+        private SqlQuery AppendWhereQuery(SqlQuery sqlQuery, Expression<Func<TEntity, bool>> predicate)
+        {
+            IDictionary<string, object> dictionary = new Dictionary<string, object>();
+
+            if (predicate != null)
+            {
+                // WHERE
+                var queryProperties = new List<QueryParameter>();
+                FillQueryProperties(predicate.Body, ExpressionType.Default, ref queryProperties);
+
+                sqlQuery.SqlBuilder.Append("WHERE ");
+
+                for (var i = 0; i < queryProperties.Count; i++)
+                {
+                    var item = queryProperties[i];
+                    var tableName = TableName;
+                    string columnName;
+                    if (item.NestedProperty)
+                    {
+                        var joinProperty = SqlJoinProperties.First(x => x.PropertyName == item.PropertyName);
+                        tableName = joinProperty.TableName;
+                        columnName = joinProperty.ColumnName;
+                    }
+                    else
+                    {
+                        columnName = SqlProperties.First(x => x.PropertyName == item.PropertyName).ColumnName;
+                    }
+
+                    if (!string.IsNullOrEmpty(item.LinkingOperator) && i > 0)
+                        sqlQuery.SqlBuilder.Append(item.LinkingOperator + " ");
+
+                    if (item.PropertyValue == null)
+                        sqlQuery.SqlBuilder.Append(tableName + "." + columnName + " " + (item.QueryOperator == "=" ? "IS" : "IS NOT") + " NULL ");
+                    else
+                        sqlQuery.SqlBuilder.Append(tableName + "." + columnName + " " + item.QueryOperator + " @" + item.PropertyName + " ");
+
+
+                    dictionary[item.PropertyName] = item.PropertyValue;
+                }
+
+                if (LogicalDelete)
+                    sqlQuery.SqlBuilder.Append("AND " + TableName + "." + StatusPropertyName + " != " + LogicalDeleteValue + " ");
+            }
+            else
+            {
+                if (LogicalDelete)
+                    sqlQuery.SqlBuilder.Append("WHERE " + TableName + "." + StatusPropertyName + " != " + LogicalDeleteValue + " ");
+            }
+
+            sqlQuery.SetParam(dictionary);
+
+            return sqlQuery;
         }
 
         private void InitProperties()
@@ -538,57 +602,11 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                 sqlQuery.SqlBuilder.Append(" FROM " + TableName + " ");
             }
 
-            IDictionary<string, object> dictionary = new Dictionary<string, object>();
-
-            if (predicate != null)
-            {
-                // WHERE
-                var queryProperties = new List<QueryParameter>();
-                FillQueryProperties(predicate.Body, ExpressionType.Default, ref queryProperties);
-
-                sqlQuery.SqlBuilder.Append("WHERE ");
-
-                for (var i = 0; i < queryProperties.Count; i++)
-                {
-                    var item = queryProperties[i];
-                    var tableName = TableName;
-                    string columnName;
-                    if (item.NestedProperty)
-                    {
-                        var joinProperty = SqlJoinProperties.First(x => x.PropertyName == item.PropertyName);
-                        tableName = joinProperty.TableName;
-                        columnName = joinProperty.ColumnName;
-                    }
-                    else
-                    {
-                        columnName = SqlProperties.First(x => x.PropertyName == item.PropertyName).ColumnName;
-                    }
-
-                    if (!string.IsNullOrEmpty(item.LinkingOperator) && i > 0)
-                        sqlQuery.SqlBuilder.Append(item.LinkingOperator + " ");
-
-                    if (item.PropertyValue == null)
-                        sqlQuery.SqlBuilder.Append(tableName + "." + columnName + " " + (item.QueryOperator == "=" ? "IS" : "IS NOT") + " NULL ");
-                    else
-                        sqlQuery.SqlBuilder.Append(tableName + "." + columnName + " " + item.QueryOperator + " @" + item.PropertyName + " ");
-
-
-                    dictionary[item.PropertyName] = item.PropertyValue;
-                }
-
-                if (LogicalDelete)
-                    sqlQuery.SqlBuilder.Append("AND " + TableName + "." + StatusPropertyName + " != " + LogicalDeleteValue + " ");
-            }
-            else
-            {
-                if (LogicalDelete)
-                    sqlQuery.SqlBuilder.Append("WHERE " + TableName + "." + StatusPropertyName + " != " + LogicalDeleteValue + " ");
-            }
+            AppendWhereQuery(sqlQuery, predicate);
 
             if (firstOnly && (Config.SqlConnector == ESqlConnector.MySQL || Config.SqlConnector == ESqlConnector.PostgreSQL))
                 sqlQuery.SqlBuilder.Append("LIMIT 1");
 
-            sqlQuery.SetParam(dictionary);
             return sqlQuery;
         }
 

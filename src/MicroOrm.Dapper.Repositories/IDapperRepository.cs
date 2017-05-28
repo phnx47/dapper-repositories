@@ -457,6 +457,16 @@ namespace MicroOrm.Dapper.Repositories
         Task<bool> DeleteAsync(TEntity instance, IDbTransaction transaction = null);
 
         /// <summary>
+        ///     Delete objects from DB
+        /// </summary>
+        bool Delete(Expression<Func<TEntity, bool>> predicate, IDbTransaction transaction = null);
+
+        /// <summary>
+        ///     Delete objects from DB
+        /// </summary>
+        Task<bool> DeleteAsync(Expression<Func<TEntity, bool>> predicate, IDbTransaction transaction = null);
+
+        /// <summary>
         ///     Update object in DB
         /// </summary>
         bool Update(TEntity instance, IDbTransaction transaction = null);

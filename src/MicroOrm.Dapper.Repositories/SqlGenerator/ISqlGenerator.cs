@@ -121,5 +121,10 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         ///     Get SQL for DELETE Query
         /// </summary>
         SqlQuery GetDelete(TEntity entity);
+
+        /// <summary>
+        ///     Get SQL for DELETE Query
+        /// </summary>
+        SqlQuery GetDeleteAll(Expression<Func<TEntity, bool>> predicate);
     }
 }
