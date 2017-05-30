@@ -434,5 +434,61 @@ namespace MicroOrm.Dapper.Repositories.Tests.Tests
 
             Assert.Equal(1, objectsCount);
         }
+    
+        [Fact]
+        public void BulkUpdate()
+        {
+            var phone1 = new Phone { Code = "Kiev123", Number = "Kiev123" };
+            var phone2 = new Phone { Code = "Kiev123", Number = "Kiev333" };
+
+            _sqlDatabaseFixture.Db.Phones.Insert(phone1);
+            _sqlDatabaseFixture.Db.Phones.Insert(phone2);
+
+            var insertedPhone1 = _sqlDatabaseFixture.Db.Phones.FindById(phone1.Id);
+            var insertedPhone2 = _sqlDatabaseFixture.Db.Phones.FindById(phone2.Id);
+            Assert.Equal("Kiev123", phone1.Number);
+            Assert.Equal("Kiev333", phone2.Number);
+
+            insertedPhone1.Number = "Kiev666";
+            insertedPhone2.Number = "Kiev777";
+
+            bool result = _sqlDatabaseFixture.Db.Phones.BulkUpdate(new List<Phone> { insertedPhone1, insertedPhone2 });
+
+            Assert.True(result);
+
+            var newPhone1 = _sqlDatabaseFixture.Db.Phones.FindById(phone1.Id);
+            var newPhone2 = _sqlDatabaseFixture.Db.Phones.FindById(phone2.Id);
+
+            Assert.Equal("Kiev666", newPhone1.Number);
+            Assert.Equal("Kiev777", newPhone2.Number);
+        }
+
+        [Fact]
+        public async void BulkUpdateAsync()
+        {
+            var phone1 = new Phone { Code = "MSK123", Number = "MSK123" };
+            var phone2 = new Phone { Code = "MSK123", Number = "MSK333" };
+
+            await _sqlDatabaseFixture.Db.Phones.InsertAsync(phone1);
+            await _sqlDatabaseFixture.Db.Phones.InsertAsync(phone2);
+
+            var insertedPhone1 = await _sqlDatabaseFixture.Db.Phones.FindByIdAsync(phone1.Id);
+            var insertedPhone2 = await _sqlDatabaseFixture.Db.Phones.FindByIdAsync(phone2.Id);
+            Assert.Equal("MSK123", phone1.Number);
+            Assert.Equal("MSK333", phone2.Number);
+
+            insertedPhone1.Number = "MSK666";
+            insertedPhone2.Number = "MSK777";
+
+            bool result = await _sqlDatabaseFixture.Db.Phones.BulkUpdateAsync(new List<Phone> { insertedPhone1, insertedPhone2 });
+
+            Assert.True(result);
+
+            var newPhone1 = await _sqlDatabaseFixture.Db.Phones.FindByIdAsync(phone1.Id);
+            var newPhone2 = await _sqlDatabaseFixture.Db.Phones.FindByIdAsync(phone2.Id);
+
+            Assert.Equal("MSK666", newPhone1.Number);
+            Assert.Equal("MSK777", newPhone2.Number);
+        }
     }
 }

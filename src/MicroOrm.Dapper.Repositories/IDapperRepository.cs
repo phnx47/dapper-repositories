@@ -472,6 +472,16 @@ namespace MicroOrm.Dapper.Repositories
         bool Update(TEntity instance, IDbTransaction transaction = null);
 
         /// <summary>
+        ///     Bulk Update objects in DB
+        /// </summary>
+        Task<bool> BulkUpdateAsync(IEnumerable<TEntity> instances, IDbTransaction transaction = null);
+
+        /// <summary>
+        ///     Bulk Update objects in DB
+        /// </summary>
+        bool BulkUpdate(IEnumerable<TEntity> instances, IDbTransaction transaction = null);
+
+        /// <summary>
         ///     Update object in DB
         /// </summary>
         Task<bool> UpdateAsync(TEntity instance, IDbTransaction transaction = null);

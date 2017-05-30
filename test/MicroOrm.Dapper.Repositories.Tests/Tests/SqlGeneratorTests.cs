@@ -368,5 +368,37 @@ namespace MicroOrm.Dapper.Repositories.Tests.Tests
 
             Assert.Equal("DELETE FROM [DAB].[Phones] WHERE [DAB].[Phones].[IsActive] = @IsActive AND [DAB].[Phones].[Number] = @Number", sqlQuery.GetSql());
         }
+
+        [Fact]
+        public void MsSqlBulkUpdate()
+        {
+            ISqlGenerator<Phone> userSqlGenerator = new SqlGenerator<Phone>(ESqlConnector.MSSQL, true);
+            List<Phone> phones = new List<Phone>
+            {
+                new Phone { Id = 10, IsActive = true, Number = "111" },
+                new Phone { Id = 10, IsActive = false, Number = "222" }
+            };
+
+            var sqlQuery = userSqlGenerator.GetBulkUpdate(phones);
+
+            Assert.Equal(" UPDATE [DAB].[Phones] SET [Number] = @Number0, [IsActive] = @IsActive0 WHERE [Id] = @Id0" +
+                         " UPDATE [DAB].[Phones] SET [Number] = @Number1, [IsActive] = @IsActive1 WHERE [Id] = @Id1", sqlQuery.GetSql());
+        }
+
+        [Fact]
+        public void MySqlBulkUpdate()
+        {
+            ISqlGenerator<Phone> userSqlGenerator = new SqlGenerator<Phone>(ESqlConnector.MySQL, true);
+            List<Phone> phones = new List<Phone>
+            {
+                new Phone { Id = 10, IsActive = true, Number = "111" },
+                new Phone { Id = 10, IsActive = false, Number = "222" }
+            };
+
+            var sqlQuery = userSqlGenerator.GetBulkUpdate(phones);
+
+            Assert.Equal(" UPDATE `DAB`.`Phones` SET `Number` = @Number0, `IsActive` = @IsActive0 WHERE `Id` = @Id0" +
+                         " UPDATE `DAB`.`Phones` SET `Number` = @Number1, `IsActive` = @IsActive1 WHERE `Id` = @Id1", sqlQuery.GetSql());
+        }
     }
 }

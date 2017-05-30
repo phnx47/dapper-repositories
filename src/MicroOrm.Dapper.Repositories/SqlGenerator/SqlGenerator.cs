@@ -219,8 +219,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
             if (!entitiesArray.Any())
                 throw new ArgumentException("collection is empty");
 
-            var arrayEntities = entitiesArray.ToArray();
-            var entityType = arrayEntities[0].GetType();
+            var entityType = entitiesArray[0].GetType();
 
             var properties = (IsIdentity ? SqlProperties.Where(p => !p.PropertyName.Equals(IdentitySqlProperty.PropertyName, StringComparison.OrdinalIgnoreCase)) : SqlProperties).ToList();
 
@@ -229,13 +228,13 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
             var values = new List<string>();
             var parameters = new Dictionary<string, object>();
 
-            for (var i = 0; i < arrayEntities.Length; i++)
+            for (var i = 0; i < entitiesArray.Length; i++)
             {
                 if (HasUpdatedAt)
-                    UpdatedAtProperty.SetValue(arrayEntities[i], DateTime.UtcNow);
+                    UpdatedAtProperty.SetValue(entitiesArray[i], DateTime.UtcNow);
 
                 foreach (var property in properties)
-                    parameters.Add(property.PropertyName + i, entityType.GetProperty(property.PropertyName).GetValue(arrayEntities[i], null));
+                    parameters.Add(property.PropertyName + i, entityType.GetProperty(property.PropertyName).GetValue(entitiesArray[i], null));
 
                 values.Add("(" + string.Join(", ", properties.Select(p => "@" + p.PropertyName + i)) + ")");
             }
@@ -260,6 +259,44 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
 
             var query = new SqlQuery(entity);
             query.SqlBuilder.Append("UPDATE " + TableName + " SET " + string.Join(", ", properties.Select(p => p.ColumnName + " = @" + p.PropertyName)) + " WHERE " + string.Join(" AND ", KeySqlProperties.Select(p => p.ColumnName + " = @" + p.PropertyName)));
+
+            return query;
+        }
+
+        /// <inheritdoc />
+        public virtual SqlQuery GetBulkUpdate(IEnumerable<TEntity> entities)
+        {
+            var entitiesArray = entities as TEntity[] ?? entities.ToArray();
+            if (!entitiesArray.Any())
+                throw new ArgumentException("collection is empty");
+
+            var entityType = entitiesArray[0].GetType();
+
+            var properties = SqlProperties.Where(p => !KeySqlProperties.Any(k => k.PropertyName.Equals(p.PropertyName, StringComparison.OrdinalIgnoreCase)) && !p.IgnoreUpdate);
+
+            var query = new SqlQuery();
+
+            var parameters = new Dictionary<string, object>();
+
+            for (var i = 0; i < entitiesArray.Length; i++)
+            {
+                if (HasUpdatedAt)
+                    UpdatedAtProperty.SetValue(entitiesArray[i], DateTime.UtcNow);
+
+                query.SqlBuilder.Append(" UPDATE " + TableName + " SET " + string.Join(", ", properties.Select(p => p.ColumnName + " = @" + p.PropertyName + i)) + " WHERE " + string.Join(" AND ", KeySqlProperties.Select(p => p.ColumnName + " = @" + p.PropertyName + i)));
+
+                foreach (var property in properties)
+                {
+                    parameters.Add(property.PropertyName + i, entityType.GetProperty(property.PropertyName).GetValue(entitiesArray[i], null));
+                }
+
+                foreach (var property in KeySqlProperties)
+                {
+                    parameters.Add(property.PropertyName + i, entityType.GetProperty(property.PropertyName).GetValue(entitiesArray[i], null));
+                }
+            }
+
+            query.SetParam(parameters);
 
             return query;
         }
