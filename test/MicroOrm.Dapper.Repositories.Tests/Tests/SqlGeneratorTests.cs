@@ -400,5 +400,21 @@ namespace MicroOrm.Dapper.Repositories.Tests.Tests
             Assert.Equal(" UPDATE `DAB`.`Phones` SET `Number` = @Number0, `IsActive` = @IsActive0 WHERE `Id` = @Id0" +
                          " UPDATE `DAB`.`Phones` SET `Number` = @Number1, `IsActive` = @IsActive1 WHERE `Id` = @Id1", sqlQuery.GetSql());
         }
+
+        [Fact]
+        public void MsSqlBulkUpdateIgnoreOneOfKeys()
+        {
+            ISqlGenerator<Report> userSqlGenerator = new SqlGenerator<Report>(ESqlConnector.MSSQL, true);
+            List<Report> reports = new List<Report>
+            {
+                new Report { Id = 10, AnotherId = 10, UserId = 22 },
+                new Report { Id = 10, AnotherId = 10, UserId = 23 }
+            };
+
+            var sqlQuery = userSqlGenerator.GetBulkUpdate(reports);
+
+            Assert.Equal(" UPDATE [Reports] SET [UserId] = @UserId0 WHERE [AnotherId] = @AnotherId0" +
+                         " UPDATE [Reports] SET [UserId] = @UserId1 WHERE [AnotherId] = @AnotherId1", sqlQuery.GetSql());
+        }
     }
 }
