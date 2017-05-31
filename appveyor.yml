@@ -2,18 +2,40 @@ version: '{build}-{branch}'
 image: Visual Studio 2017
 configuration: Release
 platform: Any CPU
-clone_folder: c:\projects\microorm.dapper.repositories
 services: mssql2016
 build_script:
-- cmd: dotnet restore && dotnet pack src\MicroOrm.Dapper.Repositories -c Release --include-symbols
+- ps: >-
+    dotnet restore
+
+    dotnet build src\MicroOrm.Dapper.Repositories -c Release
+
+    if($env:APPVEYOR_REPO_TAG -eq "false") {
+        dotnet pack src\MicroOrm.Dapper.Repositories --include-symbols --no-build --version-suffix build-$env:APPVEYOR_BUILD_NUMBER -o artifacts\myget
+    }
+
+    if($env:APPVEYOR_REPO_TAG -eq "true") {
+        dotnet pack src\MicroOrm.Dapper.Repositories --include-symbols --no-build -o artifacts\nuget
+    }
 test_script:
 - cmd: dotnet test test\MicroOrm.Dapper.Repositories.Tests\MicroOrm.Dapper.Repositories.Tests.csproj -c Release
 artifacts:
-- path: '**\*.nupkg'
-  name: All Nupkg
+- path: '**\artifacts\nuget\*.nupkg'
+  name: NuGet
+- path: '**\artifacts\myget\*.nupkg'
+  name: MyGet
 deploy:
 - provider: NuGet
   api_key:
     secure: ZWN99UOlUq7ILlVxQmWxn5+FzwDAIdyYYnPc/WBDTVzklrgX+jOzs2UHJOruyvrf
+  artifact: NuGet
   on:
     appveyor_repo_tag: true
+- provider: NuGet
+  server: https://www.myget.org/F/phnx47-beta/api/v2/package
+  api_key:
+    secure: sra89qUYhiuc146gUszl0lg1u3tWG1Zc65B7lgVuZlIfxyq/3w4q3mkXeBiLpNA5
+  symbol_server: https://www.myget.org/F/phnx47-beta/symbols/api/v2/package
+  artifact: MyGet
+  on:
+    branch: master
+    appveyor_repo_tag: false

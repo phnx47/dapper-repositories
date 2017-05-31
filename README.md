@@ -1,6 +1,6 @@
 # MicroOrm.Dapper.Repositories
 
-[![NuGet Badge](https://buildstats.info/nuget/MicroOrm.Dapper.Repositories)](https://www.nuget.org/packages/MicroOrm.Dapper.Repositories/) [![License MIT](https://img.shields.io/badge/license-MIT-green.svg)](https://opensource.org/licenses/MIT) [![Build status](https://ci.appveyor.com/api/projects/status/5v68lbhwc9d4948g?svg=true)](https://ci.appveyor.com/project/phnx47/microorm-dapper-repositories) 
+[![MyGet](https://img.shields.io/myget/phnx47-beta/vpre/MicroOrm.Dapper.Repositories.svg)](https://www.myget.org/feed/phnx47-beta/package/nuget/MicroOrm.Dapper.Repositories)  [![NuGet Badge](https://buildstats.info/nuget/MicroOrm.Dapper.Repositories)](https://www.nuget.org/packages/MicroOrm.Dapper.Repositories/) [![License MIT](https://img.shields.io/badge/license-MIT-green.svg)](https://opensource.org/licenses/MIT) [![Build status](https://ci.appveyor.com/api/projects/status/5v68lbhwc9d4948g?svg=true)](https://ci.appveyor.com/project/phnx47/microorm-dapper-repositories) 
 
 
 Installation
