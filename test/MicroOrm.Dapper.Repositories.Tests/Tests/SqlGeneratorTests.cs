@@ -57,7 +57,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.Tests
             var sqlQuery = userSqlGenerator.GetSelectFirst(x => x.IsActive != true);
 
             var parameters = sqlQuery.Param as IDictionary<string, object>;
-            Assert.Equal(true, parameters["IsActive"]);
+            Assert.True(Convert.ToBoolean(parameters["IsActive"]));
 
             Assert.Equal("SELECT TOP 1 [DAB].[Phones].[Id], [DAB].[Phones].[Number], [DAB].[Phones].[IsActive], [DAB].[Phones].[Code] FROM [DAB].[Phones] WHERE [DAB].[Phones].[IsActive] != @IsActive", sqlQuery.GetSql());
         }
@@ -69,7 +69,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.Tests
             var sqlQuery = userSqlGenerator.GetSelectFirst(x => x.IsActive == false);
 
             var parameters = sqlQuery.Param as IDictionary<string, object>;
-            Assert.Equal(false, parameters["IsActive"]);
+            Assert.False(Convert.ToBoolean(parameters["IsActive"]));
 
             Assert.Equal("SELECT TOP 1 [DAB].[Phones].[Id], [DAB].[Phones].[Number], [DAB].[Phones].[IsActive], [DAB].[Phones].[Code] FROM [DAB].[Phones] WHERE [DAB].[Phones].[IsActive] = @IsActive", sqlQuery.GetSql());
         }
@@ -81,7 +81,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.Tests
             var sqlQuery = userSqlGenerator.GetSelectFirst(x => !x.IsActive);
 
             var parameters = sqlQuery.Param as IDictionary<string, object>;
-            Assert.Equal(false, parameters["IsActive"]);
+            Assert.False(Convert.ToBoolean(parameters["IsActive"]));
 
             Assert.Equal("SELECT TOP 1 [DAB].[Phones].[Id], [DAB].[Phones].[Number], [DAB].[Phones].[IsActive], [DAB].[Phones].[Code] FROM [DAB].[Phones] WHERE [DAB].[Phones].[IsActive] = @IsActive", sqlQuery.GetSql());
         }
@@ -93,7 +93,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.Tests
             var sqlQuery = userSqlGenerator.GetSelectFirst(x => x.IsActive);
 
             var parameters = sqlQuery.Param as IDictionary<string, object>;
-            Assert.Equal(true, parameters["IsActive"]);
+            Assert.True(Convert.ToBoolean(parameters["IsActive"]));
 
             Assert.Equal("SELECT TOP 1 [DAB].[Phones].[Id], [DAB].[Phones].[Number], [DAB].[Phones].[IsActive], [DAB].[Phones].[Code] FROM [DAB].[Phones] WHERE [DAB].[Phones].[IsActive] = @IsActive", sqlQuery.GetSql());
         }

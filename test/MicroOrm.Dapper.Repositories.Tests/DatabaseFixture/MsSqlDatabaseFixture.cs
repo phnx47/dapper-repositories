@@ -34,16 +34,24 @@ namespace MicroOrm.Dapper.Repositories.Tests.DatabaseFixture
             Db.Connection.Execute($"IF NOT EXISTS (SELECT name FROM master.dbo.sysdatabases WHERE name = '{DbName}') CREATE DATABASE [{DbName}];");
             Db.Connection.Execute($"USE [{DbName}]");
 
-            Action<string, string> dropTable = (schema, name) => Db.Connection.Execute($@"IF OBJECT_ID('{schema}.{name}', 'U') IS NOT NULL DROP TABLE [{schema}].[{name}]; ");
-            dropTable("dbo", "Users");
-            dropTable("dbo", "Cars");
-            dropTable("dbo","Addresses");
-            dropTable("dbo","Cities");
-            dropTable("dbo", "Reports");
-            dropTable("DAB", "Phones");
+            void DropTable(string schema, string name)
+            {
+                Db.Connection.Execute($@"IF OBJECT_ID('{schema}.{name}', 'U') IS NOT NULL DROP TABLE [{schema}].[{name}]; ");
+            }
 
-            Action<string> createSchema = DbSchema => Db.Connection.Execute($@"IF schema_id('{DbSchema}') IS NULL EXECUTE('CREATE SCHEMA {DbSchema}') ");
-            createSchema("DAB");
+            DropTable("dbo", "Users");
+            DropTable("dbo", "Cars");
+            DropTable("dbo", "Addresses");
+            DropTable("dbo", "Cities");
+            DropTable("dbo", "Reports");
+            DropTable("DAB", "Phones");
+
+            void CreateSchema(string dbSchema)
+            {
+                Db.Connection.Execute($@"IF schema_id('{dbSchema}') IS NULL EXECUTE('CREATE SCHEMA {dbSchema}') ");
+            }
+
+            CreateSchema("DAB");
 
             Db.Connection.Execute(@"CREATE TABLE Users (Id int IDENTITY(1,1) not null, Name varchar(256) not null, AddressId int not null, PhoneId int not null, Deleted bit not null, UpdatedAt datetime2,  PRIMARY KEY (Id))");
             Db.Connection.Execute(@"CREATE TABLE Cars (Id int IDENTITY(1,1) not null, Name varchar(256) not null, UserId int not null, Status int not null, Data binary(16) null, PRIMARY KEY (Id))");
@@ -55,8 +63,8 @@ namespace MicroOrm.Dapper.Repositories.Tests.DatabaseFixture
 
             Db.Address.Insert(new Address { Street = "Street0", CityId = "MSK" });
             Db.Cities.Insert(new City { Identifier = "MSK", Name = "Moscow" });
-            Db.Phones.Insert(new Phone { Number = "123", IsActive = true, Code = "UK"});
-            Db.Phones.Insert(new Phone { Number = "333", IsActive = false, Code = "UK"});
+            Db.Phones.Insert(new Phone { Number = "123", IsActive = true, Code = "UK" });
+            Db.Phones.Insert(new Phone { Number = "333", IsActive = false, Code = "UK" });
 
             for (var i = 0; i < 10; i++)
                 Db.Users.Insert(new User

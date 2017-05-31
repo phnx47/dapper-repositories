@@ -115,9 +115,6 @@ namespace MicroOrm.Dapper.Repositories.Tests.Tests
         [Fact]
         public async Task FindPhoneAsyncDifferentBoolQuery()
         {
-            var phones = await _sqlDatabaseFixture.Db.Phones.FindAllAsync();
-            Assert.Equal(2, phones.Count());
-
             var phone = await _sqlDatabaseFixture.Db.Phones.FindAsync(x => x.Id == 1);
             Assert.NotNull(phone);
 
