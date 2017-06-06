@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <Description>CRUD extension methods for Dapper</Description>
+    <Description>CRUD for Dapper</Description>
     <Copyright>2017 © Sergey Kuznetsov</Copyright>
     <AssemblyTitle>MicroOrm.Dapper.Repositories</AssemblyTitle>
     <VersionPrefix>1.8.0</VersionPrefix>
