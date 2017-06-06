@@ -1,5 +1,3 @@
-## Description
-
 [![MyGet](https://img.shields.io/myget/phnx47-beta/vpre/MicroOrm.Dapper.Repositories.svg)](https://www.myget.org/feed/phnx47-beta/package/nuget/MicroOrm.Dapper.Repositories)
 [![NuGet](https://img.shields.io/nuget/v/MicroOrm.Dapper.Repositories.svg)](https://www.nuget.org/packages/MicroOrm.Dapper.Repositories)
 [![NuGet](https://img.shields.io/nuget/dt/MicroOrm.Dapper.Repositories.svg)](https://www.nuget.org/packages/MicroOrm.Dapper.Repositories)
@@ -11,6 +9,8 @@
 [![GitHub stars](https://img.shields.io/github/stars/phnx47/MicroOrm.Dapper.Repositories.svg?style=social&label=Star)](https://github.com/phnx47/MicroOrm.Dapper.Repositories)
 [![GitHub forks](https://img.shields.io/github/forks/phnx47/MicroOrm.Dapper.Repositories.svg?style=social&label=Fork)](https://github.com/phnx47/MicroOrm.Dapper.Repositories)
 [![GitHub watchers](https://img.shields.io/github/watchers/phnx47/MicroOrm.Dapper.Repositories.svg?style=social&label=Watch)](https://github.com/phnx47/MicroOrm.Dapper.Repositories)
+
+## Description
 
 If you like your code to run fast, you probably know about Micro ORMs.
 They are simple and one of their main goals is to be the fastest execution of your SQL sentences in you data repository.
@@ -29,31 +29,31 @@ I tested this with MSSQL, PostgreSQL and MySQL.
 
 ## Metadata attributes
 
-######	[Key]
+**[Key]**   
 From `System.ComponentModel.DataAnnotations` - Use for primary key.
 
-###### [Identity]
+**[Identity]**  
 Use for identity key.
 
-######	[Table]
+**[Table]**  
 From `System.ComponentModel.DataAnnotations.Schema` - By default the database table name will match the model name but it can be overridden with this.
 
-###### [Column]
+**[Column]**  
 From `System.ComponentModel.DataAnnotations.Schema` - By default the column name will match the property name but it can be overridden with this.
 
-###### [NotMapped]
+**[NotMapped]**  
 From `System.ComponentModel.DataAnnotations.Schema` - For "logical" properties that do not have a corresponding column and have to be ignored by the SQL Generator.
 
-######	[Deleted], [Status]
+**[Deleted], [Status]**  
 For tables that implement "logical deletes" instead of physical deletes. Use this to decorate the `bool` or `enum`.
 
-######	[LeftJoin]
+**[LeftJoin]**  
 
-######	[InnerJoin]
+**[InnerJoin]**  
 
-######	[RightJoin]
+**[RightJoin]**  
 
-######	[UpdatedAt]
+**[UpdatedAt]**  
 
 #### Notes
 
