@@ -1,3 +1,5 @@
+## Description
+
 [![MyGet](https://img.shields.io/myget/phnx47-beta/vpre/MicroOrm.Dapper.Repositories.svg)](https://www.myget.org/feed/phnx47-beta/package/nuget/MicroOrm.Dapper.Repositories)
 [![NuGet](https://img.shields.io/nuget/v/MicroOrm.Dapper.Repositories.svg)](https://www.nuget.org/packages/MicroOrm.Dapper.Repositories)
 [![NuGet](https://img.shields.io/nuget/dt/MicroOrm.Dapper.Repositories.svg)](https://www.nuget.org/packages/MicroOrm.Dapper.Repositories)
@@ -25,45 +27,42 @@ I tested this with MSSQL, PostgreSQL and MySQL.
     PM> Install-Package MicroOrm.Dapper.Repositories
 
 
-Metadata attributes
--------------------
+## Metadata attributes
 
-###	[Key]
+######	[Key]
 From `System.ComponentModel.DataAnnotations` - Use for primary key.
 
-### [Identity]
+###### [Identity]
 Use for identity key.
 
-###	[Table]
+######	[Table]
 From `System.ComponentModel.DataAnnotations.Schema` - By default the database table name will match the model name but it can be overridden with this.
 
-### [Column]
+###### [Column]
 From `System.ComponentModel.DataAnnotations.Schema` - By default the column name will match the property name but it can be overridden with this.
 
-### [NotMapped]
+###### [NotMapped]
 From `System.ComponentModel.DataAnnotations.Schema` - For "logical" properties that do not have a corresponding column and have to be ignored by the SQL Generator.
 
-###	[Deleted], [Status]
+######	[Deleted], [Status]
 For tables that implement "logical deletes" instead of physical deletes. Use this to decorate the `bool` or `enum`.
 
-###	[LeftJoin]
+######	[LeftJoin]
 
-###	[InnerJoin]
+######	[InnerJoin]
 
-###	[RightJoin]
+######	[RightJoin]
 
-###	[UpdatedAt]
+######	[UpdatedAt]
 
-Notes
-----------
+#### Notes
 
 *  By default the SQL Generator is going to map the POCO name with the table name, and each public property to a column.
 *  If the [Deleted] is used on a certain POCO, the sentence will be an update instead of a delete.
 *  Supports complex primary keys.
 *  Supports simple Joins.
 
-Examples
-=============
+## Examples
 
 "Users" POCO:
 
