@@ -1,7 +1,7 @@
 ﻿using MicroOrm.Dapper.Repositories.Tests.DatabaseFixture;
 using Xunit;
 
-namespace MicroOrm.Dapper.Repositories.Tests.Tests
+namespace MicroOrm.Dapper.Repositories.Tests.RepositoriesTests
 {
     public class MySqlRepositoriesTests : IClassFixture<MySqlDatabaseFixture>
     {

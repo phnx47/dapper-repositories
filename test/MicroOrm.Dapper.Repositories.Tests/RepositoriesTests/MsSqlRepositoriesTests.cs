@@ -6,7 +6,7 @@ using MicroOrm.Dapper.Repositories.Tests.Classes;
 using MicroOrm.Dapper.Repositories.Tests.DatabaseFixture;
 using Xunit;
 
-namespace MicroOrm.Dapper.Repositories.Tests.Tests
+namespace MicroOrm.Dapper.Repositories.Tests.RepositoriesTests
 {
     public class MsSqlRepositoriesTests : IClassFixture<MsSqlDatabaseFixture>
     {
