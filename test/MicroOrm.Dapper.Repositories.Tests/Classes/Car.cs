@@ -32,6 +32,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.Classes
 
         Active = 1,
 
-        [Deleted] Deleted = -1
+        [Deleted]
+        Deleted = -1
     }
 }

@@ -122,10 +122,10 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
             {
                 { keyProperty.PropertyName, id }
             };
-            sqlQuery.SqlBuilder.Append("WHERE " + TableName + "." + keyProperty.ColumnName + " = @" + keyProperty.PropertyName);
+            sqlQuery.SqlBuilder.Append("WHERE " + TableName + "." + keyProperty.ColumnName + " = @" + keyProperty.PropertyName + " ");
 
             if (LogicalDelete)
-                sqlQuery.SqlBuilder.Append(" AND " + TableName + "." + StatusPropertyName + " != " + LogicalDeleteValue + " ");
+                sqlQuery.SqlBuilder.Append("AND " + TableName + "." + StatusPropertyName + " != " + LogicalDeleteValue + " ");
 
             if (Config.SqlConnector == ESqlConnector.MySQL || Config.SqlConnector == ESqlConnector.PostgreSQL)
                 sqlQuery.SqlBuilder.Append("LIMIT 1");
@@ -159,6 +159,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
             {
                 if (HasUpdatedAt)
                     UpdatedAtProperty.SetValue(entity, DateTime.UtcNow);
+
                 sqlQuery.SqlBuilder.Append("UPDATE " + TableName + " SET " + StatusPropertyName + " = " + LogicalDeleteValue + whereSql);
             }
 
@@ -258,7 +259,8 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                 UpdatedAtProperty.SetValue(entity, DateTime.UtcNow);
 
             var query = new SqlQuery(entity);
-            query.SqlBuilder.Append("UPDATE " + TableName + " SET " + string.Join(", ", properties.Select(p => p.ColumnName + " = @" + p.PropertyName)) + " WHERE " + string.Join(" AND ", KeySqlProperties.Where(p => !p.IgnoreUpdate).Select(p => p.ColumnName + " = @" + p.PropertyName)));
+            query.SqlBuilder.Append("UPDATE " + TableName + " SET " + string.Join(", ", properties.Select(p => p.ColumnName + " = @" + p.PropertyName)) 
+                + " WHERE " + string.Join(" AND ", KeySqlProperties.Where(p => !p.IgnoreUpdate).Select(p => p.ColumnName + " = @" + p.PropertyName)));
 
             return query;
         }
@@ -272,7 +274,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
 
             var entityType = entitiesArray[0].GetType();
 
-            var properties = SqlProperties.Where(p => !KeySqlProperties.Any(k => k.PropertyName.Equals(p.PropertyName, StringComparison.OrdinalIgnoreCase)) && !p.IgnoreUpdate);
+            var properties = SqlProperties.Where(p => !KeySqlProperties.Any(k => k.PropertyName.Equals(p.PropertyName, StringComparison.OrdinalIgnoreCase)) && !p.IgnoreUpdate).ToArray();
 
             var query = new SqlQuery();
 
@@ -283,7 +285,8 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                 if (HasUpdatedAt)
                     UpdatedAtProperty.SetValue(entitiesArray[i], DateTime.UtcNow);
 
-                query.SqlBuilder.Append(" UPDATE " + TableName + " SET " + string.Join(", ", properties.Select(p => p.ColumnName + " = @" + p.PropertyName + i)) + " WHERE " + string.Join(" AND ", KeySqlProperties.Where(p => !p.IgnoreUpdate).Select(p => p.ColumnName + " = @" + p.PropertyName + i)));
+                query.SqlBuilder.Append(" UPDATE " + TableName + " SET " + string.Join(", ", properties.Select(p => p.ColumnName + " = @" + p.PropertyName + i))
+                    + " WHERE " + string.Join(" AND ", KeySqlProperties.Where(p => !p.IgnoreUpdate).Select(p => p.ColumnName + " = @" + p.PropertyName + i)));
 
                 foreach (var property in properties)
                 {

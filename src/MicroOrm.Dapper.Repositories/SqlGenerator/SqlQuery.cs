@@ -40,7 +40,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         /// </summary>
         public string GetSql()
         {
-            return SqlBuilder.ToString().TrimEnd();
+            return SqlBuilder.ToString().Trim();
         }
 
         /// <summary>

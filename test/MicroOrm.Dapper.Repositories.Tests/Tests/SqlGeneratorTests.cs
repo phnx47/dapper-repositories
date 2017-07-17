@@ -9,6 +9,8 @@ namespace MicroOrm.Dapper.Repositories.Tests.Tests
 {
     public class SqlGeneratorTests
     {
+        //todo: group by provider
+
         [Fact]
         public void ChangeDate_Insert()
         {
@@ -273,6 +275,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.Tests
             Assert.DoesNotContain("!= NULL", sqlQuery.GetSql());
         }
 
+
         [Fact]
         public void MySqlIsNotNullAND()
         {
@@ -300,6 +303,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.Tests
                          "WHERE `Users`.`Deleted` != 1 AND `Users`.`Id` BETWEEN '1' AND '10'", sqlQuery.GetSql());
         }
 
+
         [Fact]
         public void MySqlSelectFirstWithDeleted()
         {
@@ -314,6 +318,22 @@ namespace MicroOrm.Dapper.Repositories.Tests.Tests
             ISqlGenerator<City> sqlGenerator = new SqlGenerator<City>(ESqlConnector.MySQL, false);
             var sqlQuery = sqlGenerator.GetSelectFirst(x => x.Identifier == "");
             Assert.Equal("SELECT Cities.Identifier, Cities.Name FROM Cities WHERE Cities.Identifier = @Identifier LIMIT 1", sqlQuery.GetSql());
+        }
+
+        [Fact]
+        public void MySqlSelectFirst2()
+        {
+            ISqlGenerator<City> sqlGenerator = new SqlGenerator<City>(ESqlConnector.MySQL, false);
+            var sqlQuery = sqlGenerator.GetSelectFirst(x => x.Identifier == "" && x.Name == "");
+            Assert.Equal("SELECT Cities.Identifier, Cities.Name FROM Cities WHERE Cities.Identifier = @Identifier AND Cities.Name = @Name LIMIT 1", sqlQuery.GetSql());
+        }
+
+        [Fact]
+        public void MySqlSelectById()
+        {
+            ISqlGenerator<Address> sqlGenerator = new SqlGenerator<Address>(ESqlConnector.MySQL, false);
+            var sqlQuery = sqlGenerator.GetSelectById(1);
+            Assert.Equal("SELECT Addresses.Id, Addresses.Street, Addresses.CityId FROM Addresses WHERE Addresses.Id = @Id LIMIT 1", sqlQuery.GetSql());
         }
 
         [Fact]
@@ -381,8 +401,8 @@ namespace MicroOrm.Dapper.Repositories.Tests.Tests
 
             var sqlQuery = userSqlGenerator.GetBulkUpdate(phones);
 
-            Assert.Equal(" UPDATE [DAB].[Phones] SET [Number] = @Number0, [IsActive] = @IsActive0 WHERE [Id] = @Id0" +
-                         " UPDATE [DAB].[Phones] SET [Number] = @Number1, [IsActive] = @IsActive1 WHERE [Id] = @Id1", sqlQuery.GetSql());
+            Assert.Equal("UPDATE [DAB].[Phones] SET [Number] = @Number0, [IsActive] = @IsActive0 WHERE [Id] = @Id0 " +
+                         "UPDATE [DAB].[Phones] SET [Number] = @Number1, [IsActive] = @IsActive1 WHERE [Id] = @Id1", sqlQuery.GetSql());
         }
 
         [Fact]
@@ -397,8 +417,8 @@ namespace MicroOrm.Dapper.Repositories.Tests.Tests
 
             var sqlQuery = userSqlGenerator.GetBulkUpdate(phones);
 
-            Assert.Equal(" UPDATE `DAB`.`Phones` SET `Number` = @Number0, `IsActive` = @IsActive0 WHERE `Id` = @Id0" +
-                         " UPDATE `DAB`.`Phones` SET `Number` = @Number1, `IsActive` = @IsActive1 WHERE `Id` = @Id1", sqlQuery.GetSql());
+            Assert.Equal("UPDATE `DAB`.`Phones` SET `Number` = @Number0, `IsActive` = @IsActive0 WHERE `Id` = @Id0 " +
+                         "UPDATE `DAB`.`Phones` SET `Number` = @Number1, `IsActive` = @IsActive1 WHERE `Id` = @Id1", sqlQuery.GetSql());
         }
 
         [Fact]
@@ -413,8 +433,8 @@ namespace MicroOrm.Dapper.Repositories.Tests.Tests
 
             var sqlQuery = userSqlGenerator.GetBulkUpdate(reports);
 
-            Assert.Equal(" UPDATE [Reports] SET [UserId] = @UserId0 WHERE [AnotherId] = @AnotherId0" +
-                         " UPDATE [Reports] SET [UserId] = @UserId1 WHERE [AnotherId] = @AnotherId1", sqlQuery.GetSql());
+            Assert.Equal("UPDATE [Reports] SET [UserId] = @UserId0 WHERE [AnotherId] = @AnotherId0 " +
+                         "UPDATE [Reports] SET [UserId] = @UserId1 WHERE [AnotherId] = @AnotherId1", sqlQuery.GetSql());
         }
     }
 }
