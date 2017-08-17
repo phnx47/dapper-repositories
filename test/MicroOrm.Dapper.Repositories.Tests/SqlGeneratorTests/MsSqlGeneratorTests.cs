@@ -168,7 +168,29 @@ namespace MicroOrm.Dapper.Repositories.Tests.SqlGeneratorTests
             var phone = new Phone { Id = 10, Code = "ZZZ", IsActive = true, Number = "111" };
             var sqlQuery = userSqlGenerator.GetDelete(phone);
 
-            Assert.Equal("DELETE FROM [DAB].[Phones] WHERE [Id] = @Id", sqlQuery.GetSql());
+            Assert.Equal("DELETE FROM [DAB].[Phones] WHERE [DAB].[Phones].[Id] = @Id", sqlQuery.GetSql());
+        }
+
+        [Fact]
+        public void LogicalDeleteEntity()
+        {
+            ISqlGenerator<Car> sqlGenerator = new SqlGenerator<Car>(SqlConnector);
+            var car = new Car() { Id = 10, Name = "LogicalDelete", UserId = 5};
+
+            var sqlQuery = sqlGenerator.GetDelete(car);
+            var realSql = sqlQuery.GetSql();
+            Assert.Equal("UPDATE Cars SET Status = -1 WHERE Cars.Id = @Id", realSql);
+        }
+
+        [Fact]
+        public void LogicalDeletePredicate()
+        {
+            ISqlGenerator<Car> sqlGenerator = new SqlGenerator<Car>(SqlConnector);
+
+            var sqlQuery = sqlGenerator.GetDelete(q => q.Id == 10);
+            var realSql = sqlQuery.GetSql();
+
+            Assert.Equal("UPDATE Cars SET Status = -1 WHERE Cars.Id = @Id", realSql);
         }
 
 
@@ -176,7 +198,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.SqlGeneratorTests
         public void DeleteWithMultiplePredicate()
         {
             ISqlGenerator<Phone> userSqlGenerator = new SqlGenerator<Phone>(SqlConnector, true);
-            var sqlQuery = userSqlGenerator.GetDeleteAll(x => x.IsActive && x.Number == "111");
+            var sqlQuery = userSqlGenerator.GetDelete(x => x.IsActive && x.Number == "111");
 
             Assert.Equal("DELETE FROM [DAB].[Phones] WHERE [DAB].[Phones].[IsActive] = @IsActive AND [DAB].[Phones].[Number] = @Number", sqlQuery.GetSql());
         }
@@ -185,7 +207,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.SqlGeneratorTests
         public void DeleteWithSinglePredicate()
         {
             ISqlGenerator<Phone> userSqlGenerator = new SqlGenerator<Phone>(SqlConnector, true);
-            var sqlQuery = userSqlGenerator.GetDeleteAll(x => x.IsActive);
+            var sqlQuery = userSqlGenerator.GetDelete(x => x.IsActive);
 
             Assert.Equal("DELETE FROM [DAB].[Phones] WHERE [DAB].[Phones].[IsActive] = @IsActive", sqlQuery.GetSql());
         }

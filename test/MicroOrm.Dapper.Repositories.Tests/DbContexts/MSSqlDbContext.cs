@@ -5,7 +5,7 @@ using MicroOrm.Dapper.Repositories.Tests.Classes;
 
 namespace MicroOrm.Dapper.Repositories.Tests.DbContexts
 {
-    public class MSSqlDbContext : DapperDbContext, IDbContext
+    public class MsSqlDbContext : DapperDbContext, IDbContext
     {
         private IDapperRepository<Address> _address;
 
@@ -25,7 +25,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.DbContexts
             UseQuotationMarks = true
         };
 
-        public MSSqlDbContext(string connectionString)
+        public MsSqlDbContext(string connectionString)
             : base(new SqlConnection(connectionString))
         {
         }

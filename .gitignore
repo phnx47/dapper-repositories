@@ -3,6 +3,7 @@
 *.suo
 *.exe
 .vs
+.idea
 bin
 obj
 packages

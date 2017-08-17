@@ -16,12 +16,12 @@ namespace MicroOrm.Dapper.Repositories.Tests.DatabaseFixture
             if (Environments.IsAppVeyor)
                 connString = "Server=(local)\\SQL2016;Database=master;User ID=sa;Password=Password12!";
 
-            Db = new MSSqlDbContext(connString);
+            Db = new MsSqlDbContext(connString);
 
             InitDb();
         }
 
-        public MSSqlDbContext Db { get; }
+        public MsSqlDbContext Db { get; }
 
         public void Dispose()
         {

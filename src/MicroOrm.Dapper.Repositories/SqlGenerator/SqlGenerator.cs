@@ -53,6 +53,9 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         public PropertyInfo UpdatedAtProperty { get; protected set; }
 
         /// <inheritdoc />
+        public SqlPropertyMetadata UpdatedAtPropertyMetadata { get; protected set; }
+
+        /// <inheritdoc />
         public bool IsIdentity => IdentitySqlProperty != null;
 
         /// <inheritdoc />
@@ -149,8 +152,9 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         /// <inheritdoc />
         public virtual SqlQuery GetDelete(TEntity entity)
         {
-            var sqlQuery = new SqlQuery(entity);
-            var whereSql = " WHERE " + string.Join(" AND ", KeySqlProperties.Select(p => p.ColumnName + " = @" + p.PropertyName));
+            var sqlQuery = new SqlQuery();
+
+            var whereSql = " WHERE " + string.Join(" AND ", KeySqlProperties.Select(p => TableName + "." + p.ColumnName + " = @" + p.PropertyName));
             if (!LogicalDelete)
             {
                 sqlQuery.SqlBuilder.Append("DELETE FROM " + TableName + whereSql);
@@ -163,17 +167,27 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                 sqlQuery.SqlBuilder.Append("UPDATE " + TableName + " SET " + StatusPropertyName + " = " + LogicalDeleteValue + whereSql);
             }
 
+            sqlQuery.SetParam(entity);
             return sqlQuery;
         }
 
         /// <inheritdoc />
-        public virtual SqlQuery GetDeleteAll(Expression<Func<TEntity, bool>> predicate)
+        public virtual SqlQuery GetDelete(Expression<Func<TEntity, bool>> predicate)
         {
             var sqlQuery = new SqlQuery();
 
-            sqlQuery.SqlBuilder.Append("DELETE FROM " + TableName + " ");
+            if (!LogicalDelete)
+            {
+                sqlQuery.SqlBuilder.Append("DELETE FROM " + TableName + " ");
+            }
+            else
+            {
+                sqlQuery.SqlBuilder.Append("UPDATE " + TableName + " SET " + StatusPropertyName + " = " + LogicalDeleteValue);
+                sqlQuery.SqlBuilder.Append(HasUpdatedAt ? UpdatedAtPropertyMetadata.ColumnName + " = @" + UpdatedAtPropertyMetadata.PropertyName : " ");
+            }
 
-            return AppendWhereQuery(sqlQuery, predicate);
+            AppendWherePredicateQuery(sqlQuery, predicate, QueryType.Delete);
+            return sqlQuery;
         }
 
         /// <inheritdoc />
@@ -259,7 +273,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                 UpdatedAtProperty.SetValue(entity, DateTime.UtcNow);
 
             var query = new SqlQuery(entity);
-            query.SqlBuilder.Append("UPDATE " + TableName + " SET " + string.Join(", ", properties.Select(p => p.ColumnName + " = @" + p.PropertyName)) 
+            query.SqlBuilder.Append("UPDATE " + TableName + " SET " + string.Join(", ", properties.Select(p => p.ColumnName + " = @" + p.PropertyName))
                 + " WHERE " + string.Join(" AND ", KeySqlProperties.Where(p => !p.IgnoreUpdate).Select(p => p.ColumnName + " = @" + p.PropertyName)));
 
             return query;
@@ -304,9 +318,9 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
             return query;
         }
 
-        private SqlQuery AppendWhereQuery(SqlQuery sqlQuery, Expression<Func<TEntity, bool>> predicate)
+        private void AppendWherePredicateQuery(SqlQuery sqlQuery, Expression<Func<TEntity, bool>> predicate, QueryType queryType)
         {
-            IDictionary<string, object> dictionary = new Dictionary<string, object>();
+            IDictionary<string, object> dictionaryParams = new Dictionary<string, object>();
 
             if (predicate != null)
             {
@@ -341,21 +355,24 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                         sqlQuery.SqlBuilder.Append(tableName + "." + columnName + " " + item.QueryOperator + " @" + item.PropertyName + " ");
 
 
-                    dictionary[item.PropertyName] = item.PropertyValue;
+                    dictionaryParams[item.PropertyName] = item.PropertyValue;
                 }
 
-                if (LogicalDelete)
+                if (LogicalDelete && queryType == QueryType.Select)
                     sqlQuery.SqlBuilder.Append("AND " + TableName + "." + StatusPropertyName + " != " + LogicalDeleteValue + " ");
             }
             else
             {
-                if (LogicalDelete)
+                if (LogicalDelete && queryType == QueryType.Select)
                     sqlQuery.SqlBuilder.Append("WHERE " + TableName + "." + StatusPropertyName + " != " + LogicalDeleteValue + " ");
             }
 
-            sqlQuery.SetParam(dictionary);
+            if (LogicalDelete && HasUpdatedAt && queryType == QueryType.Delete)
+            {
+                //todo: add DateTime.UtcNow in dictionaryParams
+            }
 
-            return sqlQuery;
+            sqlQuery.SetParam(dictionaryParams);
         }
 
         private void InitProperties()
@@ -387,7 +404,11 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
 
             var dateChangedProperty = props.FirstOrDefault(p => p.GetCustomAttributes<UpdatedAtAttribute>().Count() == 1);
             if (dateChangedProperty != null && (dateChangedProperty.PropertyType == typeof(DateTime) || dateChangedProperty.PropertyType == typeof(DateTime?)))
+            {
                 UpdatedAtProperty = props.FirstOrDefault(p => p.GetCustomAttributes<UpdatedAtAttribute>().Any());
+                UpdatedAtPropertyMetadata = new SqlPropertyMetadata(UpdatedAtProperty);
+            }
+
         }
 
         /// <summary>
@@ -500,7 +521,6 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                 ? startQuotationMark + tableSchema + endQuotationMark + "." + startQuotationMark + tableName + endQuotationMark
                 : startQuotationMark + tableName + endQuotationMark;
         }
-
 
         private void InitLogicalDeleted()
         {
@@ -642,7 +662,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                 sqlQuery.SqlBuilder.Append(" FROM " + TableName + " ");
             }
 
-            AppendWhereQuery(sqlQuery, predicate);
+            AppendWherePredicateQuery(sqlQuery, predicate, QueryType.Select);
 
             if (firstOnly && (Config.SqlConnector == ESqlConnector.MySQL || Config.SqlConnector == ESqlConnector.PostgreSQL))
                 sqlQuery.SqlBuilder.Append("LIMIT 1");
@@ -709,6 +729,12 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
             {
                 FillQueryProperties(ExpressionHelper.GetBinaryExpression(expr), linkingType, ref queryProperties);
             }
+        }
+
+        private enum QueryType
+        {
+            Select,
+            Delete
         }
     }
 }

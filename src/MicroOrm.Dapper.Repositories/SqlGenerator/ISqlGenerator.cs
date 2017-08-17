@@ -26,6 +26,11 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         PropertyInfo UpdatedAtProperty { get; }
 
         /// <summary>
+        ///     Date of Changed Metadata Property
+        /// </summary>
+        SqlPropertyMetadata UpdatedAtPropertyMetadata { get; }
+
+        /// <summary>
         ///     Is Autoincrement table
         /// </summary>
         bool IsIdentity { get; }
@@ -130,6 +135,6 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         /// <summary>
         ///     Get SQL for DELETE Query
         /// </summary>
-        SqlQuery GetDeleteAll(Expression<Func<TEntity, bool>> predicate);
+        SqlQuery GetDelete(Expression<Func<TEntity, bool>> predicate);
     }
 }
