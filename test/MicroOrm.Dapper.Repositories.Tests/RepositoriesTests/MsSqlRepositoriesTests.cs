@@ -49,7 +49,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.RepositoriesTests
         [Fact]
         public async void FindByIdAsync()
         {
-            var user = await  _sqlDatabaseFixture.Db.Users.FindByIdAsync(2);
+            var user = await _sqlDatabaseFixture.Db.Users.FindByIdAsync(2);
             Assert.False(user.Deleted);
             Assert.Equal("TestName1", user.Name);
         }
@@ -393,11 +393,11 @@ namespace MicroOrm.Dapper.Repositories.Tests.RepositoriesTests
                 new Address { Street = "aaa1" , CityId = "11"}
             };
 
-            int inserted =  _sqlDatabaseFixture.Db.Address.BulkInsert(adresses);
+            int inserted = _sqlDatabaseFixture.Db.Address.BulkInsert(adresses);
             Assert.Equal(2, inserted);
 
-            var adresses0 =  _sqlDatabaseFixture.Db.Address.Find(x => x.CityId == "10");
-            var adresses1 =  _sqlDatabaseFixture.Db.Address.Find(x => x.CityId == "11");
+            var adresses0 = _sqlDatabaseFixture.Db.Address.Find(x => x.CityId == "10");
+            var adresses1 = _sqlDatabaseFixture.Db.Address.Find(x => x.CityId == "11");
 
             Assert.Equal("aaa0", adresses0.Street);
             Assert.Equal("aaa1", adresses1.Street);
@@ -420,7 +420,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.RepositoriesTests
             var adresses1 = _sqlDatabaseFixture.Db.Address.Find(x => x.CityId == "111");
             var objectsCount = _sqlDatabaseFixture.Db.Address.FindAll(x => x.Street == "aaa10").Count();
 
-            Assert.Equal(3 , objectsCount);
+            Assert.Equal(3, objectsCount);
 
             Assert.Equal("aaa10", adresses0.Street);
             Assert.Equal("aaa10", adresses1.Street);
@@ -431,7 +431,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.RepositoriesTests
 
             Assert.Equal(1, objectsCount);
         }
-    
+
         [Fact]
         public void BulkUpdate()
         {
@@ -486,6 +486,51 @@ namespace MicroOrm.Dapper.Repositories.Tests.RepositoriesTests
 
             Assert.Equal("MSK666", newPhone1.Number);
             Assert.Equal("MSK777", newPhone2.Number);
+        }
+
+        
+        [Fact]
+        public async Task LogicalDeleteWithUpdatedAt()
+        {
+            const string name = "testLogicalDeleted1";
+            var user = new User()
+            {
+                Name = name
+            };
+
+            await _sqlDatabaseFixture.Db.Users.InsertAsync(user);
+            user = await _sqlDatabaseFixture.Db.Users.FindAsync(q => q.Name == name);
+
+            //var updatedAt = user.UpdatedAt;
+
+            await _sqlDatabaseFixture.Db.Users.DeleteAsync(user);
+            user = await _sqlDatabaseFixture.Db.Users.FindAsync(q => q.Name == name);
+
+            Assert.Null(user);
+
+        }
+
+
+        [Fact]
+        public async Task LogicalDeleteWithUpdatedAtWithPredicate()
+        {
+            const string name = "testLogicalDeleted2";
+            var user = new User()
+            {
+
+                Name = name
+            };
+
+            await _sqlDatabaseFixture.Db.Users.InsertAsync(user);
+            user = await _sqlDatabaseFixture.Db.Users.FindAsync(q => q.Name == name);
+
+            // var updatedAt = user.UpdatedAt;
+
+            await _sqlDatabaseFixture.Db.Users.DeleteAsync(q => q.Id == user.Id);
+            user = await _sqlDatabaseFixture.Db.Users.FindAsync(q => q.Name == name);
+
+            Assert.Null(user);
+
         }
     }
 }

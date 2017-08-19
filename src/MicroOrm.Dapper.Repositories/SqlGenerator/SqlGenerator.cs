@@ -153,18 +153,23 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         public virtual SqlQuery GetDelete(TEntity entity)
         {
             var sqlQuery = new SqlQuery();
-
             var whereSql = " WHERE " + string.Join(" AND ", KeySqlProperties.Select(p => TableName + "." + p.ColumnName + " = @" + p.PropertyName));
+
             if (!LogicalDelete)
             {
                 sqlQuery.SqlBuilder.Append("DELETE FROM " + TableName + whereSql);
             }
             else
             {
-                if (HasUpdatedAt)
-                    UpdatedAtProperty.SetValue(entity, DateTime.UtcNow);
+                sqlQuery.SqlBuilder.Append("UPDATE " + TableName + " SET " + StatusPropertyName + " = " + LogicalDeleteValue);
 
-                sqlQuery.SqlBuilder.Append("UPDATE " + TableName + " SET " + StatusPropertyName + " = " + LogicalDeleteValue + whereSql);
+                if (HasUpdatedAt)
+                {
+                    UpdatedAtProperty.SetValue(entity, DateTime.UtcNow);
+                    sqlQuery.SqlBuilder.Append(", " + UpdatedAtPropertyMetadata.ColumnName + " = @" + UpdatedAtPropertyMetadata.PropertyName);
+                }
+
+                sqlQuery.SqlBuilder.Append(whereSql);
             }
 
             sqlQuery.SetParam(entity);
@@ -183,7 +188,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
             else
             {
                 sqlQuery.SqlBuilder.Append("UPDATE " + TableName + " SET " + StatusPropertyName + " = " + LogicalDeleteValue);
-                sqlQuery.SqlBuilder.Append(HasUpdatedAt ? UpdatedAtPropertyMetadata.ColumnName + " = @" + UpdatedAtPropertyMetadata.PropertyName : " ");
+                sqlQuery.SqlBuilder.Append(HasUpdatedAt ? ", " + UpdatedAtPropertyMetadata.ColumnName + " = @" + UpdatedAtPropertyMetadata.PropertyName + " "  : " ");
             }
 
             AppendWherePredicateQuery(sqlQuery, predicate, QueryType.Delete);
@@ -368,10 +373,8 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
             }
 
             if (LogicalDelete && HasUpdatedAt && queryType == QueryType.Delete)
-            {
-                //todo: add DateTime.UtcNow in dictionaryParams
-            }
-
+                dictionaryParams.Add(UpdatedAtPropertyMetadata.ColumnName, DateTime.UtcNow);
+            
             sqlQuery.SetParam(dictionaryParams);
         }
 

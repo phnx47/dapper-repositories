@@ -10,8 +10,11 @@ namespace MicroOrm.Dapper.Repositories.Tests.Classes
         [Key]
         [Identity]
         public int Id { get; set; }
+
         public string Number { get; set; }
+
         public bool IsActive { get; set; }
+
         [IgnoreUpdate]
         public string Code { get; set; }
     }
