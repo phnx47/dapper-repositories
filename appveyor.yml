@@ -39,5 +39,3 @@ deploy:
   on:
     branch: master
     appveyor_repo_tag: false
-hosts:
-  api.nuget.org: 93.184.221.200
