@@ -162,25 +162,25 @@ namespace MicroOrm.Dapper.Repositories.Tests.SqlGeneratorTests
         }
 
         [Fact]
-        public void LogicallDeleteWithUpdatedAt()
+        public void LogicalDeleteWithUpdatedAt()
         {
             ISqlGenerator<User> userSqlGenerator = new SqlGenerator<User>(SqlConnector);
             var user = new User() { Id = 10 };
             var sqlQuery = userSqlGenerator.GetDelete(user);
             var sql = sqlQuery.GetSql();
 
-            Assert.Equal("UPDATE Users SET Deleted = 1, UpdatedAt = @UpdatedAt", sql);
+            Assert.Equal("UPDATE Users SET Deleted = 1, UpdatedAt = @UpdatedAt WHERE Users.Id = @Id", sql);
         }
 
         [Fact]
-        public void LogicallDeleteWithUpdatedAtWithPredicate()
+        public void LogicalleleteWithUpdatedAtWithPredicate()
         {
             ISqlGenerator<User> userSqlGenerator = new SqlGenerator<User>(SqlConnector);
             var user = new User() { Id = 10 };
             var sqlQuery = userSqlGenerator.GetDelete(user);
             var sql = sqlQuery.GetSql();
 
-            Assert.Equal("UPDATE Users SET Deleted = 1, UpdatedAt = @UpdatedAt", sql);
+            Assert.Equal("UPDATE Users SET Deleted = 1, UpdatedAt = @UpdatedAt WHERE Users.Id = @Id", sql);
         }
 
         [Fact]

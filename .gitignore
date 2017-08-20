@@ -8,7 +8,5 @@ bin
 obj
 packages
 TestResults
-BenchmarkDotNet.Artifacts
-BDN.Generated
 Coverage
 Coverage.xml

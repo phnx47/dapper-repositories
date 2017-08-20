@@ -18,8 +18,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{4EAE3A6B-3
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MicroOrm.Dapper.Repositories.Tests", "test\MicroOrm.Dapper.Repositories.Tests\MicroOrm.Dapper.Repositories.Tests.csproj", "{C1FDB39A-B2B9-4561-B38F-AB95783AEAD3}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MicroOrm.Dapper.Repositories.Benchmarks.Tests", "test\MicroOrm.Dapper.Repositories.Benchmarks.Tests\MicroOrm.Dapper.Repositories.Benchmarks.Tests.csproj", "{9747DDB8-C9A5-4DEE-B037-91E365C426B1}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -34,10 +32,6 @@ Global
 		{C1FDB39A-B2B9-4561-B38F-AB95783AEAD3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C1FDB39A-B2B9-4561-B38F-AB95783AEAD3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C1FDB39A-B2B9-4561-B38F-AB95783AEAD3}.Release|Any CPU.Build.0 = Release|Any CPU
-		{9747DDB8-C9A5-4DEE-B037-91E365C426B1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{9747DDB8-C9A5-4DEE-B037-91E365C426B1}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{9747DDB8-C9A5-4DEE-B037-91E365C426B1}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{9747DDB8-C9A5-4DEE-B037-91E365C426B1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -45,6 +39,5 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{EC3073B6-AD9A-491D-A117-8A3C771DD634} = {E409731D-9AB4-4389-B611-53A3AF8324A4}
 		{C1FDB39A-B2B9-4561-B38F-AB95783AEAD3} = {4EAE3A6B-35A5-4C95-AAB6-1D977F63184B}
-		{9747DDB8-C9A5-4DEE-B037-91E365C426B1} = {4EAE3A6B-35A5-4C95-AAB6-1D977F63184B}
 	EndGlobalSection
 EndGlobal
