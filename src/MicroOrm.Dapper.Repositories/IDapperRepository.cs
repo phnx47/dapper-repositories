@@ -25,12 +25,22 @@ namespace MicroOrm.Dapper.Repositories
         /// <summary>
         ///     Get first object
         /// </summary>
-        TEntity Find(IDbTransaction transaction = null);
+        TEntity Find();
+        
+        /// <summary>
+        ///     Get first object
+        /// </summary>
+        TEntity Find(Expression<Func<TEntity, bool>> predicate);
+        
+        /// <summary>
+        ///     Get first object
+        /// </summary>
+        TEntity Find(IDbTransaction transaction);
 
         /// <summary>
         ///     Get first object
         /// </summary>
-        TEntity Find(Expression<Func<TEntity, bool>> predicate, IDbTransaction transaction = null);
+        TEntity Find(Expression<Func<TEntity, bool>> predicate, IDbTransaction transaction);
 
         /// <summary>
         ///     Get first object with join objects
