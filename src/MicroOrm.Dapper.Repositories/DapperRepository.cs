@@ -585,23 +585,7 @@ namespace MicroOrm.Dapper.Repositories
             return deleted;
         }
 
-        /// <inheritdoc />
-        public virtual bool Update(TEntity instance, IDbTransaction transaction = null)
-        {
-            var sqlQuery = SqlGenerator.GetUpdate(instance);
-            var updated = Connection.Execute(sqlQuery.GetSql(), instance, transaction) > 0;
-            return updated;
-        }
-
-        /// <inheritdoc />
-        public virtual async Task<bool> UpdateAsync(TEntity instance, IDbTransaction transaction = null)
-        {
-            var sqlQuery = SqlGenerator.GetUpdate(instance);
-            var updated = await Connection.ExecuteAsync(sqlQuery.GetSql(), instance, transaction) > 0;
-            return updated;
-        }
-
-
+       
         /// <inheritdoc />
         public IEnumerable<TEntity> FindAllBetween(object from, object to, Expression<Func<TEntity, object>> btwField, IDbTransaction transaction = null)
         {

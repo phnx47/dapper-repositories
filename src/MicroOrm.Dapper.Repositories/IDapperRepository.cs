@@ -26,12 +26,12 @@ namespace MicroOrm.Dapper.Repositories
         ///     Get first object
         /// </summary>
         TEntity Find();
-        
+
         /// <summary>
         ///     Get first object
         /// </summary>
         TEntity Find(Expression<Func<TEntity, bool>> predicate);
-        
+
         /// <summary>
         ///     Get first object
         /// </summary>
@@ -476,10 +476,49 @@ namespace MicroOrm.Dapper.Repositories
         /// </summary>
         Task<bool> DeleteAsync(Expression<Func<TEntity, bool>> predicate, IDbTransaction transaction = null);
 
+
         /// <summary>
         ///     Update object in DB
         /// </summary>
-        bool Update(TEntity instance, IDbTransaction transaction = null);
+        bool Update(TEntity instance);
+
+        /// <summary>
+        ///     Update object in DB
+        /// </summary>
+        bool Update(TEntity instance, IDbTransaction transaction);
+
+
+        /// <summary>
+        ///     Update object in DB
+        /// </summary>
+        Task<bool> UpdateAsync(TEntity instance);
+
+        /// <summary>
+        ///     Update object in DB
+        /// </summary>
+        Task<bool> UpdateAsync(TEntity instance, IDbTransaction transaction);
+
+        /// <summary>
+        ///     Update object in DB
+        /// </summary>
+        bool Update(Expression<Func<TEntity, bool>> predicate, TEntity instance);
+
+
+        /// <summary>
+        ///     Update object in DB
+        /// </summary>
+        bool Update(Expression<Func<TEntity, bool>> predicate, TEntity instance, IDbTransaction transaction);
+
+        /// <summary>
+        ///     Update object in DB
+        /// </summary>
+        Task<bool> UpdateAsync(Expression<Func<TEntity, bool>> predicate, TEntity instance);
+
+        /// <summary>
+        ///     Update object in DB
+        /// </summary>
+        Task<bool> UpdateAsync(Expression<Func<TEntity, bool>> predicate, TEntity instance, IDbTransaction transaction);
+
 
         /// <summary>
         ///     Bulk Update objects in DB
@@ -491,10 +530,6 @@ namespace MicroOrm.Dapper.Repositories
         /// </summary>
         bool BulkUpdate(IEnumerable<TEntity> instances, IDbTransaction transaction = null);
 
-        /// <summary>
-        ///     Update object in DB
-        /// </summary>
-        Task<bool> UpdateAsync(TEntity instance, IDbTransaction transaction = null);
 
         /// <summary>
         ///     Get all objects with BETWEEN query
@@ -504,7 +539,8 @@ namespace MicroOrm.Dapper.Repositories
         /// <summary>
         ///     Get all objects with BETWEEN query
         /// </summary>
-        IEnumerable<TEntity> FindAllBetween(object from, object to, Expression<Func<TEntity, object>> btwField, Expression<Func<TEntity, bool>> predicate = null, IDbTransaction transaction = null);
+        IEnumerable<TEntity> FindAllBetween(object from, object to, Expression<Func<TEntity, object>> btwField, Expression<Func<TEntity, bool>> predicate = null,
+            IDbTransaction transaction = null);
 
         /// <summary>
         ///     Get all objects with BETWEEN query
@@ -514,7 +550,8 @@ namespace MicroOrm.Dapper.Repositories
         /// <summary>
         ///     Get all objects with BETWEEN query
         /// </summary>
-        IEnumerable<TEntity> FindAllBetween(DateTime from, DateTime to, Expression<Func<TEntity, object>> btwField, Expression<Func<TEntity, bool>> predicate, IDbTransaction transaction = null);
+        IEnumerable<TEntity> FindAllBetween(DateTime from, DateTime to, Expression<Func<TEntity, object>> btwField, Expression<Func<TEntity, bool>> predicate,
+            IDbTransaction transaction = null);
 
         /// <summary>
         ///     Get all objects with BETWEEN query
@@ -524,7 +561,8 @@ namespace MicroOrm.Dapper.Repositories
         /// <summary>
         ///     Get all objects with BETWEEN query
         /// </summary>
-        Task<IEnumerable<TEntity>> FindAllBetweenAsync(object from, object to, Expression<Func<TEntity, object>> btwField, Expression<Func<TEntity, bool>> predicate, IDbTransaction transaction = null);
+        Task<IEnumerable<TEntity>> FindAllBetweenAsync(object from, object to, Expression<Func<TEntity, object>> btwField, Expression<Func<TEntity, bool>> predicate,
+            IDbTransaction transaction = null);
 
         /// <summary>
         ///     Get all objects with BETWEEN query
@@ -534,6 +572,7 @@ namespace MicroOrm.Dapper.Repositories
         /// <summary>
         ///     Get all objects with BETWEEN query
         /// </summary>
-        Task<IEnumerable<TEntity>> FindAllBetweenAsync(DateTime from, DateTime to, Expression<Func<TEntity, object>> btwField, Expression<Func<TEntity, bool>> predicate, IDbTransaction transaction = null);
+        Task<IEnumerable<TEntity>> FindAllBetweenAsync(DateTime from, DateTime to, Expression<Func<TEntity, object>> btwField, Expression<Func<TEntity, bool>> predicate,
+            IDbTransaction transaction = null);
     }
 }

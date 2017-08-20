@@ -103,6 +103,11 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         SqlQuery GetUpdate(TEntity entity);
 
         /// <summary>
+        ///     Get SQL for UPDATE Query
+        /// </summary>
+        SqlQuery GetUpdate(Expression<Func<TEntity, bool>> predicate, TEntity entity);
+
+        /// <summary>
         ///     Get SQL for bulk UPDATE Query
         /// </summary>
         SqlQuery GetBulkUpdate(IEnumerable<TEntity> entities);

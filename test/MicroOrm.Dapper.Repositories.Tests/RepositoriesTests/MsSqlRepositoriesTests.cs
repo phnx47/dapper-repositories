@@ -136,7 +136,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.RepositoriesTests
         public void FindAllJoin2Table()
         {
             var user = _sqlDatabaseFixture.Db.Users.FindAll<Car, Address>(x => x.Id == 1, q => q.Cars, q => q.Addresses).First();
-            Assert.Equal(1, user.Cars.Count);
+            Assert.True(user.Cars.Count == 1);
             Assert.Equal("TestCar0", user.Cars.First().Name);
             Assert.Equal("Street0", user.Addresses.Street);
         }
@@ -145,7 +145,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.RepositoriesTests
         public async Task FindAllJoin2TableAsync()
         {
             var user = (await _sqlDatabaseFixture.Db.Users.FindAllAsync<Car, Address>(x => x.Id == 1, q => q.Cars, q => q.Addresses)).First();
-            Assert.Equal(1, user.Cars.Count);
+            Assert.True(user.Cars.Count == 1);
             Assert.Equal("TestCar0", user.Cars.First().Name);
             Assert.Equal("Street0", user.Addresses.Street);
         }
@@ -154,7 +154,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.RepositoriesTests
         public void FindAllJoin3Table()
         {
             var user = _sqlDatabaseFixture.Db.Users.FindAll<Car, Address, Phone>(x => x.Id == 1, q => q.Cars, q => q.Addresses, q => q.Phone).First();
-            Assert.Equal(1, user.Cars.Count);
+            Assert.True(user.Cars.Count == 1);
             Assert.Equal("TestCar0", user.Cars.First().Name);
             Assert.Equal("Street0", user.Addresses.Street);
             Assert.Equal("123", user.Phone.Number);
@@ -164,7 +164,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.RepositoriesTests
         public async Task FindAllJoin3TableAsync()
         {
             var user = (await _sqlDatabaseFixture.Db.Users.FindAllAsync<Car, Address, Phone>(x => x.Id == 1, q => q.Cars, q => q.Addresses, q => q.Phone)).First();
-            Assert.Equal(1, user.Cars.Count);
+            Assert.True(user.Cars.Count == 1);
             Assert.Equal("TestCar0", user.Cars.First().Name);
             Assert.Equal("Street0", user.Addresses.Street);
             Assert.Equal("123", user.Phone.Number);
@@ -192,7 +192,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.RepositoriesTests
         public void FindJoin()
         {
             var user = _sqlDatabaseFixture.Db.Users.Find<Car>(x => x.Id == 1, q => q.Cars);
-            Assert.Equal(1, user.Cars.Count);
+            Assert.True(user.Cars.Count == 1);
             Assert.Equal("TestCar0", user.Cars.First().Name);
 
             var car = _sqlDatabaseFixture.Db.Cars.Find<User>(x => x.Id == 1, q => q.User);
@@ -203,7 +203,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.RepositoriesTests
         public async Task FindJoinAsync()
         {
             var user = await _sqlDatabaseFixture.Db.Users.FindAsync<Car>(x => x.Id == 1, q => q.Cars);
-            Assert.Equal(1, user.Cars.Count);
+            Assert.True(user.Cars.Count == 1);
             Assert.Equal("TestCar0", user.Cars.First().Name);
 
             var car = await _sqlDatabaseFixture.Db.Cars.FindAsync<User>(x => x.Id == 1, q => q.User);
@@ -488,7 +488,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.RepositoriesTests
             Assert.Equal("MSK777", newPhone2.Number);
         }
 
-        
+
         [Fact]
         public async Task LogicalDeleteWithUpdatedAt()
         {
@@ -531,6 +531,42 @@ namespace MicroOrm.Dapper.Repositories.Tests.RepositoriesTests
 
             Assert.Null(user);
 
+        }
+
+        [Fact]
+        public void InsertAndUpdate_WithGuid_WithoutKey()
+        {
+            var identifier = Guid.NewGuid();
+            var city = new City { Identifier = identifier, Name = "Moscow" };
+
+            _sqlDatabaseFixture.Db.Cities.Insert(city);
+            city = _sqlDatabaseFixture.Db.Cities.Find(q => q.Identifier == identifier);
+
+            Assert.NotNull(city);
+            city.Name = "Moscow1";
+            _sqlDatabaseFixture.Db.Cities.Update(q => q.Identifier == identifier, city);
+
+            city = _sqlDatabaseFixture.Db.Cities.Find(q => q.Identifier == identifier);
+            Assert.NotNull(city);
+            Assert.Equal("Moscow1", city.Name);
+        }
+
+        [Fact]
+        public async Task InsertAndUpdate_WithGuid_WithoutKey_Async()
+        {
+            var identifier = Guid.NewGuid();
+            var city = new City { Identifier = identifier, Name = "Moscow" };
+
+            await _sqlDatabaseFixture.Db.Cities.InsertAsync(city);
+            city = await _sqlDatabaseFixture.Db.Cities.FindAsync(q => q.Identifier == identifier);
+
+            Assert.NotNull(city);
+            city.Name = "Moscow1";
+            await _sqlDatabaseFixture.Db.Cities.UpdateAsync(q => q.Identifier == identifier, city);
+
+            city = await _sqlDatabaseFixture.Db.Cities.FindAsync(q => q.Identifier == identifier);
+            Assert.NotNull(city);
+            Assert.Equal("Moscow1", city.Name);
         }
     }
 }

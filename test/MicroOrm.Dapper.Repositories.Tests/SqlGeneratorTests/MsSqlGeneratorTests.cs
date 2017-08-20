@@ -359,5 +359,15 @@ namespace MicroOrm.Dapper.Repositories.Tests.SqlGeneratorTests
 
             Assert.Equal("UPDATE [DAB].[Phones] SET [Number] = @Number, [IsActive] = @IsActive WHERE [Id] = @Id", sqlQuery.GetSql());
         }
+
+
+        [Fact]
+        public void UpdateWithPredicate()
+        {
+            ISqlGenerator<City> sqlGenerator = new SqlGenerator<City>(SqlConnector);
+            var sqlQuery = sqlGenerator.GetUpdate(q => q.Identifier == Guid.Empty, new City());
+            var sql = sqlQuery.GetSql();
+            Assert.Equal("UPDATE Cities SET Identifier = @Identifier, Name = @Name WHERE Cities.Identifier = @Identifier", sql);
+        }
     }
 }

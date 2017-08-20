@@ -188,7 +188,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
             else
             {
                 sqlQuery.SqlBuilder.Append("UPDATE " + TableName + " SET " + StatusPropertyName + " = " + LogicalDeleteValue);
-                sqlQuery.SqlBuilder.Append(HasUpdatedAt ? ", " + UpdatedAtPropertyMetadata.ColumnName + " = @" + UpdatedAtPropertyMetadata.PropertyName + " "  : " ");
+                sqlQuery.SqlBuilder.Append(HasUpdatedAt ? ", " + UpdatedAtPropertyMetadata.ColumnName + " = @" + UpdatedAtPropertyMetadata.PropertyName + " " : " ");
             }
 
             AppendWherePredicateQuery(sqlQuery, predicate, QueryType.Delete);
@@ -272,7 +272,9 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         /// <inheritdoc />
         public virtual SqlQuery GetUpdate(TEntity entity)
         {
-            var properties = SqlProperties.Where(p => !KeySqlProperties.Any(k => k.PropertyName.Equals(p.PropertyName, StringComparison.OrdinalIgnoreCase)) && !p.IgnoreUpdate);
+            var properties = SqlProperties.Where(p => !KeySqlProperties.Any(k => k.PropertyName.Equals(p.PropertyName, StringComparison.OrdinalIgnoreCase)) && !p.IgnoreUpdate).ToArray();
+            if (!properties.Any())
+                throw new ArgumentException("Can't update without [Key]");
 
             if (HasUpdatedAt)
                 UpdatedAtProperty.SetValue(entity, DateTime.UtcNow);
@@ -283,6 +285,23 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
 
             return query;
         }
+
+        
+        /// <inheritdoc />
+        public virtual SqlQuery GetUpdate(Expression<Func<TEntity, bool>> predicate, TEntity entity)
+        {
+            var properties = SqlProperties.Where(p => !KeySqlProperties.Any(k => k.PropertyName.Equals(p.PropertyName, StringComparison.OrdinalIgnoreCase)) && !p.IgnoreUpdate);
+
+            if (HasUpdatedAt)
+                UpdatedAtProperty.SetValue(entity, DateTime.UtcNow);
+
+            var query = new SqlQuery(entity);
+            query.SqlBuilder.Append("UPDATE " + TableName + " SET " + string.Join(", ", properties.Select(p => p.ColumnName + " = @" + p.PropertyName)) + " ");
+            AppendWherePredicateQuery(query, predicate, QueryType.Update);
+
+            return query;
+        }
+        
 
         /// <inheritdoc />
         public virtual SqlQuery GetBulkUpdate(IEnumerable<TEntity> entities)
@@ -374,7 +393,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
 
             if (LogicalDelete && HasUpdatedAt && queryType == QueryType.Delete)
                 dictionaryParams.Add(UpdatedAtPropertyMetadata.ColumnName, DateTime.UtcNow);
-            
+
             sqlQuery.SetParam(dictionaryParams);
         }
 
@@ -737,7 +756,8 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         private enum QueryType
         {
             Select,
-            Delete
+            Delete,
+            Update
         }
     }
 }
