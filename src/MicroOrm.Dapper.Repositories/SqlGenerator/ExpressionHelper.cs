@@ -11,7 +11,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         public static string GetPropertyName<TSource, TField>(Expression<Func<TSource, TField>> field)
         {
             if (Equals(field, null))
-                throw new NullReferenceException("Field is required");
+                throw new ArgumentNullException(nameof(field), "field can't be null");
 
             MemberExpression expr;
 
@@ -26,7 +26,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                 if (expression != null)
                     expr = (MemberExpression)expression.Operand;
                 else
-                    throw new ArgumentException("Expression" + field + " is not supported.", nameof(field));
+                    throw new ArgumentException("Expression field is not supported.", nameof(field));
             }
 
             return expr.Member.Name;
