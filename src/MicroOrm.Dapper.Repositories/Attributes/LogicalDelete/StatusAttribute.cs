@@ -5,7 +5,7 @@ namespace MicroOrm.Dapper.Repositories.Attributes.LogicalDelete
     /// <summary>
     ///     Use with "Deleted" for logical delete
     /// </summary>
-    public class StatusAttribute : Attribute
+    public sealed class StatusAttribute : Attribute
     {
     }
 }

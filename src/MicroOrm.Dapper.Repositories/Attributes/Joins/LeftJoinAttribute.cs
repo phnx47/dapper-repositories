@@ -3,7 +3,7 @@
     /// <summary>
     ///     Generate LEFT JOIN
     /// </summary>
-    public class LeftJoinAttribute : JoinAttributeBase
+    public sealed class LeftJoinAttribute : JoinAttributeBase
     {
         /// <summary>
         ///     Constructor

@@ -3,7 +3,7 @@
     /// <summary>
     ///     Generate INNER JOIN
     /// </summary>
-    public class InnerJoinAttribute : JoinAttributeBase
+    public sealed class InnerJoinAttribute : JoinAttributeBase
     {
         /// <summary>
         ///     Constructor

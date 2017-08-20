@@ -3,7 +3,7 @@
     /// <summary>
     ///     Generate RIGHT JOIN
     /// </summary>
-    public class RightJoinAttribute : JoinAttributeBase
+    public sealed class RightJoinAttribute : JoinAttributeBase
     {
         /// <summary>
         ///     Constructor
