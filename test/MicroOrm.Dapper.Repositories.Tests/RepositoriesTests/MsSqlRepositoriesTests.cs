@@ -211,6 +211,27 @@ namespace MicroOrm.Dapper.Repositories.Tests.RepositoriesTests
         }
 
         [Fact]
+        public void InsertAndUpdate()
+        {
+            var user = new User
+            {
+                Name = "Sergey"
+            };
+
+            var insert =  _sqlDatabaseFixture.Db.Users.Insert(user);
+            Assert.True(insert);
+
+            var userFromDb =  _sqlDatabaseFixture.Db.Users.Find(q => q.Id == user.Id);
+            Assert.Equal(user.Name, userFromDb.Name);
+            user.Name = "Sergey1";
+
+            var update =  _sqlDatabaseFixture.Db.Users.Update(user);
+            Assert.True(update);
+            userFromDb =  _sqlDatabaseFixture.Db.Users.Find(q => q.Id == user.Id);
+            Assert.Equal("Sergey1", userFromDb.Name);
+        }
+
+        [Fact]
         public async Task InsertAndUpdateAsync()
         {
             var user = new User
@@ -230,6 +251,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.RepositoriesTests
             userFromDb = await _sqlDatabaseFixture.Db.Users.FindAsync(q => q.Id == user.Id);
             Assert.Equal("Sergey1", userFromDb.Name);
         }
+
 
         [Fact]
         public void InsertBinaryData()

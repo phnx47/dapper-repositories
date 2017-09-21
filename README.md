@@ -21,7 +21,7 @@ A more detailed description:
 
 [MicroOrm.Dapper.Repositories](http://dapper.phnx47.net)
 
-## Authors
+## Contributors
 
 * [Sergey Kuznetsov](https://github.com/phnx47)
 * [Borys Iermakov](https://github.com/borisermakof)
