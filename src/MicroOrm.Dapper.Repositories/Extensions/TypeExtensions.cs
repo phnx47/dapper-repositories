@@ -24,7 +24,7 @@ namespace MicroOrm.Dapper.Repositories.Extensions
 
         public static bool IsGenericType(this Type type)
         {
-#if COREFX
+#if NESTANDART13
             return type.GetTypeInfo().IsGenericType;
 #else
             return type.IsGenericType;
@@ -33,7 +33,7 @@ namespace MicroOrm.Dapper.Repositories.Extensions
 
         public static bool IsEnum(this Type type)
         {
-#if COREFX
+#if NESTANDART13
             return type.GetTypeInfo().IsEnum;
 #else
             return type.IsEnum;
@@ -42,7 +42,7 @@ namespace MicroOrm.Dapper.Repositories.Extensions
 
         public static bool IsValueType(this Type type)
         {
-#if COREFX
+#if NESTANDART13
             return type.GetTypeInfo().IsValueType;
 #else
             return type.IsValueType;
