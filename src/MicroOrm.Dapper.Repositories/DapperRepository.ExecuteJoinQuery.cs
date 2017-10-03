@@ -13,6 +13,9 @@ using MicroOrm.Dapper.Repositories.SqlGenerator;
 
 namespace MicroOrm.Dapper.Repositories
 {
+    /// <summary>
+    ///     Base Repository
+    /// </summary>
     public partial class DapperRepository<TEntity> 
         where TEntity : class
     {

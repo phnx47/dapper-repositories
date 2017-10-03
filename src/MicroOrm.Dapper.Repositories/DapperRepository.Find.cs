@@ -2,6 +2,8 @@
 using System.Data;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Threading.Tasks;
+using Dapper;
 
 
 namespace MicroOrm.Dapper.Repositories
@@ -33,7 +35,33 @@ namespace MicroOrm.Dapper.Repositories
         /// <inheritdoc />
         public virtual TEntity Find(Expression<Func<TEntity, bool>> predicate, IDbTransaction transaction)
         {
-            return FindAll(predicate, transaction).FirstOrDefault();
+            var queryResult = SqlGenerator.GetSelectFirst(predicate);
+            return Connection.QueryFirstOrDefault<TEntity>(queryResult.GetSql(), queryResult.Param, transaction);
+        }
+
+        /// <inheritdoc />
+        public virtual Task<TEntity> FindAsync()
+        {
+            return FindAsync(null, null);
+        }
+
+        /// <inheritdoc />
+        public virtual Task<TEntity> FindAsync(IDbTransaction transaction)
+        {
+            return FindAsync(null, transaction);
+        }
+
+        /// <inheritdoc />
+        public virtual Task<TEntity> FindAsync(Expression<Func<TEntity, bool>> predicate)
+        {
+            return FindAsync(predicate, null);
+        }
+
+        /// <inheritdoc />
+        public virtual Task<TEntity> FindAsync(Expression<Func<TEntity, bool>> predicate, IDbTransaction transaction)
+        {
+            var queryResult = SqlGenerator.GetSelectFirst(predicate);
+            return Connection.QueryFirstOrDefaultAsync<TEntity>(queryResult.GetSql(), queryResult.Param, transaction);
         }
     }
 }

@@ -102,7 +102,12 @@ namespace MicroOrm.Dapper.Repositories
         /// <summary>
         ///     Get object by Id
         /// </summary>
-        TEntity FindById(object id, IDbTransaction transaction = null);
+        TEntity FindById(object id);
+
+        /// <summary>
+        ///     Get object by Id
+        /// </summary>
+        TEntity FindById(object id, IDbTransaction transaction);
 
         /// <summary>
         ///     Get object by Id with join objects
@@ -164,7 +169,12 @@ namespace MicroOrm.Dapper.Repositories
         /// <summary>
         ///     Get object by Id
         /// </summary>
-        Task<TEntity> FindByIdAsync(object id, IDbTransaction transaction = null);
+        Task<TEntity> FindByIdAsync(object id);
+
+        /// <summary>
+        ///     Get object by Id
+        /// </summary>
+        Task<TEntity> FindByIdAsync(object id, IDbTransaction transaction);
 
         /// <summary>
         ///     Get object by Id with join objects
@@ -223,15 +233,26 @@ namespace MicroOrm.Dapper.Repositories
             Expression<Func<TEntity, object>> tChild6,
             IDbTransaction transaction = null);
 
-        /// <summary>
-        ///     Get first object
-        /// </summary>
-        Task<TEntity> FindAsync(IDbTransaction transaction = null);
 
         /// <summary>
         ///     Get first object
         /// </summary>
-        Task<TEntity> FindAsync(Expression<Func<TEntity, bool>> predicate, IDbTransaction transaction = null);
+        Task<TEntity> FindAsync();
+
+        /// <summary>
+        ///     Get first object
+        /// </summary>
+        Task<TEntity> FindAsync(IDbTransaction transaction);
+
+        /// <summary>
+        ///     Get first object
+        /// </summary>
+        Task<TEntity> FindAsync(Expression<Func<TEntity, bool>> predicate);
+
+        /// <summary>
+        ///     Get first object
+        /// </summary>
+        Task<TEntity> FindAsync(Expression<Func<TEntity, bool>> predicate, IDbTransaction transaction);
 
         /// <summary>
         ///     Get first object with join objects
