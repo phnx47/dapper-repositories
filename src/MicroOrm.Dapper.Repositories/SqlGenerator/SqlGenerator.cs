@@ -570,9 +570,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                     return;
 
                 var enumValue = Enum.Parse(statusProperty.PropertyInfo.PropertyType, deleteOption.Name);
-
-                if (enumValue != null)
-                    LogicalDeleteValue = Convert.ChangeType(enumValue, Enum.GetUnderlyingType(statusProperty.PropertyInfo.PropertyType));
+                LogicalDeleteValue = Convert.ChangeType(enumValue, Enum.GetUnderlyingType(statusProperty.PropertyInfo.PropertyType));
 
                 LogicalDelete = true;
             }

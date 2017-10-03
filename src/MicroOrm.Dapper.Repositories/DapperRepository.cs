@@ -233,57 +233,7 @@ namespace MicroOrm.Dapper.Repositories
             return ExecuteJoinQueryAsync<TChild1, TChild2, TChild3, TChild4, TChild5, TChild6>(sqlQuery, transaction, tChild1, tChild2, tChild3, tChild4, tChild5, tChild6);
         }
 
-        /// <inheritdoc />
-        public virtual bool Insert(TEntity instance, IDbTransaction transaction = null)
-        {
-            bool added;
 
-            var queryResult = SqlGenerator.GetInsert(instance);
-
-            if (SqlGenerator.IsIdentity)
-            {
-                var newId = Connection.Query<long>(queryResult.GetSql(), queryResult.Param, transaction).FirstOrDefault();
-                added = newId > 0;
-
-                if (added)
-                {
-                    var newParsedId = Convert.ChangeType(newId, SqlGenerator.IdentitySqlProperty.PropertyInfo.PropertyType);
-                    SqlGenerator.IdentitySqlProperty.PropertyInfo.SetValue(instance, newParsedId);
-                }
-            }
-            else
-            {
-                added = Connection.Execute(queryResult.GetSql(), instance, transaction) > 0;
-            }
-
-            return added;
-        }
-
-        /// <inheritdoc />
-        public virtual async Task<bool> InsertAsync(TEntity instance, IDbTransaction transaction = null)
-        {
-            bool added;
-
-            var queryResult = SqlGenerator.GetInsert(instance);
-
-            if (SqlGenerator.IsIdentity)
-            {
-                var newId = (await Connection.QueryAsync<long>(queryResult.GetSql(), queryResult.Param, transaction)).FirstOrDefault();
-                added = newId > 0;
-
-                if (added)
-                {
-                    var newParsedId = Convert.ChangeType(newId, SqlGenerator.IdentitySqlProperty.PropertyInfo.PropertyType);
-                    SqlGenerator.IdentitySqlProperty.PropertyInfo.SetValue(instance, newParsedId);
-                }
-            }
-            else
-            {
-                added = await Connection.ExecuteAsync(queryResult.GetSql(), instance, transaction) > 0;
-            }
-
-            return added;
-        }
 
         /// <inheritdoc />
         public virtual int BulkInsert(IEnumerable<TEntity> instances, IDbTransaction transaction = null)

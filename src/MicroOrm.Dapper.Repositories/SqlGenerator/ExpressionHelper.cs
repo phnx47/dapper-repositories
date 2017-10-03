@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
@@ -89,7 +90,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
 
                 case "Any":
                 case "All":
-                    return methodName.ToUpper();
+                    return methodName.ToUpperInvariant();
 
                 default:
                     throw new NotImplementedException();

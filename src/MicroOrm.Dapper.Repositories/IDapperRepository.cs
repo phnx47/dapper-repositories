@@ -460,12 +460,22 @@ namespace MicroOrm.Dapper.Repositories
         /// <summary>
         ///     Insert object to DB
         /// </summary>
-        bool Insert(TEntity instance, IDbTransaction transaction = null);
+        bool Insert(TEntity instance);
 
         /// <summary>
         ///     Insert object to DB
         /// </summary>
-        Task<bool> InsertAsync(TEntity instance, IDbTransaction transaction = null);
+        bool Insert(TEntity instance, IDbTransaction transaction);
+
+        /// <summary>
+        ///     Insert object to DB
+        /// </summary>
+        Task<bool> InsertAsync(TEntity instance);
+
+        /// <summary>
+        ///     Insert object to DB
+        /// </summary>
+        Task<bool> InsertAsync(TEntity instance, IDbTransaction transaction);
 
         /// <summary>
         ///     Bulk Insert objects to DB
