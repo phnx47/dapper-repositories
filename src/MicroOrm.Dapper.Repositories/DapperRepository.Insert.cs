@@ -22,27 +22,14 @@ namespace MicroOrm.Dapper.Repositories
         /// <inheritdoc />
         public virtual bool Insert(TEntity instance, IDbTransaction transaction)
         {
-            bool added;
-
             var queryResult = SqlGenerator.GetInsert(instance);
 
             if (SqlGenerator.IsIdentity)
             {
                 var newId = Connection.Query<long>(queryResult.GetSql(), queryResult.Param, transaction).FirstOrDefault();
-                added = newId > 0;
-
-                if (added)
-                {
-                    var newParsedId = Convert.ChangeType(newId, SqlGenerator.IdentitySqlProperty.PropertyInfo.PropertyType);
-                    SqlGenerator.IdentitySqlProperty.PropertyInfo.SetValue(instance, newParsedId);
-                }
+                return SetValue(newId, instance);
             }
-            else
-            {
-                added = Connection.Execute(queryResult.GetSql(), instance, transaction) > 0;
-            }
-
-            return added;
+            return Connection.Execute(queryResult.GetSql(), instance, transaction) > 0;
         }
 
         /// <inheritdoc />
@@ -54,26 +41,26 @@ namespace MicroOrm.Dapper.Repositories
         /// <inheritdoc />
         public virtual async Task<bool> InsertAsync(TEntity instance, IDbTransaction transaction)
         {
-            bool added;
-
             var queryResult = SqlGenerator.GetInsert(instance);
 
             if (SqlGenerator.IsIdentity)
             {
                 var newId = (await Connection.QueryAsync<long>(queryResult.GetSql(), queryResult.Param, transaction)).FirstOrDefault();
-                added = newId > 0;
-
-                if (added)
-                {
-                    var newParsedId = Convert.ChangeType(newId, SqlGenerator.IdentitySqlProperty.PropertyInfo.PropertyType);
-                    SqlGenerator.IdentitySqlProperty.PropertyInfo.SetValue(instance, newParsedId);
-                }
+                return SetValue(newId, instance);
             }
-            else
+
+            return await Connection.ExecuteAsync(queryResult.GetSql(), instance, transaction) > 0;
+        }
+
+        private bool SetValue(long newId, TEntity instance)
+        {
+            var added = newId > 0;
+
+            if (added)
             {
-                added = await Connection.ExecuteAsync(queryResult.GetSql(), instance, transaction) > 0;
+                var newParsedId = Convert.ChangeType(newId, SqlGenerator.IdentitySqlProperty.PropertyInfo.PropertyType);
+                SqlGenerator.IdentitySqlProperty.PropertyInfo.SetValue(instance, newParsedId);
             }
-
             return added;
         }
     }
