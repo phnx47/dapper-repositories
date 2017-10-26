@@ -130,7 +130,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.SqlGeneratorTests
 
             var sqlQuery = userSqlGenerator.GetBulkUpdate(phones);
 
-            Assert.Equal("UPDATE [DAB].[Phones] SET [Number] = @Number0, [IsActive] = @IsActive0 WHERE [Id] = @Id0 " +
+            Assert.Equal("UPDATE [DAB].[Phones] SET [Number] = @Number0, [IsActive] = @IsActive0 WHERE [Id] = @Id0; " +
                          "UPDATE [DAB].[Phones] SET [Number] = @Number1, [IsActive] = @IsActive1 WHERE [Id] = @Id1", sqlQuery.GetSql());
         }
 
@@ -146,7 +146,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.SqlGeneratorTests
 
             var sqlQuery = userSqlGenerator.GetBulkUpdate(reports);
 
-            Assert.Equal("UPDATE [Reports] SET [UserId] = @UserId0 WHERE [AnotherId] = @AnotherId0 " +
+            Assert.Equal("UPDATE [Reports] SET [UserId] = @UserId0 WHERE [AnotherId] = @AnotherId0; " +
                          "UPDATE [Reports] SET [UserId] = @UserId1 WHERE [AnotherId] = @AnotherId1", sqlQuery.GetSql());
         }
 

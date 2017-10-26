@@ -13,6 +13,22 @@ namespace MicroOrm.Dapper.Repositories.Tests.SqlGeneratorTests
         [Fact]
         public void BulkUpdate()
         {
+            ISqlGenerator<Phone> userSqlGenerator = new SqlGenerator<Phone>(SqlConnector);
+            var phones = new List<Phone>
+            {
+                new Phone { Id = 10, IsActive = true, Number = "111" },
+                new Phone { Id = 10, IsActive = false, Number = "222" }
+            };
+
+            var sqlQuery = userSqlGenerator.GetBulkUpdate(phones);
+
+            Assert.Equal("UPDATE DAB.Phones SET Number = @Number0, IsActive = @IsActive0 WHERE Id = @Id0; " +
+                         "UPDATE DAB.Phones SET Number = @Number1, IsActive = @IsActive1 WHERE Id = @Id1", sqlQuery.GetSql());
+        }
+        
+        [Fact]
+        public void BulkUpdate_QuoMarks()
+        {
             ISqlGenerator<Phone> userSqlGenerator = new SqlGenerator<Phone>(SqlConnector, true);
             var phones = new List<Phone>
             {
@@ -22,12 +38,12 @@ namespace MicroOrm.Dapper.Repositories.Tests.SqlGeneratorTests
 
             var sqlQuery = userSqlGenerator.GetBulkUpdate(phones);
 
-            Assert.Equal("UPDATE `DAB`.`Phones` SET `Number` = @Number0, `IsActive` = @IsActive0 WHERE `Id` = @Id0 " +
+            Assert.Equal("UPDATE `DAB`.`Phones` SET `Number` = @Number0, `IsActive` = @IsActive0 WHERE `Id` = @Id0; " +
                          "UPDATE `DAB`.`Phones` SET `Number` = @Number1, `IsActive` = @IsActive1 WHERE `Id` = @Id1", sqlQuery.GetSql());
         }
 
         [Fact]
-        public void InsertQuoMarks()
+        public void Insert_QuoMarks()
         {
             ISqlGenerator<Address> userSqlGenerator = new SqlGenerator<Address>(SqlConnector, true);
             var sqlQuery = userSqlGenerator.GetInsert(new Address());
@@ -99,7 +115,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.SqlGeneratorTests
         }
 
         [Fact]
-        public void SelectFirstQuoMarks()
+        public void SelectFirst_QuoMarks()
         {
             ISqlGenerator<City> sqlGenerator = new SqlGenerator<City>(SqlConnector, true);
             var sqlQuery = sqlGenerator.GetSelectFirst(x => x.Identifier == Guid.Empty);

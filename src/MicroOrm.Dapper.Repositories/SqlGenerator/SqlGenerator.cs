@@ -323,7 +323,10 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                 if (HasUpdatedAt)
                     UpdatedAtProperty.SetValue(entitiesArray[i], DateTime.UtcNow);
 
-                query.SqlBuilder.Append(" UPDATE " + TableName + " SET " + string.Join(", ", properties.Select(p => p.ColumnName + " = @" + p.PropertyName + i))
+                if (i > 0)
+                    query.SqlBuilder.Append("; ");
+                
+                query.SqlBuilder.Append("UPDATE " + TableName + " SET " + string.Join(", ", properties.Select(p => p.ColumnName + " = @" + p.PropertyName + i))
                     + " WHERE " + string.Join(" AND ", KeySqlProperties.Where(p => !p.IgnoreUpdate).Select(p => p.ColumnName + " = @" + p.PropertyName + i)));
 
                 foreach (var property in properties)
