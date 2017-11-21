@@ -17,9 +17,7 @@
 
 ## Docs
 
-A more detailed description:
-
-[MicroOrm.Dapper.Repositories](http://dapper.phnx47.net)
+Documentation in [GitHub Pages](http://dapper.phnx47.net)
 
 ## Contributors
 
