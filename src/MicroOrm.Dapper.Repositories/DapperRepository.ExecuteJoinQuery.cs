@@ -183,10 +183,9 @@ namespace MicroOrm.Dapper.Repositories
         private static TEntity EntityJoinMapping<TChild1, TChild2, TChild3, TChild4, TChild5, TChild6>(IDictionary<object, TEntity> lookup, PropertyInfo[] keyProperties,
             IList<PropertyInfo> childKeyProperties, IList<PropertyInfo> childProperties, IList<string> propertyNames, Type entityType, TEntity entity, params object[] childs)
         {
-            TEntity target;
             var compositeKeyProperty = string.Join("|", keyProperties.Select(q => q.GetValue(entity).ToString()));
 
-            if (!lookup.TryGetValue(compositeKeyProperty, out target))
+            if (!lookup.TryGetValue(compositeKeyProperty, out var target))
                 lookup.Add(compositeKeyProperty, target = entity);
 
             for (var i = 0; i < childs.Length; i++)
@@ -244,6 +243,7 @@ namespace MicroOrm.Dapper.Repositories
                 }
                 else
                 {
+                    // ReSharper disable once PossibleNullReferenceException
                     entityType.GetProperty(propertyName).SetValue(target, child);
                 }
             }
