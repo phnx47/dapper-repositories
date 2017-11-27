@@ -4,7 +4,7 @@
     /// <summary>
     ///     Type Sql provider
     /// </summary>
-    public enum ESqlConnector
+    public enum SqlProvider
     {
         /// <summary>
         ///     MSSQL

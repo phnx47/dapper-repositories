@@ -8,7 +8,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.SqlGeneratorTests
 {
     public class PostgresSqlGeneratorTests
     {
-        private const ESqlConnector SqlConnector = ESqlConnector.PostgreSQL;
+        private const SqlProvider SqlConnector = SqlProvider.PostgreSQL;
 
         [Fact]
         public void SelectFirst()

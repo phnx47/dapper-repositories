@@ -20,15 +20,15 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         ///     Constructor
         /// </summary>
         public SqlGenerator()
-            : this(new SqlGeneratorConfig { SqlConnector = ESqlConnector.MSSQL, UseQuotationMarks = false })
+            : this(new SqlGeneratorConfig { SqlProvider = SqlProvider.MSSQL, UseQuotationMarks = false })
         {
         }
 
         /// <summary>
         ///     Constructor
         /// </summary>
-        public SqlGenerator(ESqlConnector sqlConnector, bool useQuotationMarks = false)
-            : this(new SqlGeneratorConfig { SqlConnector = sqlConnector, UseQuotationMarks = useQuotationMarks })
+        public SqlGenerator(SqlProvider sqlProvider, bool useQuotationMarks = false)
+            : this(new SqlGeneratorConfig { SqlProvider = sqlProvider, UseQuotationMarks = useQuotationMarks })
         {
         }
 
@@ -130,7 +130,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
             if (LogicalDelete)
                 sqlQuery.SqlBuilder.Append("AND " + TableName + "." + StatusPropertyName + " != " + LogicalDeleteValue + " ");
 
-            if (Config.SqlConnector == ESqlConnector.MySQL || Config.SqlConnector == ESqlConnector.PostgreSQL)
+            if (Config.SqlProvider == SqlProvider.MySQL || Config.SqlProvider == SqlProvider.PostgreSQL)
                 sqlQuery.SqlBuilder.Append("LIMIT 1");
 
             sqlQuery.SetParam(dictionary);
@@ -211,17 +211,17 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                 + " VALUES (" + string.Join(", ", properties.Select(p => "@" + p.PropertyName)) + ")"); // values
 
             if (IsIdentity)
-                switch (Config.SqlConnector)
+                switch (Config.SqlProvider)
                 {
-                    case ESqlConnector.MSSQL:
+                    case SqlProvider.MSSQL:
                         query.SqlBuilder.Append(" SELECT SCOPE_IDENTITY() AS " + IdentitySqlProperty.ColumnName);
                         break;
 
-                    case ESqlConnector.MySQL:
+                    case SqlProvider.MySQL:
                         query.SqlBuilder.Append("; SELECT CONVERT(LAST_INSERT_ID(), SIGNED INTEGER) AS " + IdentitySqlProperty.ColumnName);
                         break;
 
-                    case ESqlConnector.PostgreSQL:
+                    case SqlProvider.PostgreSQL:
                         query.SqlBuilder.Append(" RETURNING " + IdentitySqlProperty.ColumnName);
                         break;
 
@@ -466,9 +466,9 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
 
             if (Config.UseQuotationMarks)
             {
-                switch (Config.SqlConnector)
+                switch (Config.SqlProvider)
                 {
-                    case ESqlConnector.MSSQL:
+                    case SqlProvider.MSSQL:
                         TableName = GetTableNameWithSchemaPrefix(TableName, TableSchema, "[", "]");
 
                         foreach (var propertyMetadata in SqlProperties)
@@ -488,7 +488,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
 
                         break;
 
-                    case ESqlConnector.MySQL:
+                    case SqlProvider.MySQL:
                         TableName = GetTableNameWithSchemaPrefix(TableName, TableSchema, "`", "`");
 
                         foreach (var propertyMetadata in SqlProperties)
@@ -508,7 +508,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
 
                         break;
 
-                    case ESqlConnector.PostgreSQL:
+                    case SqlProvider.PostgreSQL:
                         TableName = GetTableNameWithSchemaPrefix(TableName, TableSchema, "\"", "\"");
 
                         foreach (var propertyMetadata in SqlProperties)
@@ -529,7 +529,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                         break;
 
                     default:
-                        throw new ArgumentOutOfRangeException(nameof(Config.SqlConnector));
+                        throw new ArgumentOutOfRangeException(nameof(Config.SqlProvider));
                 }
             }
             else
@@ -582,7 +582,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         private SqlQuery InitBuilderSelect(bool firstOnly)
         {
             var query = new SqlQuery();
-            query.SqlBuilder.Append("SELECT " + (firstOnly && Config.SqlConnector == ESqlConnector.MSSQL ? "TOP 1 " : "") + GetFieldsSelect(TableName, SqlProperties));
+            query.SqlBuilder.Append("SELECT " + (firstOnly && Config.SqlProvider == SqlProvider.MSSQL ? "TOP 1 " : "") + GetFieldsSelect(TableName, SqlProperties));
             return query;
         }
 
@@ -615,9 +615,9 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                 var props = properties.Where(p => !p.GetCustomAttributes<NotMappedAttribute>().Any()).Select(p => new SqlPropertyMetadata(p)).ToArray();
 
                 if (Config.UseQuotationMarks)
-                    switch (Config.SqlConnector)
+                    switch (Config.SqlProvider)
                     {
-                        case ESqlConnector.MSSQL:
+                        case SqlProvider.MSSQL:
                             tableName = "[" + tableName + "]";
                             attrJoin.TableName = GetTableNameWithSchemaPrefix(attrJoin.TableName, attrJoin.TableSchema, "[", "]");
                             attrJoin.Key = "[" + attrJoin.Key + "]";
@@ -626,7 +626,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                                 prop.ColumnName = "[" + prop.ColumnName + "]";
                             break;
 
-                        case ESqlConnector.MySQL:
+                        case SqlProvider.MySQL:
                             tableName = "`" + tableName + "`";
                             attrJoin.TableName = GetTableNameWithSchemaPrefix(attrJoin.TableName, attrJoin.TableSchema, "`", "`");
                             attrJoin.Key = "`" + attrJoin.Key + "`";
@@ -635,7 +635,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                                 prop.ColumnName = "`" + prop.ColumnName + "`";
                             break;
 
-                        case ESqlConnector.PostgreSQL:
+                        case SqlProvider.PostgreSQL:
                             tableName = "\"" + tableName + "\"";
                             attrJoin.TableName = GetTableNameWithSchemaPrefix(attrJoin.TableName, attrJoin.TableSchema, "\"", "\"");
                             attrJoin.Key = "\"" + attrJoin.Key + "\"";
@@ -645,7 +645,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                             break;
 
                         default:
-                            throw new ArgumentOutOfRangeException(nameof(Config.SqlConnector));
+                            throw new ArgumentOutOfRangeException(nameof(Config.SqlProvider));
                     }
                 else
                     attrJoin.TableName = GetTableNameWithSchemaPrefix(attrJoin.TableName, attrJoin.TableSchema);
@@ -687,7 +687,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
 
             AppendWherePredicateQuery(sqlQuery, predicate, QueryType.Select);
 
-            if (firstOnly && (Config.SqlConnector == ESqlConnector.MySQL || Config.SqlConnector == ESqlConnector.PostgreSQL))
+            if (firstOnly && (Config.SqlProvider == SqlProvider.MySQL || Config.SqlProvider == SqlProvider.PostgreSQL))
                 sqlQuery.SqlBuilder.Append("LIMIT 1");
 
             return sqlQuery;

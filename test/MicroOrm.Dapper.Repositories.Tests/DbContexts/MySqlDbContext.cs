@@ -12,7 +12,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.DbContexts
         private IDapperRepository<User> _users;
         private readonly SqlGeneratorConfig _config = new SqlGeneratorConfig
         {
-            SqlConnector = ESqlConnector.MySQL,
+            SqlProvider = SqlProvider.MySQL,
             UseQuotationMarks = true
         };
 

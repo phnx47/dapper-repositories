@@ -23,16 +23,16 @@ namespace MicroOrm.Dapper.Repositories
         public DapperRepository(IDbConnection connection)
         {
             Connection = connection;
-            SqlGenerator = new SqlGenerator<TEntity>(ESqlConnector.MSSQL);
+            SqlGenerator = new SqlGenerator<TEntity>(SqlProvider.MSSQL);
         }
 
         /// <summary>
         ///     Constructor
         /// </summary>
-        public DapperRepository(IDbConnection connection, ESqlConnector sqlConnector)
+        public DapperRepository(IDbConnection connection, SqlProvider sqlProvider)
         {
             Connection = connection;
-            SqlGenerator = new SqlGenerator<TEntity>(sqlConnector);
+            SqlGenerator = new SqlGenerator<TEntity>(sqlProvider);
         }
 
         /// <summary>

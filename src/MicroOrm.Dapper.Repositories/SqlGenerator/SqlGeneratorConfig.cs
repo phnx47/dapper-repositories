@@ -8,7 +8,7 @@
         /// <summary>
         ///     Type Sql provider
         /// </summary>
-        public ESqlConnector SqlConnector { get; set; }
+        public SqlProvider SqlProvider { get; set; }
 
         /// <summary>
         ///     Use quotation marks for TableName and ColumnName

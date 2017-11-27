@@ -8,7 +8,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.SqlGeneratorTests
 {
     public class MySqlGeneratorTests
     {
-        private const ESqlConnector SqlConnector = ESqlConnector.MySQL;
+        private const SqlProvider SqlConnector = SqlProvider.MySQL;
 
         [Fact]
         public void BulkUpdate()

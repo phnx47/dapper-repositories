@@ -9,7 +9,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.SqlGeneratorTests
 {
     public class MsSqlGeneratorTests
     {
-        private const ESqlConnector SqlConnector = ESqlConnector.MSSQL;
+        private const SqlProvider SqlConnector = SqlProvider.MSSQL;
 
         [Fact]
         public static void ChangeDate_Insert()

@@ -21,7 +21,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.DbContexts
 
         private readonly SqlGeneratorConfig _config = new SqlGeneratorConfig
         {
-            SqlConnector = ESqlConnector.MSSQL,
+            SqlProvider = SqlProvider.MSSQL,
             UseQuotationMarks = true
         };
 
