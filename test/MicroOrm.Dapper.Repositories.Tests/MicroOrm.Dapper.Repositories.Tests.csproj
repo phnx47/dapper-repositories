@@ -1,35 +1,19 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <Description>MicroOrm.Dapper.Repositories.Tests</Description>
     <Authors>Sergey Kuznetsov</Authors>
-    <TargetFramework>netcoreapp1.1</TargetFramework>
+    <TargetFramework>netcoreapp2.0</TargetFramework>
     <DebugType>portable</DebugType>
     <AssemblyName>MicroOrm.Dapper.Repositories.Tests</AssemblyName>
     <PackageId>MicroOrm.Dapper.Repositories.Tests</PackageId>
-    <GenerateRuntimeConfigurationFiles>true</GenerateRuntimeConfigurationFiles>
-    <PackageTargetFallback>$(PackageTargetFallback);dnxcore50</PackageTargetFallback>
-    <RuntimeFrameworkVersion>1.1.1</RuntimeFrameworkVersion>
   </PropertyGroup>
-
   <ItemGroup>
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.5.0-preview-20170810-02" />
-    <PackageReference Include="MySql.Data" Version="8.0.8-dmr" />
-    <PackageReference Include="xunit" Version="2.3.0-beta4-build3742" />
-    <PackageReference Include="xunit.runner.visualstudio" Version="2.3.0-beta4-build3742" />
-    <DotNetCliToolReference Include="dotnet-xunit" Version="2.3.0-beta1-build3642" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.5.0" />
+    <PackageReference Include="MySql.Data" Version="8.0.9-dmr" />
+    <PackageReference Include="xunit" Version="2.3.1" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.3.1" />
   </ItemGroup>
-
   <ItemGroup>
     <ProjectReference Include="..\..\src\MicroOrm.Dapper.Repositories\MicroOrm.Dapper.Repositories.csproj" />
   </ItemGroup>
-
-  <ItemGroup>
-    <Service Include="{82a7f48d-3b50-4b1e-b82e-3ada8210c358}" />
-  </ItemGroup>
-
-  <PropertyGroup Condition=" '$(TargetFramework)' == 'netcoreapp1.1' ">
-    <DefineConstants>$(DefineConstants);COREFX</DefineConstants>
-  </PropertyGroup>
-
 </Project>
