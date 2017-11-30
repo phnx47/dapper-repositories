@@ -43,9 +43,9 @@ namespace MicroOrm.Dapper.Repositories.Tests.SqlGeneratorTests
                 var sumAr = new List<int> { 1, 2, 3 };
                 userSqlGenerator.GetSelectAll(x => sumAr.All(z => x.Id == z));
             }
-            catch (NotImplementedException ex)
+            catch (NotSupportedException ex)
             {
-                Assert.Contains("'All' method is not implemented", ex.Message);
+                Assert.Contains("'All' method is not supported", ex.Message);
                 isExceptions = true;
             }
 
