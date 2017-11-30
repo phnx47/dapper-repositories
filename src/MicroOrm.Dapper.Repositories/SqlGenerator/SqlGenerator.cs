@@ -254,6 +254,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                     UpdatedAtProperty.SetValue(entitiesArray[i], DateTime.UtcNow);
 
                 foreach (var property in properties)
+                    // ReSharper disable once PossibleNullReferenceException
                     parameters.Add(property.PropertyName + i, entityType.GetProperty(property.PropertyName).GetValue(entitiesArray[i], null));
 
                 values.Add("(" + string.Join(", ", properties.Select(p => "@" + p.PropertyName + i)) + ")");
@@ -329,6 +330,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                 query.SqlBuilder.Append("UPDATE " + TableName + " SET " + string.Join(", ", properties.Select(p => p.ColumnName + " = @" + p.PropertyName + i))
                     + " WHERE " + string.Join(" AND ", KeySqlProperties.Where(p => !p.IgnoreUpdate).Select(p => p.ColumnName + " = @" + p.PropertyName + i)));
 
+                // ReSharper disable PossibleNullReferenceException
                 foreach (var property in properties)
                 {
                     parameters.Add(property.PropertyName + i, entityType.GetProperty(property.PropertyName).GetValue(entitiesArray[i], null));
@@ -338,6 +340,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                 {
                     parameters.Add(property.PropertyName + i, entityType.GetProperty(property.PropertyName).GetValue(entitiesArray[i], null));
                 }
+                // ReSharper restore PossibleNullReferenceException
             }
 
             query.SetParam(parameters);
@@ -701,8 +704,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         /// <param name="queryProperties">The query properties.</param>
         private void FillQueryProperties(Expression expr, ExpressionType linkingType, ref List<QueryParameter> queryProperties)
         {
-            var body = expr as MethodCallExpression;
-            if (body != null)
+            if (expr is MethodCallExpression body)
             {
                 var innerBody = body;
                 var methodName = innerBody.Method.Name;
@@ -710,10 +712,10 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                 {
                     case "Contains":
                         {
-                            var propertyName = ExpressionHelper.GetPropertyNamePath(innerBody, out bool isNested);
+                            var propertyName = ExpressionHelper.GetPropertyNamePath(innerBody, out var isNested);
 
                             if (!SqlProperties.Select(x => x.PropertyName).Contains(propertyName) && !SqlJoinProperties.Select(x => x.PropertyName).Contains(propertyName))
-                                throw new NotImplementedException("predicate can't parse");
+                                throw new NotSupportedException("predicate can't parse");
 
                             var propertyValue = ExpressionHelper.GetValuesFromCollection(innerBody);
                             var opr = ExpressionHelper.GetMethodCallSqlOperator(methodName);
@@ -721,9 +723,8 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                             queryProperties.Add(new QueryParameter(link, propertyName, propertyValue, opr, isNested));
                             break;
                         }
-
                     default:
-                        throw new NotImplementedException($"'{methodName}' method is not implemented");
+                        throw new NotSupportedException($"'{methodName}' method is not supported");
                 }
             }
             else if (expr is BinaryExpression)
@@ -731,10 +732,10 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                 var innerbody = (BinaryExpression)expr;
                 if (innerbody.NodeType != ExpressionType.AndAlso && innerbody.NodeType != ExpressionType.OrElse)
                 {
-                    var propertyName = ExpressionHelper.GetPropertyNamePath(innerbody, out bool isNested);
+                    var propertyName = ExpressionHelper.GetPropertyNamePath(innerbody, out var isNested);
 
                     if (!SqlProperties.Select(x => x.PropertyName).Contains(propertyName) && !SqlJoinProperties.Select(x => x.PropertyName).Contains(propertyName))
-                        throw new NotImplementedException("predicate can't parse");
+                        throw new NotSupportedException("predicate can't parse");
 
                     var propertyValue = ExpressionHelper.GetValue(innerbody.Right);
                     var opr = ExpressionHelper.GetSqlOperator(innerbody.NodeType);
