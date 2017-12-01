@@ -53,7 +53,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.DatabaseFixture
 
             CreateSchema("DAB");
 
-            Db.Connection.Execute(@"CREATE TABLE Users (Id int IDENTITY(1,1) not null, Name varchar(256) not null, AddressId int not null, PhoneId int not null, Deleted bit not null, UpdatedAt datetime2,  PRIMARY KEY (Id))");
+            Db.Connection.Execute(@"CREATE TABLE Users (Id int IDENTITY(1,1) not null, Name varchar(256) not null, AddressId int not null, PhoneId int not null, OfficePhoneId int not null, Deleted bit not null, UpdatedAt datetime2,  PRIMARY KEY (Id))");
             Db.Connection.Execute(@"CREATE TABLE Cars (Id int IDENTITY(1,1) not null, Name varchar(256) not null, UserId int not null, Status int not null, Data binary(16) null, PRIMARY KEY (Id))");
 
             Db.Connection.Execute(@"CREATE TABLE Addresses (Id int IDENTITY(1,1) not null, Street varchar(256) not null, CityId varchar(256) not null,  PRIMARY KEY (Id))");
@@ -71,7 +71,8 @@ namespace MicroOrm.Dapper.Repositories.Tests.DatabaseFixture
                 {
                     Name = $"TestName{i}",
                     AddressId = 1,
-                    PhoneId = 1
+                    PhoneId = 1,
+                    OfficePhoneId = 2
                 });
 
             Db.Users.Insert(new User { Name = "TestName0", PhoneId = 1 });

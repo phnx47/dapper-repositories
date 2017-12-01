@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace MicroOrm.Dapper.Repositories.Attributes.Joins
 {
@@ -17,12 +19,18 @@ namespace MicroOrm.Dapper.Repositories.Attributes.Joins
         /// <summary>
         ///     Constructor
         /// </summary>
-        protected JoinAttributeBase(string tableName, string key, string externalKey, string tableSchema)
+        protected JoinAttributeBase(string tableName, string key, string externalKey, string tableSchema, string tableAlias)
         {
             TableName = tableName;
             Key = key;
             ExternalKey = externalKey;
             TableSchema = tableSchema;
+            TableAlias = tableAlias == string.Empty ? GetAlias() : tableAlias;
+        }
+
+        private string GetAlias()
+        {
+            return $"{TableName}_{Key}";
         }
 
         /// <summary>
@@ -44,5 +52,10 @@ namespace MicroOrm.Dapper.Repositories.Attributes.Joins
         ///     Key of external table
         /// </summary>
         public string ExternalKey { get; set; }
+
+        /// <summary>
+        ///     Table abbreviation override
+        /// </summary>
+        public string TableAlias { get; set; }
     }
 }
