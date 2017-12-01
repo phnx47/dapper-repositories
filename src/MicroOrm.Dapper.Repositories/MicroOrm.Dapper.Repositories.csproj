@@ -18,6 +18,9 @@
         <RepositoryType>git</RepositoryType>
         <RepositoryUrl>https://github.com/phnx47/MicroOrm.Dapper.Repositories</RepositoryUrl>
     </PropertyGroup>
+    <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+        <DebugType>Full</DebugType>
+    </PropertyGroup>
     <ItemGroup>
         <PackageReference Include="Dapper" Version="1.50.4"/>
     </ItemGroup>

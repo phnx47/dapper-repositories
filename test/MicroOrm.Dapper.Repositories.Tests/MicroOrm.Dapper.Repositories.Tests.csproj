@@ -5,6 +5,8 @@
         <TargetFramework>netcoreapp2.0</TargetFramework>
         <AssemblyName>MicroOrm.Dapper.Repositories.Tests</AssemblyName>
         <PackageId>MicroOrm.Dapper.Repositories.Tests</PackageId>
+    </PropertyGroup>
+    <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
         <DebugType>Full</DebugType>
     </PropertyGroup>
     <ItemGroup>
