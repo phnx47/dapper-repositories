@@ -1,8 +1,12 @@
 version: '{build}-{branch}'
 image: Visual Studio 2017
-configuration: Release
-platform: Any CPU
-services: mssql2016
+
+skip_commits:
+  files:
+    - '**/*.md'
+
+services: 
+- mssql2016
 
 before_build:
 - ps: choco install opencover.portable
@@ -22,6 +26,7 @@ artifacts:
   name: NuGet
 - path: '**\artifacts\myget\*.nupkg'
   name: MyGet
+
 deploy:
 - provider: NuGet
   api_key:
