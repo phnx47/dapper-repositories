@@ -171,6 +171,26 @@ namespace MicroOrm.Dapper.Repositories.Tests.RepositoriesTests
         }
 
         [Fact]
+        public void FindAllJoinSameTableTwice()
+        {
+            var user = _sqlDatabaseFixture.Db.Users.FindAll<Phone, Car, Phone>(x => x.Id == 1, q => q.OfficePhone, q => q.Cars, q => q.Phone).First();
+            Assert.True(user.Cars.Count == 1);
+            Assert.Equal("TestCar0", user.Cars.First().Name);
+            Assert.Equal("333", user.OfficePhone.Number);
+            Assert.Equal("123", user.Phone.Number);
+        }
+
+        [Fact]
+        public async void FindAllJoinSameTableTwiceAsync()
+        {
+            var user = (await _sqlDatabaseFixture.Db.Users.FindAllAsync<Phone, Car, Phone>(x => x.Id == 1, q => q.OfficePhone, q => q.Cars, q => q.Phone)).First();
+            Assert.True(user.Cars.Count == 1);
+            Assert.Equal("TestCar0", user.Cars.First().Name);
+            Assert.Equal("333", user.OfficePhone.Number);
+            Assert.Equal("123", user.Phone.Number);
+        }
+
+        [Fact]
         public async Task FindAsync()
         {
             const int id = 4;

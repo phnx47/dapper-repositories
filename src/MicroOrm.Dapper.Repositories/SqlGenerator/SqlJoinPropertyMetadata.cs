@@ -1,5 +1,6 @@
 ﻿using System.Reflection;
 using MicroOrm.Dapper.Repositories.Attributes.Joins;
+using System;
 
 namespace MicroOrm.Dapper.Repositories.SqlGenerator
 {
@@ -19,12 +20,18 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
             JoinPropertyInfo = joinPropertyInfo;
             TableSchema = joinAtttribute.TableSchema;
             TableName = joinAtttribute.TableName;
+            TableAlias = joinAtttribute.TableAlias;
         }
 
         /// <summary>
         ///     Table name
         /// </summary>
         public string TableName { get; set; }
+
+        /// <summary>
+        ///     Table alias
+        /// </summary>
+        public string TableAlias { get; set; }
 
         /// <summary>
         ///     Schema name
