@@ -1,0 +1,2 @@
+OpenCover.Console.exe -register:user -target:"C:/Program Files/dotnet/dotnet.exe" -targetargs:"test --logger:trx;LogFileName=results.trx /p:DebugType=Full ./test/MicroOrm.Dapper.Repositories.Tests/MicroOrm.Dapper.Repositories.Tests.csproj" -filter:"+[MicroOrm.Dapper.Repositories*]* -[MicroOrm.Dapper.Repositories.Tests*]*" -output:".\app-coverage.xml"
+codecov -f .\app-coverage.xml -t $env:codecov_token
