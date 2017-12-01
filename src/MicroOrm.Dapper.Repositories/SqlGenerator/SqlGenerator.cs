@@ -368,7 +368,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                     if (item.NestedProperty)
                     {
                         var joinProperty = SqlJoinProperties.First(x => x.PropertyName == item.PropertyName);
-                        tableName = joinProperty.TableName;
+                        tableName = joinProperty.TableAlias;
                         columnName = joinProperty.ColumnName;
                     }
                     else
@@ -484,6 +484,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                         {
                             propertyMetadata.TableName = GetTableNameWithSchemaPrefix(propertyMetadata.TableName, propertyMetadata.TableSchema, "[", "]");
                             propertyMetadata.ColumnName = "[" + propertyMetadata.ColumnName + "]";
+                            propertyMetadata.TableAlias = "[" + propertyMetadata.TableAlias + "]";
                         }
 
                         if (IdentitySqlProperty != null)
@@ -504,6 +505,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                         {
                             propertyMetadata.TableName = GetTableNameWithSchemaPrefix(propertyMetadata.TableName, propertyMetadata.TableSchema, "`", "`");
                             propertyMetadata.ColumnName = "`" + propertyMetadata.ColumnName + "`";
+                            propertyMetadata.TableAlias = "`" + propertyMetadata.TableAlias + "`";
                         }
 
                         if (IdentitySqlProperty != null)
@@ -524,6 +526,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                         {
                             propertyMetadata.TableName = GetTableNameWithSchemaPrefix(propertyMetadata.TableName, propertyMetadata.TableSchema, "\"", "\"");
                             propertyMetadata.ColumnName = "\"" + propertyMetadata.ColumnName + "\"";
+                            propertyMetadata.TableAlias = "\"" + propertyMetadata.TableAlias + "\"";
                         }
 
                         if (IdentitySqlProperty != null)
@@ -625,6 +628,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                             attrJoin.TableName = GetTableNameWithSchemaPrefix(attrJoin.TableName, attrJoin.TableSchema, "[", "]");
                             attrJoin.Key = "[" + attrJoin.Key + "]";
                             attrJoin.ExternalKey = "[" + attrJoin.ExternalKey + "]";
+                            attrJoin.TableAlias = "[" + attrJoin.TableAlias + "]";
                             foreach (var prop in props)
                                 prop.ColumnName = "[" + prop.ColumnName + "]";
                             break;
@@ -634,6 +638,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                             attrJoin.TableName = GetTableNameWithSchemaPrefix(attrJoin.TableName, attrJoin.TableSchema, "`", "`");
                             attrJoin.Key = "`" + attrJoin.Key + "`";
                             attrJoin.ExternalKey = "`" + attrJoin.ExternalKey + "`";
+                            attrJoin.TableAlias = "`" + attrJoin.TableAlias + "`";
                             foreach (var prop in props)
                                 prop.ColumnName = "`" + prop.ColumnName + "`";
                             break;
@@ -643,6 +648,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                             attrJoin.TableName = GetTableNameWithSchemaPrefix(attrJoin.TableName, attrJoin.TableSchema, "\"", "\"");
                             attrJoin.Key = "\"" + attrJoin.Key + "\"";
                             attrJoin.ExternalKey = "\"" + attrJoin.ExternalKey + "\"";
+                            attrJoin.TableAlias = "\"" + attrJoin.TableAlias + "\"";
                             foreach (var prop in props)
                                 prop.ColumnName = "\"" + prop.ColumnName + "\"";
                             break;
@@ -653,8 +659,9 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                 else
                     attrJoin.TableName = GetTableNameWithSchemaPrefix(attrJoin.TableName, attrJoin.TableSchema);
 
-                originalBuilder.SqlBuilder.Append(", " + GetFieldsSelect(attrJoin.TableName, props));
-                joinBuilder.Append(joinString + " " + attrJoin.TableName + " ON " + tableName + "." + attrJoin.Key + " = " + attrJoin.TableName + "." + attrJoin.ExternalKey + " ");
+                originalBuilder.SqlBuilder.Append($", {GetFieldsSelect(attrJoin.TableAlias, props)}");
+                joinBuilder.Append($"{joinString} {attrJoin.TableName} AS {attrJoin.TableAlias} ON {tableName}.{attrJoin.Key} = {attrJoin.TableAlias}.{attrJoin.ExternalKey} ");
+                
             }
             return joinBuilder.ToString();
         }

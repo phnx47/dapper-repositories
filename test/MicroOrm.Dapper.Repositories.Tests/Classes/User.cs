@@ -24,6 +24,8 @@ namespace MicroOrm.Dapper.Repositories.Tests.Classes
 
         public int PhoneId { get; set; }
 
+        public int OfficePhoneId { get; set; }
+
         [LeftJoin("Cars", "Id", "UserId")]
         public List<Car> Cars { get; set; }
 
@@ -32,6 +34,9 @@ namespace MicroOrm.Dapper.Repositories.Tests.Classes
 
         [InnerJoin("Phones", "PhoneId", "Id", "DAB")]
         public Phone Phone { get; set; }
+
+        [InnerJoin("Phones", "OfficePhoneId", "Id", "DAB")]
+        public Phone OfficePhone { get; set; }
 
         [Status]
         [Deleted]

@@ -157,7 +157,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.SqlGeneratorTests
             var ids = new List<int>();
             var sqlQuery = userSqlGenerator.GetSelectAll(x => ids.Contains(x.Id));
 
-            Assert.Equal("SELECT [Users].[Id], [Users].[Name], [Users].[AddressId], [Users].[PhoneId], [Users].[Deleted], [Users].[UpdatedAt] " +
+            Assert.Equal("SELECT [Users].[Id], [Users].[Name], [Users].[AddressId], [Users].[PhoneId], [Users].[OfficePhoneId], [Users].[Deleted], [Users].[UpdatedAt] " +
                          "FROM [Users] WHERE [Users].[Id] IN @Id AND [Users].[Deleted] != 1", sqlQuery.GetSql());
         }
 
@@ -249,7 +249,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.SqlGeneratorTests
             ISqlGenerator<User> userSqlGenerator = new SqlGenerator<User>(SqlConnector, true);
             var sqlQuery = userSqlGenerator.GetSelectAll(user => user.UpdatedAt == null);
 
-            Assert.Equal("SELECT [Users].[Id], [Users].[Name], [Users].[AddressId], [Users].[PhoneId], [Users].[Deleted], [Users].[UpdatedAt] FROM [Users] " +
+            Assert.Equal("SELECT [Users].[Id], [Users].[Name], [Users].[AddressId], [Users].[PhoneId], [Users].[OfficePhoneId], [Users].[Deleted], [Users].[UpdatedAt] FROM [Users] " +
                          "WHERE [Users].[UpdatedAt] IS NULL AND [Users].[Deleted] != 1", sqlQuery.GetSql());
             Assert.DoesNotContain("== NULL", sqlQuery.GetSql());
         }
@@ -260,9 +260,9 @@ namespace MicroOrm.Dapper.Repositories.Tests.SqlGeneratorTests
             ISqlGenerator<User> userSqlGenerator = new SqlGenerator<User>(SqlConnector, true);
             var sqlQuery = userSqlGenerator.GetSelectAll(null, user => user.Cars);
 
-            Assert.Equal("SELECT [Users].[Id], [Users].[Name], [Users].[AddressId], [Users].[PhoneId], [Users].[Deleted], [Users].[UpdatedAt], " +
-                         "[Cars].[Id], [Cars].[Name], [Cars].[Data], [Cars].[UserId], [Cars].[Status] " +
-                         "FROM [Users] LEFT JOIN [Cars] ON [Users].[Id] = [Cars].[UserId] " +
+            Assert.Equal("SELECT [Users].[Id], [Users].[Name], [Users].[AddressId], [Users].[PhoneId], [Users].[OfficePhoneId], [Users].[Deleted], [Users].[UpdatedAt], " +
+                         "[Cars_Id].[Id], [Cars_Id].[Name], [Cars_Id].[Data], [Cars_Id].[UserId], [Cars_Id].[Status] " +
+                         "FROM [Users] LEFT JOIN [Cars] AS [Cars_Id] ON [Users].[Id] = [Cars_Id].[UserId] " +
                          "WHERE [Users].[Deleted] != 1", sqlQuery.GetSql());
         }
 
@@ -272,10 +272,10 @@ namespace MicroOrm.Dapper.Repositories.Tests.SqlGeneratorTests
             ISqlGenerator<User> userSqlGenerator = new SqlGenerator<User>(SqlConnector, true);
             var sqlQuery = userSqlGenerator.GetSelectFirst(x => x.Phone.Number == "123", user => user.Phone);
 
-            Assert.Equal("SELECT TOP 1 [Users].[Id], [Users].[Name], [Users].[AddressId], [Users].[PhoneId], [Users].[Deleted], [Users].[UpdatedAt], " +
-                         "[DAB].[Phones].[Id], [DAB].[Phones].[Number], [DAB].[Phones].[IsActive], [DAB].[Phones].[Code] " +
-                         "FROM [Users] INNER JOIN [DAB].[Phones] ON [Users].[PhoneId] = [DAB].[Phones].[Id] " +
-                         "WHERE [DAB].[Phones].[Number] = @PhoneNumber AND [Users].[Deleted] != 1", sqlQuery.GetSql());
+            Assert.Equal("SELECT TOP 1 [Users].[Id], [Users].[Name], [Users].[AddressId], [Users].[PhoneId], [Users].[OfficePhoneId], [Users].[Deleted], [Users].[UpdatedAt], " +
+                         "[Phones_PhoneId].[Id], [Phones_PhoneId].[Number], [Phones_PhoneId].[IsActive], [Phones_PhoneId].[Code] " +
+                         "FROM [Users] INNER JOIN [DAB].[Phones] AS [Phones_PhoneId] ON [Users].[PhoneId] = [Phones_PhoneId].[Id] " +
+                         "WHERE [Phones_PhoneId].[Number] = @PhoneNumber AND [Users].[Deleted] != 1", sqlQuery.GetSql());
         }
 
         [Fact]
@@ -284,10 +284,10 @@ namespace MicroOrm.Dapper.Repositories.Tests.SqlGeneratorTests
             ISqlGenerator<User> userSqlGenerator = new SqlGenerator<User>(SqlConnector, false);
             var sqlQuery = userSqlGenerator.GetSelectFirst(x => x.Phone.Number == "123", user => user.Phone);
 
-            Assert.Equal("SELECT TOP 1 Users.Id, Users.Name, Users.AddressId, Users.PhoneId, Users.Deleted, Users.UpdatedAt, " +
-                         "DAB.Phones.Id, DAB.Phones.Number, DAB.Phones.IsActive, DAB.Phones.Code " +
-                         "FROM Users INNER JOIN DAB.Phones ON Users.PhoneId = DAB.Phones.Id " +
-                         "WHERE DAB.Phones.Number = @PhoneNumber AND Users.Deleted != 1", sqlQuery.GetSql());
+            Assert.Equal("SELECT TOP 1 Users.Id, Users.Name, Users.AddressId, Users.PhoneId, Users.OfficePhoneId, Users.Deleted, Users.UpdatedAt, " +
+                         "Phones_PhoneId.Id, Phones_PhoneId.Number, Phones_PhoneId.IsActive, Phones_PhoneId.Code " +
+                         "FROM Users INNER JOIN DAB.Phones AS Phones_PhoneId ON Users.PhoneId = Phones_PhoneId.Id " +
+                         "WHERE Phones_PhoneId.Number = @PhoneNumber AND Users.Deleted != 1", sqlQuery.GetSql());
         }
 
 
@@ -297,7 +297,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.SqlGeneratorTests
             ISqlGenerator<User> userSqlGenerator = new SqlGenerator<User>(SqlConnector, false);
             var sqlQuery = userSqlGenerator.GetSelectBetween(1, 10, x => x.Id);
 
-            Assert.Equal("SELECT Users.Id, Users.Name, Users.AddressId, Users.PhoneId, Users.Deleted, Users.UpdatedAt FROM Users " +
+            Assert.Equal("SELECT Users.Id, Users.Name, Users.AddressId, Users.PhoneId, Users.OfficePhoneId, Users.Deleted, Users.UpdatedAt FROM Users " +
                          "WHERE Users.Deleted != 1 AND Users.Id BETWEEN '1' AND '10'", sqlQuery.GetSql());
         }
 
@@ -307,7 +307,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.SqlGeneratorTests
             ISqlGenerator<User> userSqlGenerator = new SqlGenerator<User>(SqlConnector, true);
             var sqlQuery = userSqlGenerator.GetSelectBetween(1, 10, x => x.Id);
 
-            Assert.Equal("SELECT [Users].[Id], [Users].[Name], [Users].[AddressId], [Users].[PhoneId], [Users].[Deleted], [Users].[UpdatedAt] FROM [Users] " +
+            Assert.Equal("SELECT [Users].[Id], [Users].[Name], [Users].[AddressId], [Users].[PhoneId], [Users].[OfficePhoneId], [Users].[Deleted], [Users].[UpdatedAt] FROM [Users] " +
                          "WHERE [Users].[Deleted] != 1 AND [Users].[Id] BETWEEN '1' AND '10'", sqlQuery.GetSql());
         }
 
@@ -338,7 +338,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.SqlGeneratorTests
             ISqlGenerator<User> userSqlGenerator = new SqlGenerator<User>(SqlConnector, true);
             var sqlQuery = userSqlGenerator.GetSelectById(1);
 
-            Assert.Equal("SELECT TOP 1 [Users].[Id], [Users].[Name], [Users].[AddressId], [Users].[PhoneId], [Users].[Deleted], [Users].[UpdatedAt] " +
+            Assert.Equal("SELECT TOP 1 [Users].[Id], [Users].[Name], [Users].[AddressId], [Users].[PhoneId], [Users].[OfficePhoneId], [Users].[Deleted], [Users].[UpdatedAt] " +
                          "FROM [Users] WHERE [Users].[Id] = @Id AND [Users].[Deleted] != 1", sqlQuery.GetSql());
         }
 
@@ -347,7 +347,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.SqlGeneratorTests
         {
             ISqlGenerator<User> userSqlGenerator = new SqlGenerator<User>(SqlConnector, true);
             var sqlQuery = userSqlGenerator.GetSelectFirst(x => x.Id == 2);
-            Assert.Equal("SELECT TOP 1 [Users].[Id], [Users].[Name], [Users].[AddressId], [Users].[PhoneId], [Users].[Deleted], [Users].[UpdatedAt] FROM [Users] WHERE [Users].[Id] = @Id AND [Users].[Deleted] != 1", sqlQuery.GetSql());
+            Assert.Equal("SELECT TOP 1 [Users].[Id], [Users].[Name], [Users].[AddressId], [Users].[PhoneId], [Users].[OfficePhoneId], [Users].[Deleted], [Users].[UpdatedAt] FROM [Users] WHERE [Users].[Id] = @Id AND [Users].[Deleted] != 1", sqlQuery.GetSql());
         }
 
         [Fact]
