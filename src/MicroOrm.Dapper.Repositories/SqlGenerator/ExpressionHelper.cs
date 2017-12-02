@@ -2,11 +2,15 @@
 using System.Globalization;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Text;
 using MicroOrm.Dapper.Repositories.Extensions;
 
+[assembly: InternalsVisibleTo("MicroOrm.Dapper.Repositories.Tests")]
+
 namespace MicroOrm.Dapper.Repositories.SqlGenerator
 {
+
     internal static class ExpressionHelper
     {
         public static string GetPropertyName<TSource, TField>(Expression<Func<TSource, TField>> field)
@@ -16,18 +20,16 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
 
             MemberExpression expr;
 
-            var body = field.Body as MemberExpression;
-            if (body != null)
+            switch (field.Body)
             {
-                expr = body;
-            }
-            else
-            {
-                var expression = field.Body as UnaryExpression;
-                if (expression != null)
+                case MemberExpression body:
+                    expr = body;
+                    break;
+                case UnaryExpression expression:
                     expr = (MemberExpression)expression.Operand;
-                else
-                    throw new ArgumentException("Expression field is not supported.", nameof(field));
+                    break;
+                default:
+                    throw new ArgumentException("Expression field isn't supported", nameof(field));
             }
 
             return expr.Member.Name;
@@ -77,7 +79,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                     return string.Empty;
 
                 default:
-                    throw new NotImplementedException();
+                    throw new NotSupportedException(type + " isn't supported");
             }
         }
 
@@ -93,7 +95,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                     return methodName.ToUpperInvariant();
 
                 default:
-                    throw new NotImplementedException();
+                    throw new NotSupportedException(methodName + " isn't supported");
             }
         }
 
@@ -114,7 +116,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
             var expr = callExpr.Object as MemberExpression;
 
             if (!(expr?.Expression is ConstantExpression))
-                throw new NotImplementedException($"{callExpr.Method.Name} is not implemented");
+                throw new NotSupportedException(callExpr.Method.Name + " isn't supported");
 
             var constExpr = (ConstantExpression)expr.Expression;
 
@@ -125,43 +127,37 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
 
         public static MemberExpression GetMemberExpression(Expression expression)
         {
-            var expr = expression as MethodCallExpression;
-            if (expr != null)
-                return (MemberExpression)expr.Arguments[0];
-
-            var memberExpression = expression as MemberExpression;
-            if (memberExpression != null)
-                return memberExpression;
-
-            var unaryExpression = expression as UnaryExpression;
-            if (unaryExpression != null)
-                return (MemberExpression)unaryExpression.Operand;
-
-            var binaryExpression = expression as BinaryExpression;
-            if (binaryExpression != null)
+            switch (expression)
             {
-                var binaryExpr = binaryExpression;
+                case MethodCallExpression expr:
+                    return (MemberExpression)expr.Arguments[0];
+                    
+                case MemberExpression memberExpression:
+                    return memberExpression;
+                    
+                case UnaryExpression unaryExpression:
+                    return (MemberExpression)unaryExpression.Operand;
+                    
+                case BinaryExpression binaryExpression:
+                    var binaryExpr = binaryExpression;
 
-                var left = binaryExpr.Left as UnaryExpression;
-                if (left != null)
-                    return (MemberExpression)left.Operand;
+                    if (binaryExpr.Left is UnaryExpression left)
+                        return (MemberExpression)left.Operand;
 
-                //should we take care if right operation is memberaccess, not left ?
-                return (MemberExpression)binaryExpr.Left;
-            }
+                    //should we take care if right operation is memberaccess, not left?
+                    return (MemberExpression)binaryExpr.Left;
+                    
+                case LambdaExpression expression1:
+                    var lambdaExpression = expression1;
 
-            var expression1 = expression as LambdaExpression;
-            if (expression1 != null)
-            {
-                var lambdaExpression = expression1;
-
-                var body = lambdaExpression.Body as MemberExpression;
-                if (body != null)
-                    return body;
-
-                var expressionBody = lambdaExpression.Body as UnaryExpression;
-                if (expressionBody != null)
-                    return (MemberExpression)expressionBody.Operand;
+                    switch (lambdaExpression.Body)
+                    {
+                        case MemberExpression body:
+                            return body;
+                        case UnaryExpression expressionBody:
+                            return (MemberExpression)expressionBody.Operand;
+                    }
+                    break;
             }
 
             return null;
