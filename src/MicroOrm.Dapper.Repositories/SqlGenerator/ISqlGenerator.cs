@@ -86,6 +86,16 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         object LogicalDeleteValue { get; }
 
         /// <summary>
+        ///     Get SQL for COUNT Query
+        /// </summary>
+        SqlQuery GetCount(Expression<Func<TEntity, bool>> predicate);
+
+        /// <summary>
+        ///     Get SQL for COUNT with DISTINCT Query
+        /// </summary>
+        SqlQuery GetCount(Expression<Func<TEntity, bool>> predicate, Expression<Func<TEntity, object>> distinctField);
+
+        /// <summary>
         ///     Get SQL for INSERT Query
         /// </summary>
         SqlQuery GetInsert(TEntity entity);
@@ -115,7 +125,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         /// <summary>
         ///     Get SQL for SELECT Query by Id
         /// </summary>
-        SqlQuery GetSelectById(object id, params Expression<Func<TEntity, object>>[] includes);
+        SqlQuery  GetSelectById(object id, params Expression<Func<TEntity, object>>[] includes);
 
         /// <summary>
         ///     Get SQL for SELECT Query

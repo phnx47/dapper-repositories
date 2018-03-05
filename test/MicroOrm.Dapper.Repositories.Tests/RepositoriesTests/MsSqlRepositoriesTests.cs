@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
+using Dapper;
 using MicroOrm.Dapper.Repositories.Tests.Classes;
 using MicroOrm.Dapper.Repositories.Tests.DatabaseFixture;
 using Xunit;
@@ -28,6 +30,48 @@ namespace MicroOrm.Dapper.Repositories.Tests.RepositoriesTests
 
 
             Assert.Equal(1, userFromDb.UpdatedAt.Value.CompareTo(dateTime));
+        }
+
+        [Fact]
+        public void Count()
+        {
+            var count = _sqlDatabaseFixture.Db.Users.Count();
+            var countHandQuery =
+                _sqlDatabaseFixture.Db.Connection
+                .ExecuteScalar<int>("SELECT COUNT(*) FROM [Users] WHERE [Users].[Deleted] != 1");
+            Assert.Equal(countHandQuery, count);
+        }
+
+        [Fact]
+        public void CountWithCondition()
+        {
+            var count = _sqlDatabaseFixture.Db.Users.Count(x => x.Id == 2);
+   
+            Assert.Equal(1, count);
+        }
+
+
+        [Fact]
+        public void CountWithDistinct()
+        {
+            var count = _sqlDatabaseFixture.Db.Phones.Count(phone => phone.Code);
+
+            Assert.Equal(1, count);
+        }
+
+        [Fact]
+        public void CountWithDistinctAndWhere()
+        {
+            var count = _sqlDatabaseFixture.Db.Users.Count(x=>x.PhoneId == 1, user => user.PhoneId);
+
+            Assert.Equal(1, count);
+        }
+
+        [Fact]
+        public async Task CountAsyncThrowTaskCanceledException()
+        {
+            var ct = new CancellationToken(true);
+            await Assert.ThrowsAsync<TaskCanceledException>(async () => await _sqlDatabaseFixture.Db.Users.CountAsync(null, null, ct));
         }
 
         [Fact]
@@ -93,7 +137,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.RepositoriesTests
         {
             List<int> keyList = new List<int>();
             var users = (await _sqlDatabaseFixture.Db.Users.FindAllAsync(x => keyList.Contains(x.Id))).ToArray();
-            Assert.Equal(0, users.Length);
+            Assert.Empty(users);
         }
 
         [Fact]
