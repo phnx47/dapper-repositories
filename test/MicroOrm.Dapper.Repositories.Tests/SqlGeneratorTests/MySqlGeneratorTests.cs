@@ -11,6 +11,30 @@ namespace MicroOrm.Dapper.Repositories.Tests.SqlGeneratorTests
         private const SqlProvider SqlConnector = SqlProvider.MySQL;
 
         [Fact]
+        public static void Count()
+        {
+            ISqlGenerator<User> userSqlGenerator = new SqlGenerator<User>(SqlConnector, true);
+            var sqlQuery = userSqlGenerator.GetCount(null);
+            Assert.Equal("SELECT COUNT(*) FROM `Users` WHERE `Users`.`Deleted` != 1", sqlQuery.GetSql());
+        }
+
+        [Fact]
+        public static void CountWithDistinct()
+        {
+            ISqlGenerator<User> userSqlGenerator = new SqlGenerator<User>(SqlConnector, true);
+            var sqlQuery = userSqlGenerator.GetCount(null, user => user.AddressId);
+            Assert.Equal("SELECT COUNT(DISTINCT `Users`.`AddressId`) FROM `Users` WHERE `Users`.`Deleted` != 1", sqlQuery.GetSql());
+        }
+
+        [Fact]
+        public static void CountWithDistinctAndWhere()
+        {
+            ISqlGenerator<User> userSqlGenerator = new SqlGenerator<User>(SqlConnector, true);
+            var sqlQuery = userSqlGenerator.GetCount(x => x.PhoneId == 1, user => user.AddressId);
+            Assert.Equal("SELECT COUNT(DISTINCT `Users`.`AddressId`) FROM `Users` WHERE `Users`.`PhoneId` = @PhoneId AND `Users`.`Deleted` != 1", sqlQuery.GetSql());
+        }
+
+        [Fact]
         public void BulkUpdate()
         {
             ISqlGenerator<Phone> userSqlGenerator = new SqlGenerator<Phone>(SqlConnector);
