@@ -12,7 +12,7 @@
         <PackageId>MicroOrm.Dapper.Repositories</PackageId>
         <PackageTags>dapper;micro-orm;repositories;crud</PackageTags>
         <PackageReleaseNotes>https://github.com/phnx47/MicroOrm.Dapper.Repositories/releases</PackageReleaseNotes>
-        <PackageIconUrl>https://cdn.audsp.com/images/database-icon.png</PackageIconUrl>
+        <PackageIconUrl>https://image.ibb.co/itOgt5/database.png</PackageIconUrl>
         <PackageProjectUrl>http://dapper.phnx47.net</PackageProjectUrl>
         <PackageLicenseUrl>https://opensource.org/licenses/MIT</PackageLicenseUrl>
         <RepositoryType>git</RepositoryType>
