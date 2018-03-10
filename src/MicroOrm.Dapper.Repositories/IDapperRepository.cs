@@ -26,42 +26,82 @@ namespace MicroOrm.Dapper.Repositories
         /// <summary>
         ///     Get number of rows
         /// </summary>
-        int Count(IDbTransaction transaction = null);
+        int Count();
+        
+        /// <summary>
+        ///     Get number of rows
+        /// </summary>
+        int Count(IDbTransaction transaction);
 
         /// <summary>
         ///     Get number of rows with WHERE clause
         /// </summary>
-        int Count(Expression<Func<TEntity, bool>> predicate, IDbTransaction transaction = null);
+        int Count(Expression<Func<TEntity, bool>> predicate);
+        
+        /// <summary>
+        ///     Get number of rows with WHERE clause
+        /// </summary>
+        int Count(Expression<Func<TEntity, bool>> predicate, IDbTransaction transaction);
 
         /// <summary>
         ///     Get number of rows with DISTINCT clause
         /// </summary>
-        int Count(Expression<Func<TEntity, object>> distinctField, IDbTransaction transaction = null);
+        int Count(Expression<Func<TEntity, object>> distinctField);
+        
+        /// <summary>
+        ///     Get number of rows with DISTINCT clause
+        /// </summary>
+        int Count(Expression<Func<TEntity, object>> distinctField, IDbTransaction transaction);
 
         /// <summary>
         ///     Get number of rows with DISTINCT and WHERE clause
         /// </summary>
-        int Count(Expression<Func<TEntity, bool>> predicate, Expression<Func<TEntity, object>> distinctField, IDbTransaction transaction = null);
+        int Count(Expression<Func<TEntity, bool>> predicate, Expression<Func<TEntity, object>> distinctField);
+        
+        /// <summary>
+        ///     Get number of rows with DISTINCT and WHERE clause
+        /// </summary>
+        int Count(Expression<Func<TEntity, bool>> predicate, Expression<Func<TEntity, object>> distinctField, IDbTransaction transaction);
 
         /// <summary>
         ///     Get number of rows
         /// </summary>
-        Task<int> CountAsync(IDbTransaction transaction = null, CancellationToken cancellationToken = default(CancellationToken));
+        Task<int> CountAsync();
+        
+        /// <summary>
+        ///     Get number of rows
+        /// </summary>
+        Task<int> CountAsync(IDbTransaction transaction);
 
         /// <summary>
         ///     Get number of rows with WHERE clause
         /// </summary>
-        Task<int> CountAsync(Expression<Func<TEntity, bool>> predicate, IDbTransaction transaction = null, CancellationToken cancellationToken = default(CancellationToken));
+        Task<int> CountAsync(Expression<Func<TEntity, bool>> predicate);
+        
+        /// <summary>
+        ///     Get number of rows with WHERE clause
+        /// </summary>
+        Task<int> CountAsync(Expression<Func<TEntity, bool>> predicate, IDbTransaction transaction);
 
         /// <summary>
         ///     Get number of rows with DISTINCT clause
         /// </summary>
-        Task<int> CountAsync(Expression<Func<TEntity, object>> distinctField, IDbTransaction transaction = null, CancellationToken cancellationToken = default(CancellationToken));
+        Task<int> CountAsync(Expression<Func<TEntity, object>> distinctField);
+        
+        /// <summary>
+        ///     Get number of rows with DISTINCT clause
+        /// </summary>
+        Task<int> CountAsync(Expression<Func<TEntity, object>> distinctField, IDbTransaction transaction);
 
         /// <summary>
         ///     Get number of rows with DISTINCT and WHERE clause
         /// </summary>
-        Task<int> CountAsync(Expression<Func<TEntity, bool>> predicate, Expression<Func<TEntity, object>> distinctField, IDbTransaction transaction = null, CancellationToken cancellationToken = default (CancellationToken));
+        Task<int> CountAsync(Expression<Func<TEntity, bool>> predicate, Expression<Func<TEntity, object>> distinctField);
+        
+        /// <summary>
+        ///     Get number of rows with DISTINCT and WHERE clause
+        /// </summary>
+        Task<int> CountAsync(Expression<Func<TEntity, bool>> predicate, Expression<Func<TEntity, object>> distinctField, IDbTransaction transaction);
 
         /// <summary>
         ///     Get first object

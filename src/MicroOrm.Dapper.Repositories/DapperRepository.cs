@@ -9,8 +9,6 @@ namespace MicroOrm.Dapper.Repositories
     public partial class DapperRepository<TEntity> : IDapperRepository<TEntity>
         where TEntity : class
     {
-
-
         /// <summary>
         ///     Constructor
         /// </summary>
@@ -46,7 +44,6 @@ namespace MicroOrm.Dapper.Repositories
             Connection = connection;
             SqlGenerator = new SqlGenerator<TEntity>(config);
         }
-
 
         /// <inheritdoc />
         public IDbConnection Connection { get; }

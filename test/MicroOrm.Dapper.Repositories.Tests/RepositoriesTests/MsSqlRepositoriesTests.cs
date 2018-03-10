@@ -12,12 +12,12 @@ namespace MicroOrm.Dapper.Repositories.Tests.RepositoriesTests
 {
     public class MsSqlRepositoriesTests : IClassFixture<MsSqlDatabaseFixture>
     {
+        private readonly MsSqlDatabaseFixture _sqlDatabaseFixture;
+        
         public MsSqlRepositoriesTests(MsSqlDatabaseFixture msSqlDatabaseFixture)
         {
             _sqlDatabaseFixture = msSqlDatabaseFixture;
         }
-
-        private readonly MsSqlDatabaseFixture _sqlDatabaseFixture;
 
         [Fact]
         public async Task ChangeDateInsertAndFind()
@@ -65,13 +65,6 @@ namespace MicroOrm.Dapper.Repositories.Tests.RepositoriesTests
             var count = _sqlDatabaseFixture.Db.Users.Count(x=>x.PhoneId == 1, user => user.PhoneId);
 
             Assert.Equal(1, count);
-        }
-
-        [Fact]
-        public async Task CountAsyncThrowTaskCanceledException()
-        {
-            var ct = new CancellationToken(true);
-            await Assert.ThrowsAsync<TaskCanceledException>(async () => await _sqlDatabaseFixture.Db.Users.CountAsync(null, null, ct));
         }
 
         [Fact]
