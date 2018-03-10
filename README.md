@@ -14,7 +14,7 @@
 ## Installation
 
 
-    PM> Install-Package MicroOrm.Dapper.Repositories
+    dotnet add package MicroOrm.Dapper.Repositories
 
 ## Docs
 
