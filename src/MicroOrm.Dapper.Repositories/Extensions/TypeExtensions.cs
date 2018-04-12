@@ -7,16 +7,16 @@ namespace MicroOrm.Dapper.Repositories.Extensions
 {
     internal static class TypeExtensions
     {
-        private static readonly ConcurrentDictionary<Type, PropertyInfo[]> ReflectionPropertyCache = new ConcurrentDictionary<Type, PropertyInfo[]>();
+        private static readonly ConcurrentDictionary<Type, PropertyInfo[]> _reflectionPropertyCache = new ConcurrentDictionary<Type, PropertyInfo[]>();
 
         public static PropertyInfo[] FindClassProperties(this Type objectType)
         {
-            if (ReflectionPropertyCache.ContainsKey(objectType))
-                return ReflectionPropertyCache[objectType];
+            if (_reflectionPropertyCache.ContainsKey(objectType))
+                return _reflectionPropertyCache[objectType];
 
             var result = objectType.GetProperties().ToArray();
 
-            ReflectionPropertyCache.TryAdd(objectType, result);
+            _reflectionPropertyCache.TryAdd(objectType, result);
 
             return result;
         }

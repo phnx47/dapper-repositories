@@ -5,11 +5,11 @@ namespace MicroOrm.Dapper.Repositories.Tests.DatabaseFixture
 {
     public class MySqlDatabaseFixture : IDisposable
     {
-        private const string DbName = "test_micro_orm";
+        private const string _dbName = "test_micro_orm";
 
         public MySqlDatabaseFixture()
         {
-            var connString = $"Database={DbName};Server=localhost;Uid=root;Pwd=root;";
+            var connString = $"Database={_dbName};Server=localhost;Uid=root;Pwd=root;";
 
             Db = new MySqlDbContext(connString);
         }

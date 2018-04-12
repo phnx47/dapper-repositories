@@ -8,12 +8,12 @@ namespace MicroOrm.Dapper.Repositories.Tests.SqlGeneratorTests
 {
     public class PostgresSqlGeneratorTests
     {
-        private const SqlProvider SqlConnector = SqlProvider.PostgreSQL;
+        private const SqlProvider _sqlConnector = SqlProvider.PostgreSQL;
 
         [Fact]
         public static void Count()
         {
-            ISqlGenerator<User> userSqlGenerator = new SqlGenerator<User>(SqlConnector, true);
+            ISqlGenerator<User> userSqlGenerator = new SqlGenerator<User>(_sqlConnector, true);
             var sqlQuery = userSqlGenerator.GetCount(null);
             Assert.Equal("SELECT COUNT(*) FROM \"Users\" WHERE \"Users\".\"Deleted\" != 1", sqlQuery.GetSql());
         }
@@ -21,7 +21,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.SqlGeneratorTests
         [Fact]
         public static void CountWithDistinct()
         {
-            ISqlGenerator<User> userSqlGenerator = new SqlGenerator<User>(SqlConnector, true);
+            ISqlGenerator<User> userSqlGenerator = new SqlGenerator<User>(_sqlConnector, true);
             var sqlQuery = userSqlGenerator.GetCount(null, user => user.AddressId);
             Assert.Equal("SELECT COUNT(DISTINCT \"Users\".\"AddressId\") FROM \"Users\" WHERE \"Users\".\"Deleted\" != 1", sqlQuery.GetSql());
         }
@@ -29,7 +29,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.SqlGeneratorTests
         [Fact]
         public static void CountWithDistinctAndWhere()
         {
-            ISqlGenerator<User> userSqlGenerator = new SqlGenerator<User>(SqlConnector, true);
+            ISqlGenerator<User> userSqlGenerator = new SqlGenerator<User>(_sqlConnector, true);
             var sqlQuery = userSqlGenerator.GetCount(x => x.PhoneId == 1, user => user.AddressId);
             Assert.Equal("SELECT COUNT(DISTINCT \"Users\".\"AddressId\") FROM \"Users\" WHERE \"Users\".\"PhoneId\" = @PhoneId AND \"Users\".\"Deleted\" != 1", sqlQuery.GetSql());
         }
@@ -37,7 +37,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.SqlGeneratorTests
         [Fact]
         public void SelectFirst()
         {
-            ISqlGenerator<City> sqlGenerator = new SqlGenerator<City>(SqlConnector);
+            ISqlGenerator<City> sqlGenerator = new SqlGenerator<City>(_sqlConnector);
             var sqlQuery = sqlGenerator.GetSelectFirst(x => x.Identifier == Guid.Empty);
             Assert.Equal("SELECT Cities.Identifier, Cities.Name FROM Cities WHERE Cities.Identifier = @Identifier LIMIT 1", sqlQuery.GetSql());
         }
@@ -46,7 +46,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.SqlGeneratorTests
         [Fact]
         public void SelectFirst_QuoMarks()
         {
-            ISqlGenerator<City> sqlGenerator = new SqlGenerator<City>(SqlConnector, true);
+            ISqlGenerator<City> sqlGenerator = new SqlGenerator<City>(_sqlConnector, true);
             var sqlQuery = sqlGenerator.GetSelectFirst(x => x.Identifier == Guid.Empty);
             Assert.Equal("SELECT \"Cities\".\"Identifier\", \"Cities\".\"Name\" FROM \"Cities\" WHERE \"Cities\".\"Identifier\" = @Identifier LIMIT 1", sqlQuery.GetSql());
         }
@@ -54,7 +54,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.SqlGeneratorTests
         [Fact]
         public static void BulkUpdate()
         {
-            ISqlGenerator<Phone> userSqlGenerator = new SqlGenerator<Phone>(SqlConnector);
+            ISqlGenerator<Phone> userSqlGenerator = new SqlGenerator<Phone>(_sqlConnector);
             var phones = new List<Phone>
             {
                 new Phone { Id = 10, IsActive = true, Number = "111" },
@@ -70,7 +70,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.SqlGeneratorTests
         [Fact]
         public static void BulkUpdate_QuoMarks()
         {
-            ISqlGenerator<Phone> userSqlGenerator = new SqlGenerator<Phone>(SqlConnector, true);
+            ISqlGenerator<Phone> userSqlGenerator = new SqlGenerator<Phone>(_sqlConnector, true);
             var phones = new List<Phone>
             {
                 new Phone { Id = 10, IsActive = true, Number = "111" },

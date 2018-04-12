@@ -9,12 +9,12 @@ namespace MicroOrm.Dapper.Repositories.Tests.SqlGeneratorTests
 {
     public class MsSqlGeneratorTests
     {
-        private const SqlProvider SqlConnector = SqlProvider.MSSQL;
+        private const SqlProvider _sqlConnector = SqlProvider.MSSQL;
 
         [Fact]
         public static void Count()
         {
-            ISqlGenerator<User> userSqlGenerator = new SqlGenerator<User>(SqlConnector, true);
+            ISqlGenerator<User> userSqlGenerator = new SqlGenerator<User>(_sqlConnector, true);
             var sqlQuery = userSqlGenerator.GetCount(null);
             Assert.Equal("SELECT COUNT(*) FROM [Users] WHERE [Users].[Deleted] != 1", sqlQuery.GetSql());
         }
@@ -22,7 +22,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.SqlGeneratorTests
         [Fact]
         public static void CountWithDistinct()
         {
-            ISqlGenerator<User> userSqlGenerator = new SqlGenerator<User>(SqlConnector, true);
+            ISqlGenerator<User> userSqlGenerator = new SqlGenerator<User>(_sqlConnector, true);
             var sqlQuery = userSqlGenerator.GetCount(null, user => user.AddressId);
             Assert.Equal("SELECT COUNT(DISTINCT [Users].[AddressId]) FROM [Users] WHERE [Users].[Deleted] != 1", sqlQuery.GetSql());
         }
@@ -30,7 +30,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.SqlGeneratorTests
         [Fact]
         public static void CountWithDistinctAndWhere()
         {
-            ISqlGenerator<User> userSqlGenerator = new SqlGenerator<User>(SqlConnector, true);
+            ISqlGenerator<User> userSqlGenerator = new SqlGenerator<User>(_sqlConnector, true);
             var sqlQuery = userSqlGenerator.GetCount(x => x.PhoneId == 1, user => user.AddressId);
             Assert.Equal("SELECT COUNT(DISTINCT [Users].[AddressId]) FROM [Users] WHERE [Users].[PhoneId] = @PhoneId AND [Users].[Deleted] != 1", sqlQuery.GetSql());
         }
@@ -38,7 +38,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.SqlGeneratorTests
         [Fact]
         public static void ChangeDate_Insert()
         {
-            ISqlGenerator<User> userSqlGenerator = new SqlGenerator<User>(SqlConnector, true);
+            ISqlGenerator<User> userSqlGenerator = new SqlGenerator<User>(_sqlConnector, true);
 
             var user = new User { Name = "Dude" };
             userSqlGenerator.GetInsert(user);
@@ -48,7 +48,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.SqlGeneratorTests
         [Fact]
         public static void ChangeDate_Update()
         {
-            ISqlGenerator<User> userSqlGenerator = new SqlGenerator<User>(SqlConnector, true);
+            ISqlGenerator<User> userSqlGenerator = new SqlGenerator<User>(_sqlConnector, true);
 
             var user = new User { Name = "Dude" };
             userSqlGenerator.GetUpdate(user);
@@ -58,7 +58,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.SqlGeneratorTests
         [Fact]
         public static void ExpressionArgumentException()
         {
-            ISqlGenerator<User> userSqlGenerator = new SqlGenerator<User>(SqlConnector, true);
+            ISqlGenerator<User> userSqlGenerator = new SqlGenerator<User>(_sqlConnector, true);
 
             var isExceptions = false;
 
@@ -79,7 +79,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.SqlGeneratorTests
         [Fact]
         public static void BoolFalseEqualNotPredicate()
         {
-            ISqlGenerator<Phone> userSqlGenerator = new SqlGenerator<Phone>(SqlConnector, true);
+            ISqlGenerator<Phone> userSqlGenerator = new SqlGenerator<Phone>(_sqlConnector, true);
             var sqlQuery = userSqlGenerator.GetSelectFirst(x => x.IsActive != true);
 
             var parameters = sqlQuery.Param as IDictionary<string, object>;
@@ -91,7 +91,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.SqlGeneratorTests
         [Fact]
         public static void BoolFalseEqualPredicate()
         {
-            ISqlGenerator<Phone> userSqlGenerator = new SqlGenerator<Phone>(SqlConnector, true);
+            ISqlGenerator<Phone> userSqlGenerator = new SqlGenerator<Phone>(_sqlConnector, true);
             var sqlQuery = userSqlGenerator.GetSelectFirst(x => x.IsActive == false);
 
             var parameters = sqlQuery.Param as IDictionary<string, object>;
@@ -103,7 +103,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.SqlGeneratorTests
         [Fact]
         public static void BoolFalsePredicate()
         {
-            ISqlGenerator<Phone> userSqlGenerator = new SqlGenerator<Phone>(SqlConnector, true);
+            ISqlGenerator<Phone> userSqlGenerator = new SqlGenerator<Phone>(_sqlConnector, true);
             var sqlQuery = userSqlGenerator.GetSelectFirst(x => !x.IsActive);
 
             var parameters = sqlQuery.Param as IDictionary<string, object>;
@@ -115,7 +115,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.SqlGeneratorTests
         [Fact]
         public static void BoolTruePredicate()
         {
-            ISqlGenerator<Phone> userSqlGenerator = new SqlGenerator<Phone>(SqlConnector, true);
+            ISqlGenerator<Phone> userSqlGenerator = new SqlGenerator<Phone>(_sqlConnector, true);
             var sqlQuery = userSqlGenerator.GetSelectFirst(x => x.IsActive);
 
             var parameters = sqlQuery.Param as IDictionary<string, object>;
@@ -127,7 +127,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.SqlGeneratorTests
         [Fact]
         public static void BulkInsertMultiple()
         {
-            ISqlGenerator<Address> userSqlGenerator = new SqlGenerator<Address>(SqlConnector, true);
+            ISqlGenerator<Address> userSqlGenerator = new SqlGenerator<Address>(_sqlConnector, true);
             var sqlQuery = userSqlGenerator.GetBulkInsert(new List<Address> { new Address(), new Address() });
 
             Assert.Equal("INSERT INTO [Addresses] ([Street], [CityId]) VALUES (@Street0, @CityId0),(@Street1, @CityId1)", sqlQuery.GetSql());
@@ -136,7 +136,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.SqlGeneratorTests
         [Fact]
         public static void BulkInsertOne()
         {
-            ISqlGenerator<Address> userSqlGenerator = new SqlGenerator<Address>(SqlConnector, true);
+            ISqlGenerator<Address> userSqlGenerator = new SqlGenerator<Address>(_sqlConnector, true);
             var sqlQuery = userSqlGenerator.GetBulkInsert(new List<Address> { new Address() });
 
             Assert.Equal("INSERT INTO [Addresses] ([Street], [CityId]) VALUES (@Street0, @CityId0)", sqlQuery.GetSql());
@@ -145,7 +145,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.SqlGeneratorTests
         [Fact]
         public static void BulkUpdate()
         {
-            ISqlGenerator<Phone> userSqlGenerator = new SqlGenerator<Phone>(SqlConnector, true);
+            ISqlGenerator<Phone> userSqlGenerator = new SqlGenerator<Phone>(_sqlConnector, true);
             var phones = new List<Phone>
             {
                 new Phone { Id = 10, IsActive = true, Number = "111" },
@@ -161,7 +161,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.SqlGeneratorTests
         [Fact]
         public static void BulkUpdateIgnoreOneOfKeys()
         {
-            ISqlGenerator<Report> userSqlGenerator = new SqlGenerator<Report>(SqlConnector, true);
+            ISqlGenerator<Report> userSqlGenerator = new SqlGenerator<Report>(_sqlConnector, true);
             var reports = new List<Report>
             {
                 new Report { Id = 10, AnotherId = 10, UserId = 22 },
@@ -177,7 +177,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.SqlGeneratorTests
         [Fact]
         public static void ContainsPredicate()
         {
-            ISqlGenerator<User> userSqlGenerator = new SqlGenerator<User>(SqlConnector, true);
+            ISqlGenerator<User> userSqlGenerator = new SqlGenerator<User>(_sqlConnector, true);
             var ids = new List<int>();
             var sqlQuery = userSqlGenerator.GetSelectAll(x => ids.Contains(x.Id));
 
@@ -188,7 +188,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.SqlGeneratorTests
         [Fact]
         public static void LogicalDeleteWithUpdatedAt()
         {
-            ISqlGenerator<User> userSqlGenerator = new SqlGenerator<User>(SqlConnector);
+            ISqlGenerator<User> userSqlGenerator = new SqlGenerator<User>(_sqlConnector);
             var user = new User() { Id = 10 };
             var sqlQuery = userSqlGenerator.GetDelete(user);
             var sql = sqlQuery.GetSql();
@@ -199,7 +199,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.SqlGeneratorTests
         [Fact]
         public static void LogicalleleteWithUpdatedAtWithPredicate()
         {
-            ISqlGenerator<User> userSqlGenerator = new SqlGenerator<User>(SqlConnector);
+            ISqlGenerator<User> userSqlGenerator = new SqlGenerator<User>(_sqlConnector);
             var user = new User() { Id = 10 };
             var sqlQuery = userSqlGenerator.GetDelete(user);
             var sql = sqlQuery.GetSql();
@@ -210,7 +210,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.SqlGeneratorTests
         [Fact]
         public static void Delete()
         {
-            ISqlGenerator<Phone> userSqlGenerator = new SqlGenerator<Phone>(SqlConnector, true);
+            ISqlGenerator<Phone> userSqlGenerator = new SqlGenerator<Phone>(_sqlConnector, true);
             var phone = new Phone { Id = 10, Code = "ZZZ", IsActive = true, Number = "111" };
             var sqlQuery = userSqlGenerator.GetDelete(phone);
 
@@ -220,7 +220,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.SqlGeneratorTests
         [Fact]
         public static void LogicalDeleteEntity()
         {
-            ISqlGenerator<Car> sqlGenerator = new SqlGenerator<Car>(SqlConnector);
+            ISqlGenerator<Car> sqlGenerator = new SqlGenerator<Car>(_sqlConnector);
             var car = new Car() { Id = 10, Name = "LogicalDelete", UserId = 5 };
 
             var sqlQuery = sqlGenerator.GetDelete(car);
@@ -231,7 +231,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.SqlGeneratorTests
         [Fact]
         public static void LogicalDeletePredicate()
         {
-            ISqlGenerator<Car> sqlGenerator = new SqlGenerator<Car>(SqlConnector);
+            ISqlGenerator<Car> sqlGenerator = new SqlGenerator<Car>(_sqlConnector);
 
             var sqlQuery = sqlGenerator.GetDelete(q => q.Id == 10);
             var realSql = sqlQuery.GetSql();
@@ -243,7 +243,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.SqlGeneratorTests
         [Fact]
         public static void DeleteWithMultiplePredicate()
         {
-            ISqlGenerator<Phone> userSqlGenerator = new SqlGenerator<Phone>(SqlConnector, true);
+            ISqlGenerator<Phone> userSqlGenerator = new SqlGenerator<Phone>(_sqlConnector, true);
             var sqlQuery = userSqlGenerator.GetDelete(x => x.IsActive && x.Number == "111");
 
             Assert.Equal("DELETE FROM [DAB].[Phones] WHERE [DAB].[Phones].[IsActive] = @IsActive AND [DAB].[Phones].[Number] = @Number", sqlQuery.GetSql());
@@ -252,7 +252,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.SqlGeneratorTests
         [Fact]
         public static void DeleteWithSinglePredicate()
         {
-            ISqlGenerator<Phone> userSqlGenerator = new SqlGenerator<Phone>(SqlConnector, true);
+            ISqlGenerator<Phone> userSqlGenerator = new SqlGenerator<Phone>(_sqlConnector, true);
             var sqlQuery = userSqlGenerator.GetDelete(x => x.IsActive);
 
             Assert.Equal("DELETE FROM [DAB].[Phones] WHERE [DAB].[Phones].[IsActive] = @IsActive", sqlQuery.GetSql());
@@ -261,7 +261,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.SqlGeneratorTests
         [Fact]
         public static void InsertQuoMarks()
         {
-            ISqlGenerator<Address> userSqlGenerator = new SqlGenerator<Address>(SqlConnector, true);
+            ISqlGenerator<Address> userSqlGenerator = new SqlGenerator<Address>(_sqlConnector, true);
             var sqlQuery = userSqlGenerator.GetInsert(new Address());
 
             Assert.Equal("INSERT INTO [Addresses] ([Street], [CityId]) VALUES (@Street, @CityId) SELECT SCOPE_IDENTITY() AS [Id]", sqlQuery.GetSql());
@@ -270,7 +270,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.SqlGeneratorTests
         [Fact]
         public static void IsNull()
         {
-            ISqlGenerator<User> userSqlGenerator = new SqlGenerator<User>(SqlConnector, true);
+            ISqlGenerator<User> userSqlGenerator = new SqlGenerator<User>(_sqlConnector, true);
             var sqlQuery = userSqlGenerator.GetSelectAll(user => user.UpdatedAt == null);
 
             Assert.Equal("SELECT [Users].[Id], [Users].[Name], [Users].[AddressId], [Users].[PhoneId], [Users].[OfficePhoneId], [Users].[Deleted], [Users].[UpdatedAt] FROM [Users] " +
@@ -281,7 +281,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.SqlGeneratorTests
         [Fact]
         public static void JoinBracelets()
         {
-            ISqlGenerator<User> userSqlGenerator = new SqlGenerator<User>(SqlConnector, true);
+            ISqlGenerator<User> userSqlGenerator = new SqlGenerator<User>(_sqlConnector, true);
             var sqlQuery = userSqlGenerator.GetSelectAll(null, user => user.Cars);
 
             Assert.Equal("SELECT [Users].[Id], [Users].[Name], [Users].[AddressId], [Users].[PhoneId], [Users].[OfficePhoneId], [Users].[Deleted], [Users].[UpdatedAt], " +
@@ -293,7 +293,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.SqlGeneratorTests
         [Fact]
         public static void NavigationPredicate()
         {
-            ISqlGenerator<User> userSqlGenerator = new SqlGenerator<User>(SqlConnector, true);
+            ISqlGenerator<User> userSqlGenerator = new SqlGenerator<User>(_sqlConnector, true);
             var sqlQuery = userSqlGenerator.GetSelectFirst(x => x.Phone.Number == "123", user => user.Phone);
 
             Assert.Equal("SELECT TOP 1 [Users].[Id], [Users].[Name], [Users].[AddressId], [Users].[PhoneId], [Users].[OfficePhoneId], [Users].[Deleted], [Users].[UpdatedAt], " +
@@ -305,7 +305,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.SqlGeneratorTests
         [Fact]
         public static void NavigationPredicateNoQuotationMarks()
         {
-            ISqlGenerator<User> userSqlGenerator = new SqlGenerator<User>(SqlConnector, false);
+            ISqlGenerator<User> userSqlGenerator = new SqlGenerator<User>(_sqlConnector, false);
             var sqlQuery = userSqlGenerator.GetSelectFirst(x => x.Phone.Number == "123", user => user.Phone);
 
             Assert.Equal("SELECT TOP 1 Users.Id, Users.Name, Users.AddressId, Users.PhoneId, Users.OfficePhoneId, Users.Deleted, Users.UpdatedAt, " +
@@ -318,7 +318,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.SqlGeneratorTests
         [Fact]
         public static void SelectBetweenWithLogicalDelete()
         {
-            ISqlGenerator<User> userSqlGenerator = new SqlGenerator<User>(SqlConnector, false);
+            ISqlGenerator<User> userSqlGenerator = new SqlGenerator<User>(_sqlConnector, false);
             var sqlQuery = userSqlGenerator.GetSelectBetween(1, 10, x => x.Id);
 
             Assert.Equal("SELECT Users.Id, Users.Name, Users.AddressId, Users.PhoneId, Users.OfficePhoneId, Users.Deleted, Users.UpdatedAt FROM Users " +
@@ -328,7 +328,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.SqlGeneratorTests
         [Fact]
         public static void SelectBetweenWithLogicalDeleteBraclets()
         {
-            ISqlGenerator<User> userSqlGenerator = new SqlGenerator<User>(SqlConnector, true);
+            ISqlGenerator<User> userSqlGenerator = new SqlGenerator<User>(_sqlConnector, true);
             var sqlQuery = userSqlGenerator.GetSelectBetween(1, 10, x => x.Id);
 
             Assert.Equal("SELECT [Users].[Id], [Users].[Name], [Users].[AddressId], [Users].[PhoneId], [Users].[OfficePhoneId], [Users].[Deleted], [Users].[UpdatedAt] FROM [Users] " +
@@ -339,7 +339,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.SqlGeneratorTests
         [Fact]
         public static void SelectBetweenWithoutLogicalDelete()
         {
-            ISqlGenerator<Address> userSqlGenerator = new SqlGenerator<Address>(SqlConnector, false);
+            ISqlGenerator<Address> userSqlGenerator = new SqlGenerator<Address>(_sqlConnector, false);
             var sqlQuery = userSqlGenerator.GetSelectBetween(1, 10, x => x.Id);
 
             Assert.Equal("SELECT Addresses.Id, Addresses.Street, Addresses.CityId FROM Addresses " +
@@ -349,7 +349,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.SqlGeneratorTests
         [Fact]
         public static void SelectBetweenWithoutLogicalDeleteBraclets()
         {
-            ISqlGenerator<Address> userSqlGenerator = new SqlGenerator<Address>(SqlConnector, true);
+            ISqlGenerator<Address> userSqlGenerator = new SqlGenerator<Address>(_sqlConnector, true);
             var sqlQuery = userSqlGenerator.GetSelectBetween(1, 10, x => x.Id);
 
             Assert.Equal("SELECT [Addresses].[Id], [Addresses].[Street], [Addresses].[CityId] FROM [Addresses] " +
@@ -359,7 +359,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.SqlGeneratorTests
         [Fact]
         public static void SelectById()
         {
-            ISqlGenerator<User> userSqlGenerator = new SqlGenerator<User>(SqlConnector, true);
+            ISqlGenerator<User> userSqlGenerator = new SqlGenerator<User>(_sqlConnector, true);
             var sqlQuery = userSqlGenerator.GetSelectById(1);
 
             Assert.Equal("SELECT TOP 1 [Users].[Id], [Users].[Name], [Users].[AddressId], [Users].[PhoneId], [Users].[OfficePhoneId], [Users].[Deleted], [Users].[UpdatedAt] " +
@@ -369,7 +369,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.SqlGeneratorTests
         [Fact]
         public static void SelectFirst()
         {
-            ISqlGenerator<User> userSqlGenerator = new SqlGenerator<User>(SqlConnector, true);
+            ISqlGenerator<User> userSqlGenerator = new SqlGenerator<User>(_sqlConnector, true);
             var sqlQuery = userSqlGenerator.GetSelectFirst(x => x.Id == 2);
             Assert.Equal("SELECT TOP 1 [Users].[Id], [Users].[Name], [Users].[AddressId], [Users].[PhoneId], [Users].[OfficePhoneId], [Users].[Deleted], [Users].[UpdatedAt] FROM [Users] WHERE [Users].[Id] = @Id AND [Users].[Deleted] != 1", sqlQuery.GetSql());
         }
@@ -377,7 +377,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.SqlGeneratorTests
         [Fact]
         public static void UpdateExclude()
         {
-            ISqlGenerator<Phone> userSqlGenerator = new SqlGenerator<Phone>(SqlConnector, true);
+            ISqlGenerator<Phone> userSqlGenerator = new SqlGenerator<Phone>(_sqlConnector, true);
             var phone = new Phone { Id = 10, Code = "ZZZ", IsActive = true, Number = "111" };
             var sqlQuery = userSqlGenerator.GetUpdate(phone);
 
@@ -388,7 +388,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.SqlGeneratorTests
         [Fact]
         public static void UpdateWithPredicate()
         {
-            ISqlGenerator<City> sqlGenerator = new SqlGenerator<City>(SqlConnector);
+            ISqlGenerator<City> sqlGenerator = new SqlGenerator<City>(_sqlConnector);
             var sqlQuery = sqlGenerator.GetUpdate(q => q.Identifier == Guid.Empty, new City());
             var sql = sqlQuery.GetSql();
             Assert.Equal("UPDATE Cities SET Identifier = @Identifier, Name = @Name WHERE Cities.Identifier = @Identifier", sql);

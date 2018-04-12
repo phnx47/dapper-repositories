@@ -7,7 +7,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.DatabaseFixture
 {
     public class MsSqlDatabaseFixture : IDisposable
     {
-        private const string DbName = "test_micro_orm";
+        private const string _dbName = "test_micro_orm";
 
         public MsSqlDatabaseFixture()
         {
@@ -25,14 +25,14 @@ namespace MicroOrm.Dapper.Repositories.Tests.DatabaseFixture
 
         public void Dispose()
         {
-            Db.Connection.Execute($"USE master; DROP DATABASE {DbName}");
+            Db.Connection.Execute($"USE master; DROP DATABASE {_dbName}");
             Db.Dispose();
         }
 
         private void InitDb()
         {
-            Db.Connection.Execute($"IF NOT EXISTS (SELECT name FROM master.dbo.sysdatabases WHERE name = '{DbName}') CREATE DATABASE [{DbName}];");
-            Db.Connection.Execute($"USE [{DbName}]");
+            Db.Connection.Execute($"IF NOT EXISTS (SELECT name FROM master.dbo.sysdatabases WHERE name = '{_dbName}') CREATE DATABASE [{_dbName}];");
+            Db.Connection.Execute($"USE [{_dbName}]");
 
             void DropTable(string schema, string name)
             {
