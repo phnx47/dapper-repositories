@@ -40,3 +40,8 @@ If you are having problems, send a mail to [dapper@phnx47.net](mailto://dapper@p
 ## License
 
 All contents of this package are licensed under the [MIT license](https://opensource.org/licenses/MIT).
+
+## Support on Beerpay
+Hey dude! Help me out for a couple of :beers:!
+
+[![Beerpay](https://beerpay.io/phnx47/MicroOrm.Dapper.Repositories/badge.svg?style=beer-square)](https://beerpay.io/phnx47/MicroOrm.Dapper.Repositories)  [![Beerpay](https://beerpay.io/phnx47/MicroOrm.Dapper.Repositories/make-wish.svg?style=flat-square)](https://beerpay.io/phnx47/MicroOrm.Dapper.Repositories?focus=wish)
