@@ -13,7 +13,7 @@ build_script:
 - pwsh: dotnet build -c Release
 
 test_script:
-- pwsh: dotnet test test/* -c Release --no-build
+- pwsh: dotnet test test\* -c Release --no-build
 
 after_test:
 - pwsh: ./pack.ps1
