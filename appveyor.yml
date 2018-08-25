@@ -9,10 +9,10 @@ services:
 - mssql2017
 - mysql
 
-build:
+build_script:
 - ps: dotnet build -c Release
 
-test:
+test_script:
 - ps: dotnet test -c Release --no-build
 
 after_test:
