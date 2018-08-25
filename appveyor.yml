@@ -10,10 +10,10 @@ services:
 - mysql
 
 build_script:
-- ps: .\build.ps1
+- ps: dotnet build -c Release
 
 test_script:
-- ps: .\test.ps1
+- ps: dotnet test -c Release test/* --no-build
 
 after_test:
 - ps: .\pack.ps1
