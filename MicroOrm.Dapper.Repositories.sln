@@ -26,7 +26,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "scripts", "scripts", "{B5EB
 		build.ps1 = build.ps1
 		pack.ps1 = pack.ps1
 		test.ps1 = test.ps1
-		codecov.ps1 = codecov.ps1
 	EndProjectSection
 EndProject
 Global

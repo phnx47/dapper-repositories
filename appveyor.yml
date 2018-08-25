@@ -1,10 +1,6 @@
 version: '{build}-{branch}'
 image: Visual Studio 2017
 
-environment:
-  codecov_token:
-    secure: 4Oh5pf7ov9A647gFmKZJQaFerM/M1au9oVpRcocb6uPE9sV4DfO8vzl1h9HihPlX
-
 skip_commits:
   files:
     - '**/*.md'
@@ -13,10 +9,6 @@ services:
 - mssql2017
 - mysql
 
-before_build:
-- ps: choco install opencover.portable
-- ps: choco install codecov
-
 build_script:
 - ps: .\build.ps1
 
@@ -24,7 +16,6 @@ test_script:
 - ps: .\test.ps1
 
 after_test:
-- ps: .\codecov.ps1
 - ps: .\pack.ps1
 
 artifacts:
