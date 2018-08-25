@@ -1,1 +1,1 @@
-dotnet test -c Release test/MicroOrm.Dapper.Repositories.Tests --no-build
+dotnet test -c Release test/MicroOrm.Dapper.Repositories.Tests
