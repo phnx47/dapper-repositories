@@ -13,7 +13,7 @@ build_script:
 - ps: dotnet build -c Release
 
 test_script:
-- ps: dotnet test -c Release --no-build
+- ps: dotnet test test/* -c Release --no-build
 
 after_test:
 - ps: ./pack.ps1
