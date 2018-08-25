@@ -10,7 +10,8 @@ skip_commits:
     - '**/*.md'
 
 services: 
-- mssql2016
+- mssql2017
+- mysql
 
 before_build:
 - ps: choco install opencover.portable
