@@ -3,7 +3,7 @@ using Xunit;
 
 namespace MicroOrm.Dapper.Repositories.Tests.RepositoriesTests
 {
-    public class MySqlRepositoriesTests : IClassFixture<MySqlDatabaseFixture>
+    /*public class MySqlRepositoriesTests : IClassFixture<MySqlDatabaseFixture>
     {
         private readonly MySqlDatabaseFixture _sqlDatabaseFixture;
 
@@ -11,5 +11,5 @@ namespace MicroOrm.Dapper.Repositories.Tests.RepositoriesTests
         {
             _sqlDatabaseFixture = msSqlDatabaseFixture;
         }
-    }
+    }*/
 }

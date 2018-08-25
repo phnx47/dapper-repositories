@@ -2,6 +2,7 @@
 
 namespace MicroOrm.Dapper.Repositories.Attributes
 {
+    /// <inheritdoc />
     /// <summary>
     ///     Identity key
     /// </summary>

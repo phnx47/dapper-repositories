@@ -1,9 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
         <Description>CRUD for Dapper</Description>
-        <Copyright>2017 © Sergey Kuznetsov</Copyright>
+        <Copyright>2018 © Sergey Kuznetsov</Copyright>
         <AssemblyTitle>MicroOrm.Dapper.Repositories</AssemblyTitle>
-        <VersionPrefix>1.9.0</VersionPrefix>
+        <VersionPrefix>1.10.0-beta1</VersionPrefix>
         <Authors>Sergey Kuznetsov</Authors>
         <TargetFrameworks Condition=" '$(OS)' != 'Windows_NT' ">netstandard1.3;netstandard2.0</TargetFrameworks>
         <TargetFrameworks Condition=" '$(OS)' == 'Windows_NT' ">net451;netstandard1.3;netstandard2.0</TargetFrameworks>

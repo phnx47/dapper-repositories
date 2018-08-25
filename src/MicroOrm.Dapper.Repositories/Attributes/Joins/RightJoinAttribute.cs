@@ -1,10 +1,12 @@
 ﻿namespace MicroOrm.Dapper.Repositories.Attributes.Joins
 {
+    /// <inheritdoc />
     /// <summary>
     ///     Generate RIGHT JOIN
     /// </summary>
     public sealed class RightJoinAttribute : JoinAttributeBase
     {
+        /// <inheritdoc />
         /// <summary>
         ///     Constructor
         /// </summary>
@@ -12,6 +14,7 @@
         {
         }
 
+        /// <inheritdoc />
         /// <summary>
         ///     Constructor
         /// </summary>
@@ -23,6 +26,7 @@
         {
         }
 
+        /// <inheritdoc />
         /// <summary>
         ///     Constructor
         /// </summary>
@@ -35,6 +39,7 @@
         {
         }
 
+        /// <inheritdoc />
         /// <summary>
         ///     Constructor
         /// </summary>

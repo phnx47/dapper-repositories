@@ -61,22 +61,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.DatabaseFixture
             Db.Connection.Execute(@"CREATE TABLE Reports (Id int not null, AnotherId int not null, UserId int not null,  PRIMARY KEY (Id, AnotherId))");
             Db.Connection.Execute(@"CREATE TABLE DAB.Phones (Id int IDENTITY(1,1) not null, Number varchar(256) not null, IsActive bit not null, Code varchar(256) not null, PRIMARY KEY (Id))");
 
-            Db.Address.Insert(new Address { Street = "Street0", CityId = "MSK" });
-
-            Db.Phones.Insert(new Phone { Number = "123", IsActive = true, Code = "UK" });
-            Db.Phones.Insert(new Phone { Number = "333", IsActive = false, Code = "UK" });
-
-            for (var i = 0; i < 10; i++)
-                Db.Users.Insert(new User
-                {
-                    Name = $"TestName{i}",
-                    AddressId = 1,
-                    PhoneId = 1,
-                    OfficePhoneId = 2
-                });
-
-            Db.Users.Insert(new User { Name = "TestName0", PhoneId = 1 });
-            Db.Cars.Insert(new Car { Name = "TestCar0", UserId = 1 });
+            InitData.Execute(Db);
         }
     }
 }

@@ -3,7 +3,7 @@ using MicroOrm.Dapper.Repositories.Tests.DbContexts;
 
 namespace MicroOrm.Dapper.Repositories.Tests.DatabaseFixture
 {
-    public class MySqlDatabaseFixture : IDisposable
+    /*public class MySqlDatabaseFixture : IDisposable
     {
         private const string _dbName = "test_micro_orm";
 
@@ -23,5 +23,5 @@ namespace MicroOrm.Dapper.Repositories.Tests.DatabaseFixture
         private void InitDb()
         {
         }
-    }
+    }*/
 }

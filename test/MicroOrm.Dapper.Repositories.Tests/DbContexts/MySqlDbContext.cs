@@ -5,7 +5,7 @@ using MySql.Data.MySqlClient;
 
 namespace MicroOrm.Dapper.Repositories.Tests.DbContexts
 {
-    public class MySqlDbContext : DapperDbContext, IDbContext
+    /*public class MySqlDbContext : DapperDbContext, IDbContext
     {
         private IDapperRepository<Car> _cars;
 
@@ -23,5 +23,5 @@ namespace MicroOrm.Dapper.Repositories.Tests.DbContexts
 
         public IDapperRepository<User> Users => _users ?? (_users = new DapperRepository<User>(Connection, _config));
         public IDapperRepository<Car> Cars => _cars ?? (_cars = new DapperRepository<Car>(Connection, _config));
-    }
+    }*/
 }

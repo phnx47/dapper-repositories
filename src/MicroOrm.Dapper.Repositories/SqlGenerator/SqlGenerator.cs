@@ -357,14 +357,12 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
 
                 // ReSharper disable PossibleNullReferenceException
                 foreach (var property in properties)
-                {
                     parameters.Add(property.PropertyName + i, entityType.GetProperty(property.PropertyName).GetValue(entitiesArray[i], null));
-                }
+                
 
                 foreach (var property in KeySqlProperties.Where(p => !p.IgnoreUpdate))
-                {
                     parameters.Add(property.PropertyName + i, entityType.GetProperty(property.PropertyName).GetValue(entitiesArray[i], null));
-                }
+                
                 // ReSharper restore PossibleNullReferenceException
             }
 
@@ -478,7 +476,6 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
             foreach (var propertyInfo in singleJoinTypes)
             {
                 var joinInnerProperties = propertyInfo.PropertyType.GetProperties().Where(q => q.CanWrite).Where(ExpressionHelper.GetPrimitivePropertiesPredicate()).ToArray();
-
                 joinPropertyMetadatas.AddRange(joinInnerProperties.Where(p => !p.GetCustomAttributes<NotMappedAttribute>().Any()).Select(p => new SqlJoinPropertyMetadata(propertyInfo, p)).ToArray());
             }
 
