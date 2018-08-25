@@ -10,13 +10,13 @@ services:
 - mysql
 
 build_script:
-- ps: dotnet build -c Release
+- pwsh: dotnet build -c Release
 
 test_script:
-- ps: dotnet test test/* -c Release --no-build
+- pwsh: dotnet test test/* -c Release --no-build
 
 after_test:
-- ps: ./pack.ps1
+- pwsh: ./pack.ps1
 
 artifacts:
 - path: '**\artifacts\nuget\*.nupkg'
