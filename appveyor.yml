@@ -1,7 +1,5 @@
 version: '{build}-{branch}'
 image: Visual Studio 2017
-configuration: Release
-platform: Any CPU
 
 skip_commits:
   files:
@@ -12,9 +10,12 @@ services:
 - mysql
 
 build:
-  verbosity: normal
+- ps: dotnet build -c Release
 
-after_build:
+test:
+- ps: dotnet test -c Release --no-build
+
+after_test:
 - ps: ./pack.ps1
 
 artifacts:
