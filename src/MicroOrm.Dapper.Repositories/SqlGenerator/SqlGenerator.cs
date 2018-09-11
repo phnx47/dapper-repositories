@@ -16,7 +16,6 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
     /// <inheritdoc />
     public class SqlGenerator<TEntity> : ISqlGenerator<TEntity> where TEntity : class
     {
-        /// <inheritdoc />
         /// <summary>
         ///     Constructor
         /// </summary>
@@ -25,7 +24,6 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         {
         }
 
-        /// <inheritdoc />
         /// <summary>
         ///     Constructor
         /// </summary>
@@ -200,7 +198,17 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
             var columnName = SqlProperties.First(x => x.PropertyName == fieldName).ColumnName;
             var query = GetSelectAll(expression);
 
-            query.SqlBuilder.Append((expression == null && !LogicalDelete ? "WHERE" : "AND") + " " + TableName + "." + columnName + " BETWEEN '" + from + "' AND '" + to + "'");
+            query.SqlBuilder
+                .Append(expression == null && !LogicalDelete ? "WHERE" : "AND")
+                .Append(" ")
+                .Append(TableName)
+                .Append(".")
+                .Append(columnName)
+                .Append(" BETWEEN '")
+                .Append(from)
+                .Append("' AND '")
+                .Append(to)
+                .Append("'");
 
             return query;
         }
