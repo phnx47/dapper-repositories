@@ -16,6 +16,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
     /// <inheritdoc />
     public class SqlGenerator<TEntity> : ISqlGenerator<TEntity> where TEntity : class
     {
+        /// <inheritdoc />
         /// <summary>
         ///     Constructor
         /// </summary>
@@ -24,6 +25,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         {
         }
 
+        /// <inheritdoc />
         /// <summary>
         ///     Constructor
         /// </summary>
@@ -92,7 +94,11 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         public virtual SqlQuery GetCount(Expression<Func<TEntity, bool>> predicate)
         {
             var sqlQuery = new SqlQuery();
-            sqlQuery.SqlBuilder.Append("SELECT COUNT(*) FROM " + TableName + " ");
+
+            sqlQuery.SqlBuilder
+                .Append("SELECT COUNT(*) FROM ")
+                .Append(TableName)
+                .Append(" ");
 
             AppendWherePredicateQuery(sqlQuery, predicate, QueryType.Select);
 
@@ -106,7 +112,10 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
             var property = SqlProperties.First(x => x.PropertyName == propertyName);
             var sqlQuery = InitBuilderCountWithDistinct(property);
 
-            sqlQuery.SqlBuilder.Append(" FROM " + TableName + " ");
+            sqlQuery.SqlBuilder
+                .Append(" FROM ")
+                .Append(TableName)
+                .Append(" ");
 
             AppendWherePredicateQuery(sqlQuery, predicate, QueryType.Select);
 
@@ -232,8 +241,8 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
 
             query.SqlBuilder.Append(
                 "INSERT INTO " + TableName
-                + " (" + string.Join(", ", properties.Select(p => p.ColumnName)) + ")" // columNames
-                + " VALUES (" + string.Join(", ", properties.Select(p => "@" + p.PropertyName)) + ")"); // values
+                               + " (" + string.Join(", ", properties.Select(p => p.ColumnName)) + ")" // columNames
+                               + " VALUES (" + string.Join(", ", properties.Select(p => "@" + p.PropertyName)) + ")"); // values
 
             if (IsIdentity)
                 switch (Config.SqlProvider)
@@ -287,8 +296,8 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
 
             query.SqlBuilder.Append(
                 "INSERT INTO " + TableName
-                + " (" + string.Join(", ", properties.Select(p => p.ColumnName)) + ")" // columNames
-                + " VALUES " + string.Join(",", values)); // values
+                               + " (" + string.Join(", ", properties.Select(p => p.ColumnName)) + ")" // columNames
+                               + " VALUES " + string.Join(",", values)); // values
 
             query.SetParam(parameters);
 
@@ -307,12 +316,12 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
 
             var query = new SqlQuery(entity);
             query.SqlBuilder.Append("UPDATE " + TableName + " SET " + string.Join(", ", properties.Select(p => p.ColumnName + " = @" + p.PropertyName))
-                + " WHERE " + string.Join(" AND ", KeySqlProperties.Where(p => !p.IgnoreUpdate).Select(p => p.ColumnName + " = @" + p.PropertyName)));
+                                    + " WHERE " + string.Join(" AND ", KeySqlProperties.Where(p => !p.IgnoreUpdate).Select(p => p.ColumnName + " = @" + p.PropertyName)));
 
             return query;
         }
 
-        
+
         /// <inheritdoc />
         public virtual SqlQuery GetUpdate(Expression<Func<TEntity, bool>> predicate, TEntity entity)
         {
@@ -327,7 +336,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
 
             return query;
         }
-        
+
 
         /// <inheritdoc />
         public virtual SqlQuery GetBulkUpdate(IEnumerable<TEntity> entities)
@@ -351,18 +360,18 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
 
                 if (i > 0)
                     query.SqlBuilder.Append("; ");
-                
+
                 query.SqlBuilder.Append("UPDATE " + TableName + " SET " + string.Join(", ", properties.Select(p => p.ColumnName + " = @" + p.PropertyName + i))
-                    + " WHERE " + string.Join(" AND ", KeySqlProperties.Where(p => !p.IgnoreUpdate).Select(p => p.ColumnName + " = @" + p.PropertyName + i)));
+                                        + " WHERE " + string.Join(" AND ", KeySqlProperties.Where(p => !p.IgnoreUpdate).Select(p => p.ColumnName + " = @" + p.PropertyName + i)));
 
                 // ReSharper disable PossibleNullReferenceException
                 foreach (var property in properties)
                     parameters.Add(property.PropertyName + i, entityType.GetProperty(property.PropertyName).GetValue(entitiesArray[i], null));
-                
+
 
                 foreach (var property in KeySqlProperties.Where(p => !p.IgnoreUpdate))
                     parameters.Add(property.PropertyName + i, entityType.GetProperty(property.PropertyName).GetValue(entitiesArray[i], null));
-                
+
                 // ReSharper restore PossibleNullReferenceException
             }
 
@@ -459,7 +468,6 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                 UpdatedAtProperty = props.FirstOrDefault(p => p.GetCustomAttributes<UpdatedAtAttribute>().Any());
                 UpdatedAtPropertyMetadata = new SqlPropertyMetadata(UpdatedAtProperty);
             }
-
         }
 
         /// <summary>
@@ -693,8 +701,8 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
 
                 originalBuilder.SqlBuilder.Append($", {GetFieldsSelect(attrJoin.TableAlias, props)}");
                 joinBuilder.Append($"{joinString} {attrJoin.TableName} AS {attrJoin.TableAlias} ON {tableName}.{attrJoin.Key} = {attrJoin.TableAlias}.{attrJoin.ExternalKey} ");
-                
             }
+
             return joinBuilder.ToString();
         }
 
@@ -768,7 +776,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
             }
             else if (expr is BinaryExpression)
             {
-                var innerbody = (BinaryExpression)expr;
+                var innerbody = (BinaryExpression) expr;
                 if (innerbody.NodeType != ExpressionType.AndAlso && innerbody.NodeType != ExpressionType.OrElse)
                 {
                     var propertyName = ExpressionHelper.GetPropertyNamePath(innerbody, out var isNested);
