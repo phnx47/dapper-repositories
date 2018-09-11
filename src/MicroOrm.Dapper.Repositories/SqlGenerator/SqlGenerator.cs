@@ -138,7 +138,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         public SqlQuery GetSelectById(object id, params Expression<Func<TEntity, object>>[] includes)
         {
             if (KeySqlProperties.Length != 1)
-                throw new NotSupportedException("This method support only 1 key");
+                throw new NotSupportedException("GetSelectById support only 1 key");
 
             var keyProperty = KeySqlProperties[0];
 
@@ -147,22 +147,44 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
             if (includes.Any())
             {
                 var joinsBuilder = AppendJoinToSelect(sqlQuery, includes);
-                sqlQuery.SqlBuilder.Append(" FROM " + TableName + " ");
+                sqlQuery.SqlBuilder
+                    .Append(" FROM ")
+                    .Append(TableName)
+                    .Append(" ");
+
                 sqlQuery.SqlBuilder.Append(joinsBuilder);
             }
             else
             {
-                sqlQuery.SqlBuilder.Append(" FROM " + TableName + " ");
+                sqlQuery.SqlBuilder
+                    .Append(" FROM ")
+                    .Append(TableName)
+                    .Append(" ");
             }
 
             IDictionary<string, object> dictionary = new Dictionary<string, object>
             {
                 { keyProperty.PropertyName, id }
             };
-            sqlQuery.SqlBuilder.Append("WHERE " + TableName + "." + keyProperty.ColumnName + " = @" + keyProperty.PropertyName + " ");
+
+            sqlQuery.SqlBuilder
+                .Append("WHERE ")
+                .Append(TableName)
+                .Append(".")
+                .Append(keyProperty.ColumnName)
+                .Append(" = @")
+                .Append(keyProperty.PropertyName)
+                .Append(" ");
 
             if (LogicalDelete)
-                sqlQuery.SqlBuilder.Append("AND " + TableName + "." + StatusPropertyName + " != " + LogicalDeleteValue + " ");
+                sqlQuery.SqlBuilder
+                    .Append("AND ")
+                    .Append(TableName)
+                    .Append(".")
+                    .Append(StatusPropertyName)
+                    .Append(" != ")
+                    .Append(LogicalDeleteValue)
+                    .Append(" ");
 
             if (Config.SqlProvider == SqlProvider.MySQL || Config.SqlProvider == SqlProvider.PostgreSQL)
                 sqlQuery.SqlBuilder.Append("LIMIT 1");
