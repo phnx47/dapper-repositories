@@ -12,7 +12,7 @@ using MicroOrm.Dapper.Repositories.Extensions;
 namespace MicroOrm.Dapper.Repositories.SqlGenerator
 {
     /// <inheritdoc />
-    public partial class SqlGenerator<TEntity> : ISqlGenerator<TEntity> 
+    public partial class SqlGenerator<TEntity> : ISqlGenerator<TEntity>
         where TEntity : class
     {
         /// <summary>
@@ -21,7 +21,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         public SqlGenerator()
             : this(new SqlGeneratorConfig
             {
-                SqlProvider = SqlProvider.MSSQL, 
+                SqlProvider = SqlProvider.MSSQL,
                 UseQuotationMarks = false
             })
         {
@@ -33,7 +33,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         public SqlGenerator(SqlProvider sqlProvider, bool useQuotationMarks = false)
             : this(new SqlGeneratorConfig
             {
-                SqlProvider = sqlProvider, 
+                SqlProvider = sqlProvider,
                 UseQuotationMarks = useQuotationMarks
             })
         {
@@ -199,7 +199,8 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         }
 
         /// <inheritdoc />
-        public virtual SqlQuery GetSelectBetween(object from, object to, Expression<Func<TEntity, object>> btwField, Expression<Func<TEntity, bool>> expression = null)
+        public virtual SqlQuery GetSelectBetween(object from, object to, Expression<Func<TEntity, object>> btwField,
+            Expression<Func<TEntity, bool>> expression = null)
         {
             var fieldName = ExpressionHelper.GetPropertyName(btwField);
             var columnName = SqlProperties.First(x => x.PropertyName == fieldName).ColumnName;
@@ -259,7 +260,9 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
             else
             {
                 sqlQuery.SqlBuilder.Append("UPDATE " + TableName + " SET " + StatusPropertyName + " = " + LogicalDeleteValue);
-                sqlQuery.SqlBuilder.Append(HasUpdatedAt ? ", " + UpdatedAtPropertyMetadata.ColumnName + " = @" + UpdatedAtPropertyMetadata.PropertyName + " " : " ");
+                sqlQuery.SqlBuilder.Append(HasUpdatedAt
+                    ? ", " + UpdatedAtPropertyMetadata.ColumnName + " = @" + UpdatedAtPropertyMetadata.PropertyName + " "
+                    : " ");
             }
 
             AppendWherePredicateQuery(sqlQuery, predicate, QueryType.Delete);
@@ -269,7 +272,10 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         /// <inheritdoc />
         public virtual SqlQuery GetInsert(TEntity entity)
         {
-            var properties = (IsIdentity ? SqlProperties.Where(p => !p.PropertyName.Equals(IdentitySqlProperty.PropertyName, StringComparison.OrdinalIgnoreCase)) : SqlProperties).ToList();
+            var properties =
+                (IsIdentity
+                    ? SqlProperties.Where(p => !p.PropertyName.Equals(IdentitySqlProperty.PropertyName, StringComparison.OrdinalIgnoreCase))
+                    : SqlProperties).ToList();
 
             if (HasUpdatedAt)
                 UpdatedAtProperty.SetValue(entity, DateTime.UtcNow);
@@ -312,7 +318,10 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
 
             var entityType = entitiesArray[0].GetType();
 
-            var properties = (IsIdentity ? SqlProperties.Where(p => !p.PropertyName.Equals(IdentitySqlProperty.PropertyName, StringComparison.OrdinalIgnoreCase)) : SqlProperties).ToList();
+            var properties =
+                (IsIdentity
+                    ? SqlProperties.Where(p => !p.PropertyName.Equals(IdentitySqlProperty.PropertyName, StringComparison.OrdinalIgnoreCase))
+                    : SqlProperties).ToList();
 
             var query = new SqlQuery();
 
@@ -344,7 +353,8 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         /// <inheritdoc />
         public virtual SqlQuery GetUpdate(TEntity entity)
         {
-            var properties = SqlProperties.Where(p => !KeySqlProperties.Any(k => k.PropertyName.Equals(p.PropertyName, StringComparison.OrdinalIgnoreCase)) && !p.IgnoreUpdate).ToArray();
+            var properties = SqlProperties.Where(p =>
+                !KeySqlProperties.Any(k => k.PropertyName.Equals(p.PropertyName, StringComparison.OrdinalIgnoreCase)) && !p.IgnoreUpdate).ToArray();
             if (!properties.Any())
                 throw new ArgumentException("Can't update without [Key]");
 
@@ -353,7 +363,8 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
 
             var query = new SqlQuery(entity);
             query.SqlBuilder.Append("UPDATE " + TableName + " SET " + string.Join(", ", properties.Select(p => p.ColumnName + " = @" + p.PropertyName))
-                                    + " WHERE " + string.Join(" AND ", KeySqlProperties.Where(p => !p.IgnoreUpdate).Select(p => p.ColumnName + " = @" + p.PropertyName)));
+                                    + " WHERE " + string.Join(" AND ",
+                                        KeySqlProperties.Where(p => !p.IgnoreUpdate).Select(p => p.ColumnName + " = @" + p.PropertyName)));
 
             return query;
         }
@@ -362,7 +373,8 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         /// <inheritdoc />
         public virtual SqlQuery GetUpdate(Expression<Func<TEntity, bool>> predicate, TEntity entity)
         {
-            var properties = SqlProperties.Where(p => !KeySqlProperties.Any(k => k.PropertyName.Equals(p.PropertyName, StringComparison.OrdinalIgnoreCase)) && !p.IgnoreUpdate);
+            var properties = SqlProperties.Where(p =>
+                !KeySqlProperties.Any(k => k.PropertyName.Equals(p.PropertyName, StringComparison.OrdinalIgnoreCase)) && !p.IgnoreUpdate);
 
             if (HasUpdatedAt)
                 UpdatedAtProperty.SetValue(entity, DateTime.UtcNow);
@@ -384,7 +396,8 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
 
             var entityType = entitiesArray[0].GetType();
 
-            var properties = SqlProperties.Where(p => !KeySqlProperties.Any(k => k.PropertyName.Equals(p.PropertyName, StringComparison.OrdinalIgnoreCase)) && !p.IgnoreUpdate).ToArray();
+            var properties = SqlProperties.Where(p =>
+                !KeySqlProperties.Any(k => k.PropertyName.Equals(p.PropertyName, StringComparison.OrdinalIgnoreCase)) && !p.IgnoreUpdate).ToArray();
 
             var query = new SqlQuery();
 
@@ -399,7 +412,8 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                     query.SqlBuilder.Append("; ");
 
                 query.SqlBuilder.Append("UPDATE " + TableName + " SET " + string.Join(", ", properties.Select(p => p.ColumnName + " = @" + p.PropertyName + i))
-                                        + " WHERE " + string.Join(" AND ", KeySqlProperties.Where(p => !p.IgnoreUpdate).Select(p => p.ColumnName + " = @" + p.PropertyName + i)));
+                                        + " WHERE " + string.Join(" AND ",
+                                            KeySqlProperties.Where(p => !p.IgnoreUpdate).Select(p => p.ColumnName + " = @" + p.PropertyName + i)));
 
                 // ReSharper disable PossibleNullReferenceException
                 foreach (var property in properties)
@@ -486,8 +500,10 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
 
             foreach (var propertyInfo in singleJoinTypes)
             {
-                var joinInnerProperties = propertyInfo.PropertyType.GetProperties().Where(q => q.CanWrite).Where(ExpressionHelper.GetPrimitivePropertiesPredicate()).ToArray();
-                joinPropertyMetadatas.AddRange(joinInnerProperties.Where(p => !p.GetCustomAttributes<NotMappedAttribute>().Any()).Select(p => new SqlJoinPropertyMetadata(propertyInfo, p)).ToArray());
+                var joinInnerProperties = propertyInfo.PropertyType.GetProperties().Where(q => q.CanWrite)
+                    .Where(ExpressionHelper.GetPrimitivePropertiesPredicate()).ToArray();
+                joinPropertyMetadatas.AddRange(joinInnerProperties.Where(p => !p.GetCustomAttributes<NotMappedAttribute>().Any())
+                    .Select(p => new SqlJoinPropertyMetadata(propertyInfo, p)).ToArray());
             }
 
             return joinPropertyMetadatas.ToArray();
@@ -535,7 +551,8 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         private SqlQuery InitBuilderSelect(bool firstOnly)
         {
             var query = new SqlQuery();
-            query.SqlBuilder.Append("SELECT " + (firstOnly && Config.SqlProvider == SqlProvider.MSSQL ? "TOP 1 " : "") + GetFieldsSelect(TableName, SqlProperties));
+            query.SqlBuilder.Append("SELECT " + (firstOnly && Config.SqlProvider == SqlProvider.MSSQL ? "TOP 1 " : "") +
+                                    GetFieldsSelect(TableName, SqlProperties));
             return query;
         }
 
@@ -617,7 +634,8 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                     attrJoin.TableName = GetTableNameWithSchemaPrefix(attrJoin.TableName, attrJoin.TableSchema);
 
                 originalBuilder.SqlBuilder.Append($", {GetFieldsSelect(attrJoin.TableAlias, props)}");
-                joinBuilder.Append($"{joinString} {attrJoin.TableName} AS {attrJoin.TableAlias} ON {tableName}.{attrJoin.Key} = {attrJoin.TableAlias}.{attrJoin.ExternalKey} ");
+                joinBuilder.Append(
+                    $"{joinString} {attrJoin.TableName} AS {attrJoin.TableAlias} ON {tableName}.{attrJoin.Key} = {attrJoin.TableAlias}.{attrJoin.ExternalKey} ");
             }
 
             return joinBuilder.ToString();
@@ -678,7 +696,8 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                         {
                             var propertyName = ExpressionHelper.GetPropertyNamePath(innerBody, out var isNested);
 
-                            if (!SqlProperties.Select(x => x.PropertyName).Contains(propertyName) && !SqlJoinProperties.Select(x => x.PropertyName).Contains(propertyName))
+                            if (!SqlProperties.Select(x => x.PropertyName).Contains(propertyName) &&
+                                !SqlJoinProperties.Select(x => x.PropertyName).Contains(propertyName))
                                 throw new NotSupportedException("predicate can't parse");
 
                             var propertyValue = ExpressionHelper.GetValuesFromCollection(innerBody);
@@ -698,7 +717,8 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                 {
                     var propertyName = ExpressionHelper.GetPropertyNamePath(innerbody, out var isNested);
 
-                    if (!SqlProperties.Select(x => x.PropertyName).Contains(propertyName) && !SqlJoinProperties.Select(x => x.PropertyName).Contains(propertyName))
+                    if (!SqlProperties.Select(x => x.PropertyName).Contains(propertyName) &&
+                        !SqlJoinProperties.Select(x => x.PropertyName).Contains(propertyName))
                         throw new NotSupportedException("predicate can't parse");
 
                     var propertyValue = ExpressionHelper.GetValue(innerbody.Right);
