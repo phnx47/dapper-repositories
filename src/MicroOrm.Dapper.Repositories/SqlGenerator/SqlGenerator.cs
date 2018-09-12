@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
-using MicroOrm.Dapper.Repositories.Attributes;
 using MicroOrm.Dapper.Repositories.Attributes.Joins;
 using MicroOrm.Dapper.Repositories.Attributes.LogicalDelete;
 using MicroOrm.Dapper.Repositories.Extensions;
@@ -14,13 +12,18 @@ using MicroOrm.Dapper.Repositories.Extensions;
 namespace MicroOrm.Dapper.Repositories.SqlGenerator
 {
     /// <inheritdoc />
-    public class SqlGenerator<TEntity> : ISqlGenerator<TEntity> where TEntity : class
+    public partial class SqlGenerator<TEntity> : ISqlGenerator<TEntity> 
+        where TEntity : class
     {
         /// <summary>
         ///     Constructor
         /// </summary>
         public SqlGenerator()
-            : this(new SqlGeneratorConfig { SqlProvider = SqlProvider.MSSQL, UseQuotationMarks = false })
+            : this(new SqlGeneratorConfig
+            {
+                SqlProvider = SqlProvider.MSSQL, 
+                UseQuotationMarks = false
+            })
         {
         }
 
@@ -28,7 +31,11 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         ///     Constructor
         /// </summary>
         public SqlGenerator(SqlProvider sqlProvider, bool useQuotationMarks = false)
-            : this(new SqlGeneratorConfig { SqlProvider = sqlProvider, UseQuotationMarks = useQuotationMarks })
+            : this(new SqlGeneratorConfig
+            {
+                SqlProvider = sqlProvider, 
+                UseQuotationMarks = useQuotationMarks
+            })
         {
         }
 
@@ -465,40 +472,6 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
             sqlQuery.SetParam(dictionaryParams);
         }
 
-        private void InitProperties()
-        {
-            var entityType = typeof(TEntity);
-            var entityTypeInfo = entityType.GetTypeInfo();
-            var tableAttribute = entityTypeInfo.GetCustomAttribute<TableAttribute>();
-
-            TableName = tableAttribute != null ? tableAttribute.Name : entityTypeInfo.Name;
-            TableSchema = tableAttribute != null ? tableAttribute.Schema : string.Empty;
-
-            AllProperties = entityType.FindClassProperties().Where(q => q.CanWrite).ToArray();
-
-            var props = AllProperties.Where(ExpressionHelper.GetPrimitivePropertiesPredicate()).ToArray();
-
-            var joinProperties = AllProperties.Where(p => p.GetCustomAttributes<JoinAttributeBase>().Any()).ToArray();
-
-            SqlJoinProperties = GetJoinPropertyMetadata(joinProperties);
-
-            // Filter the non stored properties
-            SqlProperties = props.Where(p => !p.GetCustomAttributes<NotMappedAttribute>().Any()).Select(p => new SqlPropertyMetadata(p)).ToArray();
-
-            // Filter key properties
-            KeySqlProperties = props.Where(p => p.GetCustomAttributes<KeyAttribute>().Any()).Select(p => new SqlPropertyMetadata(p)).ToArray();
-
-            // Use identity as key pattern
-            var identityProperty = props.FirstOrDefault(p => p.GetCustomAttributes<IdentityAttribute>().Any());
-            IdentitySqlProperty = identityProperty != null ? new SqlPropertyMetadata(identityProperty) : null;
-
-            var dateChangedProperty = props.FirstOrDefault(p => p.GetCustomAttributes<UpdatedAtAttribute>().Count() == 1);
-            if (dateChangedProperty != null && (dateChangedProperty.PropertyType == typeof(DateTime) || dateChangedProperty.PropertyType == typeof(DateTime?)))
-            {
-                UpdatedAtProperty = props.FirstOrDefault(p => p.GetCustomAttributes<UpdatedAtAttribute>().Any());
-                UpdatedAtPropertyMetadata = new SqlPropertyMetadata(UpdatedAtProperty);
-            }
-        }
 
         /// <summary>
         ///     Get join/nested properties
@@ -518,92 +491,6 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
             }
 
             return joinPropertyMetadatas.ToArray();
-        }
-
-        /// <summary>
-        ///     Init type Sql provider
-        /// </summary>
-        private void InitConfig(SqlGeneratorConfig sqlGeneratorConfig)
-        {
-            Config = sqlGeneratorConfig;
-
-            if (Config.UseQuotationMarks)
-            {
-                switch (Config.SqlProvider)
-                {
-                    case SqlProvider.MSSQL:
-                        TableName = GetTableNameWithSchemaPrefix(TableName, TableSchema, "[", "]");
-
-                        foreach (var propertyMetadata in SqlProperties)
-                            propertyMetadata.ColumnName = "[" + propertyMetadata.ColumnName + "]";
-
-                        foreach (var propertyMetadata in KeySqlProperties)
-                            propertyMetadata.ColumnName = "[" + propertyMetadata.ColumnName + "]";
-
-                        foreach (var propertyMetadata in SqlJoinProperties)
-                        {
-                            propertyMetadata.TableName = GetTableNameWithSchemaPrefix(propertyMetadata.TableName, propertyMetadata.TableSchema, "[", "]");
-                            propertyMetadata.ColumnName = "[" + propertyMetadata.ColumnName + "]";
-                            propertyMetadata.TableAlias = "[" + propertyMetadata.TableAlias + "]";
-                        }
-
-                        if (IdentitySqlProperty != null)
-                            IdentitySqlProperty.ColumnName = "[" + IdentitySqlProperty.ColumnName + "]";
-
-                        break;
-
-                    case SqlProvider.MySQL:
-                        TableName = GetTableNameWithSchemaPrefix(TableName, TableSchema, "`", "`");
-
-                        foreach (var propertyMetadata in SqlProperties)
-                            propertyMetadata.ColumnName = "`" + propertyMetadata.ColumnName + "`";
-
-                        foreach (var propertyMetadata in KeySqlProperties)
-                            propertyMetadata.ColumnName = "`" + propertyMetadata.ColumnName + "`";
-
-                        foreach (var propertyMetadata in SqlJoinProperties)
-                        {
-                            propertyMetadata.TableName = GetTableNameWithSchemaPrefix(propertyMetadata.TableName, propertyMetadata.TableSchema, "`", "`");
-                            propertyMetadata.ColumnName = "`" + propertyMetadata.ColumnName + "`";
-                            propertyMetadata.TableAlias = "`" + propertyMetadata.TableAlias + "`";
-                        }
-
-                        if (IdentitySqlProperty != null)
-                            IdentitySqlProperty.ColumnName = "`" + IdentitySqlProperty.ColumnName + "`";
-
-                        break;
-
-                    case SqlProvider.PostgreSQL:
-                        TableName = GetTableNameWithSchemaPrefix(TableName, TableSchema, "\"", "\"");
-
-                        foreach (var propertyMetadata in SqlProperties)
-                            propertyMetadata.ColumnName = "\"" + propertyMetadata.ColumnName + "\"";
-
-                        foreach (var propertyMetadata in KeySqlProperties)
-                            propertyMetadata.ColumnName = "\"" + propertyMetadata.ColumnName + "\"";
-
-                        foreach (var propertyMetadata in SqlJoinProperties)
-                        {
-                            propertyMetadata.TableName = GetTableNameWithSchemaPrefix(propertyMetadata.TableName, propertyMetadata.TableSchema, "\"", "\"");
-                            propertyMetadata.ColumnName = "\"" + propertyMetadata.ColumnName + "\"";
-                            propertyMetadata.TableAlias = "\"" + propertyMetadata.TableAlias + "\"";
-                        }
-
-                        if (IdentitySqlProperty != null)
-                            IdentitySqlProperty.ColumnName = "\"" + IdentitySqlProperty.ColumnName + "\"";
-
-                        break;
-
-                    default:
-                        throw new ArgumentOutOfRangeException(nameof(Config.SqlProvider));
-                }
-            }
-            else
-            {
-                TableName = GetTableNameWithSchemaPrefix(TableName, TableSchema);
-                foreach (var propertyMetadata in SqlJoinProperties)
-                    propertyMetadata.TableName = GetTableNameWithSchemaPrefix(propertyMetadata.TableName, propertyMetadata.TableSchema);
-            }
         }
 
         private static string GetTableNameWithSchemaPrefix(string tableName, string tableSchema, string startQuotationMark = "", string endQuotationMark = "")
