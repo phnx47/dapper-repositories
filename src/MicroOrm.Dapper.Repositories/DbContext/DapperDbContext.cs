@@ -2,9 +2,7 @@
 
 namespace MicroOrm.Dapper.Repositories.DbContext
 {
-    /// <summary>
-    ///     Class is helper for use and close IDbConnection
-    /// </summary>
+    /// <inheritdoc />
     public class DapperDbContext : IDapperDbContext
     {
         /// <summary>
@@ -20,9 +18,7 @@ namespace MicroOrm.Dapper.Repositories.DbContext
             InnerConnection = connection;
         }
 
-        /// <summary>
-        ///     Get opened DB Connection
-        /// </summary>
+        /// <inheritdoc />
         public virtual IDbConnection Connection
         {
             get
@@ -32,23 +28,20 @@ namespace MicroOrm.Dapper.Repositories.DbContext
             }
         }
 
-        /// <summary>
-        ///     Open DB connection
-        /// </summary>
+        /// <inheritdoc />
         public void OpenConnection()
         {
             if (InnerConnection.State != ConnectionState.Open && InnerConnection.State != ConnectionState.Connecting)
                 InnerConnection.Open();
         }
 
-        /// <summary>
-        ///     Open DB connection and Begin transaction
-        /// </summary>
+        /// <inheritdoc />
         public virtual IDbTransaction BeginTransaction()
         {
             return Connection.BeginTransaction();
         }
 
+        /// <inheritdoc />
         /// <summary>
         ///     Close DB connection
         /// </summary>
