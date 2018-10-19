@@ -35,11 +35,11 @@ Contributions to the package are always welcome!
 
 ## Support
 
-If you are having problems, send a mail to [dapper@phnx47.net](mailto://dapper@phnx47.net). We will try to help you.
+If you are having problems, send a mail to [dapper@phnx47.net](mailto://dapper@phnx47.net). I will try to help you.
 
-Help me out for a couple of :beers:!
+I would also very much appreciate your support by buying me a coffee.
 
-[![Beerpay](https://beerpay.io/phnx47/MicroOrm.Dapper.Repositories/badge.svg?style=beer-square)](https://beerpay.io/phnx47/MicroOrm.Dapper.Repositories)  [![Beerpay](https://beerpay.io/phnx47/MicroOrm.Dapper.Repositories/make-wish.svg?style=flat-square)](https://beerpay.io/phnx47/MicroOrm.Dapper.Repositories?focus=wish)
+<a href="https://www.buymeacoffee.com/phnx47" target="_blank"><img src="https://www.buymeacoffee.com/assets/img/custom_images/yellow_img.png" alt="Buy Me A Coffee" style="height: auto !important;width: auto !important;" ></a>
 
 ## License
 
