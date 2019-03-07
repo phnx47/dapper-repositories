@@ -23,6 +23,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{4EAE3A6B-3
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MicroOrm.Dapper.Repositories.Tests", "test\MicroOrm.Dapper.Repositories.Tests\MicroOrm.Dapper.Repositories.Tests.csproj", "{C1FDB39A-B2B9-4561-B38F-AB95783AEAD3}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{C684F924-3259-48C0-A5FD-5C815A86A1E6}"
+ProjectSection(SolutionItems) = preProject
+	docs\_config.yml = docs\_config.yml
+	docs\index.md = docs\index.md
+	docs\CNAME = docs\CNAME
+EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

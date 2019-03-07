@@ -2,11 +2,10 @@
 [![NuGet](https://img.shields.io/nuget/v/MicroOrm.Dapper.Repositories.svg)](https://www.nuget.org/packages/MicroOrm.Dapper.Repositories)
 [![NuGet](https://img.shields.io/nuget/dt/MicroOrm.Dapper.Repositories.svg)](https://www.nuget.org/packages/MicroOrm.Dapper.Repositories)
 
-[![codecov](https://codecov.io/gh/phnx47/MicroOrm.Dapper.Repositories/branch/master/graph/badge.svg)](https://codecov.io/gh/phnx47/MicroOrm.Dapper.Repositories)
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/3f47d1be6c484a89a7204a38d6f67b6a)](https://www.codacy.com/app/phnx47/MicroOrm.Dapper.Repositories?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=phnx47/MicroOrm.Dapper.Repositories&amp;utm_campaign=Badge_Grade)
-[![GitHub contributors](https://img.shields.io/github/contributors/phnx47/MicroOrm.Dapper.Repositories.svg)](https://github.com/phnx47/MicroOrm.Dapper.Repositories/graphs/contributors)
 [![Build status](https://ci.appveyor.com/api/projects/status/5v68lbhwc9d4948g?svg=true)](https://ci.appveyor.com/project/phnx47/microorm-dapper-repositories)
+[![AppVeyor tests](https://img.shields.io/appveyor/tests/phnx47/microorm-dapper-repositories.svg)](https://ci.appveyor.com/project/phnx47/microorm-dapper-repositories/build/tests)
 [![License MIT](https://img.shields.io/badge/license-MIT-green.svg)](https://opensource.org/licenses/MIT) 
+
 
 [![GitHub stars](https://img.shields.io/github/stars/phnx47/MicroOrm.Dapper.Repositories.svg?style=social&label=Star)](https://github.com/phnx47/MicroOrm.Dapper.Repositories)
 [![GitHub forks](https://img.shields.io/github/forks/phnx47/MicroOrm.Dapper.Repositories.svg?style=social&label=Fork)](https://github.com/phnx47/MicroOrm.Dapper.Repositories)
