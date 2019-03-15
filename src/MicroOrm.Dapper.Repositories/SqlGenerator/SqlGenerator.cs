@@ -226,20 +226,20 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         public virtual SqlQuery GetDelete(TEntity entity)
         {
             var sqlQuery = new SqlQuery();
-            var whereSql = " WHERE " + string.Join(" AND ", KeySqlProperties.Select(p => TableName + "." + p.ColumnName + " = @" + p.PropertyName));
+            var whereSql = string.Format(" WHERE {0}", string.Join(" AND ", KeySqlProperties.Select(p => string.Format("{0}.{1} = @{2}", TableName, p.ColumnName, p.PropertyName))));
 
             if (!LogicalDelete)
             {
-                sqlQuery.SqlBuilder.Append("DELETE FROM " + TableName + whereSql);
+                sqlQuery.SqlBuilder.AppendFormat("DELETE FROM {0}{1}", TableName, whereSql);
             }
             else
             {
-                sqlQuery.SqlBuilder.Append("UPDATE " + TableName + " SET " + StatusPropertyName + " = " + LogicalDeleteValue);
+                sqlQuery.SqlBuilder.AppendFormat("UPDATE {0} SET {1} = {2}", TableName, StatusPropertyName, LogicalDeleteValue);
 
                 if (HasUpdatedAt)
                 {
                     UpdatedAtProperty.SetValue(entity, DateTime.UtcNow);
-                    sqlQuery.SqlBuilder.Append(", " + UpdatedAtPropertyMetadata.ColumnName + " = @" + UpdatedAtPropertyMetadata.PropertyName);
+                    sqlQuery.SqlBuilder.Append(string.Format(", {0} = @{1}", UpdatedAtPropertyMetadata.ColumnName, UpdatedAtPropertyMetadata.PropertyName));
                 }
 
                 sqlQuery.SqlBuilder.Append(whereSql);
@@ -256,13 +256,13 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
 
             if (!LogicalDelete)
             {
-                sqlQuery.SqlBuilder.Append("DELETE FROM " + TableName + " ");
+                sqlQuery.SqlBuilder.AppendFormat("DELETE FROM {0} ", TableName);
             }
             else
             {
-                sqlQuery.SqlBuilder.Append("UPDATE " + TableName + " SET " + StatusPropertyName + " = " + LogicalDeleteValue);
+                sqlQuery.SqlBuilder.AppendFormat("UPDATE {0} SET {1} = {2}", TableName, StatusPropertyName, LogicalDeleteValue);
                 sqlQuery.SqlBuilder.Append(HasUpdatedAt
-                    ? ", " + UpdatedAtPropertyMetadata.ColumnName + " = @" + UpdatedAtPropertyMetadata.PropertyName + " "
+                    ? string.Format(", {0} = @{1} ", UpdatedAtPropertyMetadata.ColumnName, UpdatedAtPropertyMetadata.PropertyName)
                     : " ");
             }
 
@@ -283,10 +283,8 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
 
             var query = new SqlQuery(entity);
 
-            query.SqlBuilder.Append(
-                "INSERT INTO " + TableName
-                               + " (" + string.Join(", ", properties.Select(p => p.ColumnName)) + ")" // columNames
-                               + " VALUES (" + string.Join(", ", properties.Select(p => "@" + p.PropertyName)) + ")"); // values
+            query.SqlBuilder.AppendFormat("INSERT INTO {0} ({1}) VALUES ({2})", TableName, string.Join(", ", properties.Select(p => p.ColumnName)),
+                                            string.Join(", ", properties.Select(p => "@" + p.PropertyName))); // values
 
             if (IsIdentity)
                 switch (Config.SqlProvider)
@@ -338,13 +336,10 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                     // ReSharper disable once PossibleNullReferenceException
                     parameters.Add(property.PropertyName + i, entityType.GetProperty(property.PropertyName).GetValue(entitiesArray[i], null));
 
-                values.Add("(" + string.Join(", ", properties.Select(p => "@" + p.PropertyName + i)) + ")");
+                values.Add(string.Format("({0})", string.Join(", ", properties.Select(p => "@" + p.PropertyName + i))));
             }
 
-            query.SqlBuilder.Append(
-                "INSERT INTO " + TableName
-                               + " (" + string.Join(", ", properties.Select(p => p.ColumnName)) + ")" // columNames
-                               + " VALUES " + string.Join(",", values)); // values
+            query.SqlBuilder.AppendFormat("INSERT INTO {0} ({1}) VALUES {2}", TableName, string.Join(", ", properties.Select(p => p.ColumnName)), string.Join(",", values)); // values
 
             query.SetParam(parameters);
 
@@ -363,9 +358,11 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                 UpdatedAtProperty.SetValue(entity, DateTime.UtcNow);
 
             var query = new SqlQuery(entity);
-            query.SqlBuilder.Append("UPDATE " + TableName + " SET " + string.Join(", ", properties.Select(p => p.ColumnName + " = @" + p.PropertyName))
-                                    + " WHERE " + string.Join(" AND ",
-                                        KeySqlProperties.Where(p => !p.IgnoreUpdate).Select(p => p.ColumnName + " = @" + p.PropertyName)));
+            query.SqlBuilder.Append(string.Format("UPDATE {0} SET {1} WHERE {2}", TableName,
+                                                    string.Join(", ", properties.Select(p => string.Format("{0} = @{1}", p.ColumnName, p.PropertyName))),
+                                                    string.Join(" AND ", KeySqlProperties.Where(p => !p.IgnoreUpdate)
+                                                                                     .Select(p => string.Format("{0} = @{1}", p.ColumnName, p.PropertyName)))
+                                                 ));
 
             return query;
         }
@@ -380,7 +377,8 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                 UpdatedAtProperty.SetValue(entity, DateTime.UtcNow);
 
             var query = new SqlQuery(entity);
-            query.SqlBuilder.Append("UPDATE " + TableName + " SET " + string.Join(", ", properties.Select(p => p.ColumnName + " = @" + p.PropertyName)) + " ");
+            query.SqlBuilder.Append(string.Format("UPDATE {0} SET {1} ", TableName,
+                                        string.Join(", ", properties.Select(p => string.Format("{0} = @{1}", p.ColumnName, p.PropertyName)))));
             AppendWherePredicateQuery(query, predicate, QueryType.Update);
 
             return query;
@@ -410,9 +408,11 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                 if (i > 0)
                     query.SqlBuilder.Append("; ");
 
-                query.SqlBuilder.Append("UPDATE " + TableName + " SET " + string.Join(", ", properties.Select(p => p.ColumnName + " = @" + p.PropertyName + i))
-                                        + " WHERE " + string.Join(" AND ",
-                                            KeySqlProperties.Where(p => !p.IgnoreUpdate).Select(p => p.ColumnName + " = @" + p.PropertyName + i)));
+                query.SqlBuilder.Append(string.Format("UPDATE {0} SET {1} WHERE {2}", TableName,
+                                                        string.Join(", ", properties.Select(p => string.Format("{0} = @{1}{2}", p.ColumnName, p.PropertyName, i))),
+                                                        string.Join(" AND ", KeySqlProperties.Where(p => !p.IgnoreUpdate)
+                                                                                             .Select(p => string.Format("{0} = @{1}{2}", p.ColumnName, p.PropertyName, i)))
+                                                    ));
 
                 // ReSharper disable PossibleNullReferenceException
                 foreach (var property in properties)
@@ -436,51 +436,99 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
             if (predicate != null)
             {
                 // WHERE
-                var queryProperties = new List<QueryParameter>();
-                FillQueryProperties(predicate.Body, ExpressionType.Default, ref queryProperties);
+                var queryProperties = new List<QueryExpression>();
+                FillQueryProperties(predicate.Body, ref queryProperties);
 
                 sqlQuery.SqlBuilder.Append("WHERE ");
 
-                for (var i = 0; i < queryProperties.Count; i++)
-                {
-                    var item = queryProperties[i];
-                    var tableName = TableName;
-                    string columnName;
-                    if (item.NestedProperty)
-                    {
-                        var joinProperty = SqlJoinProperties.First(x => x.PropertyName == item.PropertyName);
-                        tableName = joinProperty.TableAlias;
-                        columnName = joinProperty.ColumnName;
-                    }
-                    else
-                    {
-                        columnName = SqlProperties.First(x => x.PropertyName == item.PropertyName).ColumnName;
-                    }
+                var qLevel = 0;
+                var sqlBuilder = new StringBuilder();
+                var conditions = new List<KeyValuePair<string, object>>();
+                BuildQuerySql(queryProperties, ref sqlBuilder, ref conditions, ref qLevel);
 
-                    if (!string.IsNullOrEmpty(item.LinkingOperator) && i > 0)
-                        sqlQuery.SqlBuilder.Append(item.LinkingOperator + " ");
-
-                    if (item.PropertyValue == null)
-                        sqlQuery.SqlBuilder.Append(tableName + "." + columnName + " " + (item.QueryOperator == "=" ? "IS" : "IS NOT") + " NULL ");
-                    else
-                        sqlQuery.SqlBuilder.Append(tableName + "." + columnName + " " + item.QueryOperator + " @" + item.PropertyName + " ");
-
-                    dictionaryParams[item.PropertyName] = item.PropertyValue;
-                }
+                dictionaryParams.AddRange(conditions);
 
                 if (LogicalDelete && queryType == QueryType.Select)
-                    sqlQuery.SqlBuilder.Append("AND " + TableName + "." + StatusPropertyName + " != " + LogicalDeleteValue + " ");
+                    sqlQuery.SqlBuilder.AppendFormat("({3}) AND {0}.{1} != {2} ", TableName, StatusPropertyName, LogicalDeleteValue, sqlBuilder.ToString());
+                else
+                    sqlQuery.SqlBuilder.AppendFormat("{0} ", sqlBuilder.ToString());
             }
             else
             {
                 if (LogicalDelete && queryType == QueryType.Select)
-                    sqlQuery.SqlBuilder.Append("WHERE " + TableName + "." + StatusPropertyName + " != " + LogicalDeleteValue + " ");
+                    sqlQuery.SqlBuilder.AppendFormat("WHERE {0}.{1} != {2} ", TableName, StatusPropertyName, LogicalDeleteValue);
             }
 
             if (LogicalDelete && HasUpdatedAt && queryType == QueryType.Delete)
                 dictionaryParams.Add(UpdatedAtPropertyMetadata.ColumnName, DateTime.UtcNow);
 
             sqlQuery.SetParam(dictionaryParams);
+        }
+
+        /// <summary>
+        /// Build the final `query statement and parameters`
+        /// </summary>
+        /// <param name="queryProperties"></param>
+        /// <param name="sqlBuilder"></param>
+        /// <param name="conditions"></param>
+        /// <param name="qLevel">Parameters of the ranking</param>
+        /// <remarks>
+        /// Support `group conditions` syntax
+        /// </remarks>
+        private void BuildQuerySql(IList<QueryExpression> queryProperties,
+           ref StringBuilder sqlBuilder, ref List<KeyValuePair<string, object>> conditions, ref int qLevel)
+        {
+            foreach (var expr in queryProperties)
+            {
+                if (!string.IsNullOrEmpty(expr.LinkingOperator))
+                {
+                    if (sqlBuilder.Length > 0)
+                        sqlBuilder.Append(" ");
+                    sqlBuilder.Append(expr.LinkingOperator).Append(" ");
+                }
+
+                switch (expr)
+                {
+                    case QueryParameterExpression qpExpr:
+                        var tableName = this.TableName;
+                        string columnName;
+                        if (qpExpr.NestedProperty)
+                        {
+                            var joinProperty = SqlJoinProperties.First(x => x.PropertyName == qpExpr.PropertyName);
+                            tableName = joinProperty.TableAlias;
+                            columnName = joinProperty.ColumnName;
+                        }
+                        else
+                        {
+                            columnName = SqlProperties.First(x => x.PropertyName == qpExpr.PropertyName).ColumnName;
+                        }
+
+                        if (qpExpr.PropertyValue == null)
+                            sqlBuilder.AppendFormat("{0}.{1} {2} NULL", tableName, columnName, (qpExpr.QueryOperator == "=" ? "IS" : "IS NOT"));
+                        else
+                        {
+                            var vKey = string.Format("{0}_p{1}", qpExpr.PropertyName, qLevel); //Handle multiple uses of a field
+                            sqlBuilder.AppendFormat("{0}.{1} {2} @{3}", tableName, columnName, qpExpr.QueryOperator, vKey);
+                            conditions.Add(new KeyValuePair<string, object>(vKey, qpExpr.PropertyValue));
+                        }
+
+                        qLevel++;
+                        break;
+
+                    case QueryBinaryExpression qbExpr:
+                        var nSqlBuilder = new StringBuilder();
+                        var nConditions = new List<KeyValuePair<string, object>>();
+                        BuildQuerySql(qbExpr.Nodes, ref nSqlBuilder, ref nConditions, ref qLevel);
+
+                        if (qbExpr.Nodes.Count == 1) //Handle `grouping brackets`
+                            sqlBuilder.Append(nSqlBuilder);
+                        else
+                            sqlBuilder.AppendFormat("({0})", nSqlBuilder);
+
+                        conditions.AddRange(nConditions);
+                        break;
+                }
+            }
         }
 
         /// <summary>
@@ -547,8 +595,8 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         private SqlQuery InitBuilderSelect(bool firstOnly)
         {
             var query = new SqlQuery();
-            query.SqlBuilder.Append("SELECT " + (firstOnly && Config.SqlProvider == SqlProvider.MSSQL ? "TOP 1 " : "") +
-                                    GetFieldsSelect(TableName, SqlProperties));
+            query.SqlBuilder.AppendFormat("SELECT {0}{1}", (firstOnly && Config.SqlProvider == SqlProvider.MSSQL ? "TOP 1 " : ""),
+                                                           GetFieldsSelect(TableName, SqlProperties));
             return query;
         }
 
@@ -556,8 +604,8 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         {
             var query = new SqlQuery();
             var partSqlCountQuery = !string.IsNullOrEmpty(sqlProperty.Alias)
-                ? TableName + "." + sqlProperty.ColumnName + ") AS " + sqlProperty.PropertyName
-                : TableName + "." + sqlProperty.ColumnName + ")";
+                ? string.Format("{0}.{1}) AS {2}", TableName, sqlProperty.ColumnName, sqlProperty.PropertyName)
+                : string.Format("{0}.{1})", TableName, sqlProperty.ColumnName);
             query.SqlBuilder.Append("SELECT COUNT(DISTINCT " + partSqlCountQuery);
             return query;
         }
@@ -643,8 +691,8 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
             string ProjectionFunction(SqlPropertyMetadata p)
             {
                 return !string.IsNullOrEmpty(p.Alias)
-                    ? tableName + "." + p.ColumnName + " AS " + p.PropertyName
-                    : tableName + "." + p.ColumnName;
+                    ? string.Format("{0}.{1} AS {2}", tableName, p.ColumnName, p.PropertyName)
+                    : string.Format("{0}.{1}", tableName, p.ColumnName);
             }
 
             return string.Join(", ", properties.Select(ProjectionFunction));
@@ -657,12 +705,12 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
             if (includes.Any())
             {
                 var joinsBuilder = AppendJoinToSelect(sqlQuery, includes);
-                sqlQuery.SqlBuilder.Append(" FROM " + TableName + " ");
+                sqlQuery.SqlBuilder.AppendFormat(" FROM {0} ", TableName);
                 sqlQuery.SqlBuilder.Append(joinsBuilder);
             }
             else
             {
-                sqlQuery.SqlBuilder.Append(" FROM " + TableName + " ");
+                sqlQuery.SqlBuilder.AppendFormat(" FROM {0} ", TableName);
             }
 
             AppendWherePredicateQuery(sqlQuery, predicate, QueryType.Select);
@@ -674,12 +722,34 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         }
 
         /// <summary>
-        ///     Fill query properties
+        /// Fill query properties
+        /// </summary>
+        /// <param name="expr">The expression.</param>
+        /// <param name="queryProperties">The query properties.</param>
+        private void FillQueryProperties(Expression expr, ref List<QueryExpression> queryProperties)
+        {
+            var queryNode = GetQueryProperties(expr, ExpressionType.Default);
+            switch (queryNode)
+            {
+                case QueryParameterExpression qpExpr:
+                    queryProperties = new List<QueryExpression>() { queryNode };
+                    return;
+
+                case QueryBinaryExpression qbExpr:
+                    queryProperties = qbExpr.Nodes;
+                    return;
+
+                default:
+                    throw new NotSupportedException(queryNode.ToString());
+            }
+        }
+
+        /// <summary>
+        ///     Get query properties
         /// </summary>
         /// <param name="expr">The expression.</param>
         /// <param name="linkingType">Type of the linking.</param>
-        /// <param name="queryProperties">The query properties.</param>
-        private void FillQueryProperties(Expression expr, ExpressionType linkingType, ref List<QueryParameter> queryProperties)
+        private QueryExpression GetQueryProperties(Expression expr, ExpressionType linkingType)
         {
             #region adapts the unary NOT operator
 
@@ -692,8 +762,6 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                     expr = innerbody.Operand;
                     isNotUnary = true;
                 }
-                else
-                    throw new NotSupportedException(innerbody.ToString());
             }
 
             #endregion
@@ -715,8 +783,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                             var propertyValue = ExpressionHelper.GetValuesFromCollection(innerBody);
                             var opr = ExpressionHelper.GetMethodCallSqlOperator(methodName, isNotUnary);
                             var link = ExpressionHelper.GetSqlOperator(linkingType);
-                            queryProperties.Add(new QueryParameter(link, propertyName, propertyValue, opr, isNested));
-                            break;
+                            return new QueryParameterExpression(link, propertyName, propertyValue, opr, isNested);
                         }
                     default:
                         throw new NotSupportedException($"'{methodName}' method is not supported");
@@ -737,17 +804,89 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                     var opr = ExpressionHelper.GetSqlOperator(innerbody.NodeType);
                     var link = ExpressionHelper.GetSqlOperator(linkingType);
 
-                    queryProperties.Add(new QueryParameter(link, propertyName, propertyValue, opr, isNested));
+                    return new QueryParameterExpression(link, propertyName, propertyValue, opr, isNested);
                 }
                 else
                 {
-                    FillQueryProperties(innerbody.Left, innerbody.NodeType, ref queryProperties);
-                    FillQueryProperties(innerbody.Right, innerbody.NodeType, ref queryProperties);
+                    var leftExpr = GetQueryProperties(innerbody.Left, ExpressionType.Default);
+                    var rightExpr = GetQueryProperties(innerbody.Right, innerbody.NodeType);
+
+                    #region Stripping `level grouping` brackets
+
+                    switch (leftExpr)
+                    {
+                        case QueryParameterExpression lQPExpr:
+                            if (!string.IsNullOrEmpty(lQPExpr.LinkingOperator) && !string.IsNullOrEmpty(rightExpr.LinkingOperator)) // AND a AND B
+                            {
+                                switch (rightExpr)
+                                {
+                                    case QueryBinaryExpression rQBExpr:
+                                        if (lQPExpr.LinkingOperator == rQBExpr.Nodes.Last().LinkingOperator) // AND a AND (c AND d)
+                                        {
+                                            var nodes = new QueryBinaryExpression
+                                            {
+                                                LinkingOperator = leftExpr.LinkingOperator,
+                                                Nodes = new List<QueryExpression> { leftExpr }
+                                            };
+
+                                            rQBExpr.Nodes[0].LinkingOperator = rQBExpr.LinkingOperator;
+                                            nodes.Nodes.AddRange(rQBExpr.Nodes);
+
+                                            leftExpr = nodes;
+                                            rightExpr = null;
+                                            // AND a AND (c AND d) => (AND a AND c AND d)
+                                        }
+                                        break;
+                                }
+                            }
+                            break;
+
+                        case QueryBinaryExpression lQBExpr:
+                            switch (rightExpr)
+                            {
+                                case QueryParameterExpression rQPExpr:
+                                    if (rQPExpr.LinkingOperator == lQBExpr.Nodes.Last().LinkingOperator)    //(a AND b) AND c
+                                    {
+                                        lQBExpr.Nodes.Add(rQPExpr);
+                                        rightExpr = null;
+                                        //(a AND b) AND c => (a AND b AND c)
+                                    }
+                                    break;
+
+                                case QueryBinaryExpression rQBExpr:
+                                    if (rQBExpr.LinkingOperator == rQBExpr.Nodes.Last().LinkingOperator    // AND (c AND d)
+                                        && lQBExpr.Nodes.Last().LinkingOperator == rQBExpr.LinkingOperator) // (a AND b) AND (c AND d)
+                                    {
+                                        rQBExpr.Nodes[0].LinkingOperator = rQBExpr.LinkingOperator;
+                                        lQBExpr.Nodes.AddRange(rQBExpr.Nodes);
+                                        rightExpr = null;
+                                        // (a AND b) AND (c AND d) =>  (a AND b AND c AND d)
+                                    }
+                                    break;
+                            }
+                            break;
+                    }
+
+                    #endregion
+
+                    var nLinkingOperator = ExpressionHelper.GetSqlOperator(linkingType);
+                    if (rightExpr == null)
+                    {
+                        leftExpr.LinkingOperator = nLinkingOperator;
+                        return leftExpr;
+                    }
+
+                    return new QueryBinaryExpression
+                    {
+                        NodeType = QueryExpressionType.Binary,
+                        LinkingOperator = nLinkingOperator,
+                        Nodes = new List<QueryExpression> { leftExpr, rightExpr },
+                    };
                 }
             }
             else
             {
-                FillQueryProperties(ExpressionHelper.GetBinaryExpression(expr), linkingType, ref queryProperties);
+                return GetQueryProperties(ExpressionHelper.GetBinaryExpression(expr), linkingType);
             }
         }
 
