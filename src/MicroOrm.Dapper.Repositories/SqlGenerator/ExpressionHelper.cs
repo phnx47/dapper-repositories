@@ -83,12 +83,12 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
             }
         }
 
-        public static string GetMethodCallSqlOperator(string methodName)
+        public static string GetMethodCallSqlOperator(string methodName, bool isNotUnary = false)
         {
             switch (methodName)
             {
                 case "Contains":
-                    return "IN";
+                    return isNotUnary ? "NOT IN" : "IN";
 
                 case "Any":
                 case "All":

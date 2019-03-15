@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+
 using MicroOrm.Dapper.Repositories.SqlGenerator;
 using MicroOrm.Dapper.Repositories.Tests.Classes;
+
 using Xunit;
 
 namespace MicroOrm.Dapper.Repositories.Tests.SqlGeneratorTests
@@ -186,6 +188,17 @@ namespace MicroOrm.Dapper.Repositories.Tests.SqlGeneratorTests
         }
 
         [Fact]
+        public static void NotContainsPredicate()
+        {
+            ISqlGenerator<User> userSqlGenerator = new SqlGenerator<User>(_sqlConnector, true);
+            var ids = new List<int>();
+            var sqlQuery = userSqlGenerator.GetSelectAll(x => !ids.Contains(x.Id));
+
+            Assert.Equal("SELECT [Users].[Id], [Users].[Name], [Users].[AddressId], [Users].[PhoneId], [Users].[OfficePhoneId], [Users].[Deleted], [Users].[UpdatedAt] " +
+                         "FROM [Users] WHERE [Users].[Id] NOT IN @Id AND [Users].[Deleted] != 1", sqlQuery.GetSql());
+        }
+
+        [Fact]
         public static void LogicalDeleteWithUpdatedAt()
         {
             ISqlGenerator<User> userSqlGenerator = new SqlGenerator<User>(_sqlConnector);
@@ -238,7 +251,6 @@ namespace MicroOrm.Dapper.Repositories.Tests.SqlGeneratorTests
 
             Assert.Equal("UPDATE Cars SET Status = -1 WHERE Cars.Id = @Id", realSql);
         }
-
 
         [Fact]
         public static void DeleteWithMultiplePredicate()
@@ -314,7 +326,6 @@ namespace MicroOrm.Dapper.Repositories.Tests.SqlGeneratorTests
                          "WHERE Phones_PhoneId.Number = @PhoneNumber AND Users.Deleted != 1", sqlQuery.GetSql());
         }
 
-
         [Fact]
         public static void SelectBetweenWithLogicalDelete()
         {
@@ -334,7 +345,6 @@ namespace MicroOrm.Dapper.Repositories.Tests.SqlGeneratorTests
             Assert.Equal("SELECT [Users].[Id], [Users].[Name], [Users].[AddressId], [Users].[PhoneId], [Users].[OfficePhoneId], [Users].[Deleted], [Users].[UpdatedAt] FROM [Users] " +
                          "WHERE [Users].[Deleted] != 1 AND [Users].[Id] BETWEEN '1' AND '10'", sqlQuery.GetSql());
         }
-
 
         [Fact]
         public static void SelectBetweenWithoutLogicalDelete()
@@ -383,7 +393,6 @@ namespace MicroOrm.Dapper.Repositories.Tests.SqlGeneratorTests
 
             Assert.Equal("UPDATE [DAB].[Phones] SET [Number] = @Number, [IsActive] = @IsActive WHERE [Id] = @Id", sqlQuery.GetSql());
         }
-
 
         [Fact]
         public static void UpdateWithPredicate()

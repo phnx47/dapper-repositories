@@ -5,6 +5,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
+
 using MicroOrm.Dapper.Repositories.Attributes.Joins;
 using MicroOrm.Dapper.Repositories.Attributes.LogicalDelete;
 using MicroOrm.Dapper.Repositories.Extensions;
@@ -369,7 +370,6 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
             return query;
         }
 
-
         /// <inheritdoc />
         public virtual SqlQuery GetUpdate(Expression<Func<TEntity, bool>> predicate, TEntity entity)
         {
@@ -385,7 +385,6 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
 
             return query;
         }
-
 
         /// <inheritdoc />
         public virtual SqlQuery GetBulkUpdate(IEnumerable<TEntity> entities)
@@ -418,7 +417,6 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                 // ReSharper disable PossibleNullReferenceException
                 foreach (var property in properties)
                     parameters.Add(property.PropertyName + i, entityType.GetProperty(property.PropertyName).GetValue(entitiesArray[i], null));
-
 
                 foreach (var property in KeySqlProperties.Where(p => !p.IgnoreUpdate))
                     parameters.Add(property.PropertyName + i, entityType.GetProperty(property.PropertyName).GetValue(entitiesArray[i], null));
@@ -467,7 +465,6 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                     else
                         sqlQuery.SqlBuilder.Append(tableName + "." + columnName + " " + item.QueryOperator + " @" + item.PropertyName + " ");
 
-
                     dictionaryParams[item.PropertyName] = item.PropertyValue;
                 }
 
@@ -485,7 +482,6 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
 
             sqlQuery.SetParam(dictionaryParams);
         }
-
 
         /// <summary>
         ///     Get join/nested properties
@@ -641,7 +637,6 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
             return joinBuilder.ToString();
         }
 
-
         private static string GetFieldsSelect(string tableName, IEnumerable<SqlPropertyMetadata> properties)
         {
             //Projection function
@@ -686,6 +681,23 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         /// <param name="queryProperties">The query properties.</param>
         private void FillQueryProperties(Expression expr, ExpressionType linkingType, ref List<QueryParameter> queryProperties)
         {
+            #region adapts the unary NOT operator
+
+            var isNotUnary = false;
+            if (expr is UnaryExpression)
+            {
+                var innerbody = (UnaryExpression)expr;
+                if (innerbody.NodeType == ExpressionType.Not && innerbody.Operand is MethodCallExpression)
+                {
+                    expr = innerbody.Operand;
+                    isNotUnary = true;
+                }
+                else
+                    throw new NotSupportedException(innerbody.ToString());
+            }
+
+            #endregion
+
             if (expr is MethodCallExpression body)
             {
                 var innerBody = body;
@@ -701,7 +713,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                                 throw new NotSupportedException("predicate can't parse");
 
                             var propertyValue = ExpressionHelper.GetValuesFromCollection(innerBody);
-                            var opr = ExpressionHelper.GetMethodCallSqlOperator(methodName);
+                            var opr = ExpressionHelper.GetMethodCallSqlOperator(methodName, isNotUnary);
                             var link = ExpressionHelper.GetSqlOperator(linkingType);
                             queryProperties.Add(new QueryParameter(link, propertyName, propertyValue, opr, isNested));
                             break;
@@ -712,7 +724,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
             }
             else if (expr is BinaryExpression)
             {
-                var innerbody = (BinaryExpression) expr;
+                var innerbody = (BinaryExpression)expr;
                 if (innerbody.NodeType != ExpressionType.AndAlso && innerbody.NodeType != ExpressionType.OrElse)
                 {
                     var propertyName = ExpressionHelper.GetPropertyNamePath(innerbody, out var isNested);
