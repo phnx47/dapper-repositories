@@ -381,6 +381,17 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                                         string.Join(", ", properties.Select(p => string.Format("{0} = @{1}", p.ColumnName, p.PropertyName)))));
             AppendWherePredicateQuery(query, predicate, QueryType.Update);
 
+            var parameters = new Dictionary<string, object>();
+            var entityType = entity.GetType();
+            foreach (var property in properties)
+                parameters.Add(property.PropertyName, entityType.GetProperty(property.PropertyName).GetValue(entity, null));
+
+            var whereParam = query.Param as Dictionary<string, object>;
+            if (whereParam != null)
+                parameters.AddRange(whereParam);
+
+            query.SetParam(parameters);
+
             return query;
         }
 
