@@ -12,7 +12,14 @@ namespace MicroOrm.Dapper.Repositories.Tests.OtherTests
             var result = ExpressionHelper.GetMethodCallSqlOperator("Contains");
             Assert.Equal("IN", result);
         }
-        
+
+        [Fact]
+        public void GetMethodCallSqlOperator_NotContains()
+        {
+            var result = ExpressionHelper.GetMethodCallSqlOperator("Contains", true);
+            Assert.Equal("NOT IN", result);
+        }
+
         [Fact]
         public void GetMethodCallSqlOperator_Any()
         {

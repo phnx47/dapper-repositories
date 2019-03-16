@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+
 using MicroOrm.Dapper.Repositories.SqlGenerator;
 using MicroOrm.Dapper.Repositories.Tests.Classes;
+
 using Xunit;
 
 namespace MicroOrm.Dapper.Repositories.Tests.SqlGeneratorTests
@@ -31,7 +33,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.SqlGeneratorTests
         {
             ISqlGenerator<User> userSqlGenerator = new SqlGenerator<User>(_sqlConnector, true);
             var sqlQuery = userSqlGenerator.GetCount(x => x.PhoneId == 1, user => user.AddressId);
-            Assert.Equal("SELECT COUNT(DISTINCT `Users`.`AddressId`) FROM `Users` WHERE `Users`.`PhoneId` = @PhoneId AND `Users`.`Deleted` != 1", sqlQuery.GetSql());
+            Assert.Equal("SELECT COUNT(DISTINCT `Users`.`AddressId`) FROM `Users` WHERE (`Users`.`PhoneId` = @PhoneId_p0) AND `Users`.`Deleted` != 1", sqlQuery.GetSql());
         }
 
         [Fact]
@@ -49,7 +51,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.SqlGeneratorTests
             Assert.Equal("UPDATE DAB.Phones SET Number = @Number0, IsActive = @IsActive0 WHERE Id = @Id0; " +
                          "UPDATE DAB.Phones SET Number = @Number1, IsActive = @IsActive1 WHERE Id = @Id1", sqlQuery.GetSql());
         }
-        
+
         [Fact]
         public void BulkUpdate_QuoMarks()
         {
@@ -82,10 +84,9 @@ namespace MicroOrm.Dapper.Repositories.Tests.SqlGeneratorTests
             var sqlQuery = userSqlGenerator.GetSelectAll(user => user.UpdatedAt != null);
 
             Assert.Equal("SELECT `Users`.`Id`, `Users`.`Name`, `Users`.`AddressId`, `Users`.`PhoneId`, `Users`.`OfficePhoneId`, `Users`.`Deleted`, `Users`.`UpdatedAt` FROM `Users` " +
-                         "WHERE `Users`.`UpdatedAt` IS NOT NULL AND `Users`.`Deleted` != 1", sqlQuery.GetSql());
+                         "WHERE (`Users`.`UpdatedAt` IS NOT NULL) AND `Users`.`Deleted` != 1", sqlQuery.GetSql());
             Assert.DoesNotContain("!= NULL", sqlQuery.GetSql());
         }
-
 
         [Fact]
         public void IsNotNullAnd()
@@ -94,15 +95,14 @@ namespace MicroOrm.Dapper.Repositories.Tests.SqlGeneratorTests
             var sqlQuery = userSqlGenerator.GetSelectAll(user => user.Name == "Frank" && user.UpdatedAt != null);
 
             Assert.Equal("SELECT `Users`.`Id`, `Users`.`Name`, `Users`.`AddressId`, `Users`.`PhoneId`, `Users`.`OfficePhoneId`, `Users`.`Deleted`, `Users`.`UpdatedAt` FROM `Users` " +
-                         "WHERE `Users`.`Name` = @Name AND `Users`.`UpdatedAt` IS NOT NULL AND `Users`.`Deleted` != 1", sqlQuery.GetSql());
+                         "WHERE (`Users`.`Name` = @Name_p0 AND `Users`.`UpdatedAt` IS NOT NULL) AND `Users`.`Deleted` != 1", sqlQuery.GetSql());
             Assert.DoesNotContain("!= NULL", sqlQuery.GetSql());
 
             sqlQuery = userSqlGenerator.GetSelectAll(user => user.UpdatedAt != null && user.Name == "Frank");
             Assert.Equal("SELECT `Users`.`Id`, `Users`.`Name`, `Users`.`AddressId`, `Users`.`PhoneId`, `Users`.`OfficePhoneId`, `Users`.`Deleted`, `Users`.`UpdatedAt` FROM `Users` " +
-                         "WHERE `Users`.`UpdatedAt` IS NOT NULL AND `Users`.`Name` = @Name AND `Users`.`Deleted` != 1", sqlQuery.GetSql());
+                         "WHERE (`Users`.`UpdatedAt` IS NOT NULL AND `Users`.`Name` = @Name_p1) AND `Users`.`Deleted` != 1", sqlQuery.GetSql());
             Assert.DoesNotContain("!= NULL", sqlQuery.GetSql());
         }
-
 
         [Fact]
         public void SelectBetween()
@@ -127,7 +127,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.SqlGeneratorTests
         {
             ISqlGenerator<City> sqlGenerator = new SqlGenerator<City>(_sqlConnector, false);
             var sqlQuery = sqlGenerator.GetSelectFirst(x => x.Identifier == Guid.Empty);
-            Assert.Equal("SELECT Cities.Identifier, Cities.Name FROM Cities WHERE Cities.Identifier = @Identifier LIMIT 1", sqlQuery.GetSql());
+            Assert.Equal("SELECT Cities.Identifier, Cities.Name FROM Cities WHERE Cities.Identifier = @Identifier_p0 LIMIT 1", sqlQuery.GetSql());
         }
 
         [Fact]
@@ -135,7 +135,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.SqlGeneratorTests
         {
             ISqlGenerator<City> sqlGenerator = new SqlGenerator<City>(_sqlConnector, false);
             var sqlQuery = sqlGenerator.GetSelectFirst(x => x.Identifier == Guid.Empty && x.Name == "");
-            Assert.Equal("SELECT Cities.Identifier, Cities.Name FROM Cities WHERE Cities.Identifier = @Identifier AND Cities.Name = @Name LIMIT 1", sqlQuery.GetSql());
+            Assert.Equal("SELECT Cities.Identifier, Cities.Name FROM Cities WHERE Cities.Identifier = @Identifier_p0 AND Cities.Name = @Name_p1 LIMIT 1", sqlQuery.GetSql());
         }
 
         [Fact]
@@ -143,16 +143,15 @@ namespace MicroOrm.Dapper.Repositories.Tests.SqlGeneratorTests
         {
             ISqlGenerator<City> sqlGenerator = new SqlGenerator<City>(_sqlConnector, true);
             var sqlQuery = sqlGenerator.GetSelectFirst(x => x.Identifier == Guid.Empty);
-            Assert.Equal("SELECT `Cities`.`Identifier`, `Cities`.`Name` FROM `Cities` WHERE `Cities`.`Identifier` = @Identifier LIMIT 1", sqlQuery.GetSql());
+            Assert.Equal("SELECT `Cities`.`Identifier`, `Cities`.`Name` FROM `Cities` WHERE `Cities`.`Identifier` = @Identifier_p0 LIMIT 1", sqlQuery.GetSql());
         }
-
 
         [Fact]
         public void SelectFirstWithDeleted()
         {
             ISqlGenerator<User> userSqlGenerator = new SqlGenerator<User>(_sqlConnector, true);
             var sqlQuery = userSqlGenerator.GetSelectFirst(x => x.Id == 6);
-            Assert.Equal("SELECT `Users`.`Id`, `Users`.`Name`, `Users`.`AddressId`, `Users`.`PhoneId`, `Users`.`OfficePhoneId`, `Users`.`Deleted`, `Users`.`UpdatedAt` FROM `Users` WHERE `Users`.`Id` = @Id AND `Users`.`Deleted` != 1 LIMIT 1", sqlQuery.GetSql());
+            Assert.Equal("SELECT `Users`.`Id`, `Users`.`Name`, `Users`.`AddressId`, `Users`.`PhoneId`, `Users`.`OfficePhoneId`, `Users`.`Deleted`, `Users`.`UpdatedAt` FROM `Users` WHERE (`Users`.`Id` = @Id_p0) AND `Users`.`Deleted` != 1 LIMIT 1", sqlQuery.GetSql());
         }
     }
 }

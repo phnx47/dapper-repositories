@@ -2,6 +2,7 @@
 using System.Data;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+
 using Dapper;
 
 namespace MicroOrm.Dapper.Repositories
@@ -50,7 +51,7 @@ namespace MicroOrm.Dapper.Repositories
         public virtual bool Update(Expression<Func<TEntity, bool>> predicate, TEntity instance, IDbTransaction transaction)
         {
             var sqlQuery = SqlGenerator.GetUpdate(predicate, instance);
-            var updated = Connection.Execute(sqlQuery.GetSql(), instance, transaction) > 0;
+            var updated = Connection.Execute(sqlQuery.GetSql(), sqlQuery.Param, transaction) > 0;
             return updated;
         }
 
@@ -64,7 +65,7 @@ namespace MicroOrm.Dapper.Repositories
         public virtual async Task<bool> UpdateAsync(Expression<Func<TEntity, bool>> predicate, TEntity instance, IDbTransaction transaction)
         {
             var sqlQuery = SqlGenerator.GetUpdate(predicate, instance);
-            var updated = await Connection.ExecuteAsync(sqlQuery.GetSql(), instance, transaction) > 0;
+            var updated = await Connection.ExecuteAsync(sqlQuery.GetSql(), sqlQuery.Param, transaction) > 0;
             return updated;
         }
     }
