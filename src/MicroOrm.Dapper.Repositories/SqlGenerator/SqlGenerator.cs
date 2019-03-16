@@ -865,13 +865,20 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                                     break;
 
                                 case QueryBinaryExpression rQBExpr:
-                                    if (rQBExpr.LinkingOperator == rQBExpr.Nodes.Last().LinkingOperator    // AND (c AND d)
-                                        && lQBExpr.Nodes.Last().LinkingOperator == rQBExpr.LinkingOperator) // (a AND b) AND (c AND d)
+                                    if (lQBExpr.Nodes.Last().LinkingOperator == rQBExpr.LinkingOperator) // (a AND b) AND (c AND d)
                                     {
-                                        rQBExpr.Nodes[0].LinkingOperator = rQBExpr.LinkingOperator;
-                                        lQBExpr.Nodes.AddRange(rQBExpr.Nodes);
+                                        if (rQBExpr.LinkingOperator == rQBExpr.Nodes.Last().LinkingOperator)   // AND (c AND d)
+                                        {
+                                            rQBExpr.Nodes[0].LinkingOperator = rQBExpr.LinkingOperator;
+                                            lQBExpr.Nodes.AddRange(rQBExpr.Nodes);
+                                            // (a AND b) AND (c AND d) =>  (a AND b AND c AND d)
+                                        }
+                                        else
+                                        {
+                                            lQBExpr.Nodes.Add(rQBExpr);
+                                            // (a AND b) AND (c OR d) =>  (a AND b AND (c OR d))
+                                        }
                                         rightExpr = null;
-                                        // (a AND b) AND (c AND d) =>  (a AND b AND c AND d)
                                     }
                                     break;
                             }

@@ -404,11 +404,13 @@ namespace MicroOrm.Dapper.Repositories.Tests.SqlGeneratorTests
         }
 
         #region Support `group conditions` syntax
+
         [Fact]
         public static void SelectGroupConditionsWithPredicate()
         {
             ISqlGenerator<Phone> userSqlGenerator = new SqlGenerator<Phone>(_sqlConnector, true);
             var sPrefix = "SELECT [DAB].[Phones].[Id], [DAB].[Phones].[Number], [DAB].[Phones].[IsActive], [DAB].[Phones].[Code] FROM [DAB].[Phones] WHERE ";
+
             var sqlQuery1 = userSqlGenerator.GetSelectAll(x => (x.IsActive && x.Id == 123) || (x.Id == 456 && x.Number == "456"));
             Assert.Equal(sPrefix + "([DAB].[Phones].[IsActive] = @IsActive_p0 AND [DAB].[Phones].[Id] = @Id_p1) OR ([DAB].[Phones].[Id] = @Id_p2 AND [DAB].[Phones].[Number] = @Number_p3)", sqlQuery1.GetSql());
 
@@ -432,8 +434,29 @@ namespace MicroOrm.Dapper.Repositories.Tests.SqlGeneratorTests
             Assert.Equal(sPrefix + "[DAB].[Phones].[IsActive] = @IsActive_p0 AND [DAB].[Phones].[Id] = @Id_p1 AND [DAB].[Phones].[Id] = @Id_p2 AND [DAB].[Phones].[Number] = @Number_p3", sqlQuery7.GetSql());
 
             var sqlQuery8 = userSqlGenerator.GetSelectAll(x => x.Number == "1" && (x.IsActive || x.Number == "456" || x.Number == "123" || (x.Id == 1213 && x.Number == "678")) && x.Id == 123);
-            Assert.Equal(sPrefix + "[DAB].[Phones].[Number] = @Number_p0 AND (([DAB].[Phones].[IsActive] = @IsActive_p1 OR [DAB].[Phones].[Number] = @Number_p2 OR [DAB].[Phones].[Number] = @Number_p3) OR ([DAB].[Phones].[Id] = @Id_p4 AND [DAB].[Phones].[Number] = @Number_p5)) AND [DAB].[Phones].[Id] = @Id_p6", sqlQuery8.GetSql());
+            Assert.Equal(sPrefix + "[DAB].[Phones].[Number] = @Number_p0 AND ([DAB].[Phones].[IsActive] = @IsActive_p1 OR [DAB].[Phones].[Number] = @Number_p2 OR [DAB].[Phones].[Number] = @Number_p3 OR ([DAB].[Phones].[Id] = @Id_p4 AND [DAB].[Phones].[Number] = @Number_p5)) AND [DAB].[Phones].[Id] = @Id_p6", sqlQuery8.GetSql());
+
+            var sqlQuery9 = userSqlGenerator.GetSelectAll(x => (x.Id == 456 && x.Number == "456") && x.Id == 123 && (x.Id == 4567 && x.Number == "4567"));
+            Assert.Equal(sPrefix + "[DAB].[Phones].[Id] = @Id_p0 AND [DAB].[Phones].[Number] = @Number_p1 AND [DAB].[Phones].[Id] = @Id_p2 AND [DAB].[Phones].[Id] = @Id_p3 AND [DAB].[Phones].[Number] = @Number_p4", sqlQuery9.GetSql());
         }
+
+        [Fact]
+        public static void SelectGroupConditionsNavigationPredicate()
+        {
+            ISqlGenerator<User> userSqlGenerator = new SqlGenerator<User>(_sqlConnector, true);
+            var sPrefix = "SELECT TOP 1 [Users].[Id], [Users].[Name], [Users].[AddressId], [Users].[PhoneId], [Users].[OfficePhoneId], [Users].[Deleted], [Users].[UpdatedAt], " +
+                        "[Phones_PhoneId].[Id], [Phones_PhoneId].[Number], [Phones_PhoneId].[IsActive], [Phones_PhoneId].[Code] " +
+                        "FROM [Users] INNER JOIN [DAB].[Phones] AS [Phones_PhoneId] ON [Users].[PhoneId] = [Phones_PhoneId].[Id] " +
+                        "WHERE ";
+
+            var sqlQuery1 = userSqlGenerator.GetSelectFirst(x => x.Phone.Number == "123" || (x.Name == "abc" && x.Phone.IsActive), user => user.Phone);
+            Assert.Equal(sPrefix + "([Phones_PhoneId].[Number] = @PhoneNumber_p0 OR ([Users].[Name] = @Name_p1 AND [Phones_PhoneId].[IsActive] = @PhoneIsActive_p2)) AND [Users].[Deleted] != 1", sqlQuery1.GetSql());
+
+            var ids = new List<int>();
+            var sqlQuery2 = userSqlGenerator.GetSelectFirst(x => x.Phone.Number != "123" && (x.Name != "abc" || !x.Phone.IsActive || !ids.Contains(x.PhoneId) || !ids.Contains(x.Phone.Id)) && (x.Name == "abc" || x.Phone.IsActive), user => user.Phone);
+            Assert.Equal(sPrefix + "([Phones_PhoneId].[Number] != @PhoneNumber_p0 AND ([Users].[Name] != @Name_p1 OR [Phones_PhoneId].[IsActive] = @PhoneIsActive_p2 OR [Users].[PhoneId] NOT IN @PhoneId_p3 OR [Phones_PhoneId].[Id] NOT IN @PhoneId_p4) AND ([Users].[Name] = @Name_p5 OR [Phones_PhoneId].[IsActive] = @PhoneIsActive_p6)) AND [Users].[Deleted] != 1", sqlQuery2.GetSql());
+        }
+
         #endregion
     }
 }
