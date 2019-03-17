@@ -97,38 +97,6 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         public object LogicalDeleteValue { get; protected set; }
 
         /// <inheritdoc />
-        public virtual SqlQuery GetCount(Expression<Func<TEntity, bool>> predicate)
-        {
-            var sqlQuery = new SqlQuery();
-
-            sqlQuery.SqlBuilder
-                .Append("SELECT COUNT(*) FROM ")
-                .Append(TableName)
-                .Append(" ");
-
-            AppendWherePredicateQuery(sqlQuery, predicate, QueryType.Select);
-
-            return sqlQuery;
-        }
-
-        /// <inheritdoc />
-        public virtual SqlQuery GetCount(Expression<Func<TEntity, bool>> predicate, Expression<Func<TEntity, object>> distinctField)
-        {
-            var propertyName = ExpressionHelper.GetPropertyName(distinctField);
-            var property = SqlProperties.First(x => x.PropertyName == propertyName);
-            var sqlQuery = InitBuilderCountWithDistinct(property);
-
-            sqlQuery.SqlBuilder
-                .Append(" FROM ")
-                .Append(TableName)
-                .Append(" ");
-
-            AppendWherePredicateQuery(sqlQuery, predicate, QueryType.Select);
-
-            return sqlQuery;
-        }
-
-        /// <inheritdoc />
         public virtual SqlQuery GetSelectFirst(Expression<Func<TEntity, bool>> predicate, params Expression<Func<TEntity, object>>[] includes)
         {
             return GetSelect(predicate, true, includes);
@@ -608,16 +576,6 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
             var query = new SqlQuery();
             query.SqlBuilder.AppendFormat("SELECT {0}{1}", (firstOnly && Config.SqlProvider == SqlProvider.MSSQL ? "TOP 1 " : ""),
                                                            GetFieldsSelect(TableName, SqlProperties));
-            return query;
-        }
-
-        private SqlQuery InitBuilderCountWithDistinct(SqlPropertyMetadata sqlProperty)
-        {
-            var query = new SqlQuery();
-            var partSqlCountQuery = !string.IsNullOrEmpty(sqlProperty.Alias)
-                ? string.Format("{0}.{1}) AS {2}", TableName, sqlProperty.ColumnName, sqlProperty.PropertyName)
-                : string.Format("{0}.{1})", TableName, sqlProperty.ColumnName);
-            query.SqlBuilder.Append("SELECT COUNT(DISTINCT " + partSqlCountQuery);
             return query;
         }
 
