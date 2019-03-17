@@ -10,7 +10,6 @@ using MicroOrm.Dapper.Repositories.Extensions;
 
 namespace MicroOrm.Dapper.Repositories.SqlGenerator
 {
-
     internal static class ExpressionHelper
     {
         public static string GetPropertyName<TSource, TField>(Expression<Func<TSource, TField>> field)
@@ -102,7 +101,8 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         public static BinaryExpression GetBinaryExpression(Expression expression)
         {
             var binaryExpression = expression as BinaryExpression;
-            var body = binaryExpression ?? Expression.MakeBinary(ExpressionType.Equal, expression, expression.NodeType == ExpressionType.Not ? Expression.Constant(false) : Expression.Constant(true));
+            var body = binaryExpression ?? Expression.MakeBinary(ExpressionType.Equal, expression,
+                expression.NodeType == ExpressionType.Not ? Expression.Constant(false) : Expression.Constant(true));
             return body;
         }
 
@@ -124,20 +124,19 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
             return constExprType.GetField(expr.Member.Name).GetValue(constExpr.Value);
         }
 
-
         public static MemberExpression GetMemberExpression(Expression expression)
         {
             switch (expression)
             {
                 case MethodCallExpression expr:
                     return (MemberExpression)expr.Arguments[0];
-                    
+
                 case MemberExpression memberExpression:
                     return memberExpression;
-                    
+
                 case UnaryExpression unaryExpression:
                     return (MemberExpression)unaryExpression.Operand;
-                    
+
                 case BinaryExpression binaryExpression:
                     var binaryExpr = binaryExpression;
 
@@ -146,7 +145,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
 
                     //should we take care if right operation is memberaccess, not left?
                     return (MemberExpression)binaryExpr.Left;
-                    
+
                 case LambdaExpression expression1:
                     var lambdaExpression = expression1;
 
@@ -157,6 +156,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                         case UnaryExpression expressionBody:
                             return (MemberExpression)expressionBody.Operand;
                     }
+
                     break;
             }
 
