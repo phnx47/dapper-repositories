@@ -146,8 +146,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                     //should we take care if right operation is memberaccess, not left?
                     return (MemberExpression)binaryExpr.Left;
 
-                case LambdaExpression expression1:
-                    var lambdaExpression = expression1;
+                case LambdaExpression lambdaExpression:
 
                     switch (lambdaExpression.Body)
                     {
