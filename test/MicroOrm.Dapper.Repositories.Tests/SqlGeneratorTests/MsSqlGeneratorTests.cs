@@ -188,6 +188,17 @@ namespace MicroOrm.Dapper.Repositories.Tests.SqlGeneratorTests
         }
 
         [Fact]
+        public static void ContainsArrayPredicate()
+        {
+            ISqlGenerator<User> userSqlGenerator = new SqlGenerator<User>(_sqlConnector, true);
+            var ids = new int[] { };
+            var sqlQuery = userSqlGenerator.GetSelectAll(x => ids.Contains(x.Id));
+
+            Assert.Equal("SELECT [Users].[Id], [Users].[Name], [Users].[AddressId], [Users].[PhoneId], [Users].[OfficePhoneId], [Users].[Deleted], [Users].[UpdatedAt] " +
+                         "FROM [Users] WHERE ([Users].[Id] IN @Id_p0) AND [Users].[Deleted] != 1", sqlQuery.GetSql());
+        }
+
+        [Fact]
         public static void NotContainsPredicate()
         {
             ISqlGenerator<User> userSqlGenerator = new SqlGenerator<User>(_sqlConnector, true);
@@ -408,35 +419,35 @@ namespace MicroOrm.Dapper.Repositories.Tests.SqlGeneratorTests
         [Fact]
         public static void SelectGroupConditionsWithPredicate()
         {
-            ISqlGenerator<Phone> userSqlGenerator = new SqlGenerator<Phone>(_sqlConnector, true);
+            ISqlGenerator<Phone> phoneSqlGenerator = new SqlGenerator<Phone>(_sqlConnector, true);
             var sPrefix = "SELECT [DAB].[Phones].[Id], [DAB].[Phones].[Number], [DAB].[Phones].[IsActive], [DAB].[Phones].[Code] FROM [DAB].[Phones] WHERE ";
 
-            var sqlQuery1 = userSqlGenerator.GetSelectAll(x => (x.IsActive && x.Id == 123) || (x.Id == 456 && x.Number == "456"));
+            var sqlQuery1 = phoneSqlGenerator.GetSelectAll(x => (x.IsActive && x.Id == 123) || (x.Id == 456 && x.Number == "456"));
             Assert.Equal(sPrefix + "([DAB].[Phones].[IsActive] = @IsActive_p0 AND [DAB].[Phones].[Id] = @Id_p1) OR ([DAB].[Phones].[Id] = @Id_p2 AND [DAB].[Phones].[Number] = @Number_p3)", sqlQuery1.GetSql());
 
-            var sqlQuery2 = userSqlGenerator.GetSelectAll(x => !x.IsActive || (x.Id == 456 && x.Number == "456"));
+            var sqlQuery2 = phoneSqlGenerator.GetSelectAll(x => !x.IsActive || (x.Id == 456 && x.Number == "456"));
             Assert.Equal(sPrefix + "[DAB].[Phones].[IsActive] = @IsActive_p0 OR ([DAB].[Phones].[Id] = @Id_p1 AND [DAB].[Phones].[Number] = @Number_p2)", sqlQuery2.GetSql());
 
-            var sqlQuery3 = userSqlGenerator.GetSelectAll(x => (x.Id == 456 && x.Number == "456") || x.Id == 123);
+            var sqlQuery3 = phoneSqlGenerator.GetSelectAll(x => (x.Id == 456 && x.Number == "456") || x.Id == 123);
             Assert.Equal(sPrefix + "([DAB].[Phones].[Id] = @Id_p0 AND [DAB].[Phones].[Number] = @Number_p1) OR [DAB].[Phones].[Id] = @Id_p2", sqlQuery3.GetSql());
 
-            var sqlQuery4 = userSqlGenerator.GetSelectAll(x => x.Number == "1" && (x.IsActive || x.Number == "456") && x.Id == 123);
+            var sqlQuery4 = phoneSqlGenerator.GetSelectAll(x => x.Number == "1" && (x.IsActive || x.Number == "456") && x.Id == 123);
             Assert.Equal(sPrefix + "[DAB].[Phones].[Number] = @Number_p0 AND ([DAB].[Phones].[IsActive] = @IsActive_p1 OR [DAB].[Phones].[Number] = @Number_p2) AND [DAB].[Phones].[Id] = @Id_p3", sqlQuery4.GetSql());
 
-            var sqlQuery5 = userSqlGenerator.GetSelectAll(x => x.Number == "1" && (x.IsActive || x.Number == "456" || x.Number == "678") && x.Id == 123);
+            var sqlQuery5 = phoneSqlGenerator.GetSelectAll(x => x.Number == "1" && (x.IsActive || x.Number == "456" || x.Number == "678") && x.Id == 123);
             Assert.Equal(sPrefix + "[DAB].[Phones].[Number] = @Number_p0 AND ([DAB].[Phones].[IsActive] = @IsActive_p1 OR [DAB].[Phones].[Number] = @Number_p2 OR [DAB].[Phones].[Number] = @Number_p3) AND [DAB].[Phones].[Id] = @Id_p4", sqlQuery5.GetSql());
 
             var ids = new List<int>();
-            var sqlQuery6 = userSqlGenerator.GetSelectAll(x => !x.IsActive || (x.IsActive && ids.Contains(x.Id)));
+            var sqlQuery6 = phoneSqlGenerator.GetSelectAll(x => !x.IsActive || (x.IsActive && ids.Contains(x.Id)));
             Assert.Equal(sPrefix + "[DAB].[Phones].[IsActive] = @IsActive_p0 OR ([DAB].[Phones].[IsActive] = @IsActive_p1 AND [DAB].[Phones].[Id] IN @Id_p2)", sqlQuery6.GetSql());
 
-            var sqlQuery7 = userSqlGenerator.GetSelectAll(x => (x.IsActive && x.Id == 123) && (x.Id == 456 && x.Number == "456"));
+            var sqlQuery7 = phoneSqlGenerator.GetSelectAll(x => (x.IsActive && x.Id == 123) && (x.Id == 456 && x.Number == "456"));
             Assert.Equal(sPrefix + "[DAB].[Phones].[IsActive] = @IsActive_p0 AND [DAB].[Phones].[Id] = @Id_p1 AND [DAB].[Phones].[Id] = @Id_p2 AND [DAB].[Phones].[Number] = @Number_p3", sqlQuery7.GetSql());
 
-            var sqlQuery8 = userSqlGenerator.GetSelectAll(x => x.Number == "1" && (x.IsActive || x.Number == "456" || x.Number == "123" || (x.Id == 1213 && x.Number == "678")) && x.Id == 123);
+            var sqlQuery8 = phoneSqlGenerator.GetSelectAll(x => x.Number == "1" && (x.IsActive || x.Number == "456" || x.Number == "123" || (x.Id == 1213 && x.Number == "678")) && x.Id == 123);
             Assert.Equal(sPrefix + "[DAB].[Phones].[Number] = @Number_p0 AND ([DAB].[Phones].[IsActive] = @IsActive_p1 OR [DAB].[Phones].[Number] = @Number_p2 OR [DAB].[Phones].[Number] = @Number_p3 OR ([DAB].[Phones].[Id] = @Id_p4 AND [DAB].[Phones].[Number] = @Number_p5)) AND [DAB].[Phones].[Id] = @Id_p6", sqlQuery8.GetSql());
 
-            var sqlQuery9 = userSqlGenerator.GetSelectAll(x => (x.Id == 456 && x.Number == "456") && x.Id == 123 && (x.Id == 4567 && x.Number == "4567"));
+            var sqlQuery9 = phoneSqlGenerator.GetSelectAll(x => (x.Id == 456 && x.Number == "456") && x.Id == 123 && (x.Id == 4567 && x.Number == "4567"));
             Assert.Equal(sPrefix + "[DAB].[Phones].[Id] = @Id_p0 AND [DAB].[Phones].[Number] = @Number_p1 AND [DAB].[Phones].[Id] = @Id_p2 AND [DAB].[Phones].[Id] = @Id_p3 AND [DAB].[Phones].[Number] = @Number_p4", sqlQuery9.GetSql());
         }
 
@@ -455,6 +466,37 @@ namespace MicroOrm.Dapper.Repositories.Tests.SqlGeneratorTests
             var ids = new List<int>();
             var sqlQuery2 = userSqlGenerator.GetSelectFirst(x => x.Phone.Number != "123" && (x.Name != "abc" || !x.Phone.IsActive || !ids.Contains(x.PhoneId) || !ids.Contains(x.Phone.Id)) && (x.Name == "abc" || x.Phone.IsActive), user => user.Phone);
             Assert.Equal(sPrefix + "([Phones_PhoneId].[Number] != @PhoneNumber_p0 AND ([Users].[Name] != @Name_p1 OR [Phones_PhoneId].[IsActive] = @PhoneIsActive_p2 OR [Users].[PhoneId] NOT IN @PhoneId_p3 OR [Phones_PhoneId].[Id] NOT IN @PhoneId_p4) AND ([Users].[Name] = @Name_p5 OR [Phones_PhoneId].[IsActive] = @PhoneIsActive_p6)) AND [Users].[Deleted] != 1", sqlQuery2.GetSql());
+        }
+
+        #endregion
+
+        #region Support `like` syntax
+
+        [Fact]
+        public static void SelectLikeWithPredicate()
+        {
+            ISqlGenerator<Phone> phoneSqlGenerator1 = new SqlGenerator<Phone>(_sqlConnector, true);
+            var sPrefix1 = "SELECT [DAB].[Phones].[Id], [DAB].[Phones].[Number], [DAB].[Phones].[IsActive], [DAB].[Phones].[Code] FROM [DAB].[Phones] WHERE ";
+
+            var sqlQuery11 = phoneSqlGenerator1.GetSelectAll(x => x.Code.StartsWith("123", StringComparison.OrdinalIgnoreCase) || !x.Code.EndsWith("456") || x.Code.Contains("789"));
+            Assert.Equal(sPrefix1 + "[DAB].[Phones].[Code] LIKE @Code_p0 OR [DAB].[Phones].[Code] NOT LIKE @Code_p1 OR [DAB].[Phones].[Code] LIKE @Code_p2", sqlQuery11.GetSql());
+
+            var parameters11 = sqlQuery11.Param as IDictionary<string, object>;
+            Assert.True("123%" == parameters11["Code_p0"].ToString());
+            Assert.True("%456" == parameters11["Code_p1"].ToString());
+            Assert.True("%789%" == parameters11["Code_p2"].ToString());
+
+            ISqlGenerator<User> userSqlGenerator2 = new SqlGenerator<User>(_sqlConnector, true);
+            var sPrefix2 = "SELECT TOP 1 [Users].[Id], [Users].[Name], [Users].[AddressId], [Users].[PhoneId], [Users].[OfficePhoneId], [Users].[Deleted], [Users].[UpdatedAt], " +
+            "[Phones_PhoneId].[Id], [Phones_PhoneId].[Number], [Phones_PhoneId].[IsActive], [Phones_PhoneId].[Code] " +
+            "FROM [Users] INNER JOIN [DAB].[Phones] AS [Phones_PhoneId] ON [Users].[PhoneId] = [Phones_PhoneId].[Id] " +
+            "WHERE ";
+
+            var sqlQuery21 = userSqlGenerator2.GetSelectFirst(x => x.Phone.Number.StartsWith("123") || (!x.Name.Contains("abc") && x.Phone.IsActive), user => user.Phone);
+            Assert.Equal(sPrefix2 + "([Phones_PhoneId].[Number] LIKE @PhoneNumber_p0 OR ([Users].[Name] NOT LIKE @Name_p1 AND [Phones_PhoneId].[IsActive] = @PhoneIsActive_p2)) AND [Users].[Deleted] != 1", sqlQuery21.GetSql());
+            var parameters21 = sqlQuery21.Param as IDictionary<string, object>;
+            Assert.True("123%" == parameters21["PhoneNumber_p0"].ToString());
+            Assert.True("%abc%" == parameters21["Name_p1"].ToString());
         }
 
         #endregion

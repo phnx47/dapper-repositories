@@ -1,9 +1,10 @@
 ﻿using System;
-using System.Globalization;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text;
+
 using MicroOrm.Dapper.Repositories.Extensions;
 
 [assembly: InternalsVisibleTo("MicroOrm.Dapper.Repositories.Tests")]
@@ -24,9 +25,11 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                 case MemberExpression body:
                     expr = body;
                     break;
+
                 case UnaryExpression expression:
                     expr = (MemberExpression)expression.Operand;
                     break;
+
                 default:
                     throw new ArgumentException("Expression field isn't supported", nameof(field));
             }
@@ -82,10 +85,36 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
             }
         }
 
+        public static string GetSqlLikeValue(string methodName, object value)
+        {
+            if (value == null)
+                value = string.Empty;
+
+            switch (methodName)
+            {
+                case "StartsWith":
+                    return string.Format("{0}%", value);
+
+                case "EndsWith":
+                    return string.Format("%{0}", value);
+
+                case "StringContains":
+                    return string.Format("%{0}%", value);
+
+                default:
+                    throw new NotImplementedException();
+            }
+        }
+
         public static string GetMethodCallSqlOperator(string methodName, bool isNotUnary = false)
         {
             switch (methodName)
             {
+                case "StartsWith":
+                case "EndsWith":
+                case "StringContains":
+                    return isNotUnary ? "NOT LIKE" : "LIKE";
+
                 case "Contains":
                     return isNotUnary ? "NOT IN" : "IN";
 
@@ -111,9 +140,17 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
             return p => p.CanWrite && (p.PropertyType.IsValueType() || p.PropertyType == typeof(string) || p.PropertyType == typeof(byte[]));
         }
 
+        public static object GetValuesFromStringMethod(MethodCallExpression callExpr)
+        {
+            var expr = callExpr.Method.IsStatic ? callExpr.Arguments[1] : callExpr.Arguments[0];
+
+            return GetValue(expr);
+        }
+
         public static object GetValuesFromCollection(MethodCallExpression callExpr)
         {
-            var expr = callExpr.Object as MemberExpression;
+            var expr = (callExpr.Method.IsStatic ? callExpr.Arguments.First() : callExpr.Object)
+                            as MemberExpression;
 
             if (!(expr?.Expression is ConstantExpression))
                 throw new NotSupportedException(callExpr.Method.Name + " isn't supported");
@@ -129,7 +166,10 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
             switch (expression)
             {
                 case MethodCallExpression expr:
-                    return (MemberExpression)expr.Arguments[0];
+                    if (expr.Method.IsStatic)
+                        return (MemberExpression)expr.Arguments.Last(x => x.NodeType == ExpressionType.MemberAccess);
+                    else
+                        return (MemberExpression)expr.Arguments[0];
 
                 case MemberExpression memberExpression:
                     return memberExpression;
@@ -152,6 +192,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                     {
                         case MemberExpression body:
                             return body;
+
                         case UnaryExpression expressionBody:
                             return (MemberExpression)expressionBody.Operand;
                     }
