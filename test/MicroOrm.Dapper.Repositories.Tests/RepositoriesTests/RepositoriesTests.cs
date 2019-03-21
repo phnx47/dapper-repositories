@@ -2,9 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+
 using Dapper;
+
 using MicroOrm.Dapper.Repositories.Tests.Classes;
 using MicroOrm.Dapper.Repositories.Tests.DbContexts;
+
 using Xunit;
 
 namespace MicroOrm.Dapper.Repositories.Tests.RepositoriesTests
@@ -17,7 +20,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.RepositoriesTests
         {
             _db = db;
         }
-        
+
         [Fact]
         public async Task ChangeDateInsertAndFind()
         {
@@ -26,7 +29,6 @@ namespace MicroOrm.Dapper.Repositories.Tests.RepositoriesTests
             var user = new User { Name = "Sergey Phoenix", UpdatedAt = dateTime };
             await _db.Users.InsertAsync(user);
             var userFromDb = await _db.Users.FindAsync(q => q.Id == user.Id);
-
 
             Assert.Equal(1, userFromDb.UpdatedAt.Value.CompareTo(dateTime));
         }
@@ -45,10 +47,9 @@ namespace MicroOrm.Dapper.Repositories.Tests.RepositoriesTests
         public void CountWithCondition()
         {
             var count = _db.Users.Count(x => x.Id == 2);
-   
+
             Assert.Equal(1, count);
         }
-
 
         [Fact]
         public void CountWithDistinct()
@@ -61,7 +62,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.RepositoriesTests
         [Fact]
         public void CountWithDistinctAndWhere()
         {
-            var count = _db.Users.Count(x=>x.PhoneId == 1, user => user.PhoneId);
+            var count = _db.Users.Count(x => x.PhoneId == 1, user => user.PhoneId);
 
             Assert.Equal(1, count);
         }
@@ -166,7 +167,6 @@ namespace MicroOrm.Dapper.Repositories.Tests.RepositoriesTests
             var phone4 = await _db.Phones.FindAsync(x => x.Number == "333" && !x.IsActive);
             Assert.NotNull(phone4);
         }
-
 
         [Fact]
         public void FindAllJoin2Table()
@@ -274,16 +274,16 @@ namespace MicroOrm.Dapper.Repositories.Tests.RepositoriesTests
                 Name = "Sergey"
             };
 
-            var insert =  _db.Users.Insert(user);
+            var insert = _db.Users.Insert(user);
             Assert.True(insert);
 
-            var userFromDb =  _db.Users.Find(q => q.Id == user.Id);
+            var userFromDb = _db.Users.Find(q => q.Id == user.Id);
             Assert.Equal(user.Name, userFromDb.Name);
             user.Name = "Sergey1";
 
-            var update =  _db.Users.Update(user);
+            var update = _db.Users.Update(user);
             Assert.True(update);
-            userFromDb =  _db.Users.Find(q => q.Id == user.Id);
+            userFromDb = _db.Users.Find(q => q.Id == user.Id);
             Assert.Equal("Sergey1", userFromDb.Name);
         }
 
@@ -307,7 +307,6 @@ namespace MicroOrm.Dapper.Repositories.Tests.RepositoriesTests
             userFromDb = await _db.Users.FindAsync(q => q.Id == user.Id);
             Assert.Equal("Sergey1", userFromDb.Name);
         }
-
 
         [Fact]
         public void InsertBinaryData()
@@ -566,7 +565,6 @@ namespace MicroOrm.Dapper.Repositories.Tests.RepositoriesTests
             Assert.Equal("MSK777", newPhone2.Number);
         }
 
-
         [Fact]
         public async Task LogicalDeleteWithUpdatedAt()
         {
@@ -585,9 +583,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.RepositoriesTests
             user = await _db.Users.FindAsync(q => q.Name == name);
 
             Assert.Null(user);
-
         }
-
 
         [Fact]
         public async Task LogicalDeleteWithUpdatedAtWithPredicate()
@@ -595,7 +591,6 @@ namespace MicroOrm.Dapper.Repositories.Tests.RepositoriesTests
             const string name = "testLogicalDeleted2";
             var user = new User()
             {
-
                 Name = name
             };
 
@@ -608,7 +603,6 @@ namespace MicroOrm.Dapper.Repositories.Tests.RepositoriesTests
             user = await _db.Users.FindAsync(q => q.Name == name);
 
             Assert.Null(user);
-
         }
 
         [Fact]
@@ -645,6 +639,37 @@ namespace MicroOrm.Dapper.Repositories.Tests.RepositoriesTests
             city = await _db.Cities.FindAsync(q => q.Identifier == identifier);
             Assert.NotNull(city);
             Assert.Equal("Moscow1", city.Name);
+        }
+
+        [Fact]
+        public async Task FindAllByContainsArrayMultipleList()
+        {
+            var keyList = new int[] { 2, 3, 4 };
+            var users = (await _db.Users.FindAllAsync(x => keyList.Contains(x.Id))).ToArray();
+            var usersArray = users.ToArray();
+            Assert.Equal(3, usersArray.Length);
+            Assert.Equal("TestName1", usersArray[0].Name);
+            Assert.Equal("TestName2", usersArray[1].Name);
+            Assert.Equal("TestName3", usersArray[2].Name);
+        }
+
+        [Fact]
+        public async Task FindAllByLikeName()
+        {
+            var users1 = (await _db.Users.FindAllAsync(x => x.Name.EndsWith("Name1"))).ToArray();
+            Assert.Equal("TestName1", users1.First().Name);
+
+            var users2 = (await _db.Users.FindAllAsync(x => x.Name.Contains("Name"))).ToArray();
+            Assert.True(users2.Length > 0);
+
+            var users3 = (await _db.Users.FindAllAsync(x => x.Name.StartsWith("Test"))).ToArray();
+            Assert.True(users3.Length > 0);
+
+            var users4 = (await _db.Users.FindAllAsync(x => !x.Name.StartsWith("est"))).ToArray();
+            Assert.True(users4.Length > 0);
+
+            var users5 = (await _db.Users.FindAllAsync(x => x.Name.StartsWith("est"))).ToArray();
+            Assert.True(users5.Length <= 0);
         }
     }
 }
