@@ -366,71 +366,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
 
         
 
-        /// <summary>
-        /// Build the final `query statement and parameters`
-        /// </summary>
-        /// <param name="queryProperties"></param>
-        /// <param name="sqlBuilder"></param>
-        /// <param name="conditions"></param>
-        /// <param name="qLevel">Parameters of the ranking</param>
-        /// <remarks>
-        /// Support `group conditions` syntax
-        /// </remarks>
-        private void BuildQuerySql(IList<QueryExpression> queryProperties,
-           ref StringBuilder sqlBuilder, ref List<KeyValuePair<string, object>> conditions, ref int qLevel)
-        {
-            foreach (var expr in queryProperties)
-            {
-                if (!string.IsNullOrEmpty(expr.LinkingOperator))
-                {
-                    if (sqlBuilder.Length > 0)
-                        sqlBuilder.Append(" ");
-                    sqlBuilder.Append(expr.LinkingOperator).Append(" ");
-                }
-
-                switch (expr)
-                {
-                    case QueryParameterExpression qpExpr:
-                        var tableName = this.TableName;
-                        string columnName;
-                        if (qpExpr.NestedProperty)
-                        {
-                            var joinProperty = SqlJoinProperties.First(x => x.PropertyName == qpExpr.PropertyName);
-                            tableName = joinProperty.TableAlias;
-                            columnName = joinProperty.ColumnName;
-                        }
-                        else
-                        {
-                            columnName = SqlProperties.First(x => x.PropertyName == qpExpr.PropertyName).ColumnName;
-                        }
-
-                        if (qpExpr.PropertyValue == null)
-                            sqlBuilder.AppendFormat("{0}.{1} {2} NULL", tableName, columnName, (qpExpr.QueryOperator == "=" ? "IS" : "IS NOT"));
-                        else
-                        {
-                            var vKey = string.Format("{0}_p{1}", qpExpr.PropertyName, qLevel); //Handle multiple uses of a field
-                            sqlBuilder.AppendFormat("{0}.{1} {2} @{3}", tableName, columnName, qpExpr.QueryOperator, vKey);
-                            conditions.Add(new KeyValuePair<string, object>(vKey, qpExpr.PropertyValue));
-                        }
-
-                        qLevel++;
-                        break;
-
-                    case QueryBinaryExpression qbExpr:
-                        var nSqlBuilder = new StringBuilder();
-                        var nConditions = new List<KeyValuePair<string, object>>();
-                        BuildQuerySql(qbExpr.Nodes, ref nSqlBuilder, ref nConditions, ref qLevel);
-
-                        if (qbExpr.Nodes.Count == 1) //Handle `grouping brackets`
-                            sqlBuilder.Append(nSqlBuilder);
-                        else
-                            sqlBuilder.AppendFormat("({0})", nSqlBuilder);
-
-                        conditions.AddRange(nConditions);
-                        break;
-                }
-            }
-        }
+       
 
         /// <summary>
         ///     Get join/nested properties
@@ -461,12 +397,10 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                 : startQuotationMark + tableName + endQuotationMark;
         }
 
-       
-
         private SqlQuery InitBuilderSelect(bool firstOnly)
         {
             var query = new SqlQuery();
-            query.SqlBuilder.AppendFormat("SELECT {0}{1}", (firstOnly && Config.SqlProvider == SqlProvider.MSSQL ? "TOP 1 " : ""),
+            query.SqlBuilder.AppendFormat("SELECT {0}{1}", firstOnly && Config.SqlProvider == SqlProvider.MSSQL ? "TOP 1 " : "",
                                                            GetFieldsSelect(TableName, SqlProperties));
             return query;
         }
