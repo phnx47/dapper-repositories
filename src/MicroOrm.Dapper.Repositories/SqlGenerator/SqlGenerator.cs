@@ -315,54 +315,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
             return query;
         }
 
-        /// <inheritdoc />
-        public virtual SqlQuery GetUpdate(TEntity entity)
-        {
-            var properties = SqlProperties.Where(p =>
-                !KeySqlProperties.Any(k => k.PropertyName.Equals(p.PropertyName, StringComparison.OrdinalIgnoreCase)) && !p.IgnoreUpdate).ToArray();
-            if (!properties.Any())
-                throw new ArgumentException("Can't update without [Key]");
-
-            if (HasUpdatedAt)
-                UpdatedAtProperty.SetValue(entity, DateTime.UtcNow);
-
-            var query = new SqlQuery(entity);
-            query.SqlBuilder.Append(string.Format("UPDATE {0} SET {1} WHERE {2}", TableName,
-                                                    string.Join(", ", properties.Select(p => string.Format("{0} = @{1}", p.ColumnName, p.PropertyName))),
-                                                    string.Join(" AND ", KeySqlProperties.Where(p => !p.IgnoreUpdate)
-                                                                                     .Select(p => string.Format("{0} = @{1}", p.ColumnName, p.PropertyName)))
-                                                 ));
-
-            return query;
-        }
-
-        /// <inheritdoc />
-        public virtual SqlQuery GetUpdate(Expression<Func<TEntity, bool>> predicate, TEntity entity)
-        {
-            var properties = SqlProperties.Where(p =>
-                !KeySqlProperties.Any(k => k.PropertyName.Equals(p.PropertyName, StringComparison.OrdinalIgnoreCase)) && !p.IgnoreUpdate);
-
-            if (HasUpdatedAt)
-                UpdatedAtProperty.SetValue(entity, DateTime.UtcNow);
-
-            var query = new SqlQuery(entity);
-            query.SqlBuilder.Append(string.Format("UPDATE {0} SET {1} ", TableName,
-                                        string.Join(", ", properties.Select(p => string.Format("{0} = @{1}", p.ColumnName, p.PropertyName)))));
-            AppendWherePredicateQuery(query, predicate, QueryType.Update);
-
-            var parameters = new Dictionary<string, object>();
-            var entityType = entity.GetType();
-            foreach (var property in properties)
-                parameters.Add(property.PropertyName, entityType.GetProperty(property.PropertyName).GetValue(entity, null));
-
-            var whereParam = query.Param as Dictionary<string, object>;
-            if (whereParam != null)
-                parameters.AddRange(whereParam);
-
-            query.SetParam(parameters);
-
-            return query;
-        }
+      
 
         /// <inheritdoc />
         public virtual SqlQuery GetBulkUpdate(IEnumerable<TEntity> entities)
