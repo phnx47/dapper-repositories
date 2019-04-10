@@ -67,8 +67,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                                 goto default;
                             }
 
-                            bool isNested = false;
-                            var propertyName = ExpressionHelper.GetPropertyNamePath(exprObj, out isNested);
+                            var propertyName = ExpressionHelper.GetPropertyNamePath(exprObj, out bool isNested);
 
                             if (!SqlProperties.Select(x => x.PropertyName).Contains(propertyName) &&
                                 !SqlJoinProperties.Select(x => x.PropertyName).Contains(propertyName))

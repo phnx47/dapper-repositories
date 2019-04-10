@@ -17,6 +17,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
     public partial class SqlGenerator<TEntity> : ISqlGenerator<TEntity>
         where TEntity : class
     {
+        /// <inheritdoc />
         /// <summary>
         ///     Constructor
         /// </summary>
@@ -29,6 +30,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         {
         }
 
+        /// <inheritdoc />
         /// <summary>
         ///     Constructor
         /// </summary>
@@ -493,37 +495,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                 : startQuotationMark + tableName + endQuotationMark;
         }
 
-        private void InitLogicalDeleted()
-        {
-            var statusProperty =
-                SqlProperties.FirstOrDefault(x => x.PropertyInfo.GetCustomAttributes<StatusAttribute>().Any());
-
-            if (statusProperty == null)
-                return;
-            StatusPropertyName = statusProperty.ColumnName;
-
-            if (statusProperty.PropertyInfo.PropertyType.IsBool())
-            {
-                var deleteProperty = AllProperties.FirstOrDefault(p => p.GetCustomAttributes<DeletedAttribute>().Any());
-                if (deleteProperty == null)
-                    return;
-
-                LogicalDelete = true;
-                LogicalDeleteValue = 1; // true
-            }
-            else if (statusProperty.PropertyInfo.PropertyType.IsEnum())
-            {
-                var deleteOption = statusProperty.PropertyInfo.PropertyType.GetFields().FirstOrDefault(f => f.GetCustomAttribute<DeletedAttribute>() != null);
-
-                if (deleteOption == null)
-                    return;
-
-                var enumValue = Enum.Parse(statusProperty.PropertyInfo.PropertyType, deleteOption.Name);
-                LogicalDeleteValue = Convert.ChangeType(enumValue, Enum.GetUnderlyingType(statusProperty.PropertyInfo.PropertyType));
-
-                LogicalDelete = true;
-            }
-        }
+       
 
         private SqlQuery InitBuilderSelect(bool firstOnly)
         {
