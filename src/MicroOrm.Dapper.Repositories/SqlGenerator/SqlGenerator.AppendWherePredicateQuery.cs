@@ -19,8 +19,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
             if (predicate != null)
             {
                 // WHERE
-                var queryProperties = new List<QueryExpression>();
-                FillQueryProperties(predicate.Body, ref queryProperties);
+                var queryProperties = GetQueryProperties(predicate.Body);
 
                 sqlQuery.SqlBuilder.Append("WHERE ");
 
@@ -117,6 +116,26 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                         conditions.AddRange(nConditions);
                         break;
                 }
+            }
+        }
+        
+        /// <summary>
+        /// Get query properties
+        /// </summary>
+        /// <param name="expr">The expression.</param>
+        private List<QueryExpression> GetQueryProperties(Expression expr)
+        {
+            var queryNode = GetQueryProperties(expr, ExpressionType.Default);
+            switch (queryNode)
+            {
+                case QueryParameterExpression qpExpr:
+                    return new List<QueryExpression> { queryNode };
+
+                case QueryBinaryExpression qbExpr:
+                    return qbExpr.Nodes;
+
+                default:
+                    throw new NotSupportedException(queryNode.ToString());
             }
         }
     }

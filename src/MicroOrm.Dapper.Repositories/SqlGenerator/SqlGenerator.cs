@@ -194,54 +194,6 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         }
 
         /// <inheritdoc />
-        public virtual SqlQuery GetDelete(TEntity entity)
-        {
-            var sqlQuery = new SqlQuery();
-            var whereSql = string.Format(" WHERE {0}", string.Join(" AND ", KeySqlProperties.Select(p => string.Format("{0}.{1} = @{2}", TableName, p.ColumnName, p.PropertyName))));
-
-            if (!LogicalDelete)
-            {
-                sqlQuery.SqlBuilder.AppendFormat("DELETE FROM {0}{1}", TableName, whereSql);
-            }
-            else
-            {
-                sqlQuery.SqlBuilder.AppendFormat("UPDATE {0} SET {1} = {2}", TableName, StatusPropertyName, LogicalDeleteValue);
-
-                if (HasUpdatedAt)
-                {
-                    UpdatedAtProperty.SetValue(entity, DateTime.UtcNow);
-                    sqlQuery.SqlBuilder.Append(string.Format(", {0} = @{1}", UpdatedAtPropertyMetadata.ColumnName, UpdatedAtPropertyMetadata.PropertyName));
-                }
-
-                sqlQuery.SqlBuilder.Append(whereSql);
-            }
-
-            sqlQuery.SetParam(entity);
-            return sqlQuery;
-        }
-
-        /// <inheritdoc />
-        public virtual SqlQuery GetDelete(Expression<Func<TEntity, bool>> predicate)
-        {
-            var sqlQuery = new SqlQuery();
-
-            if (!LogicalDelete)
-            {
-                sqlQuery.SqlBuilder.AppendFormat("DELETE FROM {0} ", TableName);
-            }
-            else
-            {
-                sqlQuery.SqlBuilder.AppendFormat("UPDATE {0} SET {1} = {2}", TableName, StatusPropertyName, LogicalDeleteValue);
-                sqlQuery.SqlBuilder.Append(HasUpdatedAt
-                    ? string.Format(", {0} = @{1} ", UpdatedAtPropertyMetadata.ColumnName, UpdatedAtPropertyMetadata.PropertyName)
-                    : " ");
-            }
-
-            AppendWherePredicateQuery(sqlQuery, predicate, QueryType.Delete);
-            return sqlQuery;
-        }
-
-        /// <inheritdoc />
         public virtual SqlQuery GetInsert(TEntity entity)
         {
             var properties =
@@ -363,10 +315,6 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
 
             return query;
         }
-
-        
-
-       
 
         /// <summary>
         ///     Get join/nested properties
@@ -514,29 +462,6 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                 sqlQuery.SqlBuilder.Append("LIMIT 1");
 
             return sqlQuery;
-        }
-
-        /// <summary>
-        /// Fill query properties
-        /// </summary>
-        /// <param name="expr">The expression.</param>
-        /// <param name="queryProperties">The query properties.</param>
-        private void FillQueryProperties(Expression expr, ref List<QueryExpression> queryProperties)
-        {
-            var queryNode = GetQueryProperties(expr, ExpressionType.Default);
-            switch (queryNode)
-            {
-                case QueryParameterExpression qpExpr:
-                    queryProperties = new List<QueryExpression>() { queryNode };
-                    return;
-
-                case QueryBinaryExpression qbExpr:
-                    queryProperties = qbExpr.Nodes;
-                    return;
-
-                default:
-                    throw new NotSupportedException(queryNode.ToString());
-            }
         }
 
         
