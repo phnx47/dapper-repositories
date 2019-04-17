@@ -27,7 +27,7 @@ namespace MicroOrm.Dapper.Repositories
         ///     Get number of rows
         /// </summary>
         int Count();
-        
+
         /// <summary>
         ///     Get number of rows
         /// </summary>
@@ -37,7 +37,7 @@ namespace MicroOrm.Dapper.Repositories
         ///     Get number of rows with WHERE clause
         /// </summary>
         int Count(Expression<Func<TEntity, bool>> predicate);
-        
+
         /// <summary>
         ///     Get number of rows with WHERE clause
         /// </summary>
@@ -47,7 +47,7 @@ namespace MicroOrm.Dapper.Repositories
         ///     Get number of rows with DISTINCT clause
         /// </summary>
         int Count(Expression<Func<TEntity, object>> distinctField);
-        
+
         /// <summary>
         ///     Get number of rows with DISTINCT clause
         /// </summary>
@@ -57,7 +57,7 @@ namespace MicroOrm.Dapper.Repositories
         ///     Get number of rows with DISTINCT and WHERE clause
         /// </summary>
         int Count(Expression<Func<TEntity, bool>> predicate, Expression<Func<TEntity, object>> distinctField);
-        
+
         /// <summary>
         ///     Get number of rows with DISTINCT and WHERE clause
         /// </summary>
@@ -67,7 +67,7 @@ namespace MicroOrm.Dapper.Repositories
         ///     Get number of rows
         /// </summary>
         Task<int> CountAsync();
-        
+
         /// <summary>
         ///     Get number of rows
         /// </summary>
@@ -77,7 +77,7 @@ namespace MicroOrm.Dapper.Repositories
         ///     Get number of rows with WHERE clause
         /// </summary>
         Task<int> CountAsync(Expression<Func<TEntity, bool>> predicate);
-        
+
         /// <summary>
         ///     Get number of rows with WHERE clause
         /// </summary>
@@ -87,7 +87,7 @@ namespace MicroOrm.Dapper.Repositories
         ///     Get number of rows with DISTINCT clause
         /// </summary>
         Task<int> CountAsync(Expression<Func<TEntity, object>> distinctField);
-        
+
         /// <summary>
         ///     Get number of rows with DISTINCT clause
         /// </summary>
@@ -97,7 +97,7 @@ namespace MicroOrm.Dapper.Repositories
         ///     Get number of rows with DISTINCT and WHERE clause
         /// </summary>
         Task<int> CountAsync(Expression<Func<TEntity, bool>> predicate, Expression<Func<TEntity, object>> distinctField);
-        
+
         /// <summary>
         ///     Get number of rows with DISTINCT and WHERE clause
         /// </summary>
@@ -314,7 +314,6 @@ namespace MicroOrm.Dapper.Repositories
             Expression<Func<TEntity, object>> tChild6,
             IDbTransaction transaction = null);
 
-
         /// <summary>
         ///     Get first object
         /// </summary>
@@ -402,12 +401,10 @@ namespace MicroOrm.Dapper.Repositories
         /// </summary>
         IEnumerable<TEntity> FindAll(Expression<Func<TEntity, bool>> predicate, IDbTransaction transaction = null);
 
-
         /// <summary>
         ///     Get all objects with join objects
         /// </summary>
         IEnumerable<TEntity> FindAll<TChild1>(Expression<Func<TEntity, bool>> predicate, Expression<Func<TEntity, object>> tChild1, IDbTransaction transaction = null);
-
 
         /// <summary>
         ///     Get all objects with join objects
@@ -474,7 +471,6 @@ namespace MicroOrm.Dapper.Repositories
         /// </summary>
         Task<IEnumerable<TEntity>> FindAllAsync(Expression<Func<TEntity, bool>> predicate, IDbTransaction transaction = null);
 
-
         /// <summary>
         ///     Get all objects with join objects
         /// </summary>
@@ -490,7 +486,6 @@ namespace MicroOrm.Dapper.Repositories
             Expression<Func<TEntity, object>> tChild1,
             Expression<Func<TEntity, object>> tChild2,
             IDbTransaction transaction = null);
-
 
         /// <summary>
         ///     Get all objects with join objects
@@ -588,7 +583,6 @@ namespace MicroOrm.Dapper.Repositories
         /// </summary>
         Task<bool> DeleteAsync(Expression<Func<TEntity, bool>> predicate, IDbTransaction transaction = null);
 
-
         /// <summary>
         ///     Update object in DB
         /// </summary>
@@ -598,7 +592,6 @@ namespace MicroOrm.Dapper.Repositories
         ///     Update object in DB
         /// </summary>
         bool Update(TEntity instance, IDbTransaction transaction);
-
 
         /// <summary>
         ///     Update object in DB
@@ -615,7 +608,6 @@ namespace MicroOrm.Dapper.Repositories
         /// </summary>
         bool Update(Expression<Func<TEntity, bool>> predicate, TEntity instance);
 
-
         /// <summary>
         ///     Update object in DB
         /// </summary>
@@ -630,7 +622,6 @@ namespace MicroOrm.Dapper.Repositories
         ///     Update object in DB
         /// </summary>
         Task<bool> UpdateAsync(Expression<Func<TEntity, bool>> predicate, TEntity instance, IDbTransaction transaction);
-
 
         /// <summary>
         ///     Bulk Update objects in DB
@@ -652,49 +643,120 @@ namespace MicroOrm.Dapper.Repositories
         /// </summary>
         bool BulkUpdate(IEnumerable<TEntity> instances, IDbTransaction transaction);
 
+        /// <summary>
+        ///     Get all objects with BETWEEN query
+        /// </summary>
+        IEnumerable<TEntity> FindAllBetween(object from, object to, Expression<Func<TEntity, object>> btwField);
+        
+        /// <summary>
+        ///     Get all objects with BETWEEN query
+        /// </summary>
+        IEnumerable<TEntity> FindAllBetween(object from, object to, Expression<Func<TEntity, object>> btwField, IDbTransaction transaction);
 
         /// <summary>
         ///     Get all objects with BETWEEN query
         /// </summary>
-        IEnumerable<TEntity> FindAllBetween(object from, object to, Expression<Func<TEntity, object>> btwField, IDbTransaction transaction = null);
+        IEnumerable<TEntity> FindAllBetween(
+            object from,
+            object to,
+            Expression<Func<TEntity, object>> btwField,
+            Expression<Func<TEntity, bool>> predicate);
+        
+        /// <summary>
+        ///     Get all objects with BETWEEN query
+        /// </summary>
+        IEnumerable<TEntity> FindAllBetween(
+            object from,
+            object to,
+            Expression<Func<TEntity, object>> btwField,
+            Expression<Func<TEntity, bool>> predicate,
+            IDbTransaction transaction);
 
         /// <summary>
         ///     Get all objects with BETWEEN query
         /// </summary>
-        IEnumerable<TEntity> FindAllBetween(object from, object to, Expression<Func<TEntity, object>> btwField, Expression<Func<TEntity, bool>> predicate = null,
-            IDbTransaction transaction = null);
+        IEnumerable<TEntity> FindAllBetween(DateTime from, DateTime to, Expression<Func<TEntity, object>> btwField);
 
         /// <summary>
         ///     Get all objects with BETWEEN query
         /// </summary>
-        IEnumerable<TEntity> FindAllBetween(DateTime from, DateTime to, Expression<Func<TEntity, object>> btwField, IDbTransaction transaction = null);
+        IEnumerable<TEntity> FindAllBetween(DateTime from, DateTime to, Expression<Func<TEntity, object>> btwField, IDbTransaction transaction);
 
         /// <summary>
         ///     Get all objects with BETWEEN query
         /// </summary>
-        IEnumerable<TEntity> FindAllBetween(DateTime from, DateTime to, Expression<Func<TEntity, object>> btwField, Expression<Func<TEntity, bool>> predicate,
-            IDbTransaction transaction = null);
+        IEnumerable<TEntity> FindAllBetween(
+            DateTime from,
+            DateTime to,
+            Expression<Func<TEntity, object>> btwField,
+            Expression<Func<TEntity, bool>> predicate);
 
         /// <summary>
         ///     Get all objects with BETWEEN query
         /// </summary>
-        Task<IEnumerable<TEntity>> FindAllBetweenAsync(object from, object to, Expression<Func<TEntity, object>> btwField, IDbTransaction transaction = null);
+        IEnumerable<TEntity> FindAllBetween(
+            DateTime from,
+            DateTime to,
+            Expression<Func<TEntity, object>> btwField,
+            Expression<Func<TEntity, bool>> predicate,
+            IDbTransaction transaction);
 
         /// <summary>
         ///     Get all objects with BETWEEN query
         /// </summary>
-        Task<IEnumerable<TEntity>> FindAllBetweenAsync(object from, object to, Expression<Func<TEntity, object>> btwField, Expression<Func<TEntity, bool>> predicate,
-            IDbTransaction transaction = null);
+        Task<IEnumerable<TEntity>> FindAllBetweenAsync(object from, object to, Expression<Func<TEntity, object>> btwField);
 
         /// <summary>
         ///     Get all objects with BETWEEN query
         /// </summary>
-        Task<IEnumerable<TEntity>> FindAllBetweenAsync(DateTime from, DateTime to, Expression<Func<TEntity, object>> btwField, IDbTransaction transaction = null);
+        Task<IEnumerable<TEntity>> FindAllBetweenAsync(object from, object to, Expression<Func<TEntity, object>> btwField, IDbTransaction transaction);
 
         /// <summary>
         ///     Get all objects with BETWEEN query
         /// </summary>
-        Task<IEnumerable<TEntity>> FindAllBetweenAsync(DateTime from, DateTime to, Expression<Func<TEntity, object>> btwField, Expression<Func<TEntity, bool>> predicate,
-            IDbTransaction transaction = null);
+        Task<IEnumerable<TEntity>> FindAllBetweenAsync(
+            object from,
+            object to,
+            Expression<Func<TEntity, object>> btwField,
+            Expression<Func<TEntity, bool>> predicate);
+
+        /// <summary>
+        ///     Get all objects with BETWEEN query
+        /// </summary>
+        Task<IEnumerable<TEntity>> FindAllBetweenAsync(
+            object from,
+            object to,
+            Expression<Func<TEntity, object>> btwField,
+            Expression<Func<TEntity, bool>> predicate,
+            IDbTransaction transaction);
+
+        /// <summary>
+        ///     Get all objects with BETWEEN query
+        /// </summary>
+        Task<IEnumerable<TEntity>> FindAllBetweenAsync(DateTime from, DateTime to, Expression<Func<TEntity, object>> btwField);
+
+        /// <summary>
+        ///     Get all objects with BETWEEN query
+        /// </summary>
+        Task<IEnumerable<TEntity>> FindAllBetweenAsync(DateTime from, DateTime to, Expression<Func<TEntity, object>> btwField, IDbTransaction transaction);
+
+        /// <summary>
+        ///     Get all objects with BETWEEN query
+        /// </summary>
+        Task<IEnumerable<TEntity>> FindAllBetweenAsync(
+            DateTime from,
+            DateTime to,
+            Expression<Func<TEntity, object>> btwField,
+            Expression<Func<TEntity, bool>> predicate);
+
+        /// <summary>
+        ///     Get all objects with BETWEEN query
+        /// </summary>
+        Task<IEnumerable<TEntity>> FindAllBetweenAsync(
+            DateTime from,
+            DateTime to,
+            Expression<Func<TEntity, object>> btwField,
+            Expression<Func<TEntity, bool>> predicate,
+            IDbTransaction transaction);
     }
 }

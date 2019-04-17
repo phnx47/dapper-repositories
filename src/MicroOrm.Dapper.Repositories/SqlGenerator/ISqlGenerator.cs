@@ -125,7 +125,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         /// <summary>
         ///     Get SQL for SELECT Query by Id
         /// </summary>
-        SqlQuery  GetSelectById(object id, params Expression<Func<TEntity, object>>[] includes);
+        SqlQuery GetSelectById(object id, params Expression<Func<TEntity, object>>[] includes);
 
         /// <summary>
         ///     Get SQL for SELECT Query
@@ -140,7 +140,12 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         /// <summary>
         ///     Get SQL for SELECT Query with BETWEEN
         /// </summary>
-        SqlQuery GetSelectBetween(object from, object to, Expression<Func<TEntity, object>> btwField, Expression<Func<TEntity, bool>> expression = null);
+        SqlQuery GetSelectBetween(object from, object to, Expression<Func<TEntity, object>> btwField);
+        
+        /// <summary>
+        ///     Get SQL for SELECT Query with BETWEEN
+        /// </summary>
+        SqlQuery GetSelectBetween(object from, object to, Expression<Func<TEntity, object>> btwField, Expression<Func<TEntity, bool>> predicate);
 
         /// <summary>
         ///     Get SQL for DELETE Query

@@ -101,15 +101,20 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         }
 
         /// <inheritdoc />
-        public virtual SqlQuery GetSelectBetween(object from, object to, Expression<Func<TEntity, object>> btwField,
-            Expression<Func<TEntity, bool>> expression = null)
+        public virtual SqlQuery GetSelectBetween(object from, object to, Expression<Func<TEntity, object>> btwField)
+        {
+            return GetSelectBetween(from, to, btwField, null);
+        }
+
+        /// <inheritdoc />
+        public virtual SqlQuery GetSelectBetween(object from, object to, Expression<Func<TEntity, object>> btwField, Expression<Func<TEntity, bool>> predicate)
         {
             var fieldName = ExpressionHelper.GetPropertyName(btwField);
             var columnName = SqlProperties.First(x => x.PropertyName == fieldName).ColumnName;
-            var query = GetSelectAll(expression);
+            var query = GetSelectAll(predicate);
 
             query.SqlBuilder
-                .Append(expression == null && !LogicalDelete ? "WHERE" : "AND")
+                .Append(predicate == null && !LogicalDelete ? "WHERE" : "AND")
                 .Append(" ")
                 .Append(TableName)
                 .Append(".")
