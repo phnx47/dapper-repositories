@@ -15,7 +15,8 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
 
             sqlQuery.SqlBuilder
                 .Append(" FROM ")
-                .Append(TableName);
+                .Append(TableName)
+                .Append(" ");
             
             if (includes.Any())                  
                 sqlQuery.SqlBuilder.Append(AppendJoinToSelect(sqlQuery, includes));
