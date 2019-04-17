@@ -13,13 +13,14 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         {
             var sqlQuery = InitBuilderSelect(firstOnly);
 
+            var joinsBuilder = AppendJoinToSelect(sqlQuery, includes);
             sqlQuery.SqlBuilder
                 .Append(" FROM ")
                 .Append(TableName)
                 .Append(" ");
             
             if (includes.Any())                  
-                sqlQuery.SqlBuilder.Append(AppendJoinToSelect(sqlQuery, includes));
+                sqlQuery.SqlBuilder.Append(joinsBuilder);
             
             AppendWherePredicateQuery(sqlQuery, predicate, QueryType.Select);
 
