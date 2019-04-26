@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Reflection;
 
@@ -14,18 +16,21 @@ namespace MicroOrm.Dapper.Repositories.Extensions
             if (_reflectionPropertyCache.ContainsKey(objectType))
                 return _reflectionPropertyCache[objectType];
 
-            var result = objectType.GetProperties().ToArray();
+            var propertyInfos = objectType.GetProperties()
+                .OrderBy(p => p.GetCustomAttributes<ColumnAttribute>()
+                    .Select(a => a.Order)
+                    .DefaultIfEmpty(int.MaxValue)
+                    .FirstOrDefault()).ToArray();
 
-            _reflectionPropertyCache.TryAdd(objectType, result);
+            _reflectionPropertyCache.TryAdd(objectType, propertyInfos);
 
-            return result;
+            return propertyInfos;
         }
-
 
         public static bool IsGenericType(this Type type)
         {
 #if NESTANDARD13
-        
+
             return type.GetTypeInfo().IsGenericType;
 #else
             return type.IsGenericType;
