@@ -1,18 +1,12 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using MicroOrm.Dapper.Repositories.Attributes;
+﻿using System.ComponentModel.DataAnnotations.Schema;
 using MicroOrm.Dapper.Repositories.Attributes.Joins;
 using MicroOrm.Dapper.Repositories.Attributes.LogicalDelete;
 
 namespace MicroOrm.Dapper.Repositories.Tests.Classes
 {
     [Table("Cars")]
-    public class Car
+    public class Car : BaseEntity<int>
     {
-        [Key]
-        [Identity]
-        public int Id { get; set; }
-
         public string Name { get; set; }
 
         public byte[] Data { get; set; }

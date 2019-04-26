@@ -9,12 +9,8 @@ using MicroOrm.Dapper.Repositories.Attributes.LogicalDelete;
 namespace MicroOrm.Dapper.Repositories.Tests.Classes
 {
     [Table("Users")]
-    public class User
+    public class User : BaseEntity<int>
     {
-        [Key]
-        [Identity]
-        public int Id { get; set; }
-
         public string ReadOnly => "test";
 
         [Column(Order = 1)]
