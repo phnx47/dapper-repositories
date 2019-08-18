@@ -33,13 +33,21 @@ namespace MicroOrm.Dapper.Repositories.Tests.DatabaseFixture
 
             ClearDb();
 
-            Db.Connection.Execute("CREATE TABLE IF NOT EXISTS `Users`" + 
+            Db.Connection.Execute("CREATE TABLE IF NOT EXISTS `Users` " + 
                 "(`Id` int not null auto_increment, `Name` varchar(256) not null, `AddressId` int not null, `PhoneId` int not null, "  +
                 "`OfficePhoneId` int not null, `Deleted` boolean not null, `UpdatedAt` datetime, PRIMARY KEY  (`Id`));");
             
-            Db.Connection.Execute("CREATE TABLE IF NOT EXISTS `Cars`" + 
+            Db.Connection.Execute("CREATE TABLE IF NOT EXISTS `Cars` " + 
                 "(`Id` int not null auto_increment, `Name` varchar(256) not null, "  +
                 "`UserId` int not null, `Status` int not null, Data binary(16) null, PRIMARY KEY  (`Id`));");
+            
+            Db.Connection.Execute("CREATE TABLE IF NOT EXISTS `Addresses`" + 
+                "(`Id` int not null auto_increment, `Street` varchar(256) not null, "  +
+                "`CityId` varchar(256) not null, PRIMARY KEY  (`Id`));");
+            
+            Db.Connection.Execute("CREATE TABLE IF NOT EXISTS `DAB.Phones` " + 
+                "(`Id` int not null auto_increment, `Number` varchar(256) not null, "  +
+                "`IsActive` boolean not null, `Code` varchar(256) not null, PRIMARY KEY  (`Id`));");
             
             InitData.Execute(Db);
             var t = 2;
@@ -53,11 +61,11 @@ namespace MicroOrm.Dapper.Repositories.Tests.DatabaseFixture
             }
 
             DropTable("Users");
-            /*DropTable("dbo", "Cars");
-            DropTable("dbo", "Addresses");
-            DropTable("dbo", "Cities");
-            DropTable("dbo", "Reports");
-            DropTable("DAB", "Phones");*/
+            DropTable("Cars");
+            DropTable("Addresses");
+            DropTable("Cities");
+            DropTable("Reports");
+            DropTable("DAB.Phones");
         }
     }
 }
