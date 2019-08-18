@@ -58,6 +58,14 @@ namespace MicroOrm.Dapper.Repositories.Tests.RepositoriesTests
 
             Assert.Equal(1, count);
         }
+        
+        [Fact]
+        public async Task CountWithDistinctAsync()
+        {
+            var count = await _db.Phones.CountAsync(phone => phone.Code);
+
+            Assert.Equal(1, count);
+        }
 
         [Fact]
         public void CountWithDistinctAndWhere()
