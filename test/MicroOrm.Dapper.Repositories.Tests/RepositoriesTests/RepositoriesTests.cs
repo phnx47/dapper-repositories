@@ -252,6 +252,8 @@ namespace MicroOrm.Dapper.Repositories.Tests.RepositoriesTests
             Assert.Equal("TestCar0", user.Cars.First().Name);
 
             var car = _db.Cars.Find<User>(x => x.Id == 1, q => q.User);
+            Assert.NotNull(car);
+            Assert.NotNull(car.User);
             Assert.Equal("TestName0", car.User.Name);
         }
 
@@ -263,6 +265,8 @@ namespace MicroOrm.Dapper.Repositories.Tests.RepositoriesTests
             Assert.Equal("TestCar0", user.Cars.First().Name);
 
             var car = await _db.Cars.FindAsync<User>(x => x.Id == 1, q => q.User);
+            Assert.NotNull(car);
+            Assert.NotNull(car.User);
             Assert.Equal("TestName0", car.User.Name);
         }
 
