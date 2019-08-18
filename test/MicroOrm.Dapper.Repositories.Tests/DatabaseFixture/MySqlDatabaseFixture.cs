@@ -29,10 +29,18 @@ namespace MicroOrm.Dapper.Repositories.Tests.DatabaseFixture
         private void InitDb()
         {
             Db.Connection.Execute($"CREATE DATABASE IF NOT EXISTS `{_dbName}`;");
+            Db.Connection.Execute($"CREATE DATABASE IF NOT EXISTS DAB;");
+            
             Db.Connection.Execute($"USE `{_dbName}`");
 
             ClearDb();
 
+            Db.Connection.Execute($"USE `DAB`");
+            Db.Connection.Execute("CREATE TABLE IF NOT EXISTS `Phones` " + 
+                "(`Id` int not null auto_increment, `Number` varchar(256) not null, "  +
+                "`IsActive` boolean not null, `Code` varchar(256) not null, PRIMARY KEY  (`Id`));");
+            
+            Db.Connection.Execute($"USE `{_dbName}`");
             Db.Connection.Execute("CREATE TABLE IF NOT EXISTS `Users` " + 
                 "(`Id` int not null auto_increment, `Name` varchar(256) not null, `AddressId` int not null, `PhoneId` int not null, "  +
                 "`OfficePhoneId` int not null, `Deleted` boolean not null, `UpdatedAt` datetime, PRIMARY KEY  (`Id`));");
@@ -45,9 +53,6 @@ namespace MicroOrm.Dapper.Repositories.Tests.DatabaseFixture
                 "(`Id` int not null auto_increment, `Street` varchar(256) not null, "  +
                 "`CityId` varchar(256) not null, PRIMARY KEY  (`Id`));");
             
-            Db.Connection.Execute("CREATE TABLE IF NOT EXISTS `DAB.Phones` " + 
-                "(`Id` int not null auto_increment, `Number` varchar(256) not null, "  +
-                "`IsActive` boolean not null, `Code` varchar(256) not null, PRIMARY KEY  (`Id`));");
             
             InitData.Execute(Db);
             var t = 2;
@@ -59,13 +64,17 @@ namespace MicroOrm.Dapper.Repositories.Tests.DatabaseFixture
             {
                 Db.Connection.Execute($"DROP TABLE IF EXISTS {name};");
             }
-
+            
+            Db.Connection.Execute($"USE `{_dbName}`");
             DropTable("Users");
-            DropTable("Cars");
             DropTable("Addresses");
             DropTable("Cities");
             DropTable("Reports");
-            DropTable("DAB.Phones");
+            DropTable("Cars");
+           
+            
+            Db.Connection.Execute($"USE `DAB`");
+            DropTable("Phones");
         }
     }
 }
