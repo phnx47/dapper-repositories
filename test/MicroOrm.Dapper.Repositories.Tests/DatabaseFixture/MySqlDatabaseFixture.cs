@@ -55,7 +55,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.DatabaseFixture
                 "`CityId` varchar(256) not null, PRIMARY KEY  (`Id`));");
             
             Db.Connection.Execute("CREATE TABLE IF NOT EXISTS `Cities`" + 
-                "(`Id` int not null auto_increment, `Name` varchar(256) not null, `Identifier` binary(16) not null, "  +
+                "(`Id` int not null auto_increment, `Name` varchar(256) not null, `Identifier` char(36) not null, "  +
                 "PRIMARY KEY  (`Id`));");
             
             Db.Connection.Execute("CREATE TABLE IF NOT EXISTS `Reports`" + 
