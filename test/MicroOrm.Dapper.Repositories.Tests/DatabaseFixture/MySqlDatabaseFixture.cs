@@ -33,7 +33,15 @@ namespace MicroOrm.Dapper.Repositories.Tests.DatabaseFixture
 
             ClearDb();
 
-            Db.Connection.Execute("CREATE TABLE IF NOT EXISTS `Users` (`Id` int(11) NOT NULL auto_increment, `Name` varchar(256) NOT NULL, PRIMARY KEY  (`Id`));");
+            Db.Connection.Execute("CREATE TABLE IF NOT EXISTS `Users`" + 
+                "(`Id` int not null auto_increment, `Name` varchar(256) not null, `AddressId` int not null, `PhoneId` int not null, "  +
+                "`OfficePhoneId` int not null, `Deleted` boolean not null, `UpdatedAt` datetime, PRIMARY KEY  (`Id`));");
+            
+            Db.Connection.Execute("CREATE TABLE IF NOT EXISTS `Cars`" + 
+                "(`Id` int not null auto_increment, `Name` varchar(256) not null, "  +
+                "`UserId` int not null, `Status` int not null, Data binary(16) null, PRIMARY KEY  (`Id`));");
+            
+            InitData.Execute(Db);
             var t = 2;
         }
         
