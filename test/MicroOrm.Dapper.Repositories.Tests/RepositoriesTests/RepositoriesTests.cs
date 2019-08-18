@@ -252,11 +252,16 @@ namespace MicroOrm.Dapper.Repositories.Tests.RepositoriesTests
         }
 
         [Fact]
-        public void FindJoin()
+        public void FindJoin_User()
         {
             var user = _db.Users.Find<Car>(x => x.Id == 1, q => q.Cars);
             Assert.True(user.Cars.Count == 1);
             Assert.Equal("TestCar0", user.Cars.First().Name);
+        }
+        
+        [Fact]
+        public void FindJoin_Car()
+        {
 
             var car = _db.Cars.Find<User>(x => x.Id == 1, q => q.User);
             Assert.NotNull(car);
@@ -265,12 +270,16 @@ namespace MicroOrm.Dapper.Repositories.Tests.RepositoriesTests
         }
 
         [Fact]
-        public async Task FindJoinAsync()
+        public async Task FindJoinAsync_User()
         {
             var user = await _db.Users.FindAsync<Car>(x => x.Id == 1, q => q.Cars);
             Assert.True(user.Cars.Count == 1);
             Assert.Equal("TestCar0", user.Cars.First().Name);
-
+        }
+        
+        [Fact]
+        public async Task FindJoinAsync_Car()
+        {
             var car = await _db.Cars.FindAsync<User>(x => x.Id == 1, q => q.User);
             Assert.NotNull(car);
             Assert.NotNull(car.User);
@@ -375,15 +384,22 @@ namespace MicroOrm.Dapper.Repositories.Tests.RepositoriesTests
         [Fact]
         public async Task LogicalDeletedEnumAsync()
         {
-            const int id = 1;
+            var newCar = new Car
+            {
+                Data = Guid.NewGuid().ToByteArray(),
+                Name = "Deleted Car",
+                Status = StatusCar.Active
+            };
 
-            var car = _db.Cars.Find(x => x.Id == id);
+            var insert = await _db.Cars.InsertAsync(newCar);
+            
+            var car = _db.Cars.Find(x => x.Id == newCar.Id);
             Assert.False(car.Status == StatusCar.Deleted);
 
             var deleted = await _db.Cars.DeleteAsync(car);
             Assert.True(deleted);
 
-            var deletedCar = _db.Cars.Find(x => x.Id == id);
+            var deletedCar = _db.Cars.Find(x => x.Id == newCar.Id);
             Assert.Null(deletedCar);
         }
 
