@@ -11,11 +11,8 @@ namespace MicroOrm.Dapper.Repositories.Tests.DatabaseFixture
 
         public MySqlDatabaseFixture()
         {
-            var connString = "Server=localhost;Uid=user_test_micro_orm;Pwd=Password12!;SslMode=none";
-
-            if (Environments.IsAppVeyor)
-                connString = "Server=localhost;Uid=root;Pwd=Password12!;SslMode=none";
-
+            const string connString = "Server=localhost;Uid=root;Pwd=Password12!;SslMode=none";
+            
             Db = new MySqlDbContext(connString);
 
             InitDb();
@@ -25,6 +22,8 @@ namespace MicroOrm.Dapper.Repositories.Tests.DatabaseFixture
 
         public void Dispose()
         {
+            Db.Connection.Execute($"DROP DATABASE {_dbName}");
+            Db.Dispose();
         }
 
         private void InitDb()
@@ -32,8 +31,25 @@ namespace MicroOrm.Dapper.Repositories.Tests.DatabaseFixture
             Db.Connection.Execute($"CREATE DATABASE IF NOT EXISTS `{_dbName}`;");
             Db.Connection.Execute($"USE `{_dbName}`");
 
+            ClearDb();
 
-            Db.Connection.Execute("CREATE TABLE IF NOT EXISTS `Users` (`Id` int(11) NOT NULL auto_increment, PRIMARY KEY  (`Id`));");
+            Db.Connection.Execute("CREATE TABLE IF NOT EXISTS `Users` (`Id` int(11) NOT NULL auto_increment, `Name` varchar(256) NOT NULL, PRIMARY KEY  (`Id`));");
+            var t = 2;
+        }
+        
+        private void ClearDb()
+        {    
+            void DropTable(string name)
+            {
+                Db.Connection.Execute($"DROP TABLE IF EXISTS {name};");
+            }
+
+            DropTable("Users");
+            /*DropTable("dbo", "Cars");
+            DropTable("dbo", "Addresses");
+            DropTable("dbo", "Cities");
+            DropTable("dbo", "Reports");
+            DropTable("DAB", "Phones");*/
         }
     }
 }
