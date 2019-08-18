@@ -2,23 +2,23 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-
 using Dapper;
-
 using MicroOrm.Dapper.Repositories.Tests.Classes;
 using MicroOrm.Dapper.Repositories.Tests.DbContexts;
-
 using Xunit;
+using Xunit.Abstractions;
 
 namespace MicroOrm.Dapper.Repositories.Tests.RepositoriesTests
 {
     public abstract class RepositoriesTests
     {
         private readonly IDbContext _db;
+        private readonly ITestOutputHelper _testOutputHelper;
 
-        protected RepositoriesTests(IDbContext db)
+        protected RepositoriesTests(IDbContext db, ITestOutputHelper testOutputHelper)
         {
             _db = db;
+            _testOutputHelper = testOutputHelper;
         }
 
         [Fact]
@@ -39,7 +39,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.RepositoriesTests
             var count = _db.Users.Count();
             var countHandQuery =
                 _db.Connection
-                .ExecuteScalar<int>("SELECT COUNT(*) FROM Users WHERE Users.Deleted != 1");
+                    .ExecuteScalar<int>("SELECT COUNT(*) FROM Users WHERE Users.Deleted != 1");
             Assert.Equal(countHandQuery, count);
         }
 
@@ -55,10 +55,9 @@ namespace MicroOrm.Dapper.Repositories.Tests.RepositoriesTests
         public void CountWithDistinct()
         {
             var count = _db.Phones.Count(phone => phone.Code);
-
             Assert.Equal(1, count);
         }
-        
+
         [Fact]
         public async Task CountWithDistinctAsync()
         {
@@ -400,6 +399,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.RepositoriesTests
                 await _db.Users.InsertAsync(user, trans);
                 trans.Rollback();
             }
+
             var userFromDb = await _db.Users.FindAsync(x => x.Name == "Sergey_Transaction");
             Assert.Null(userFromDb);
 
@@ -408,6 +408,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.RepositoriesTests
                 await _db.Users.InsertAsync(user, trans);
                 trans.Commit();
             }
+
             userFromDb = await _db.Users.FindAsync(x => x.Name == "Sergey_Transaction");
             Assert.NotNull(userFromDb);
         }
@@ -459,8 +460,8 @@ namespace MicroOrm.Dapper.Repositories.Tests.RepositoriesTests
         {
             List<Address> adresses = new List<Address>
             {
-                new Address { Street = "aaa0" , CityId = "10"},
-                new Address { Street = "aaa1" , CityId = "11"}
+                new Address { Street = "aaa0", CityId = "10" },
+                new Address { Street = "aaa1", CityId = "11" }
             };
 
             int inserted = await _db.Address.BulkInsertAsync(adresses);
@@ -478,8 +479,8 @@ namespace MicroOrm.Dapper.Repositories.Tests.RepositoriesTests
         {
             List<Address> adresses = new List<Address>
             {
-                new Address { Street = "aaa0" , CityId = "10"},
-                new Address { Street = "aaa1" , CityId = "11"}
+                new Address { Street = "aaa0", CityId = "10" },
+                new Address { Street = "aaa1", CityId = "11" }
             };
 
             int inserted = _db.Address.BulkInsert(adresses);
@@ -497,9 +498,9 @@ namespace MicroOrm.Dapper.Repositories.Tests.RepositoriesTests
         {
             List<Address> adresses = new List<Address>
             {
-                new Address { Street = "aaa10" , CityId = "110"},
-                new Address { Street = "aaa10" , CityId = "111"},
-                new Address { Street = "aaa10" , CityId = "112"}
+                new Address { Street = "aaa10", CityId = "110" },
+                new Address { Street = "aaa10", CityId = "111" },
+                new Address { Street = "aaa10", CityId = "112" }
             };
 
             int inserted = _db.Address.BulkInsert(adresses);
@@ -524,57 +525,81 @@ namespace MicroOrm.Dapper.Repositories.Tests.RepositoriesTests
         [Fact]
         public void BulkUpdate()
         {
-            var phone1 = new Phone { Code = "Kiev123", Number = "Kiev123" };
-            var phone2 = new Phone { Code = "Kiev123", Number = "Kiev333" };
+            var user1 = new User
+            {
+                Name = "Bulk1",
+                AddressId = 1,
+                PhoneId = 1,
+                OfficePhoneId = 2
+            };
+            var user2 = new User
+            {
+                Name = "Bulk2",
+                AddressId = 1,
+                PhoneId = 1,
+                OfficePhoneId = 2
+            };
 
-            _db.Phones.Insert(phone1);
-            _db.Phones.Insert(phone2);
+            _db.Users.Insert(user1);
+            _db.Users.Insert(user2);
 
-            var insertedPhone1 = _db.Phones.FindById(phone1.Id);
-            var insertedPhone2 = _db.Phones.FindById(phone2.Id);
-            Assert.Equal("Kiev123", phone1.Number);
-            Assert.Equal("Kiev333", phone2.Number);
+            var insertedUser1 = _db.Users.FindById(user1.Id);
+            var insertedUser2 = _db.Users.FindById(user2.Id);
+            Assert.Equal("Bulk1", insertedUser1.Name);
+            Assert.Equal("Bulk2", insertedUser2.Name);
 
-            insertedPhone1.Number = "Kiev666";
-            insertedPhone2.Number = "Kiev777";
+            insertedUser1.Name = "Bulk11";
+            insertedUser2.Name = "Bulk22";
 
-            bool result = _db.Phones.BulkUpdate(new List<Phone> { insertedPhone1, insertedPhone2 });
+            bool result = _db.Users.BulkUpdate(new List<User> { insertedUser1, insertedUser2 });
 
             Assert.True(result);
 
-            var newPhone1 = _db.Phones.FindById(phone1.Id);
-            var newPhone2 = _db.Phones.FindById(phone2.Id);
+            var newUser1 = _db.Users.FindById(user1.Id);
+            var newUser2 = _db.Users.FindById(user2.Id);
 
-            Assert.Equal("Kiev666", newPhone1.Number);
-            Assert.Equal("Kiev777", newPhone2.Number);
+            Assert.Equal("Bulk11", newUser1.Name);
+            Assert.Equal("Bulk22", newUser2.Name);
         }
 
         [Fact]
         public async void BulkUpdateAsync()
         {
-            var phone1 = new Phone { Code = "MSK123", Number = "MSK123" };
-            var phone2 = new Phone { Code = "MSK123", Number = "MSK333" };
+            var user1 = new User
+            {
+                Name = "Bulk1",
+                AddressId = 1,
+                PhoneId = 1,
+                OfficePhoneId = 2
+            };
+            var user2 = new User
+            {
+                Name = "Bulk2",
+                AddressId = 1,
+                PhoneId = 1,
+                OfficePhoneId = 2
+            };
 
-            await _db.Phones.InsertAsync(phone1);
-            await _db.Phones.InsertAsync(phone2);
+            _db.Users.Insert(user1);
+            _db.Users.Insert(user2);
 
-            var insertedPhone1 = await _db.Phones.FindByIdAsync(phone1.Id);
-            var insertedPhone2 = await _db.Phones.FindByIdAsync(phone2.Id);
-            Assert.Equal("MSK123", phone1.Number);
-            Assert.Equal("MSK333", phone2.Number);
+            var insertedUser1 = await _db.Users.FindByIdAsync(user1.Id);
+            var insertedUser2 = await _db.Users.FindByIdAsync(user2.Id);
+            Assert.Equal("Bulk1", insertedUser1.Name);
+            Assert.Equal("Bulk2", insertedUser2.Name);
 
-            insertedPhone1.Number = "MSK666";
-            insertedPhone2.Number = "MSK777";
+            insertedUser1.Name = "Bulk11";
+            insertedUser2.Name = "Bulk22";
 
-            bool result = await _db.Phones.BulkUpdateAsync(new List<Phone> { insertedPhone1, insertedPhone2 });
+            bool result = await _db.Users.BulkUpdateAsync(new List<User> { insertedUser1, insertedUser2 });
 
             Assert.True(result);
 
-            var newPhone1 = await _db.Phones.FindByIdAsync(phone1.Id);
-            var newPhone2 = await _db.Phones.FindByIdAsync(phone2.Id);
+            var newUser1 = await _db.Users.FindByIdAsync(user1.Id);
+            var newUser2 = await _db.Users.FindByIdAsync(user2.Id);
 
-            Assert.Equal("MSK666", newPhone1.Number);
-            Assert.Equal("MSK777", newPhone2.Number);
+            Assert.Equal("Bulk11", newUser1.Name);
+            Assert.Equal("Bulk22", newUser2.Name);
         }
 
         [Fact]

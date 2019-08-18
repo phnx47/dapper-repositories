@@ -22,8 +22,8 @@ namespace MicroOrm.Dapper.Repositories.Tests.DatabaseFixture
 
         public void Dispose()
         {
-            Db.Connection.Execute($"DROP DATABASE {_dbName}");
-            Db.Connection.Execute($"DROP DATABASE DAB");
+            /*Db.Connection.Execute($"DROP DATABASE {_dbName}");
+            Db.Connection.Execute($"DROP DATABASE DAB");*/
             Db.Dispose();
         }
 
