@@ -23,6 +23,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.DatabaseFixture
         public void Dispose()
         {
             Db.Connection.Execute($"DROP DATABASE {_dbName}");
+            Db.Connection.Execute($"DROP DATABASE DAB");
             Db.Dispose();
         }
 
@@ -80,7 +81,6 @@ namespace MicroOrm.Dapper.Repositories.Tests.DatabaseFixture
             DropTable("Cities");
             DropTable("Reports");
             DropTable("Cars");
-           
             
             Db.Connection.Execute($"USE `DAB`");
             DropTable("Phones");
