@@ -41,6 +41,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.DatabaseFixture
                 "`IsActive` boolean not null, `Code` varchar(256) not null, PRIMARY KEY  (`Id`));");
             
             Db.Connection.Execute($"USE `{_dbName}`");
+            
             Db.Connection.Execute("CREATE TABLE IF NOT EXISTS `Users` " + 
                 "(`Id` int not null auto_increment, `Name` varchar(256) not null, `AddressId` int not null, `PhoneId` int not null, "  +
                 "`OfficePhoneId` int not null, `Deleted` boolean not null, `UpdatedAt` datetime, PRIMARY KEY  (`Id`));");
@@ -52,6 +53,10 @@ namespace MicroOrm.Dapper.Repositories.Tests.DatabaseFixture
             Db.Connection.Execute("CREATE TABLE IF NOT EXISTS `Addresses`" + 
                 "(`Id` int not null auto_increment, `Street` varchar(256) not null, "  +
                 "`CityId` varchar(256) not null, PRIMARY KEY  (`Id`));");
+            
+            Db.Connection.Execute("CREATE TABLE IF NOT EXISTS `Reports`" + 
+                "(`Id` int not null auto_increment, `AnotherId` int not null, `UserId` int not null, "  +
+                "PRIMARY KEY  (`Id`, `AnotherId`));");
             
             
             InitData.Execute(Db);
