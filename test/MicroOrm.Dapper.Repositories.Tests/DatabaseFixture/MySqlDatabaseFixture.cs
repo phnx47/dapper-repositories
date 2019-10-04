@@ -65,7 +65,6 @@ namespace MicroOrm.Dapper.Repositories.Tests.DatabaseFixture
             
             
             InitData.Execute(Db);
-            var t = 2;
         }
         
         private void ClearDb()

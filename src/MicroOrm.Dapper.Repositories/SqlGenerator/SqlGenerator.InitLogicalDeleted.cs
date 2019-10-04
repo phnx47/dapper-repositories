@@ -19,7 +19,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                 return;
             StatusPropertyName = statusProperty.ColumnName;
 
-            if (statusProperty.PropertyInfo.PropertyType.IsBool())
+            if (statusProperty.PropertyInfo.PropertyType == typeof(bool))
             {
                 var deleteProperty = AllProperties.FirstOrDefault(p => p.GetCustomAttributes<DeletedAttribute>().Any());
                 if (deleteProperty == null)
@@ -28,7 +28,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                 LogicalDelete = true;
                 LogicalDeleteValue = 1; // true
             }
-            else if (statusProperty.PropertyInfo.PropertyType.IsEnum())
+            else if (statusProperty.PropertyInfo.PropertyType.IsEnum)
             {
                 var deleteOption = statusProperty.PropertyInfo.PropertyType.GetFields().FirstOrDefault(f => f.GetCustomAttribute<DeletedAttribute>() != null);
 

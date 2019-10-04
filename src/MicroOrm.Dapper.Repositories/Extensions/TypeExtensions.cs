@@ -26,38 +26,5 @@ namespace MicroOrm.Dapper.Repositories.Extensions
 
             return propertyInfos;
         }
-
-        public static bool IsGenericType(this Type type)
-        {
-#if NESTANDARD13
-
-            return type.GetTypeInfo().IsGenericType;
-#else
-            return type.IsGenericType;
-#endif
-        }
-
-        public static bool IsEnum(this Type type)
-        {
-#if NESTANDARD13
-            return type.GetTypeInfo().IsEnum;
-#else
-            return type.IsEnum;
-#endif
-        }
-
-        public static bool IsValueType(this Type type)
-        {
-#if NESTANDARD13
-            return type.GetTypeInfo().IsValueType;
-#else
-            return type.IsValueType;
-#endif
-        }
-
-        public static bool IsBool(this Type type)
-        {
-            return type == typeof(bool);
-        }
     }
 }

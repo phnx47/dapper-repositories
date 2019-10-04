@@ -41,7 +41,7 @@ namespace MicroOrm.Dapper.Repositories
 
             foreach (var property in childProperties)
             {
-                var childType = property.PropertyType.IsGenericType() ? property.PropertyType.GenericTypeArguments[0] : property.PropertyType;
+                var childType = property.PropertyType.IsGenericType ? property.PropertyType.GenericTypeArguments[0] : property.PropertyType;
                 var properties = childType.FindClassProperties().Where(ExpressionHelper.GetPrimitivePropertiesPredicate());
                 childKeyProperties.AddRange(properties.Where(p => p.GetCustomAttributes<KeyAttribute>().Any()));
             }
@@ -121,7 +121,7 @@ namespace MicroOrm.Dapper.Repositories
 
             foreach (var property in childProperties)
             {
-                var childType = property.PropertyType.IsGenericType() ? property.PropertyType.GenericTypeArguments[0] : property.PropertyType;
+                var childType = property.PropertyType.IsGenericType ? property.PropertyType.GenericTypeArguments[0] : property.PropertyType;
                 var properties = childType.FindClassProperties().Where(ExpressionHelper.GetPrimitivePropertiesPredicate());
                 childKeyProperties.AddRange(properties.Where(p => p.GetCustomAttributes<KeyAttribute>().Any()));
             }
@@ -195,7 +195,7 @@ namespace MicroOrm.Dapper.Repositories
                 var propertyName = propertyNames[i];
                 var childKeyProperty = childKeyProperties[i];
 
-                if (childProperty.PropertyType.IsGenericType())
+                if (childProperty.PropertyType.IsGenericType)
                 {
                     var list = (IList)childProperty.GetValue(target);
                     if (list == null)

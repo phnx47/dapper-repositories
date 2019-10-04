@@ -1,7 +1,7 @@
-﻿using System.Data.SqlClient;
-using MicroOrm.Dapper.Repositories.DbContext;
+﻿using MicroOrm.Dapper.Repositories.DbContext;
 using MicroOrm.Dapper.Repositories.SqlGenerator;
 using MicroOrm.Dapper.Repositories.Tests.Classes;
+using Microsoft.Data.SqlClient;
 
 namespace MicroOrm.Dapper.Repositories.Tests.DbContexts
 {
