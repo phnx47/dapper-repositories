@@ -9,9 +9,7 @@
 [![GitHub contributors](https://img.shields.io/github/contributors/phnx47/MicroOrm.Dapper.Repositories.svg)](https://github.com/phnx47/MicroOrm.Dapper.Repositories/graphs/contributors)
 [![License MIT](https://img.shields.io/badge/license-MIT-green.svg)](https://opensource.org/licenses/MIT) 
 
-
 ## Installation
-
 
     dotnet add package MicroOrm.Dapper.Repositories
 
