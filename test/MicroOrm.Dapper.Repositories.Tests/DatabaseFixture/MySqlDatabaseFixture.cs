@@ -6,9 +6,13 @@ namespace MicroOrm.Dapper.Repositories.Tests.DatabaseFixture
 {
     public class MySqlDatabaseFixture : IDisposable
     {
+        /*
+         * docker run --rm --name=mysql -d -p 3306:3306 -e MYSQL_ROOT_PASSWORD=Password12! mysql
+         */
+        
         private const string _dbName = "test_micro_orm";
 
-
+        
         public MySqlDatabaseFixture()
         {
             const string connString = "Server=localhost;Uid=root;Pwd=Password12!";
