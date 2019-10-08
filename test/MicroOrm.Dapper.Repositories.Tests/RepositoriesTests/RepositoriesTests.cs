@@ -99,7 +99,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.RepositoriesTests
         }
 
         [Fact]
-        public async void FindByIdWithJoinAsync()
+        public async void FindByIdWithJoinAsync_NotNullJoins()
         {
             var user = await _db.Users.FindByIdAsync<Car, Phone, Address>(1, x => x.Cars, x => x.Phone, x => x.Addresses);
             Assert.False(user.Deleted);
@@ -108,6 +108,16 @@ namespace MicroOrm.Dapper.Repositories.Tests.RepositoriesTests
             Assert.NotNull(user.Phone);
             Assert.NotNull(user.Cars);
             Assert.NotNull(user.Addresses);
+        }
+        
+        [Fact]
+        public async void FindJoinAsync_CollectionMoreOneRecords()
+        {
+            var user = await _db.Users.FindAsync<Car>(q => q.Id == 1, q => q.Cars);
+            Assert.False(user.Deleted);
+            Assert.Equal("TestName0", user.Name);
+            
+            Assert.True(user.Cars.Count == 2);
         }
 
         [Fact]
@@ -179,7 +189,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.RepositoriesTests
         public void FindAllJoin2Table()
         {
             var user = _db.Users.FindAll<Car, Address>(x => x.Id == 1, q => q.Cars, q => q.Addresses).First();
-            Assert.True(user.Cars.Count == 1);
+            Assert.True(user.Cars.Count == 2);
             Assert.Equal("TestCar0", user.Cars.First().Name);
             Assert.Equal("Street0", user.Addresses.Street);
         }
@@ -188,7 +198,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.RepositoriesTests
         public async Task FindAllJoin2TableAsync()
         {
             var user = (await _db.Users.FindAllAsync<Car, Address>(x => x.Id == 1, q => q.Cars, q => q.Addresses)).First();
-            Assert.True(user.Cars.Count == 1);
+            Assert.True(user.Cars.Count == 2);
             Assert.Equal("TestCar0", user.Cars.First().Name);
             Assert.Equal("Street0", user.Addresses.Street);
         }
@@ -197,7 +207,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.RepositoriesTests
         public void FindAllJoin3Table()
         {
             var user = _db.Users.FindAll<Car, Address, Phone>(x => x.Id == 1, q => q.Cars, q => q.Addresses, q => q.Phone).First();
-            Assert.True(user.Cars.Count == 1);
+            Assert.True(user.Cars.Count == 2);
             Assert.Equal("TestCar0", user.Cars.First().Name);
             Assert.Equal("Street0", user.Addresses.Street);
             Assert.Equal("123", user.Phone.Number);
@@ -207,7 +217,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.RepositoriesTests
         public async Task FindAllJoin3TableAsync()
         {
             var user = (await _db.Users.FindAllAsync<Car, Address, Phone>(x => x.Id == 1, q => q.Cars, q => q.Addresses, q => q.Phone)).First();
-            Assert.True(user.Cars.Count == 1);
+            Assert.True(user.Cars.Count == 2);
             Assert.Equal("TestCar0", user.Cars.First().Name);
             Assert.Equal("Street0", user.Addresses.Street);
             Assert.Equal("123", user.Phone.Number);
@@ -217,7 +227,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.RepositoriesTests
         public void FindAllJoinSameTableTwice()
         {
             var user = _db.Users.FindAll<Phone, Car, Phone>(x => x.Id == 1, q => q.OfficePhone, q => q.Cars, q => q.Phone).First();
-            Assert.True(user.Cars.Count == 1);
+            Assert.True(user.Cars.Count == 2);
             Assert.Equal("TestCar0", user.Cars.First().Name);
             Assert.Equal("333", user.OfficePhone.Number);
             Assert.Equal("123", user.Phone.Number);
@@ -227,7 +237,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.RepositoriesTests
         public async void FindAllJoinSameTableTwiceAsync()
         {
             var user = (await _db.Users.FindAllAsync<Phone, Car, Phone>(x => x.Id == 1, q => q.OfficePhone, q => q.Cars, q => q.Phone)).First();
-            Assert.True(user.Cars.Count == 1);
+            Assert.True(user.Cars.Count == 2);
             Assert.Equal("TestCar0", user.Cars.First().Name);
             Assert.Equal("333", user.OfficePhone.Number);
             Assert.Equal("123", user.Phone.Number);
