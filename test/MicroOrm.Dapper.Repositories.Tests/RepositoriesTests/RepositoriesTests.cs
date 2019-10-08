@@ -111,13 +111,23 @@ namespace MicroOrm.Dapper.Repositories.Tests.RepositoriesTests
         }
         
         [Fact]
-        public async void FindJoinAsync_CollectionMoreOneRecords()
+        public async void FindJoin_CollectionneRecord()
+        {
+            var user = _db.Users.Find<Car>(q => q.Id == 1, q => q.Cars);
+            Assert.False(user.Deleted);
+            Assert.Equal("TestName0", user.Name);
+            
+            Assert.True(user.Cars.Count == 1);
+        }
+        
+        [Fact]
+        public async void FindJoinAsync_CollectionneRecord()
         {
             var user = await _db.Users.FindAsync<Car>(q => q.Id == 1, q => q.Cars);
             Assert.False(user.Deleted);
             Assert.Equal("TestName0", user.Name);
             
-            Assert.True(user.Cars.Count == 2);
+            Assert.True(user.Cars.Count == 1);
         }
 
         [Fact]
