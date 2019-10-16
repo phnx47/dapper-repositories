@@ -4,7 +4,6 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 
-
 namespace MicroOrm.Dapper.Repositories
 {
     /// <inheritdoc />
@@ -16,8 +15,15 @@ namespace MicroOrm.Dapper.Repositories
     {
         /// <inheritdoc />
         public virtual TEntity FindById<TChild1>(object id,
+            Expression<Func<TEntity, object>> tChild1)
+        {
+            return FindById<TChild1>(id, tChild1, null);
+        }
+
+        /// <inheritdoc />
+        public virtual TEntity FindById<TChild1>(object id,
             Expression<Func<TEntity, object>> tChild1,
-            IDbTransaction transaction = null)
+            IDbTransaction transaction)
         {
             var queryResult = SqlGenerator.GetSelectById(id, tChild1);
             return ExecuteJoinQuery<TChild1, DontMap, DontMap, DontMap, DontMap, DontMap>(queryResult, transaction, tChild1).FirstOrDefault();
@@ -80,13 +86,21 @@ namespace MicroOrm.Dapper.Repositories
             IDbTransaction transaction = null)
         {
             var queryResult = SqlGenerator.GetSelectById(id, tChild1, tChild2, tChild3, tChild4, tChild5, tChild6);
-            return ExecuteJoinQuery<TChild1, TChild2, TChild3, TChild4, TChild5, TChild6>(queryResult, transaction, tChild1, tChild2, tChild3, tChild4, tChild5, tChild6).FirstOrDefault();
+            return ExecuteJoinQuery<TChild1, TChild2, TChild3, TChild4, TChild5, TChild6>(queryResult, transaction, tChild1, tChild2, tChild3, tChild4, tChild5, tChild6)
+                .FirstOrDefault();
         }
 
         /// <inheritdoc />
+        public virtual Task<TEntity> FindByIdAsync<TChild1>(object id,
+            Expression<Func<TEntity, object>> tChild1)
+        {
+            return FindByIdAsync<TEntity>(id, tChild1, null);
+        }
+        
+        /// <inheritdoc />
         public virtual async Task<TEntity> FindByIdAsync<TChild1>(object id,
             Expression<Func<TEntity, object>> tChild1,
-            IDbTransaction transaction = null)
+            IDbTransaction transaction)
         {
             var queryResult = SqlGenerator.GetSelectById(id, tChild1);
             return (await ExecuteJoinQueryAsync<TChild1, DontMap, DontMap, DontMap, DontMap, DontMap>(queryResult, transaction, tChild1)).FirstOrDefault();
@@ -122,7 +136,8 @@ namespace MicroOrm.Dapper.Repositories
             IDbTransaction transaction = null)
         {
             var queryResult = SqlGenerator.GetSelectById(id, tChild1, tChild2, tChild3, tChild4);
-            return (await ExecuteJoinQueryAsync<TChild1, TChild2, TChild3, TChild4, DontMap, DontMap>(queryResult, transaction, tChild1, tChild2, tChild3, tChild4)).FirstOrDefault();
+            return (await ExecuteJoinQueryAsync<TChild1, TChild2, TChild3, TChild4, DontMap, DontMap>(queryResult, transaction, tChild1, tChild2, tChild3, tChild4))
+                .FirstOrDefault();
         }
 
         /// <inheritdoc />
@@ -135,7 +150,8 @@ namespace MicroOrm.Dapper.Repositories
             IDbTransaction transaction = null)
         {
             var queryResult = SqlGenerator.GetSelectById(id, tChild1, tChild2, tChild3, tChild4, tChild5);
-            return (await ExecuteJoinQueryAsync<TChild1, TChild2, TChild3, TChild4, TChild5, DontMap>(queryResult, transaction, tChild1, tChild2, tChild3, tChild4, tChild5)).FirstOrDefault();
+            return (await ExecuteJoinQueryAsync<TChild1, TChild2, TChild3, TChild4, TChild5, DontMap>(queryResult, transaction, tChild1, tChild2, tChild3, tChild4, tChild5))
+                .FirstOrDefault();
         }
 
         /// <inheritdoc />
@@ -149,7 +165,8 @@ namespace MicroOrm.Dapper.Repositories
             IDbTransaction transaction = null)
         {
             var queryResult = SqlGenerator.GetSelectById(id, tChild1, tChild2, tChild3, tChild4, tChild5, tChild6);
-            return (await ExecuteJoinQueryAsync<TChild1, TChild2, TChild3, TChild4, TChild5, TChild6>(queryResult, transaction, tChild1, tChild2, tChild3, tChild4, tChild5, tChild6)).FirstOrDefault();
+            return (await ExecuteJoinQueryAsync<TChild1, TChild2, TChild3, TChild4, TChild5, TChild6>(queryResult, transaction, tChild1, tChild2, tChild3, tChild4, tChild5,
+                tChild6)).FirstOrDefault();
         }
     }
 }

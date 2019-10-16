@@ -111,7 +111,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.RepositoriesTests
         }
         
         [Fact]
-        public async void FindJoin_CollectionneRecord()
+        public void FindJoin_CollectionneRecord()
         {
             var user = _db.Users.Find<Car>(q => q.Id == 1, q => q.Cars);
             Assert.False(user.Deleted);

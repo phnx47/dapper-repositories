@@ -194,8 +194,14 @@ namespace MicroOrm.Dapper.Repositories
         ///     Get object by Id with join objects
         /// </summary>
         TEntity FindById<TChild1>(object id,
+            Expression<Func<TEntity, object>> tChild1);
+        
+        /// <summary>
+        ///     Get object by Id with join objects
+        /// </summary>
+        TEntity FindById<TChild1>(object id,
             Expression<Func<TEntity, object>> tChild1,
-            IDbTransaction transaction = null);
+            IDbTransaction transaction);
 
         /// <summary>
         ///     Get object by Id with join objects
@@ -261,8 +267,14 @@ namespace MicroOrm.Dapper.Repositories
         ///     Get object by Id with join objects
         /// </summary>
         Task<TEntity> FindByIdAsync<TChild1>(object id,
+            Expression<Func<TEntity, object>> tChild1);
+        
+        /// <summary>
+        ///     Get object by Id with join objects
+        /// </summary>
+        Task<TEntity> FindByIdAsync<TChild1>(object id,
             Expression<Func<TEntity, object>> tChild1,
-            IDbTransaction transaction = null);
+            IDbTransaction transaction);
 
         /// <summary>
         ///     Get object by Id with join objects
