@@ -16,7 +16,7 @@ namespace MicroOrm.Dapper.Repositories
     /// <summary>
     ///     Base Repository
     /// </summary>
-    public partial class DapperRepository<TEntity> 
+    public partial class ReadOnlyDapperRepository<TEntity> 
         where TEntity : class
     {
 

@@ -6,50 +6,42 @@ namespace MicroOrm.Dapper.Repositories
     /// <summary>
     ///     Base Repository
     /// </summary>
-    public partial class DapperRepository<TEntity> : IDapperRepository<TEntity>
+    public partial class DapperRepository<TEntity> : ReadOnlyDapperRepository<TEntity>, IDapperRepository<TEntity>
         where TEntity : class
     {
+        
         /// <summary>
         ///     Constructor
         /// </summary>
         public DapperRepository(IDbConnection connection)
+            :base(connection)
         {
-            Connection = connection;
-            SqlGenerator = new SqlGenerator<TEntity>(SqlProvider.MSSQL);
         }
 
         /// <summary>
         ///     Constructor
         /// </summary>
         public DapperRepository(IDbConnection connection, SqlProvider sqlProvider)
+            :base(connection, sqlProvider)
         {
-            Connection = connection;
-            SqlGenerator = new SqlGenerator<TEntity>(sqlProvider);
+
         }
 
         /// <summary>
         ///     Constructor
         /// </summary>
         public DapperRepository(IDbConnection connection, ISqlGenerator<TEntity> sqlGenerator)
+            :base(connection, sqlGenerator)
         {
-            Connection = connection;
-            SqlGenerator = sqlGenerator;
         }
 
         /// <summary>
         ///     Constructor
         /// </summary>
         public DapperRepository(IDbConnection connection, SqlGeneratorConfig config)
+            :base(connection, config)
         {
-            Connection = connection;
-            SqlGenerator = new SqlGenerator<TEntity>(config);
+
         }
-
-        /// <inheritdoc />
-        public IDbConnection Connection { get; }
-
-        /// <inheritdoc />
-        public ISqlGenerator<TEntity> SqlGenerator { get; }
-        
     }
 }

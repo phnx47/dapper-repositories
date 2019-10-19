@@ -25,7 +25,7 @@ namespace MicroOrm.Dapper.Repositories
 
                 var properties =
                     (SqlGenerator.IsIdentity
-                        ? SqlGenerator.SqlProperties.Where(p => !p.PropertyName.Equals(SqlGenerator.IdentitySqlProperty.PropertyName, System.StringComparison.OrdinalIgnoreCase))
+                        ? SqlGenerator.SqlProperties.Where(p => !p.PropertyName.Equals(SqlGenerator.IdentitySqlProperty.PropertyName, StringComparison.OrdinalIgnoreCase))
                         : SqlGenerator.SqlProperties).ToList();
 
                 int exceededTimes = (int)Math.Ceiling(totalInstances * properties.Count / 2100d);
@@ -56,7 +56,7 @@ namespace MicroOrm.Dapper.Repositories
 
                 var properties =
                     (SqlGenerator.IsIdentity
-                        ? SqlGenerator.SqlProperties.Where(p => !p.PropertyName.Equals(SqlGenerator.IdentitySqlProperty.PropertyName, System.StringComparison.OrdinalIgnoreCase))
+                        ? SqlGenerator.SqlProperties.Where(p => !p.PropertyName.Equals(SqlGenerator.IdentitySqlProperty.PropertyName, StringComparison.OrdinalIgnoreCase))
                         : SqlGenerator.SqlProperties).ToList();
 
                 int exceededTimes = (int)Math.Ceiling(totalInstances * properties.Count / 2100d);
