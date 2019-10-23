@@ -14,9 +14,18 @@ namespace MicroOrm.Dapper.Repositories
     public partial class ReadOnlyDapperRepository<TEntity>
         where TEntity : class
     {
+        
+        /// <inheritdoc />
+        public virtual IEnumerable<TEntity> FindAll<TChild1>(Expression<Func<TEntity, bool>> predicate, 
+            Expression<Func<TEntity, object>> tChild1)
+        {
+            return FindAll<TChild1>(predicate, tChild1, null);
+        }
 
         /// <inheritdoc />
-        public virtual IEnumerable<TEntity> FindAll<TChild1>(Expression<Func<TEntity, bool>> predicate, Expression<Func<TEntity, object>> tChild1, IDbTransaction transaction = null)
+        public virtual IEnumerable<TEntity> FindAll<TChild1>(Expression<Func<TEntity, bool>> predicate, 
+            Expression<Func<TEntity, object>> tChild1, 
+            IDbTransaction transaction)
         {
             var queryResult = SqlGenerator.GetSelectAll(predicate, tChild1);
             return ExecuteJoinQuery<TChild1, DontMap, DontMap, DontMap, DontMap, DontMap>(queryResult, transaction, tChild1);

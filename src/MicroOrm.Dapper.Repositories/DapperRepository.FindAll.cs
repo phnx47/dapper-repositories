@@ -5,7 +5,6 @@ using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Dapper;
 
-
 namespace MicroOrm.Dapper.Repositories
 {
     /// <summary>
@@ -14,19 +13,31 @@ namespace MicroOrm.Dapper.Repositories
     public partial class ReadOnlyDapperRepository<TEntity>
         where TEntity : class
     {
-               /// <inheritdoc />
-        public virtual IEnumerable<TEntity> FindAll(IDbTransaction transaction = null)
+        /// <inheritdoc />
+        public virtual IEnumerable<TEntity> FindAll()
+        {
+            return FindAll(transaction: null);
+        }
+        
+        /// <inheritdoc />
+        public virtual IEnumerable<TEntity> FindAll(IDbTransaction transaction)
         {
             return FindAll(null, transaction);
         }
 
         /// <inheritdoc />
-        public virtual IEnumerable<TEntity> FindAll(Expression<Func<TEntity, bool>> predicate, IDbTransaction transaction = null)
+        public virtual IEnumerable<TEntity> FindAll(Expression<Func<TEntity, bool>> predicate)
+        {
+            return FindAll(predicate, null);
+        }
+        
+        /// <inheritdoc />
+        public virtual IEnumerable<TEntity> FindAll(Expression<Func<TEntity, bool>> predicate, IDbTransaction transaction)
         {
             var queryResult = SqlGenerator.GetSelectAll(predicate);
             return Connection.Query<TEntity>(queryResult.GetSql(), queryResult.Param, transaction);
         }
-        
+
         /// <inheritdoc />
         public virtual Task<IEnumerable<TEntity>> FindAllAsync(IDbTransaction transaction = null)
         {
