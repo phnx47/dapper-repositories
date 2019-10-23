@@ -2,7 +2,6 @@
 using System.Threading.Tasks;
 using Dapper;
 
-
 namespace MicroOrm.Dapper.Repositories
 {
     /// <summary>

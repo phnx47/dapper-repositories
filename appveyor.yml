@@ -5,7 +5,7 @@ skip_commits:
   files:
     - '**/*.md'
 
-services: 
+services:
 - mssql2017
 - mysql
 
@@ -32,7 +32,7 @@ deploy:
   artifact: NuGet
   on:
     appveyor_repo_tag: true
-    
+
 - provider: NuGet
   server: https://www.myget.org/F/phnx47-beta/api/v2/package
   api_key:
