@@ -9,12 +9,11 @@ namespace MicroOrm.Dapper.Repositories
     public partial class DapperRepository<TEntity> : ReadOnlyDapperRepository<TEntity>, IDapperRepository<TEntity>
         where TEntity : class
     {
-        
         /// <summary>
         ///     Constructor
         /// </summary>
         public DapperRepository(IDbConnection connection)
-            :base(connection)
+            : base(connection)
         {
         }
 
@@ -22,16 +21,15 @@ namespace MicroOrm.Dapper.Repositories
         ///     Constructor
         /// </summary>
         public DapperRepository(IDbConnection connection, SqlProvider sqlProvider)
-            :base(connection, sqlProvider)
+            : base(connection, sqlProvider)
         {
-
         }
 
         /// <summary>
         ///     Constructor
         /// </summary>
         public DapperRepository(IDbConnection connection, ISqlGenerator<TEntity> sqlGenerator)
-            :base(connection, sqlGenerator)
+            : base(connection, sqlGenerator)
         {
         }
 
@@ -39,9 +37,8 @@ namespace MicroOrm.Dapper.Repositories
         ///     Constructor
         /// </summary>
         public DapperRepository(IDbConnection connection, SqlGeneratorConfig config)
-            :base(connection, config)
+            : base(connection, config)
         {
-
         }
     }
 }
