@@ -6,6 +6,8 @@
 
 [![Build status](https://ci.appveyor.com/api/projects/status/5v68lbhwc9d4948g?svg=true)](https://ci.appveyor.com/project/phnx47/microorm-dapper-repositories)
 [![AppVeyor tests](https://img.shields.io/appveyor/tests/phnx47/microorm-dapper-repositories.svg)](https://ci.appveyor.com/project/phnx47/microorm-dapper-repositories/build/tests)
+[![GitHub contributors](https://img.shields.io/github/contributors/phnx47/MicroOrm.Dapper.Repositories.svg)](https://github.com/phnx47/MicroOrm.Dapper.Repositories/graphs/contributors)
+[![CodeFactor](https://www.codefactor.io/repository/github/phnx47/microorm.dapper.repositories/badge/master)](https://www.codefactor.io/repository/github/phnx47/microorm.dapper.repositories/overview/master)
 [![License MIT](https://img.shields.io/badge/license-MIT-green.svg)](https://opensource.org/licenses/MIT)
 
 [![GitHub stars](https://img.shields.io/github/stars/phnx47/MicroOrm.Dapper.Repositories.svg?style=social&label=Star)](https://github.com/phnx47/MicroOrm.Dapper.Repositories)
