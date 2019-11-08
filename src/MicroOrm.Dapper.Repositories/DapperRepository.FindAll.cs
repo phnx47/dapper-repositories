@@ -39,13 +39,25 @@ namespace MicroOrm.Dapper.Repositories
         }
 
         /// <inheritdoc />
-        public virtual Task<IEnumerable<TEntity>> FindAllAsync(IDbTransaction transaction = null)
+        public virtual Task<IEnumerable<TEntity>> FindAllAsync()
+        {
+            return FindAllAsync(null, null);
+        }
+        
+        /// <inheritdoc />
+        public virtual Task<IEnumerable<TEntity>> FindAllAsync(IDbTransaction transaction)
         {
             return FindAllAsync(null, transaction);
         }
 
         /// <inheritdoc />
-        public virtual Task<IEnumerable<TEntity>> FindAllAsync(Expression<Func<TEntity, bool>> predicate, IDbTransaction transaction = null)
+        public virtual Task<IEnumerable<TEntity>> FindAllAsync(Expression<Func<TEntity, bool>> predicate)
+        {
+            return FindAllAsync(predicate, null);
+        }
+        
+        /// <inheritdoc />
+        public virtual Task<IEnumerable<TEntity>> FindAllAsync(Expression<Func<TEntity, bool>> predicate, IDbTransaction transaction)
         {
             var queryResult = SqlGenerator.GetSelectAll(predicate);
             return Connection.QueryAsync<TEntity>(queryResult.GetSql(), queryResult.Param, transaction);

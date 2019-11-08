@@ -731,15 +731,26 @@ namespace MicroOrm.Dapper.Repositories
             Expression<Func<TEntity, object>> tChild6,
             IDbTransaction transaction);
 
+        
         /// <summary>
         ///     Get all objects
         /// </summary>
-        Task<IEnumerable<TEntity>> FindAllAsync(IDbTransaction transaction = null);
+        Task<IEnumerable<TEntity>> FindAllAsync();
 
         /// <summary>
         ///     Get all objects
         /// </summary>
-        Task<IEnumerable<TEntity>> FindAllAsync(Expression<Func<TEntity, bool>> predicate, IDbTransaction transaction = null);
+        Task<IEnumerable<TEntity>> FindAllAsync(Expression<Func<TEntity, bool>> predicate);
+        
+        /// <summary>
+        ///     Get all objects
+        /// </summary>
+        Task<IEnumerable<TEntity>> FindAllAsync(IDbTransaction transaction);
+
+        /// <summary>
+        ///     Get all objects
+        /// </summary>
+        Task<IEnumerable<TEntity>> FindAllAsync(Expression<Func<TEntity, bool>> predicate, IDbTransaction transaction);
 
         /// <summary>
         ///     Get all objects with join objects
