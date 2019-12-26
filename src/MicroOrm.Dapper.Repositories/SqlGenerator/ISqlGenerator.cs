@@ -143,13 +143,13 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         /// </summary>
         /// <returns></returns>
         SqlQuery GetSelectPaged(Expression<Func<TEntity, bool>> predicate,
-            int limit, int offset, params Expression<Func<TEntity, object>>[] includes);
-        
+            int offset, int limit, params Expression<Func<TEntity, object>>[] includes);
+
         /// <summary>
         ///     Get SQL for SELECT Query with BETWEEN
         /// </summary>
         SqlQuery GetSelectBetween(object from, object to, Expression<Func<TEntity, object>> btwField);
-        
+
         /// <summary>
         ///     Get SQL for SELECT Query with BETWEEN
         /// </summary>

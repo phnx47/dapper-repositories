@@ -45,7 +45,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
 
         /// <inheritdoc />
         public virtual SqlQuery GetSelectPaged(Expression<Func<TEntity, bool>> predicate,
-            int limit, int offset, params Expression<Func<TEntity, object>>[] includes)
+            int offset, int limit, params Expression<Func<TEntity, object>>[] includes)
         {
             var sqlQuery = InitBuilderSelect(false);
 
