@@ -156,7 +156,7 @@ namespace MicroOrm.Dapper.Repositories
         }
 
         /// <inheritdoc />
-        public virtual Task<IEnumerable<TEntity>> FindAllAsync<TChild1>(Expression<Func<TEntity, bool>> predicate, 
+        public virtual Task<IEnumerable<TEntity>> FindAllAsync<TChild1>(Expression<Func<TEntity, bool>> predicate,
             Expression<Func<TEntity, object>> tChild1,
             IDbTransaction transaction)
         {
@@ -191,7 +191,6 @@ namespace MicroOrm.Dapper.Repositories
             Expression<Func<TEntity, object>> tChild2,
             Expression<Func<TEntity, object>> tChild3)
         {
-            var sqlQuery = SqlGenerator.GetSelectAll(predicate, tChild1, tChild2, tChild3);
             return FindAllAsync<TChild1, TChild2, TChild3>(predicate, tChild1, tChild2, tChild3, null);
         }
 
@@ -267,7 +266,6 @@ namespace MicroOrm.Dapper.Repositories
             Expression<Func<TEntity, object>> tChild5,
             Expression<Func<TEntity, object>> tChild6)
         {
-            var sqlQuery = SqlGenerator.GetSelectAll(predicate, tChild1, tChild2, tChild3, tChild4, tChild5, tChild6);
             return FindAllAsync<TChild1, TChild2, TChild3, TChild4, TChild5, TChild6>(predicate, tChild1, tChild2, tChild3, tChild4, tChild5, tChild6, null);
         }
 

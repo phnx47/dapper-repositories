@@ -290,7 +290,6 @@ namespace MicroOrm.Dapper.Repositories
             Expression<Func<TEntity, object>> tChild5,
             Expression<Func<TEntity, object>> tChild6)
         {
-            var sqlQuery = SqlGenerator.GetSelectPaged(predicate, offset, limit, tChild1, tChild2, tChild3, tChild4, tChild5, tChild6);
             return FindPagedAsync<TChild1, TChild2, TChild3, TChild4, TChild5, TChild6>(predicate, offset, limit, tChild1, tChild2, tChild3, tChild4, tChild5, tChild6, null);
         }
 

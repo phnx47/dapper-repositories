@@ -136,8 +136,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         ///     Get SQL for SELECT Query
         /// </summary>
         SqlQuery GetSelectAll(Expression<Func<TEntity, bool>> predicate, params Expression<Func<TEntity, object>>[] includes);
-
-
+        
         /// <summary>
         ///  Get Pagination SELECT Query
         /// </summary>

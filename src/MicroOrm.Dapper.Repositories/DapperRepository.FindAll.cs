@@ -38,7 +38,6 @@ namespace MicroOrm.Dapper.Repositories
             return Connection.Query<TEntity>(queryResult.GetSql(), queryResult.Param, transaction);
         }
 
-
         /// <inheritdoc />
         public virtual Task<IEnumerable<TEntity>> FindAllAsync()
         {
