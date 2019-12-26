@@ -137,6 +137,14 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         /// </summary>
         SqlQuery GetSelectAll(Expression<Func<TEntity, bool>> predicate, params Expression<Func<TEntity, object>>[] includes);
 
+
+        /// <summary>
+        ///  Get Pagination SELECT Query
+        /// </summary>
+        /// <returns></returns>
+        SqlQuery GetSelectPaged(Expression<Func<TEntity, bool>> predicate,
+            int limit, int offset, params Expression<Func<TEntity, object>>[] includes);
+        
         /// <summary>
         ///     Get SQL for SELECT Query with BETWEEN
         /// </summary>

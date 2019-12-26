@@ -9,7 +9,8 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
     public partial class SqlGenerator<TEntity>
         where TEntity : class
     {
-        private SqlQuery GetSelect(Expression<Func<TEntity, bool>> predicate, bool firstOnly, params Expression<Func<TEntity, object>>[] includes)
+        private SqlQuery GetSelect(Expression<Func<TEntity, bool>> predicate, bool firstOnly,
+            params Expression<Func<TEntity, object>>[] includes)
         {
             var sqlQuery = InitBuilderSelect(firstOnly);
 
@@ -18,10 +19,10 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                 .Append(" FROM ")
                 .Append(TableName)
                 .Append(" ");
-            
-            if (includes.Any())                  
+
+            if (includes.Any())
                 sqlQuery.SqlBuilder.Append(joinsBuilder);
-            
+
             AppendWherePredicateQuery(sqlQuery, predicate, QueryType.Select);
 
             if (firstOnly && (Config.SqlProvider == SqlProvider.MySQL || Config.SqlProvider == SqlProvider.PostgreSQL))
@@ -29,7 +30,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
 
             return sqlQuery;
         }
-        
+
         /// <inheritdoc />
         public virtual SqlQuery GetSelectFirst(Expression<Func<TEntity, bool>> predicate, params Expression<Func<TEntity, object>>[] includes)
         {
@@ -40,6 +41,28 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         public virtual SqlQuery GetSelectAll(Expression<Func<TEntity, bool>> predicate, params Expression<Func<TEntity, object>>[] includes)
         {
             return GetSelect(predicate, false, includes);
+        }
+
+        /// <inheritdoc />
+        public virtual SqlQuery GetSelectPaged(Expression<Func<TEntity, bool>> predicate,
+            int limit, int offset, params Expression<Func<TEntity, object>>[] includes)
+        {
+            var sqlQuery = InitBuilderSelect(false);
+
+            var joinsBuilder = AppendJoinToSelect(sqlQuery, includes);
+            sqlQuery.SqlBuilder
+                .Append(" FROM ")
+                .Append(TableName)
+                .Append(" ");
+
+            if (includes.Any())
+                sqlQuery.SqlBuilder.Append(joinsBuilder);
+
+            AppendWherePredicateQuery(sqlQuery, predicate, QueryType.Select);
+
+            sqlQuery.SqlBuilder.Append($"LIMIT {offset},{limit}");
+
+            return sqlQuery;
         }
 
         /// <inheritdoc />
@@ -72,7 +95,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
 
             IDictionary<string, object> dictionary = new Dictionary<string, object>
             {
-                { keyProperty.PropertyName, id }
+                {keyProperty.PropertyName, id}
             };
 
             sqlQuery.SqlBuilder
@@ -128,7 +151,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
 
             return query;
         }
-        
+
         private SqlQuery InitBuilderSelect(bool firstOnly)
         {
             var query = new SqlQuery();
@@ -140,7 +163,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
 
             return query;
         }
-        
+
         private static string GetFieldsSelect(string tableName, SqlPropertyMetadata[] properties)
         {
             //Projection function

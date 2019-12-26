@@ -32,11 +32,20 @@ namespace MicroOrm.Dapper.Repositories
         }
         
         /// <inheritdoc />
+        public virtual IEnumerable<TEntity> FindPaged(Expression<Func<TEntity, bool>> predicate, int offset, int limit)
+        {
+            var queryResult = SqlGenerator.GetSelectPaged(predicate, offset, limit);
+            return Connection.Query<TEntity>(queryResult.GetSql(), queryResult.Param, null);
+            
+        }
+        
+        /// <inheritdoc />
         public virtual IEnumerable<TEntity> FindAll(Expression<Func<TEntity, bool>> predicate, IDbTransaction transaction)
         {
             var queryResult = SqlGenerator.GetSelectAll(predicate);
             return Connection.Query<TEntity>(queryResult.GetSql(), queryResult.Param, transaction);
         }
+
 
         /// <inheritdoc />
         public virtual Task<IEnumerable<TEntity>> FindAllAsync()
