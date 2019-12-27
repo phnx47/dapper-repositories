@@ -5,7 +5,6 @@
     <AssemblyTitle>MicroOrm.Dapper.Repositories</AssemblyTitle>
     <VersionPrefix>1.11.1</VersionPrefix>
     <Authors>Sergey Kuznetsov</Authors>
-    <TargetFrameworks Condition=" '$(OS)' != 'Windows_NT' ">netstandard2.0</TargetFrameworks>
     <TargetFrameworks Condition=" '$(OS)' == 'Windows_NT' ">net461;netstandard2.0</TargetFrameworks>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
@@ -16,6 +15,8 @@
     <PackageLicenseUrl>https://opensource.org/licenses/MIT</PackageLicenseUrl>
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/phnx47/MicroOrm.Dapper.Repositories</RepositoryUrl>
+    <LangVersion>8</LangVersion>
+    <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Dapper" Version="2.0.30" />

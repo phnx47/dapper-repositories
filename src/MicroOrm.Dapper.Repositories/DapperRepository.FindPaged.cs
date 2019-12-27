@@ -20,17 +20,23 @@ namespace MicroOrm.Dapper.Repositories
         }
 
         /// <inheritdoc />
-        public virtual IEnumerable<TEntity> FindPaged(IDbTransaction transaction,int offset, int limit)
+        public virtual IEnumerable<TEntity> FindPaged(IDbTransaction transaction, int offset, int limit)
         {
-            return FindPaged(null, offset, limit,transaction);
+            return FindPaged(null, offset, limit, transaction);
         }
 
         /// <inheritdoc />
         public virtual IEnumerable<TEntity> FindPaged(Expression<Func<TEntity, bool>> predicate, int offset, int limit,
-            IDbTransaction transaction = null)
+            IDbTransaction transaction)
         {
             var queryResult = SqlGenerator.GetSelectPaged(predicate, offset, limit);
             return Connection.Query<TEntity>(queryResult.GetSql(), queryResult.Param, transaction);
+        }
+
+        /// <inheritdoc />
+        public virtual IEnumerable<TEntity> FindPaged(Expression<Func<TEntity, bool>> predicate, int offset, int limit)
+        {
+            return FindPaged(predicate, offset, limit, null);
         }
 
         /// <inheritdoc />
@@ -39,7 +45,7 @@ namespace MicroOrm.Dapper.Repositories
             var queryResult = SqlGenerator.GetSelectPaged(predicate, offset, limit);
             return Connection.QueryAsync<TEntity>(queryResult.GetSql(), queryResult.Param, null);
         }
-        
+
         /// <inheritdoc />
         public virtual Task<IEnumerable<TEntity>> FindPagedAsync(int offset, int limit)
         {
@@ -54,7 +60,7 @@ namespace MicroOrm.Dapper.Repositories
 
         /// <inheritdoc />
         public virtual Task<IEnumerable<TEntity>> FindPagedAsync(Expression<Func<TEntity, bool>> predicate,
-            int offset, int limit, 
+            int offset, int limit,
             IDbTransaction transaction)
         {
             var queryResult = SqlGenerator.GetSelectPaged(predicate, offset, limit);
