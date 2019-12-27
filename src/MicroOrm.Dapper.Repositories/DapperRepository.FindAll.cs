@@ -18,7 +18,7 @@ namespace MicroOrm.Dapper.Repositories
         {
             return FindAll(transaction: null);
         }
-        
+
         /// <inheritdoc />
         public virtual IEnumerable<TEntity> FindAll(IDbTransaction transaction)
         {
@@ -30,7 +30,7 @@ namespace MicroOrm.Dapper.Repositories
         {
             return FindAll(predicate, null);
         }
-        
+
         /// <inheritdoc />
         public virtual IEnumerable<TEntity> FindAll(Expression<Func<TEntity, bool>> predicate, IDbTransaction transaction)
         {
@@ -43,7 +43,7 @@ namespace MicroOrm.Dapper.Repositories
         {
             return FindAllAsync(null, null);
         }
-        
+
         /// <inheritdoc />
         public virtual Task<IEnumerable<TEntity>> FindAllAsync(IDbTransaction transaction)
         {
@@ -55,7 +55,7 @@ namespace MicroOrm.Dapper.Repositories
         {
             return FindAllAsync(predicate, null);
         }
-        
+
         /// <inheritdoc />
         public virtual Task<IEnumerable<TEntity>> FindAllAsync(Expression<Func<TEntity, bool>> predicate, IDbTransaction transaction)
         {
