@@ -25,7 +25,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
 
             AppendWherePredicateQuery(sqlQuery, predicate, QueryType.Select);
 
-            SetOrder(sqlQuery);
+            SetOrder(TableName, sqlQuery);
 
             if (firstOnly && (Config.SqlProvider == SqlProvider.MySQL || Config.SqlProvider == SqlProvider.PostgreSQL))
                 sqlQuery.SqlBuilder.Append(" LIMIT 1");
@@ -51,7 +51,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         /// <summary>
         /// Set order by in query; DapperRepository.SetOrderBy must be called first. 
         /// </summary>
-        private void SetOrder(SqlQuery sqlQuery)
+        private void SetOrder(string tableName, SqlQuery sqlQuery)
         {
             if (FilterData.OrderInfo == null) return;
 
@@ -63,11 +63,11 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                 var col = FilterData.OrderInfo.Columns[i];
                 if (i >= count - 1)
                 {
-                    sqlQuery.SqlBuilder.Append($"{col} {FilterData.OrderInfo.Direction} ");
+                    sqlQuery.SqlBuilder.Append($"{tableName}.{col} {FilterData.OrderInfo.Direction} ");
                     break;
                 }
 
-                sqlQuery.SqlBuilder.Append($"{col},");
+                sqlQuery.SqlBuilder.Append($"{tableName}.{col},");
             }
             
             if (!FilterData.OrderInfo.Permanent)
