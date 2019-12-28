@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Reflection;
+using MicroOrm.Dapper.Repositories.SqlGenerator.Filters;
 
 namespace MicroOrm.Dapper.Repositories.SqlGenerator
 {
@@ -14,6 +15,11 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         ///     All original properties
         /// </summary>
         PropertyInfo[] AllProperties { get; }
+
+        /// <summary>
+        ///     Order info (Asc,desc, cols)
+        /// </summary>
+        FilterData FilterData { get; }
 
         /// <summary>
         ///     Has Date of changed
@@ -137,13 +143,6 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         /// </summary>
         SqlQuery GetSelectAll(Expression<Func<TEntity, bool>> predicate, params Expression<Func<TEntity, object>>[] includes);
         
-        /// <summary>
-        ///  Get Pagination SELECT Query
-        /// </summary>
-        /// <returns></returns>
-        SqlQuery GetSelectPaged(Expression<Func<TEntity, bool>> predicate,
-            int offset, int limit, params Expression<Func<TEntity, object>>[] includes);
-
         /// <summary>
         ///     Get SQL for SELECT Query with BETWEEN
         /// </summary>

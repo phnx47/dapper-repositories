@@ -122,5 +122,7 @@ namespace MicroOrm.Dapper.Repositories
         ///     Bulk Update objects in DB
         /// </summary>
         bool BulkUpdate(IEnumerable<TEntity> instances, IDbTransaction transaction);
+        
+        
     }
 }

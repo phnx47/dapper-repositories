@@ -28,7 +28,14 @@ namespace MicroOrm.Dapper.Repositories
         /// <inheritdoc />
         public virtual IEnumerable<TEntity> FindAll(Expression<Func<TEntity, bool>> predicate)
         {
-            return FindAll(predicate, null);
+            return FindAll(predicate, transaction: null);
+        }
+
+        /// <inheritdoc />
+        public virtual IEnumerable<TEntity> FindAll(Expression<Func<TEntity, bool>> predicate,
+            Expression<Func<TEntity, string, string>> orderBy)
+        {
+            return FindAll(predicate, transaction: null);
         }
 
         /// <inheritdoc />
