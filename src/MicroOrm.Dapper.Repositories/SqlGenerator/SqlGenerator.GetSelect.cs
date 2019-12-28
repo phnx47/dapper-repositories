@@ -40,12 +40,9 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
             if (FilterData.LimitInfo == null)
                 return;
 
-            if (FilterData.LimitInfo.Offset != null)
-            {
-                sqlQuery.SqlBuilder.Append($" LIMIT {FilterData.LimitInfo.Offset.Value},{FilterData.LimitInfo.Limit}");
-            }
-
-            sqlQuery.SqlBuilder.Append($" LIMIT {FilterData.LimitInfo.Limit}");
+            sqlQuery.SqlBuilder.Append(FilterData.LimitInfo.Offset != null
+                ? $" LIMIT {FilterData.LimitInfo.Offset.Value},{FilterData.LimitInfo.Limit}"
+                : $" LIMIT {FilterData.LimitInfo.Limit}");
 
             if (!FilterData.LimitInfo.Permanent)
                 FilterData.LimitInfo = null;
