@@ -4,7 +4,6 @@ using System.Linq.Expressions;
 using MicroOrm.Dapper.Repositories.SqlGenerator;
 using MicroOrm.Dapper.Repositories.SqlGenerator.Filters;
 
-
 namespace MicroOrm.Dapper.Repositories
 {
     /// <summary>

@@ -1,6 +1,5 @@
 ﻿using MicroOrm.Dapper.Repositories.SqlGenerator.Filters;
 
-
 namespace MicroOrm.Dapper.Repositories
 {
     /// <summary>
@@ -21,7 +20,6 @@ namespace MicroOrm.Dapper.Repositories
         {
             if (limit <= 0)
                 return this;
-           
             
             var data = SqlGenerator.FilterData.LimitInfo ?? new LimitInfo();
             data.Limit = limit;

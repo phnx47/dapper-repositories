@@ -72,8 +72,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
 
                 sqlQuery.SqlBuilder.Append($"{col},");
             }
-
-
+            
             if (!FilterData.OrderInfo.Permanent)
                 FilterData.OrderInfo = null;
         }
