@@ -25,10 +25,56 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
 
             AppendWherePredicateQuery(sqlQuery, predicate, QueryType.Select);
 
-            if (firstOnly && (Config.SqlProvider == SqlProvider.MySQL || Config.SqlProvider == SqlProvider.PostgreSQL))
-                sqlQuery.SqlBuilder.Append("LIMIT 1");
+            SetOrder(sqlQuery);
 
+            if (firstOnly && (Config.SqlProvider == SqlProvider.MySQL || Config.SqlProvider == SqlProvider.PostgreSQL))
+                sqlQuery.SqlBuilder.Append(" LIMIT 1");
+            else
+                SetLimit(sqlQuery);
+            
             return sqlQuery;
+        }
+
+        private void SetLimit(SqlQuery sqlQuery)
+        {
+            if (FilterData.LimitInfo == null)
+                return;
+
+            if (FilterData.LimitInfo.Offset != null)
+            {
+                sqlQuery.SqlBuilder.Append($" LIMIT {FilterData.LimitInfo.Offset.Value},{FilterData.LimitInfo.Limit}");
+            }
+
+            sqlQuery.SqlBuilder.Append($" LIMIT {FilterData.LimitInfo.Limit}");
+
+            if (!FilterData.LimitInfo.Permanent)
+                FilterData.LimitInfo = null;
+        }
+
+        /// <summary>
+        /// Set order by in query; DapperRepository.SetOrderBy must be called first. 
+        /// </summary>
+        private void SetOrder(SqlQuery sqlQuery)
+        {
+            if (FilterData.OrderInfo == null) return;
+
+            sqlQuery.SqlBuilder.Append("ORDER BY ");
+            
+            var count = FilterData.OrderInfo.Columns.Count;
+            for (var i = 0; i < count; i++)
+            {
+                var col = FilterData.OrderInfo.Columns[i];
+                if (i >= count - 1)
+                {
+                    sqlQuery.SqlBuilder.Append($"{col} {FilterData.OrderInfo.Direction} ");
+                    break;
+                }
+
+                sqlQuery.SqlBuilder.Append($"{col},");
+            }
+            
+            if (!FilterData.OrderInfo.Permanent)
+                FilterData.OrderInfo = null;
         }
 
         /// <inheritdoc />
@@ -42,29 +88,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         {
             return GetSelect(predicate, false, includes);
         }
-
-        /// <inheritdoc />
-        public virtual SqlQuery GetSelectPaged(Expression<Func<TEntity, bool>> predicate,
-            int offset, int limit, params Expression<Func<TEntity, object>>[] includes)
-        {
-            var sqlQuery = InitBuilderSelect(false);
-
-            var joinsBuilder = AppendJoinToSelect(sqlQuery, includes);
-            sqlQuery.SqlBuilder
-                .Append(" FROM ")
-                .Append(TableName)
-                .Append(" ");
-
-            if (includes.Any())
-                sqlQuery.SqlBuilder.Append(joinsBuilder);
-
-            AppendWherePredicateQuery(sqlQuery, predicate, QueryType.Select);
-
-            sqlQuery.SqlBuilder.Append($"LIMIT {offset},{limit}");
-
-            return sqlQuery;
-        }
-
+        
         /// <inheritdoc />
         public SqlQuery GetSelectById(object id, params Expression<Func<TEntity, object>>[] includes)
         {

@@ -4,6 +4,7 @@ using System.Data;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using MicroOrm.Dapper.Repositories.SqlGenerator;
+using MicroOrm.Dapper.Repositories.SqlGenerator.Filters;
 
 namespace MicroOrm.Dapper.Repositories
 {
@@ -16,6 +17,7 @@ namespace MicroOrm.Dapper.Repositories
         ///     DB Connection
         /// </summary>
         IDbConnection Connection { get; }
+
         /// <summary>
         ///     SQL Genetator
         /// </summary>
@@ -597,7 +599,7 @@ namespace MicroOrm.Dapper.Repositories
         ///     Get all objects
         /// </summary>
         IEnumerable<TEntity> FindAll();
-
+        
         /// <summary>
         ///     Get all objects
         /// </summary>
@@ -612,6 +614,41 @@ namespace MicroOrm.Dapper.Repositories
         ///     Get all objects
         /// </summary>
         IEnumerable<TEntity> FindAll(Expression<Func<TEntity, bool>> predicate, IDbTransaction transaction);
+
+        /// <summary>
+        /// Remove query sorting
+        /// </summary>
+        ReadOnlyDapperRepository<TEntity> SetOrderBy();
+
+        /// <summary>
+        /// Set query sorting
+        /// </summary>
+        ReadOnlyDapperRepository<TEntity> SetOrderBy(OrderInfo.SortDirection direction, bool permanent, params Expression<Func<TEntity, object>>[] cols);
+
+        /// <summary>
+        /// Set query sorting
+        /// </summary>
+        ReadOnlyDapperRepository<TEntity> SetOrderBy(OrderInfo.SortDirection direction, params Expression<Func<TEntity, object>>[] cols);
+
+        /// <summary>
+        /// Remove limit and offset
+        /// </summary>
+        ReadOnlyDapperRepository<TEntity> SetLimit();
+        
+        /// <summary>
+        /// Set query offset and limit
+        /// </summary>
+        ReadOnlyDapperRepository<TEntity> SetLimit(uint limit, uint? offset, bool permanent);
+        
+        /// <summary>
+        /// Set query offset and limit
+        /// </summary>
+        ReadOnlyDapperRepository<TEntity> SetLimit(uint limit, uint offset);
+        
+        /// <summary>
+        /// Set query limit
+        /// </summary>
+        ReadOnlyDapperRepository<TEntity> SetLimit(uint limit);
 
         /// <summary>
         ///     Get all objects with join objects
@@ -633,7 +670,7 @@ namespace MicroOrm.Dapper.Repositories
             Expression<Func<TEntity, bool>> predicate,
             Expression<Func<TEntity, object>> tChild1,
             Expression<Func<TEntity, object>> tChild2);
-        
+
         /// <summary>
         ///     Get all objects with join objects
         /// </summary>
@@ -651,7 +688,7 @@ namespace MicroOrm.Dapper.Repositories
             Expression<Func<TEntity, object>> tChild1,
             Expression<Func<TEntity, object>> tChild2,
             Expression<Func<TEntity, object>> tChild3);
-        
+
         /// <summary>
         ///     Get all objects with join objects
         /// </summary>
@@ -660,7 +697,7 @@ namespace MicroOrm.Dapper.Repositories
             Expression<Func<TEntity, object>> tChild1,
             Expression<Func<TEntity, object>> tChild2,
             Expression<Func<TEntity, object>> tChild3,
-            IDbTransaction transaction );
+            IDbTransaction transaction);
 
         /// <summary>
         ///     Get all objects with join objects
@@ -671,7 +708,7 @@ namespace MicroOrm.Dapper.Repositories
             Expression<Func<TEntity, object>> tChild2,
             Expression<Func<TEntity, object>> tChild3,
             Expression<Func<TEntity, object>> tChild4);
-        
+
         /// <summary>
         ///     Get all objects with join objects
         /// </summary>
@@ -693,7 +730,7 @@ namespace MicroOrm.Dapper.Repositories
             Expression<Func<TEntity, object>> tChild3,
             Expression<Func<TEntity, object>> tChild4,
             Expression<Func<TEntity, object>> tChild5);
-        
+
         /// <summary>
         ///     Get all objects with join objects
         /// </summary>
@@ -717,7 +754,7 @@ namespace MicroOrm.Dapper.Repositories
             Expression<Func<TEntity, object>> tChild4,
             Expression<Func<TEntity, object>> tChild5,
             Expression<Func<TEntity, object>> tChild6);
-        
+
         /// <summary>
         ///     Get all objects with join objects
         /// </summary>
@@ -731,7 +768,7 @@ namespace MicroOrm.Dapper.Repositories
             Expression<Func<TEntity, object>> tChild6,
             IDbTransaction transaction);
 
-        
+
         /// <summary>
         ///     Get all objects
         /// </summary>
@@ -741,7 +778,7 @@ namespace MicroOrm.Dapper.Repositories
         ///     Get all objects
         /// </summary>
         Task<IEnumerable<TEntity>> FindAllAsync(Expression<Func<TEntity, bool>> predicate);
-        
+
         /// <summary>
         ///     Get all objects
         /// </summary>
@@ -757,14 +794,14 @@ namespace MicroOrm.Dapper.Repositories
         /// </summary>
         Task<IEnumerable<TEntity>> FindAllAsync<TChild1>(Expression<Func<TEntity, bool>> predicate,
             Expression<Func<TEntity, object>> tChild1);
-        
+
         /// <summary>
         ///     Get all objects with join objects
         /// </summary>
         Task<IEnumerable<TEntity>> FindAllAsync<TChild1>(Expression<Func<TEntity, bool>> predicate,
             Expression<Func<TEntity, object>> tChild1,
             IDbTransaction transaction);
-        
+
         /// <summary>
         ///     Get all objects with join objects
         /// </summary>
@@ -772,7 +809,7 @@ namespace MicroOrm.Dapper.Repositories
             Expression<Func<TEntity, bool>> predicate,
             Expression<Func<TEntity, object>> tChild1,
             Expression<Func<TEntity, object>> tChild2);
-        
+
         /// <summary>
         ///     Get all objects with join objects
         /// </summary>
@@ -790,7 +827,7 @@ namespace MicroOrm.Dapper.Repositories
             Expression<Func<TEntity, object>> tChild1,
             Expression<Func<TEntity, object>> tChild2,
             Expression<Func<TEntity, object>> tChild3);
-        
+
         /// <summary>
         ///     Get all objects with join objects
         /// </summary>
@@ -801,7 +838,7 @@ namespace MicroOrm.Dapper.Repositories
             Expression<Func<TEntity, object>> tChild3,
             IDbTransaction transaction);
 
-        
+
         /// <summary>
         ///     Get all objects with join objects
         /// </summary>
@@ -811,7 +848,7 @@ namespace MicroOrm.Dapper.Repositories
             Expression<Func<TEntity, object>> tChild2,
             Expression<Func<TEntity, object>> tChild3,
             Expression<Func<TEntity, object>> tChild4);
-        
+
         /// <summary>
         ///     Get all objects with join objects
         /// </summary>
@@ -833,8 +870,8 @@ namespace MicroOrm.Dapper.Repositories
             Expression<Func<TEntity, object>> tChild3,
             Expression<Func<TEntity, object>> tChild4,
             Expression<Func<TEntity, object>> tChild5);
-        
-        
+
+
         /// <summary>
         ///     Get all objects with join objects
         /// </summary>
@@ -858,7 +895,7 @@ namespace MicroOrm.Dapper.Repositories
             Expression<Func<TEntity, object>> tChild4,
             Expression<Func<TEntity, object>> tChild5,
             Expression<Func<TEntity, object>> tChild6);
-        
+
         /// <summary>
         ///     Get all objects with join objects
         /// </summary>

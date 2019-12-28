@@ -1,4 +1,5 @@
 using System;
+using MicroOrm.Dapper.Repositories.SqlGenerator.Filters;
 
 namespace MicroOrm.Dapper.Repositories.SqlGenerator
 {
@@ -12,7 +13,8 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         private void InitConfig(SqlGeneratorConfig sqlGeneratorConfig)
         {
             Config = sqlGeneratorConfig;
-
+            FilterData = new FilterData();
+            
             if (Config.UseQuotationMarks)
             {
                 switch (Config.SqlProvider)
@@ -91,6 +93,5 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                     propertyMetadata.TableName = GetTableNameWithSchemaPrefix(propertyMetadata.TableName, propertyMetadata.TableSchema);
             }
         }
-        
     }
 }

@@ -9,6 +9,7 @@ using System.Text;
 using MicroOrm.Dapper.Repositories.Attributes.Joins;
 using MicroOrm.Dapper.Repositories.Attributes.LogicalDelete;
 using MicroOrm.Dapper.Repositories.Extensions;
+using MicroOrm.Dapper.Repositories.SqlGenerator.Filters;
 using MicroOrm.Dapper.Repositories.SqlGenerator.QueryExpressions;
 
 namespace MicroOrm.Dapper.Repositories.SqlGenerator
@@ -56,6 +57,9 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
 
         /// <inheritdoc />
         public PropertyInfo[] AllProperties { get; protected set; }
+        
+        /// <inheritdoc />
+        public FilterData FilterData { get; protected set; }
 
         /// <inheritdoc />
         public bool HasUpdatedAt => UpdatedAtProperty != null;
@@ -98,8 +102,6 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
 
         /// <inheritdoc />
         public object LogicalDeleteValue { get; protected set; }
-
-        
 
         /// <inheritdoc />
         public virtual SqlQuery GetInsert(TEntity entity)
