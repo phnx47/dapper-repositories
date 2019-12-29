@@ -5,7 +5,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
-
+using MicroOrm.Dapper.Repositories.Attributes;
 using MicroOrm.Dapper.Repositories.Attributes.Joins;
 using MicroOrm.Dapper.Repositories.Attributes.LogicalDelete;
 using MicroOrm.Dapper.Repositories.Extensions;
@@ -57,7 +57,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
 
         /// <inheritdoc />
         public PropertyInfo[] AllProperties { get; protected set; }
-        
+
         /// <inheritdoc />
         public FilterData FilterData { get; protected set; }
 
@@ -112,12 +112,15 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                     : SqlProperties).ToList();
 
             if (HasUpdatedAt)
-                UpdatedAtProperty.SetValue(entity, DateTime.UtcNow);
+            {
+                var attribute = UpdatedAtProperty.GetCustomAttribute<UpdatedAtAttribute>();
+                UpdatedAtProperty.SetValue(entity, TimeZoneInfo.ConvertTime(DateTime.Now, attribute.TimeZone));
+            }
 
             var query = new SqlQuery(entity);
 
             query.SqlBuilder.AppendFormat("INSERT INTO {0} ({1}) VALUES ({2})", TableName, string.Join(", ", properties.Select(p => p.ColumnName)),
-                                            string.Join(", ", properties.Select(p => "@" + p.PropertyName))); // values
+                string.Join(", ", properties.Select(p => "@" + p.PropertyName))); // values
 
             if (IsIdentity)
                 switch (Config.SqlProvider)
@@ -162,24 +165,28 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
 
             for (var i = 0; i < entitiesArray.Length; i++)
             {
+                var entity = entitiesArray[i];
                 if (HasUpdatedAt)
-                    UpdatedAtProperty.SetValue(entitiesArray[i], DateTime.UtcNow);
+                {
+                    var attribute = UpdatedAtProperty.GetCustomAttribute<UpdatedAtAttribute>();
+                    UpdatedAtProperty.SetValue(entity, TimeZoneInfo.ConvertTime(DateTime.Now, attribute.TimeZone));
+                }
 
                 foreach (var property in properties)
                     // ReSharper disable once PossibleNullReferenceException
-                    parameters.Add(property.PropertyName + i, entityType.GetProperty(property.PropertyName).GetValue(entitiesArray[i], null));
+                    parameters.Add(property.PropertyName + i, entityType.GetProperty(property.PropertyName).GetValue(entity, null));
 
                 values.Add(string.Format("({0})", string.Join(", ", properties.Select(p => "@" + p.PropertyName + i))));
             }
 
-            query.SqlBuilder.AppendFormat("INSERT INTO {0} ({1}) VALUES {2}", TableName, string.Join(", ", properties.Select(p => p.ColumnName)), string.Join(",", values)); // values
+            query.SqlBuilder.AppendFormat("INSERT INTO {0} ({1}) VALUES {2}", TableName, string.Join(", ", properties.Select(p => p.ColumnName)),
+                string.Join(",", values)); // values
 
             query.SetParam(parameters);
 
             return query;
         }
 
-      
 
         /// <inheritdoc />
         public virtual SqlQuery GetBulkUpdate(IEnumerable<TEntity> entities)
@@ -199,24 +206,25 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
 
             for (var i = 0; i < entitiesArray.Length; i++)
             {
+                var entity = entitiesArray[i];
                 if (HasUpdatedAt)
-                    UpdatedAtProperty.SetValue(entitiesArray[i], DateTime.UtcNow);
+                {
+                    var attribute = UpdatedAtProperty.GetCustomAttribute<UpdatedAtAttribute>();
+                    UpdatedAtProperty.SetValue(entity, TimeZoneInfo.ConvertTime(DateTime.Now, attribute.TimeZone));
+                }
 
                 if (i > 0)
                     query.SqlBuilder.Append("; ");
 
-                query.SqlBuilder.Append(string.Format("UPDATE {0} SET {1} WHERE {2}", TableName,
-                                                        string.Join(", ", properties.Select(p => string.Format("{0} = @{1}{2}", p.ColumnName, p.PropertyName, i))),
-                                                        string.Join(" AND ", KeySqlProperties.Where(p => !p.IgnoreUpdate)
-                                                                                             .Select(p => string.Format("{0} = @{1}{2}", p.ColumnName, p.PropertyName, i)))
-                                                    ));
+                query.SqlBuilder.Append(
+                    $"UPDATE {TableName} SET {string.Join(", ", properties.Select(p => $"{p.ColumnName} = @{p.PropertyName}{i}"))} WHERE {string.Join(" AND ", KeySqlProperties.Where(p => !p.IgnoreUpdate).Select(p => $"{p.ColumnName} = @{p.PropertyName}{i}"))}");
 
                 // ReSharper disable PossibleNullReferenceException
                 foreach (var property in properties)
-                    parameters.Add(property.PropertyName + i, entityType.GetProperty(property.PropertyName).GetValue(entitiesArray[i], null));
+                    parameters.Add(property.PropertyName + i, entityType.GetProperty(property.PropertyName).GetValue(entity, null));
 
                 foreach (var property in KeySqlProperties.Where(p => !p.IgnoreUpdate))
-                    parameters.Add(property.PropertyName + i, entityType.GetProperty(property.PropertyName).GetValue(entitiesArray[i], null));
+                    parameters.Add(property.PropertyName + i, entityType.GetProperty(property.PropertyName).GetValue(entity, null));
 
                 // ReSharper restore PossibleNullReferenceException
             }

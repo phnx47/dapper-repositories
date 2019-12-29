@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using MicroOrm.Dapper.Repositories.Attributes;
 using MicroOrm.Dapper.Repositories.Extensions;
 
 namespace MicroOrm.Dapper.Repositories.SqlGenerator
@@ -20,7 +21,10 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                 throw new ArgumentException("Can't update without [Key]");
 
             if (HasUpdatedAt)
-                UpdatedAtProperty.SetValue(entity, DateTime.UtcNow);
+            {
+                var attribute = UpdatedAtProperty.GetCustomAttribute<UpdatedAtAttribute>();
+                UpdatedAtProperty.SetValue(entity, TimeZoneInfo.ConvertTime(DateTime.Now, attribute.TimeZone));
+            }
 
             var query = new SqlQuery(entity);
 
@@ -47,7 +51,10 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                 !KeySqlProperties.Any(k => k.PropertyName.Equals(p.PropertyName, StringComparison.OrdinalIgnoreCase)) && !p.IgnoreUpdate).ToArray();
 
             if (HasUpdatedAt)
-                UpdatedAtProperty.SetValue(entity, DateTime.UtcNow);
+            {
+                var attribute = UpdatedAtProperty.GetCustomAttribute<UpdatedAtAttribute>();
+                UpdatedAtProperty.SetValue(entity, TimeZoneInfo.ConvertTime(DateTime.Now, attribute.TimeZone));
+            }
 
             var query = new SqlQuery(entity);
 
