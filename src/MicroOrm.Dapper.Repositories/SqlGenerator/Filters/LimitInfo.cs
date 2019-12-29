@@ -9,6 +9,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator.Filters
         /// The limit; Should be greater than 0.
         /// </summary>
         public uint Limit { get; set; }
+
         /// <summary>
         /// The offset (optional); Used for pagination
         /// </summary>

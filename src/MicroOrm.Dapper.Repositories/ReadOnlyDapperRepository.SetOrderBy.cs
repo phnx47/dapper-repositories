@@ -28,15 +28,22 @@ namespace MicroOrm.Dapper.Repositories
         {
             var type = typeof(TEntity);
 
-            var propertyNames = (from s in cols select ExpressionHelper.GetPropertyName(s) into prop select type.GetProperty(prop)?.GetCustomAttribute<ColumnAttribute>() into attr where attr != null select attr.Name).ToList();
+            var propertyNames =
+                (from s in cols
+                    select ExpressionHelper.GetPropertyName(s)
+                    into prop
+                    select type.GetProperty(prop)?.GetCustomAttribute<ColumnAttribute>()
+                    into attr
+                    where attr != null
+                    select attr.Name).ToList();
 
             var order = SqlGenerator.FilterData.OrderInfo ?? new OrderInfo();
             order.Direction = direction;
             order.Columns = propertyNames;
             order.Permanent = permanent;
-            
+
             SqlGenerator.FilterData.OrderInfo = order;
-            
+
             return this;
         }
 
