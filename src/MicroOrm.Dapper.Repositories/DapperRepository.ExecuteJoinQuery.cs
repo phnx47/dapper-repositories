@@ -27,26 +27,27 @@ namespace MicroOrm.Dapper.Repositories
             IDbTransaction transaction,
             params Expression<Func<TEntity, object>>[] includes)
         {
+            if (!SqlGenerator.KeySqlProperties.Any())
+                throw new NotSupportedException("Join doesn't support without [Key] attribute");
+
             var type = typeof(TEntity);
 
             var childPropertyNames = new List<string>();
             var childProperties = new List<PropertyInfo>();
+            var childKeyProperties = new List<PropertyInfo>();
+            var keyProperties = SqlGenerator.KeySqlProperties.Select(q => q.PropertyInfo).ToArray();
+
             foreach (var s in includes)
             {
                 var prop = ExpressionHelper.GetPropertyName(s);
                 childPropertyNames.Add(prop);
-                childProperties.Add(type.GetProperty(prop));
-            }
-
-            if (!SqlGenerator.KeySqlProperties.Any())
-                throw new NotSupportedException("Join doesn't support without [Key] attribute");
-
-            var keyProperties = SqlGenerator.KeySqlProperties.Select(q => q.PropertyInfo).ToArray();
-            var childKeyProperties = new List<PropertyInfo>();
-
-            foreach (var property in childProperties)
-            {
-                var childType = property.PropertyType.IsGenericType ? property.PropertyType.GenericTypeArguments[0] : property.PropertyType;
+                var childProp = type.GetProperty(prop);
+                
+                if (childProp == null) 
+                    continue;
+                
+                childProperties.Add(childProp);
+                var childType = childProp.PropertyType.IsGenericType ? childProp.PropertyType.GenericTypeArguments[0] : childProp.PropertyType;
                 var properties = childType.FindClassProperties().Where(ExpressionHelper.GetPrimitivePropertiesPredicate());
                 childKeyProperties.AddRange(properties.Where(p => p.GetCustomAttributes<KeyAttribute>().Any()));
             }
@@ -120,24 +121,31 @@ namespace MicroOrm.Dapper.Repositories
             IDbTransaction transaction,
             params Expression<Func<TEntity, object>>[] includes)
         {
-            var type = typeof(TEntity);
-
-            var childPropertyNames = includes.Select(ExpressionHelper.GetPropertyName).ToList();
-            var childProperties = childPropertyNames.Select(p => type.GetProperty(p)).ToList();
-
+            
             if (!SqlGenerator.KeySqlProperties.Any())
                 throw new NotSupportedException("Join doesn't support without [Key] attribute");
 
-            var keyProperties = SqlGenerator.KeySqlProperties.Select(q => q.PropertyInfo).ToArray();
-            var childKeyProperties = new List<PropertyInfo>();
+            var type = typeof(TEntity);
 
-            foreach (var property in childProperties)
+            var childPropertyNames = new List<string>();
+            var childProperties = new List<PropertyInfo>();
+            var childKeyProperties = new List<PropertyInfo>();
+            var keyProperties = SqlGenerator.KeySqlProperties.Select(q => q.PropertyInfo).ToArray();
+            foreach (var s in includes)
             {
-                var childType = property.PropertyType.IsGenericType ? property.PropertyType.GenericTypeArguments[0] : property.PropertyType;
+                var prop = ExpressionHelper.GetPropertyName(s);
+                childPropertyNames.Add(prop);
+                var childProp = type.GetProperty(prop);
+                
+                if (childProp == null) 
+                    continue;
+                
+                childProperties.Add(childProp);
+                var childType = childProp.PropertyType.IsGenericType ? childProp.PropertyType.GenericTypeArguments[0] : childProp.PropertyType;
                 var properties = childType.FindClassProperties().Where(ExpressionHelper.GetPrimitivePropertiesPredicate());
                 childKeyProperties.AddRange(properties.Where(p => p.GetCustomAttributes<KeyAttribute>().Any()));
             }
-
+            
             if (!childKeyProperties.Any())
                 throw new NotSupportedException("Join doesn't support without [Key] attribute");
 

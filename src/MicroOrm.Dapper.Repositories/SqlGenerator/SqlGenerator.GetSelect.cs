@@ -13,16 +13,23 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
             params Expression<Func<TEntity, object>>[] includes)
         {
             var sqlQuery = InitBuilderSelect(firstOnly);
-
-            sqlQuery.SqlBuilder
-                .Append(" FROM ")
-                .Append(TableName)
-                .Append(" ");
-
-            if (includes.Any())
+            
+            if (includes.Length > 0)
             {
                 var joinsBuilder = AppendJoinToSelect(sqlQuery, includes);
+                sqlQuery.SqlBuilder
+                    .Append(" FROM ")
+                    .Append(TableName)
+                    .Append(" ");
+
                 sqlQuery.SqlBuilder.Append(joinsBuilder);
+            }
+            else
+            {
+                sqlQuery.SqlBuilder
+                    .Append(" FROM ")
+                    .Append(TableName)
+                    .Append(" ");
             }
 
             AppendWherePredicateQuery(sqlQuery, predicate, QueryType.Select);
@@ -102,7 +109,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
 
             var sqlQuery = InitBuilderSelect(true);
 
-            if (includes.Any())
+            if (includes.Length > 0)
             {
                 var joinsBuilder = AppendJoinToSelect(sqlQuery, includes);
                 sqlQuery.SqlBuilder
