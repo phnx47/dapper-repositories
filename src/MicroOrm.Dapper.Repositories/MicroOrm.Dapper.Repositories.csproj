@@ -3,21 +3,23 @@
     <Description>CRUD for Dapper</Description>
     <Copyright>2019 © Sergey Kuznetsov</Copyright>
     <AssemblyTitle>MicroOrm.Dapper.Repositories</AssemblyTitle>
-    <VersionPrefix>1.11.1</VersionPrefix>
+    <VersionPrefix>1.12.0</VersionPrefix>
     <Authors>Sergey Kuznetsov</Authors>
     <TargetFrameworks Condition=" '$(OS)' == 'Windows_NT' ">net461;netstandard2.0</TargetFrameworks>
+    <TargetFramework Condition=" '$(OS)' != 'Windows_NT' ">netstandard2.0</TargetFramework>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <PackageId>MicroOrm.Dapper.Repositories</PackageId>
     <PackageTags>dapper;micro-orm;repositories;crud</PackageTags>
-    <PackageIconUrl>https://image.ibb.co/itOgt5/database.png</PackageIconUrl>
+    <PackageIcon>icon.png</PackageIcon>
     <PackageProjectUrl>http://dapper.phnx47.net</PackageProjectUrl>
-    <PackageLicenseUrl>https://opensource.org/licenses/MIT</PackageLicenseUrl>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/phnx47/MicroOrm.Dapper.Repositories</RepositoryUrl>
-    <LangVersion>8</LangVersion>
-    <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
+  <ItemGroup>
+    <None Include="../../icon.png" Pack="true" Visible="false" PackagePath="" />
+  </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Dapper" Version="2.0.30" />
   </ItemGroup>
