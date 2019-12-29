@@ -13,22 +13,31 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
             params Expression<Func<TEntity, object>>[] includes)
         {
             var sqlQuery = InitBuilderSelect(firstOnly);
+            
+            if (includes.Length > 0)
+            {
+                var joinsBuilder = AppendJoinToSelect(sqlQuery, includes);
+                sqlQuery.SqlBuilder
+                    .Append(" FROM ")
+                    .Append(TableName)
+                    .Append(" ");
 
-            var joinsBuilder = AppendJoinToSelect(sqlQuery, includes);
-            sqlQuery.SqlBuilder
-                .Append(" FROM ")
-                .Append(TableName)
-                .Append(" ");
-
-            if (includes.Any())
                 sqlQuery.SqlBuilder.Append(joinsBuilder);
+            }
+            else
+            {
+                sqlQuery.SqlBuilder
+                    .Append(" FROM ")
+                    .Append(TableName)
+                    .Append(" ");
+            }
 
             AppendWherePredicateQuery(sqlQuery, predicate, QueryType.Select);
 
-            SetOrder(sqlQuery);
+            SetOrder(TableName, sqlQuery);
 
             if (firstOnly && (Config.SqlProvider == SqlProvider.MySQL || Config.SqlProvider == SqlProvider.PostgreSQL))
-                sqlQuery.SqlBuilder.Append(" LIMIT 1");
+                sqlQuery.SqlBuilder.Append("LIMIT 1");
             else
                 SetLimit(sqlQuery);
             
@@ -40,12 +49,9 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
             if (FilterData.LimitInfo == null)
                 return;
 
-            if (FilterData.LimitInfo.Offset != null)
-            {
-                sqlQuery.SqlBuilder.Append($" LIMIT {FilterData.LimitInfo.Offset.Value},{FilterData.LimitInfo.Limit}");
-            }
-
-            sqlQuery.SqlBuilder.Append($" LIMIT {FilterData.LimitInfo.Limit}");
+            sqlQuery.SqlBuilder.Append(FilterData.LimitInfo.Offset != null
+                ? $"LIMIT {FilterData.LimitInfo.Offset.Value},{FilterData.LimitInfo.Limit}"
+                : $"LIMIT {FilterData.LimitInfo.Limit}");
 
             if (!FilterData.LimitInfo.Permanent)
                 FilterData.LimitInfo = null;
@@ -54,7 +60,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         /// <summary>
         /// Set order by in query; DapperRepository.SetOrderBy must be called first. 
         /// </summary>
-        private void SetOrder(SqlQuery sqlQuery)
+        private void SetOrder(string tableName, SqlQuery sqlQuery)
         {
             if (FilterData.OrderInfo == null) return;
 
@@ -64,14 +70,18 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
             for (var i = 0; i < count; i++)
             {
                 var col = FilterData.OrderInfo.Columns[i];
+                sqlQuery.SqlBuilder.Append(tableName);
+                sqlQuery.SqlBuilder.Append(".");
+                sqlQuery.SqlBuilder.Append(col);
                 if (i >= count - 1)
                 {
-                    sqlQuery.SqlBuilder.Append($"{col} {FilterData.OrderInfo.Direction} ");
+                    sqlQuery.SqlBuilder.Append(" ");
+                    sqlQuery.SqlBuilder.Append(FilterData.OrderInfo.Direction);
                     break;
                 }
-
-                sqlQuery.SqlBuilder.Append($"{col},");
+                sqlQuery.SqlBuilder.Append(",");
             }
+            sqlQuery.SqlBuilder.Append(" ");
             
             if (!FilterData.OrderInfo.Permanent)
                 FilterData.OrderInfo = null;
@@ -99,7 +109,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
 
             var sqlQuery = InitBuilderSelect(true);
 
-            if (includes.Any())
+            if (includes.Length > 0)
             {
                 var joinsBuilder = AppendJoinToSelect(sqlQuery, includes);
                 sqlQuery.SqlBuilder
@@ -194,8 +204,8 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
             string ProjectionFunction(SqlPropertyMetadata p)
             {
                 return !string.IsNullOrEmpty(p.Alias)
-                    ? string.Format("{0}.{1} AS {2}", tableName, p.ColumnName, p.PropertyName)
-                    : string.Format("{0}.{1}", tableName, p.ColumnName);
+                    ? $"{tableName}.{p.ColumnName} AS {p.PropertyName}"
+                    : $"{tableName}.{p.ColumnName}";
             }
 
             return string.Join(", ", properties.Select(ProjectionFunction));

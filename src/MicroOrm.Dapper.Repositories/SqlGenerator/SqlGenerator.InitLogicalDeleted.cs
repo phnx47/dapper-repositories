@@ -2,7 +2,6 @@
 using System.Linq;
 using System.Reflection;
 using MicroOrm.Dapper.Repositories.Attributes.LogicalDelete;
-using MicroOrm.Dapper.Repositories.Extensions;
 
 namespace MicroOrm.Dapper.Repositories.SqlGenerator
 {

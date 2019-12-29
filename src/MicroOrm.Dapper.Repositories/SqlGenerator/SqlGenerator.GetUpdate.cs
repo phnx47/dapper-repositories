@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using MicroOrm.Dapper.Repositories.Attributes;
 using MicroOrm.Dapper.Repositories.Extensions;
 
 namespace MicroOrm.Dapper.Repositories.SqlGenerator
@@ -20,7 +21,18 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                 throw new ArgumentException("Can't update without [Key]");
 
             if (HasUpdatedAt)
-                UpdatedAtProperty.SetValue(entity, DateTime.UtcNow);
+            {
+                var attribute = UpdatedAtProperty.GetCustomAttribute<UpdatedAtAttribute>();
+                var offset = attribute.TimeKind == DateTimeKind.Local
+                    ? new DateTimeOffset(DateTime.Now)
+                    : new DateTimeOffset(DateTime.UtcNow);
+                if (attribute.OffSet != 0)
+                {
+                    offset = offset.ToOffset(TimeSpan.FromHours(attribute.OffSet));
+                }
+
+                UpdatedAtProperty.SetValue(entity, offset.Date);
+            }
 
             var query = new SqlQuery(entity);
 
@@ -30,12 +42,12 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                 .Append(" SET ");
 
             query.SqlBuilder.Append(string.Join(", ", properties
-                .Select(p => string.Format("{0} = @{1}", p.ColumnName, p.PropertyName))));
+                .Select(p => $"{p.ColumnName} = @{p.PropertyName}")));
 
             query.SqlBuilder.Append(" WHERE ");
 
             query.SqlBuilder.Append(string.Join(" AND ", KeySqlProperties.Where(p => !p.IgnoreUpdate)
-                .Select(p => string.Format("{0} = @{1}", p.ColumnName, p.PropertyName))));
+                .Select(p => $"{p.ColumnName} = @{p.PropertyName}")));
 
             return query;
         }
@@ -47,7 +59,18 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                 !KeySqlProperties.Any(k => k.PropertyName.Equals(p.PropertyName, StringComparison.OrdinalIgnoreCase)) && !p.IgnoreUpdate).ToArray();
 
             if (HasUpdatedAt)
-                UpdatedAtProperty.SetValue(entity, DateTime.UtcNow);
+            {
+                var attribute = UpdatedAtProperty.GetCustomAttribute<UpdatedAtAttribute>();
+                var offset = attribute.TimeKind == DateTimeKind.Local
+                    ? new DateTimeOffset(DateTime.Now)
+                    : new DateTimeOffset(DateTime.UtcNow);
+                if (attribute.OffSet != 0)
+                {
+                    offset = offset.ToOffset(TimeSpan.FromHours(attribute.OffSet));
+                }
+
+                UpdatedAtProperty.SetValue(entity, offset.Date);
+            }
 
             var query = new SqlQuery(entity);
 
@@ -57,17 +80,15 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                 .Append(" SET ");
 
             query.SqlBuilder.Append(string.Join(", ", properties
-                .Select(p => string.Format("{0} = @{1}", p.ColumnName, p.PropertyName))));
+                .Select(p => $"{p.ColumnName} = @{p.PropertyName}")));
 
             query.SqlBuilder
                 .Append(" ");
-            
+
             AppendWherePredicateQuery(query, predicate, QueryType.Update);
 
-            var parameters = new Dictionary<string, object>();
             var entityType = entity.GetType();
-            foreach (var property in properties)
-                parameters.Add(property.PropertyName, entityType.GetProperty(property.PropertyName).GetValue(entity, null));
+            var parameters = properties.ToDictionary(property => property.PropertyName, property => entityType.GetProperty(property.PropertyName)?.GetValue(entity, null));
 
             if (query.Param is Dictionary<string, object> whereParam)
                 parameters.AddRange(whereParam);
