@@ -13,8 +13,8 @@ namespace MicroOrm.Dapper.Repositories.Extensions
 
         public static PropertyInfo[] FindClassProperties(this Type objectType)
         {
-            if (_reflectionPropertyCache.ContainsKey(objectType))
-                return _reflectionPropertyCache[objectType];
+            if (_reflectionPropertyCache.TryGetValue(objectType, out var cachedEntry))
+                return cachedEntry;
 
             var propertyInfos = objectType.GetProperties()
                 .OrderBy(p => p.GetCustomAttributes<ColumnAttribute>()

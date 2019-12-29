@@ -30,12 +30,12 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                 .Append(" SET ");
 
             query.SqlBuilder.Append(string.Join(", ", properties
-                .Select(p => string.Format("{0} = @{1}", p.ColumnName, p.PropertyName))));
+                .Select(p => $"{p.ColumnName} = @{p.PropertyName}")));
 
             query.SqlBuilder.Append(" WHERE ");
 
             query.SqlBuilder.Append(string.Join(" AND ", KeySqlProperties.Where(p => !p.IgnoreUpdate)
-                .Select(p => string.Format("{0} = @{1}", p.ColumnName, p.PropertyName))));
+                .Select(p => $"{p.ColumnName} = @{p.PropertyName}")));
 
             return query;
         }
@@ -57,17 +57,15 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                 .Append(" SET ");
 
             query.SqlBuilder.Append(string.Join(", ", properties
-                .Select(p => string.Format("{0} = @{1}", p.ColumnName, p.PropertyName))));
+                .Select(p => $"{p.ColumnName} = @{p.PropertyName}")));
 
             query.SqlBuilder
                 .Append(" ");
             
             AppendWherePredicateQuery(query, predicate, QueryType.Update);
 
-            var parameters = new Dictionary<string, object>();
             var entityType = entity.GetType();
-            foreach (var property in properties)
-                parameters.Add(property.PropertyName, entityType.GetProperty(property.PropertyName).GetValue(entity, null));
+            var parameters = properties.ToDictionary(property => property.PropertyName, property => entityType.GetProperty(property.PropertyName)?.GetValue(entity, null));
 
             if (query.Param is Dictionary<string, object> whereParam)
                 parameters.AddRange(whereParam);
