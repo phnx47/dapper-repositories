@@ -23,7 +23,10 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
             if (HasUpdatedAt)
             {
                 var attribute = UpdatedAtProperty.GetCustomAttribute<UpdatedAtAttribute>();
-                UpdatedAtProperty.SetValue(entity, TimeZoneInfo.ConvertTime(DateTime.Now, attribute.TimeZone));
+                var offset = attribute.TimeKind == DateTimeKind.Local
+                    ? new DateTimeOffset(DateTime.Now)
+                    : new DateTimeOffset(DateTime.UtcNow, TimeSpan.FromHours(attribute.OffSet));
+                UpdatedAtProperty.SetValue(entity, offset.Date);
             }
 
             var query = new SqlQuery(entity);
@@ -53,7 +56,10 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
             if (HasUpdatedAt)
             {
                 var attribute = UpdatedAtProperty.GetCustomAttribute<UpdatedAtAttribute>();
-                UpdatedAtProperty.SetValue(entity, TimeZoneInfo.ConvertTime(DateTime.Now, attribute.TimeZone));
+                var offset = attribute.TimeKind == DateTimeKind.Local
+                    ? new DateTimeOffset(DateTime.Now)
+                    : new DateTimeOffset(DateTime.UtcNow, TimeSpan.FromHours(attribute.OffSet));
+                UpdatedAtProperty.SetValue(entity, offset.Date);
             }
 
             var query = new SqlQuery(entity);
@@ -68,7 +74,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
 
             query.SqlBuilder
                 .Append(" ");
-            
+
             AppendWherePredicateQuery(query, predicate, QueryType.Update);
 
             var entityType = entity.GetType();

@@ -13,12 +13,18 @@ namespace MicroOrm.Dapper.Repositories.Attributes
         /// </summary>
         public UpdatedAtAttribute()
         {
-            TimeZone = TimeZoneInfo.Utc;
+            TimeKind = DateTimeKind.Utc;
+            OffSet = 0;
         }
 
         /// <summary>
-        /// Specified timezone, default UTC
+        /// The timezone offset
         /// </summary>
-        public TimeZoneInfo TimeZone { get; set; }
+        public int OffSet { get; set; }
+
+        /// <summary>
+        /// Specified time kind, default UTC. If TimeKind = Local, then the offset is ignored.
+        /// </summary>
+        public DateTimeKind TimeKind { get; set; }
     }
 }

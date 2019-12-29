@@ -38,7 +38,10 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                 if (HasUpdatedAt)
                 {
                     var attribute = UpdatedAtProperty.GetCustomAttribute<UpdatedAtAttribute>();
-                    UpdatedAtProperty.SetValue(entity, TimeZoneInfo.ConvertTime(DateTime.Now, attribute.TimeZone));
+                    var offset = attribute.TimeKind == DateTimeKind.Local
+                        ? new DateTimeOffset(DateTime.Now)
+                        : new DateTimeOffset(DateTime.UtcNow, TimeSpan.FromHours(attribute.OffSet));
+                    UpdatedAtProperty.SetValue(entity, offset.Date);
 
                     sqlQuery.SqlBuilder
                         .Append(", ")
