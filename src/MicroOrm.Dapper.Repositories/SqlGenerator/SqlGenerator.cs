@@ -116,7 +116,11 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                 var attribute = UpdatedAtProperty.GetCustomAttribute<UpdatedAtAttribute>();
                 var offset = attribute.TimeKind == DateTimeKind.Local
                     ? new DateTimeOffset(DateTime.Now)
-                    : new DateTimeOffset(DateTime.UtcNow, TimeSpan.FromHours(attribute.OffSet));
+                    : new DateTimeOffset(DateTime.UtcNow);
+                if (attribute.OffSet != 0)
+                {
+                    offset = offset.ToOffset(TimeSpan.FromHours(attribute.OffSet));
+                }
                 UpdatedAtProperty.SetValue(entity, offset.Date);
             }
 
@@ -174,7 +178,11 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                     var attribute = UpdatedAtProperty.GetCustomAttribute<UpdatedAtAttribute>();
                     var offset = attribute.TimeKind == DateTimeKind.Local
                         ? new DateTimeOffset(DateTime.Now)
-                        : new DateTimeOffset(DateTime.UtcNow, TimeSpan.FromHours(attribute.OffSet));
+                        : new DateTimeOffset(DateTime.UtcNow);
+                    if (attribute.OffSet != 0)
+                    {
+                        offset = offset.ToOffset(TimeSpan.FromHours(attribute.OffSet));
+                    }
                     UpdatedAtProperty.SetValue(entity, offset.Date);
                 }
 
@@ -218,7 +226,11 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                     var attribute = UpdatedAtProperty.GetCustomAttribute<UpdatedAtAttribute>();
                     var offset = attribute.TimeKind == DateTimeKind.Local
                         ? new DateTimeOffset(DateTime.Now)
-                        : new DateTimeOffset(DateTime.UtcNow, TimeSpan.FromHours(attribute.OffSet));
+                        : new DateTimeOffset(DateTime.UtcNow);
+                    if (attribute.OffSet != 0)
+                    {
+                        offset = offset.ToOffset(TimeSpan.FromHours(attribute.OffSet));
+                    }
                     UpdatedAtProperty.SetValue(entity, offset.Date);
                 }
 

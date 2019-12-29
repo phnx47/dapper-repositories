@@ -23,7 +23,7 @@ namespace MicroOrm.Dapper.Repositories.Attributes
         public int OffSet { get; set; }
 
         /// <summary>
-        /// Specified time kind, default UTC. If TimeKind = Local, then the offset is ignored.
+        /// Specified time kind, default UTC.
         /// </summary>
         public DateTimeKind TimeKind { get; set; }
     }
