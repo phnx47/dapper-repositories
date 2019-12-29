@@ -14,21 +14,23 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         {
             var sqlQuery = InitBuilderSelect(firstOnly);
 
-            var joinsBuilder = AppendJoinToSelect(sqlQuery, includes);
             sqlQuery.SqlBuilder
                 .Append(" FROM ")
                 .Append(TableName)
                 .Append(" ");
 
             if (includes.Any())
+            {
+                var joinsBuilder = AppendJoinToSelect(sqlQuery, includes);
                 sqlQuery.SqlBuilder.Append(joinsBuilder);
+            }
 
             AppendWherePredicateQuery(sqlQuery, predicate, QueryType.Select);
 
             SetOrder(TableName, sqlQuery);
 
             if (firstOnly && (Config.SqlProvider == SqlProvider.MySQL || Config.SqlProvider == SqlProvider.PostgreSQL))
-                sqlQuery.SqlBuilder.Append(" LIMIT 1");
+                sqlQuery.SqlBuilder.Append("LIMIT 1");
             else
                 SetLimit(sqlQuery);
             
@@ -41,8 +43,8 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                 return;
 
             sqlQuery.SqlBuilder.Append(FilterData.LimitInfo.Offset != null
-                ? $" LIMIT {FilterData.LimitInfo.Offset.Value},{FilterData.LimitInfo.Limit}"
-                : $" LIMIT {FilterData.LimitInfo.Limit}");
+                ? $"LIMIT {FilterData.LimitInfo.Offset.Value},{FilterData.LimitInfo.Limit}"
+                : $"LIMIT {FilterData.LimitInfo.Limit}");
 
             if (!FilterData.LimitInfo.Permanent)
                 FilterData.LimitInfo = null;
@@ -61,14 +63,18 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
             for (var i = 0; i < count; i++)
             {
                 var col = FilterData.OrderInfo.Columns[i];
+                sqlQuery.SqlBuilder.Append(tableName);
+                sqlQuery.SqlBuilder.Append(".");
+                sqlQuery.SqlBuilder.Append(col);
                 if (i >= count - 1)
                 {
-                    sqlQuery.SqlBuilder.Append($"{tableName}.{col} {FilterData.OrderInfo.Direction} ");
+                    sqlQuery.SqlBuilder.Append(" ");
+                    sqlQuery.SqlBuilder.Append(FilterData.OrderInfo.Direction);
                     break;
                 }
-
-                sqlQuery.SqlBuilder.Append($"{tableName}.{col},");
+                sqlQuery.SqlBuilder.Append(",");
             }
+            sqlQuery.SqlBuilder.Append(" ");
             
             if (!FilterData.OrderInfo.Permanent)
                 FilterData.OrderInfo = null;
