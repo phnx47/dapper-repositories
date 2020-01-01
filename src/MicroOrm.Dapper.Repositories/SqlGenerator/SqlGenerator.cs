@@ -352,7 +352,6 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                         case SqlProvider.SQLite:
                             break;
 
-
                         case SqlProvider.PostgreSQL:
                             tableName = "\"" + tableName + "\"";
                             attrJoin.TableName = GetTableNameWithSchemaPrefix(attrJoin.TableName, attrJoin.TableSchema, "\"", "\"");
