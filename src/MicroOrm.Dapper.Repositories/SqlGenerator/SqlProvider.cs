@@ -1,4 +1,4 @@
-﻿namespace MicroOrm.Dapper.Repositories.SqlGenerator
+namespace MicroOrm.Dapper.Repositories.SqlGenerator
 {
     // ReSharper disable InconsistentNaming
     /// <summary>
@@ -19,6 +19,11 @@
         /// <summary>
         ///     PostgreSQL
         /// </summary>
-        PostgreSQL
+        PostgreSQL,
+
+        /// <summary>
+        /// SQLite
+        /// </summary>
+        SQLite
     }
 }
