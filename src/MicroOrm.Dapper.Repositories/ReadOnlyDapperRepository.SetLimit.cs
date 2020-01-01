@@ -20,13 +20,13 @@ namespace MicroOrm.Dapper.Repositories
         {
             if (limit <= 0)
                 return this;
-            
+
             var data = SqlGenerator.FilterData.LimitInfo ?? new LimitInfo();
             data.Limit = limit;
             data.Offset = offset;
             data.Permanent = permanent;
             SqlGenerator.FilterData.LimitInfo = data;
-            
+
             return this;
         }
 
@@ -35,7 +35,7 @@ namespace MicroOrm.Dapper.Repositories
         {
             return SetLimit(limit, null, false);
         }
-        
+
         /// <inheritdoc />
         public virtual ReadOnlyDapperRepository<TEntity> SetLimit(uint limit, uint offset)
         {

@@ -616,6 +616,11 @@ namespace MicroOrm.Dapper.Repositories
         IEnumerable<TEntity> FindAll(Expression<Func<TEntity, bool>> predicate, IDbTransaction transaction);
 
         /// <summary>
+        ///     Get all objects with orderBy
+        /// </summary>
+        IEnumerable<TEntity> FindAll(Expression<Func<TEntity, bool>> predicate, Expression<Func<TEntity, string, string>> orderBy);
+
+        /// <summary>
         /// Remove query sorting
         /// </summary>
         ReadOnlyDapperRepository<TEntity> SetOrderBy();

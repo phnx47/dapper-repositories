@@ -16,12 +16,12 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator.Filters
         /// Columns to sort
         /// </summary>
         public List<string> Columns { get; set; }
-        
+
         /// <summary>
         /// If true, will be used for all queries
         /// </summary>
         public bool Permanent { get; set; }
-        
+
         /// <summary>
         ///  Possible sorting Direction
         /// </summary>
