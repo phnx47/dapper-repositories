@@ -150,7 +150,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.SqlGeneratorTests
             ISqlGenerator<City> sqlGenerator = new SqlGenerator<City>(_sqlConnector, false);
 
             var data = sqlGenerator.FilterData.OrderInfo ?? new OrderInfo();
-            data.Columns = new List<string> {"Cities.Name"};
+            data.Columns = new List<string> {"Name"};
             data.Direction = OrderInfo.SortDirection.ASC;
             sqlGenerator.FilterData.OrderInfo = data;
 

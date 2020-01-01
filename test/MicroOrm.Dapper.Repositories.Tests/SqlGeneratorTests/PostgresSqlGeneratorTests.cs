@@ -38,6 +38,33 @@ namespace MicroOrm.Dapper.Repositories.Tests.SqlGeneratorTests
         }
 
         [Fact]
+        public void SelectLimit()
+        {
+            ISqlGenerator<City> sqlGenerator = new SqlGenerator<City>(_sqlConnector);
+
+            var data = sqlGenerator.FilterData.LimitInfo ?? new LimitInfo();
+            data.Limit = 10u;
+            sqlGenerator.FilterData.LimitInfo = data;
+
+            var sqlQuery = sqlGenerator.GetSelectAll(x => x.Identifier == Guid.Empty);
+            Assert.Equal("SELECT Cities.Identifier, Cities.Name FROM Cities WHERE Cities.Identifier = @Identifier_p0 LIMIT 10", sqlQuery.GetSql());
+        }
+
+        [Fact]
+        public void SelectOrderBy()
+        {
+            ISqlGenerator<City> sqlGenerator = new SqlGenerator<City>(_sqlConnector);
+
+            var data = sqlGenerator.FilterData.OrderInfo ?? new OrderInfo();
+            data.Columns = new List<string> { "Name" };
+            data.Direction = OrderInfo.SortDirection.ASC;
+            sqlGenerator.FilterData.OrderInfo = data;
+
+            var sqlQuery = sqlGenerator.GetSelectAll(x => x.Identifier == Guid.Empty);
+            Assert.Equal("SELECT Cities.Identifier, Cities.Name FROM Cities WHERE Cities.Identifier = @Identifier_p0 ORDER BY Cities.Name ASC", sqlQuery.GetSql());
+        }
+
+        [Fact]
         public void SelectPaged()
         {
             ISqlGenerator<City> sqlGenerator = new SqlGenerator<City>(_sqlConnector);

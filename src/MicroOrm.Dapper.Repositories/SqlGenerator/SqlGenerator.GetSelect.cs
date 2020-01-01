@@ -54,12 +54,12 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
 
             if (Config.SqlProvider == SqlProvider.MSSQL)
             {
-                if (FilterData.OrderInfo == null)
+                if (!FilterData.Ordered)
                     return;
 
                 sqlQuery.SqlBuilder.Append("OFFSET ");
                 sqlQuery.SqlBuilder.Append(FilterData.LimitInfo.Offset ?? 0);
-                sqlQuery.SqlBuilder.Append(" ROWS FETCH NEXT");
+                sqlQuery.SqlBuilder.Append(" ROWS FETCH NEXT ");
                 sqlQuery.SqlBuilder.Append(FilterData.LimitInfo.Limit);
                 sqlQuery.SqlBuilder.Append(" ROWS ONLY");
                 return;
@@ -92,7 +92,15 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                 var col = FilterData.OrderInfo.Columns[i];
                 sqlQuery.SqlBuilder.Append(tableName);
                 sqlQuery.SqlBuilder.Append(".");
-                sqlQuery.SqlBuilder.Append(col);
+                if (Config.UseQuotationMarks)
+                {
+                    sqlQuery.SqlBuilder.Append(Config.SqlProvider == SqlProvider.MSSQL ? $"[{col}]" : $"`{col}`");
+                }
+                else
+                {
+                    sqlQuery.SqlBuilder.Append(col);
+                }
+
                 if (i >= count - 1)
                 {
                     sqlQuery.SqlBuilder.Append(" ");
@@ -107,6 +115,8 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
 
             if (!FilterData.OrderInfo.Permanent)
                 FilterData.OrderInfo = null;
+
+            FilterData.Ordered = true;
         }
 
         /// <inheritdoc />

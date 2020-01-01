@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Dapper;
 using MicroOrm.Dapper.Repositories.Tests.Classes;
 using MicroOrm.Dapper.Repositories.Tests.DbContexts;
@@ -11,7 +11,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.DatabaseFixture
 
         public MsSqlDatabaseFixture()
         {
-            var connString = "Server=(local);Initial Catalog=master;Integrated Security=True";
+            var connString = "Server=localhost\\SQLEXPRESS;Database=master;Trusted_Connection=True;";
 
             if (Environments.IsAppVeyor)
                 connString = "Server=(local)\\SQL2017;Database=master;User ID=sa;Password=Password12!";
