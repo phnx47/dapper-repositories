@@ -5,7 +5,6 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator.Filters
     /// </summary>
     public class FilterData
     {
-        //todo: create select filter
         /// <summary>
         /// The query order settings
         /// </summary>
