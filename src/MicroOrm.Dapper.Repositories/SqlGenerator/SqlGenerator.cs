@@ -141,6 +141,10 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                         query.SqlBuilder.Append("; SELECT CONVERT(LAST_INSERT_ID(), SIGNED INTEGER) AS " + IdentitySqlProperty.ColumnName);
                         break;
 
+                    case SqlProvider.SQLite:
+                        query.SqlBuilder.Append("; SELECT LAST_INSERT_ROWID() AS " + IdentitySqlProperty.ColumnName);
+                        break;
+
                     case SqlProvider.PostgreSQL:
                         query.SqlBuilder.Append(" RETURNING " + IdentitySqlProperty.ColumnName);
                         break;
