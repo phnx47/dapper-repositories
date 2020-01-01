@@ -13,7 +13,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
             params Expression<Func<TEntity, object>>[] includes)
         {
             var sqlQuery = InitBuilderSelect(firstOnly);
-            
+
             if (includes.Length > 0)
             {
                 var joinsBuilder = AppendJoinToSelect(sqlQuery, includes);
@@ -36,11 +36,14 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
 
             SetOrder(TableName, sqlQuery);
 
-            if (firstOnly && (Config.SqlProvider == SqlProvider.MySQL || Config.SqlProvider == SqlProvider.PostgreSQL))
-                sqlQuery.SqlBuilder.Append("LIMIT 1");
+            if (firstOnly)
+            {
+                if (Config.SqlProvider != SqlProvider.MSSQL)
+                    sqlQuery.SqlBuilder.Append("LIMIT 1");
+            }
             else
                 SetLimit(sqlQuery);
-            
+
             return sqlQuery;
         }
 
@@ -49,9 +52,26 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
             if (FilterData.LimitInfo == null)
                 return;
 
-            sqlQuery.SqlBuilder.Append(FilterData.LimitInfo.Offset != null
-                ? $"LIMIT {FilterData.LimitInfo.Offset.Value},{FilterData.LimitInfo.Limit}"
-                : $"LIMIT {FilterData.LimitInfo.Limit}");
+            if (Config.SqlProvider == SqlProvider.MSSQL)
+            {
+                if (FilterData.OrderInfo == null)
+                    return;
+
+                sqlQuery.SqlBuilder.Append("OFFSET ");
+                sqlQuery.SqlBuilder.Append(FilterData.LimitInfo.Offset ?? 0);
+                sqlQuery.SqlBuilder.Append(" ROWS FETCH NEXT");
+                sqlQuery.SqlBuilder.Append(FilterData.LimitInfo.Limit);
+                sqlQuery.SqlBuilder.Append(" ROWS ONLY");
+                return;
+            }
+
+            sqlQuery.SqlBuilder.Append("LIMIT ");
+            sqlQuery.SqlBuilder.Append(FilterData.LimitInfo.Limit);
+            if (FilterData.LimitInfo.Offset != null)
+            {
+                sqlQuery.SqlBuilder.Append(" OFFSET ");
+                sqlQuery.SqlBuilder.Append(FilterData.LimitInfo.Offset);
+            }
 
             if (!FilterData.LimitInfo.Permanent)
                 FilterData.LimitInfo = null;
@@ -65,7 +85,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
             if (FilterData.OrderInfo == null) return;
 
             sqlQuery.SqlBuilder.Append("ORDER BY ");
-            
+
             var count = FilterData.OrderInfo.Columns.Count;
             for (var i = 0; i < count; i++)
             {
@@ -79,10 +99,12 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                     sqlQuery.SqlBuilder.Append(FilterData.OrderInfo.Direction);
                     break;
                 }
+
                 sqlQuery.SqlBuilder.Append(",");
             }
+
             sqlQuery.SqlBuilder.Append(" ");
-            
+
             if (!FilterData.OrderInfo.Permanent)
                 FilterData.OrderInfo = null;
         }
@@ -98,7 +120,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         {
             return GetSelect(predicate, false, includes);
         }
-        
+
         /// <inheritdoc />
         public SqlQuery GetSelectById(object id, params Expression<Func<TEntity, object>>[] includes)
         {
@@ -190,8 +212,19 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         {
             var query = new SqlQuery();
             query.SqlBuilder.Append("SELECT ");
-            if (firstOnly && Config.SqlProvider == SqlProvider.MSSQL)
-                query.SqlBuilder.Append("TOP 1 ");
+
+            if (Config.SqlProvider == SqlProvider.MSSQL)
+                if (firstOnly)
+                    query.SqlBuilder.Append("TOP 1 ");
+                else
+                {
+                    if (FilterData.LimitInfo != null && FilterData.OrderInfo == null)
+                    {
+                        query.SqlBuilder.Append("TOP (");
+                        query.SqlBuilder.Append(FilterData.LimitInfo.Limit);
+                        query.SqlBuilder.Append(") ");
+                    }
+                }
 
             query.SqlBuilder.Append(GetFieldsSelect(TableName, SqlProperties));
 

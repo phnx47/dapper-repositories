@@ -1,7 +1,8 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 
 using MicroOrm.Dapper.Repositories.SqlGenerator;
+using MicroOrm.Dapper.Repositories.SqlGenerator.Filters;
 using MicroOrm.Dapper.Repositories.Tests.Classes;
 
 using Xunit;
@@ -34,6 +35,20 @@ namespace MicroOrm.Dapper.Repositories.Tests.SqlGeneratorTests
             ISqlGenerator<User> userSqlGenerator = new SqlGenerator<User>(_sqlConnector, true);
             var sqlQuery = userSqlGenerator.GetCount(x => x.PhoneId == 1, user => user.AddressId);
             Assert.Equal("SELECT COUNT(DISTINCT \"Users\".\"AddressId\") FROM \"Users\" WHERE (\"Users\".\"PhoneId\" = @PhoneId_p0) AND \"Users\".\"Deleted\" != 1", sqlQuery.GetSql());
+        }
+
+        [Fact]
+        public void SelectPaged()
+        {
+            ISqlGenerator<City> sqlGenerator = new SqlGenerator<City>(_sqlConnector);
+
+            var data = sqlGenerator.FilterData.LimitInfo ?? new LimitInfo();
+            data.Limit = 10u;
+            data.Offset = 5u;
+            sqlGenerator.FilterData.LimitInfo = data;
+
+            var sqlQuery = sqlGenerator.GetSelectAll(x => x.Identifier == Guid.Empty);
+            Assert.Equal("SELECT Cities.Identifier, Cities.Name FROM Cities WHERE Cities.Identifier = @Identifier_p0 LIMIT 10 OFFSET 5", sqlQuery.GetSql());
         }
 
         [Fact]
