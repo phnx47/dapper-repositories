@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
@@ -121,6 +121,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                 {
                     offset = offset.ToOffset(TimeSpan.FromHours(attribute.OffSet));
                 }
+
                 UpdatedAtProperty.SetValue(entity, offset.Date);
             }
 
@@ -138,6 +139,10 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
 
                     case SqlProvider.MySQL:
                         query.SqlBuilder.Append("; SELECT CONVERT(LAST_INSERT_ID(), SIGNED INTEGER) AS " + IdentitySqlProperty.ColumnName);
+                        break;
+
+                    case SqlProvider.SQLite:
+                        query.SqlBuilder.Append("; SELECT LAST_INSERT_ROWID() AS " + IdentitySqlProperty.ColumnName);
                         break;
 
                     case SqlProvider.PostgreSQL:
@@ -183,6 +188,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                     {
                         offset = offset.ToOffset(TimeSpan.FromHours(attribute.OffSet));
                     }
+
                     UpdatedAtProperty.SetValue(entity, offset.Date);
                 }
 
@@ -231,6 +237,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                     {
                         offset = offset.ToOffset(TimeSpan.FromHours(attribute.OffSet));
                     }
+
                     UpdatedAtProperty.SetValue(entity, offset.Date);
                 }
 
@@ -291,22 +298,33 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
             foreach (var include in includes)
             {
                 var joinProperty = AllProperties.First(q => q.Name == ExpressionHelper.GetPropertyName(include));
-                var declaringType = joinProperty.DeclaringType.GetTypeInfo();
-                var tableAttribute = declaringType.GetCustomAttribute<TableAttribute>();
-                var tableName = tableAttribute != null ? tableAttribute.Name : declaringType.Name;
-
                 var attrJoin = joinProperty.GetCustomAttribute<JoinAttributeBase>();
 
                 if (attrJoin == null)
                     continue;
 
+                var declaringType = joinProperty.DeclaringType.GetTypeInfo();
+                var tableAttribute = declaringType.GetCustomAttribute<TableAttribute>();
+                var tableName = tableAttribute != null ? tableAttribute.Name : declaringType.Name;
+
                 var joinString = "";
-                if (attrJoin is LeftJoinAttribute)
-                    joinString = "LEFT JOIN";
-                else if (attrJoin is InnerJoinAttribute)
-                    joinString = "INNER JOIN";
-                else if (attrJoin is RightJoinAttribute)
-                    joinString = "RIGHT JOIN";
+                switch (attrJoin)
+                {
+                    case LeftJoinAttribute _:
+                        joinString = "LEFT JOIN";
+                        break;
+                    case InnerJoinAttribute _:
+                        joinString = "INNER JOIN";
+                        break;
+                    case RightJoinAttribute _ when Config.SqlProvider == SqlProvider.SQLite:
+                        throw new NotSupportedException("SQLite doesn't support RIGHT JOIN");
+                    case RightJoinAttribute _:
+                        joinString = "RIGHT JOIN";
+                        break;
+                    case CrossJoinAttribute _:
+                        joinString = "CROSS JOIN";
+                        break;
+                }
 
                 var joinType = joinProperty.PropertyType.IsGenericType ? joinProperty.PropertyType.GenericTypeArguments[0] : joinProperty.PropertyType;
                 var properties = joinType.FindClassProperties().Where(ExpressionHelper.GetPrimitivePropertiesPredicate());
@@ -335,6 +353,9 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                                 prop.ColumnName = "`" + prop.ColumnName + "`";
                             break;
 
+                        case SqlProvider.SQLite:
+                            break;
+
                         case SqlProvider.PostgreSQL:
                             tableName = "\"" + tableName + "\"";
                             attrJoin.TableName = GetTableNameWithSchemaPrefix(attrJoin.TableName, attrJoin.TableSchema, "\"", "\"");
@@ -353,7 +374,9 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
 
                 originalBuilder.SqlBuilder.Append($", {GetFieldsSelect(attrJoin.TableAlias, props)}");
                 joinBuilder.Append(
-                    $"{joinString} {attrJoin.TableName} AS {attrJoin.TableAlias} ON {tableName}.{attrJoin.Key} = {attrJoin.TableAlias}.{attrJoin.ExternalKey} ");
+                    attrJoin is CrossJoinAttribute
+                        ? $"{joinString} {attrJoin.TableName} AS {attrJoin.TableAlias}"
+                        : $"{joinString} {attrJoin.TableName} AS {attrJoin.TableAlias} ON {tableName}.{attrJoin.Key} = {attrJoin.TableAlias}.{attrJoin.ExternalKey} ");
             }
 
             return joinBuilder.ToString();

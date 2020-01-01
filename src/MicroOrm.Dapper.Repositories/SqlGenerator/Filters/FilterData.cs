@@ -14,5 +14,10 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator.Filters
         /// The query limits settings
         /// </summary>
         public LimitInfo LimitInfo { get; set; }
+
+        /// <sumary>
+        /// Specify if the query is ordered
+        /// </sumary>
+        public bool Ordered { get; set; }
     }
 }

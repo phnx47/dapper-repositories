@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Dapper;
 using MicroOrm.Dapper.Repositories.Tests.DbContexts;
 
@@ -15,8 +15,11 @@ namespace MicroOrm.Dapper.Repositories.Tests.DatabaseFixture
         
         public MySqlDatabaseFixture()
         {
-            const string connString = "Server=localhost;Uid=root;Pwd=Password12!";
-            
+            string connString = "Server=localhost;Uid=root;Pwd=";
+
+            if (Environments.IsAppVeyor)
+                connString = "Server=localhost;Uid=root;Pwd=Password12!";
+
             Db = new MySqlDbContext(connString);
 
             InitDb();

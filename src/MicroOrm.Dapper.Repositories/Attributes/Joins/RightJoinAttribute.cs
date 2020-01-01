@@ -1,4 +1,4 @@
-﻿namespace MicroOrm.Dapper.Repositories.Attributes.Joins
+namespace MicroOrm.Dapper.Repositories.Attributes.Joins
 {
     /// <inheritdoc />
     /// <summary>

@@ -1,8 +1,9 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
 using MicroOrm.Dapper.Repositories.SqlGenerator;
+using MicroOrm.Dapper.Repositories.SqlGenerator.Filters;
 using MicroOrm.Dapper.Repositories.Tests.Classes;
 
 using Xunit;
@@ -393,6 +394,51 @@ namespace MicroOrm.Dapper.Repositories.Tests.SqlGeneratorTests
             ISqlGenerator<User> userSqlGenerator = new SqlGenerator<User>(_sqlConnector, true);
             var sqlQuery = userSqlGenerator.GetSelectFirst(x => x.Id == 2);
             Assert.Equal("SELECT TOP 1 [Users].[Id], [Users].[Name], [Users].[AddressId], [Users].[PhoneId], [Users].[OfficePhoneId], [Users].[Deleted], [Users].[UpdatedAt] FROM [Users] WHERE ([Users].[Id] = @Id_p0) AND [Users].[Deleted] != 1", sqlQuery.GetSql());
+        }
+        
+        [Fact]
+        public static void SelectLimit()
+        {
+            ISqlGenerator<User> userSqlGenerator = new SqlGenerator<User>(_sqlConnector, true);
+            var data = userSqlGenerator.FilterData.LimitInfo ?? new LimitInfo();
+            data.Limit = 10u;
+            userSqlGenerator.FilterData.LimitInfo = data;
+
+            var sqlQuery = userSqlGenerator.GetSelectAll(x => x.Id == 2);
+            Assert.Equal("SELECT TOP (10) [Users].[Id], [Users].[Name], [Users].[AddressId], [Users].[PhoneId], [Users].[OfficePhoneId], [Users].[Deleted], [Users].[UpdatedAt] FROM [Users] WHERE ([Users].[Id] = @Id_p0) AND [Users].[Deleted] != 1", sqlQuery.GetSql());
+        }
+
+        [Fact]
+        public static void SelectOrderBy()
+        {
+            ISqlGenerator<User> userSqlGenerator = new SqlGenerator<User>(_sqlConnector, true);
+
+            var data = userSqlGenerator.FilterData.OrderInfo ?? new OrderInfo();
+            data.Columns = new List<string> { "Id" };
+            data.Direction = OrderInfo.SortDirection.ASC;
+            userSqlGenerator.FilterData.OrderInfo = data;
+
+            var sqlQuery = userSqlGenerator.GetSelectAll(x => x.Id == 2);
+            Assert.Equal("SELECT [Users].[Id], [Users].[Name], [Users].[AddressId], [Users].[PhoneId], [Users].[OfficePhoneId], [Users].[Deleted], [Users].[UpdatedAt] FROM [Users] WHERE ([Users].[Id] = @Id_p0) AND [Users].[Deleted] != 1 ORDER BY [Users].[Id] ASC", sqlQuery.GetSql());
+        }
+
+        [Fact]
+        public static void SelectPaged()
+        {
+            ISqlGenerator<User> userSqlGenerator = new SqlGenerator<User>(_sqlConnector, true);
+
+            var data = userSqlGenerator.FilterData.OrderInfo ?? new OrderInfo();
+            data.Columns = new List<string> { "Id" };
+            data.Direction = OrderInfo.SortDirection.ASC;
+            userSqlGenerator.FilterData.OrderInfo = data;
+
+            var dataLimit = userSqlGenerator.FilterData.LimitInfo ?? new LimitInfo();
+            dataLimit.Limit = 10u;
+            dataLimit.Offset = 5u;
+            userSqlGenerator.FilterData.LimitInfo = dataLimit;
+
+            var sqlQuery = userSqlGenerator.GetSelectAll(x => x.Id == 2);
+            Assert.Equal("SELECT [Users].[Id], [Users].[Name], [Users].[AddressId], [Users].[PhoneId], [Users].[OfficePhoneId], [Users].[Deleted], [Users].[UpdatedAt] FROM [Users] WHERE ([Users].[Id] = @Id_p0) AND [Users].[Deleted] != 1 ORDER BY [Users].[Id] ASC OFFSET 5 ROWS FETCH NEXT 10 ROWS ONLY", sqlQuery.GetSql());
         }
 
         [Fact]
