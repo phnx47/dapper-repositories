@@ -231,7 +231,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
             return query;
         }
 
-        private static string GetFieldsSelect(string tableName, SqlPropertyMetadata[] properties)
+        private static string GetFieldsSelect(string tableName, IEnumerable<SqlPropertyMetadata> properties)
         {
             //Projection function
             string ProjectionFunction(SqlPropertyMetadata p)

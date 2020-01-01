@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
@@ -291,14 +291,14 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
             foreach (var include in includes)
             {
                 var joinProperty = AllProperties.First(q => q.Name == ExpressionHelper.GetPropertyName(include));
-                var declaringType = joinProperty.DeclaringType.GetTypeInfo();
-                var tableAttribute = declaringType.GetCustomAttribute<TableAttribute>();
-                var tableName = tableAttribute != null ? tableAttribute.Name : declaringType.Name;
-
                 var attrJoin = joinProperty.GetCustomAttribute<JoinAttributeBase>();
 
                 if (attrJoin == null)
                     continue;
+
+                var declaringType = joinProperty.DeclaringType.GetTypeInfo();
+                var tableAttribute = declaringType.GetCustomAttribute<TableAttribute>();
+                var tableName = tableAttribute != null ? tableAttribute.Name : declaringType.Name;
 
                 var joinString = "";
                 if (attrJoin is LeftJoinAttribute)

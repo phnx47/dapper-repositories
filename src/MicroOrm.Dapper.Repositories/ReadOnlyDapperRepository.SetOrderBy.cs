@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+using System;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Linq.Expressions;
@@ -32,10 +31,8 @@ namespace MicroOrm.Dapper.Repositories
                 (from s in cols
                     select ExpressionHelper.GetPropertyName(s)
                     into prop
-                    select type.GetProperty(prop)?.GetCustomAttribute<ColumnAttribute>()
-                    into attr
-                    where attr != null
-                    select attr.Name).ToList();
+                    let attr = type.GetProperty(prop)?.GetCustomAttribute<ColumnAttribute>()
+                    select attr == null ? prop : attr.Name).ToList();
 
             var order = SqlGenerator.FilterData.OrderInfo ?? new OrderInfo();
             order.Direction = direction;

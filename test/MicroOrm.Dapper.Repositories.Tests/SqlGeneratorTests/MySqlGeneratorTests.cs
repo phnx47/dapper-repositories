@@ -145,6 +145,20 @@ namespace MicroOrm.Dapper.Repositories.Tests.SqlGeneratorTests
         }
 
         [Fact]
+        public void SelectOrderBy()
+        {
+            ISqlGenerator<City> sqlGenerator = new SqlGenerator<City>(_sqlConnector, false);
+
+            var data = sqlGenerator.FilterData.OrderInfo ?? new OrderInfo();
+            data.Columns = new List<string> {"Cities.Name"};
+            data.Direction = OrderInfo.SortDirection.ASC;
+            sqlGenerator.FilterData.OrderInfo = data;
+
+            var sqlQuery = sqlGenerator.GetSelectAll(x => x.Identifier == Guid.Empty);
+            Assert.Equal("SELECT Cities.Identifier, Cities.Name FROM Cities WHERE Cities.Identifier = @Identifier_p0 ORDER BY Cities.Name ASC", sqlQuery.GetSql());
+        }
+
+        [Fact]
         public void SelectPaged()
         {
             ISqlGenerator<City> sqlGenerator = new SqlGenerator<City>(_sqlConnector, false);
@@ -153,7 +167,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.SqlGeneratorTests
             data.Limit = 10u;
             data.Offset = 5u;
             sqlGenerator.FilterData.LimitInfo = data;
-
+            
             var sqlQuery = sqlGenerator.GetSelectAll(x => x.Identifier == Guid.Empty);
             Assert.Equal("SELECT Cities.Identifier, Cities.Name FROM Cities WHERE Cities.Identifier = @Identifier_p0 LIMIT 10 OFFSET 5", sqlQuery.GetSql());
         }
