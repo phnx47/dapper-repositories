@@ -18,9 +18,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.DatabaseFixture
             string connString = "Server=localhost;Uid=root;Pwd=";
 
             if (Environments.IsAppVeyor)
-            {
-                connString = "";
-            }
+                connString = "Server=localhost;Uid=root;Pwd=Password12!";
 
             Db = new MySqlDbContext(connString);
 
