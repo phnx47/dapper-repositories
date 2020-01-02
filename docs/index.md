@@ -61,8 +61,8 @@ Inner join for property: Collection and object are supported.
 **[RightJoin]**  
 Right join for property: Collection and object are supported.
 
-**[CrossJoin]**  
-Cross join for property: Only available with SQLite.
+**[CrossJoin] - SQLite only**  
+Cross join for property: Collection and object are supported.
 
 **[UpdatedAt]**  
 Automatically set DataTime.UtcNow (You can use local date or define offset) for Insert and Update.
