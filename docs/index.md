@@ -22,11 +22,13 @@ For some Micro ORM's you need to write your own SQL sentences and this is the ca
 
 This tool abstracts the generation of the SQL sentence for CRUD operations based on each C# POCO class "metadata".
 We know there are plugins for both Micro ORMs that implement the execution of these tasks, but that's exactly where this tool is different. The "SQL Generator" is a generic component
-that generates all the CRUD sentences for a POCO class based on its definition and the possibility to override the SQL generatorand the way it builds each sentence.
+that generates all the CRUD sentences for a POCO class based on its definition and the possibility to override the SQL generator and the way it builds each sentence.
 
 The original idea was taken from [Yoinbol](https://github.com/Yoinbol/MicroOrm.Pocos.SqlGenerator).
 
-I tested this with MSSQL, PostgreSQL and MySQL.
+All tests with MSSQL, PostgreSQL and MySQL has passed, SQLite still not tested.
+
+## Installation
 
     dotnet add package MicroOrm.Dapper.Repositories
 
@@ -59,8 +61,11 @@ Inner join for property: Collection and object are supported.
 **[RightJoin]**  
 Right join for property: Collection and object are supported.
 
+**[CrossJoin] - SQLite only**  
+Cross join for property: Collection and object are supported.
+
 **[UpdatedAt]**  
-Automatically set DataTime.UtcNow for Insert and Update.
+Automatically set DataTime.UtcNow (You can use local date or define offset) for Insert and Update.
 
 ### Notes
 
@@ -68,6 +73,7 @@ Automatically set DataTime.UtcNow for Insert and Update.
 * If the [Deleted] is used on a certain POCO, the sentence will be an update instead of a delete.
 * Supports complex primary keys.
 * Supports simple Joins.
+* For this moment, with MSSQL you can only use limit with offset if you call OrderBy first, otherwise limit will be ignored.
 
 ## Examples
 
@@ -146,7 +152,25 @@ Implements the repository:
 Find by ID:
 
     var user = await userRepository.FindAsync(x => x.Id == 5);
+    
+Query with limit:
 
-Find all users for AccountId==3 and not logical deleted:
+    var limit = 10u;
+    var users = await userRepository.SetLimit(limit).FindAllAsync();
+
+
+Query with limit and offset:
+
+    var limit = 10u;
+    var offset = 5u;
+    var users = await userRepository.SetLimit(limit, offset).FindAllAsync();
+
+
+Query with OrderBy:
+    
+    var users = await userRepository.SetOrderBy(OrderInfo.SortDirection.DESC, x => x.CreatedAt).FindAllAsync();
+
+
+Find all users for AccountId equals to 3 and not logical deleted:
 
     var allUsers = await userRepository.FindAllAsync(x => x.AccountId == 3 && x.Deleted != false);
