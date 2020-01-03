@@ -81,7 +81,10 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                             IdentitySqlProperty.ColumnName = "\"" + IdentitySqlProperty.ColumnName + "\"";
 
                         break;
-
+                    case SqlProvider.SQLite:
+                        //SQLite doesn't use it.
+                        break;
+                    
                     default:
                         throw new ArgumentOutOfRangeException(nameof(MicroOrmConfig.SqlProvider));
                 }
