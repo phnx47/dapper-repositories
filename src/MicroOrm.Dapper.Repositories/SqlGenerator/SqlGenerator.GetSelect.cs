@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using MicroOrm.Dapper.Repositories.Config;
 
 namespace MicroOrm.Dapper.Repositories.SqlGenerator
 {
@@ -38,7 +39,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
 
             if (firstOnly)
             {
-                if (Config.SqlProvider != SqlProvider.MSSQL)
+                if (MicroOrmConfig.SqlProvider != SqlProvider.MSSQL)
                     sqlQuery.SqlBuilder.Append("LIMIT 1");
             }
             else
@@ -52,7 +53,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
             if (FilterData.LimitInfo == null)
                 return;
 
-            if (Config.SqlProvider == SqlProvider.MSSQL)
+            if (MicroOrmConfig.SqlProvider == SqlProvider.MSSQL)
             {
                 if (!FilterData.Ordered)
                     return;
@@ -92,9 +93,9 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                 var col = FilterData.OrderInfo.Columns[i];
                 sqlQuery.SqlBuilder.Append(tableName);
                 sqlQuery.SqlBuilder.Append(".");
-                if (Config.UseQuotationMarks)
+                if (MicroOrmConfig.UseQuotationMarks)
                 {
-                    sqlQuery.SqlBuilder.Append(Config.SqlProvider == SqlProvider.MSSQL ? $"[{col}]" : $"`{col}`");
+                    sqlQuery.SqlBuilder.Append(MicroOrmConfig.SqlProvider == SqlProvider.MSSQL ? $"[{col}]" : $"`{col}`");
                 }
                 else
                 {
@@ -183,7 +184,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                     .Append(LogicalDeleteValue)
                     .Append(" ");
 
-            if (Config.SqlProvider == SqlProvider.MySQL || Config.SqlProvider == SqlProvider.PostgreSQL)
+            if (MicroOrmConfig.SqlProvider == SqlProvider.MySQL || MicroOrmConfig.SqlProvider == SqlProvider.PostgreSQL)
                 sqlQuery.SqlBuilder.Append("LIMIT 1");
 
             sqlQuery.SetParam(dictionary);
@@ -223,7 +224,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
             var query = new SqlQuery();
             query.SqlBuilder.Append("SELECT ");
 
-            if (Config.SqlProvider == SqlProvider.MSSQL)
+            if (MicroOrmConfig.SqlProvider == SqlProvider.MSSQL)
                 if (firstOnly)
                     query.SqlBuilder.Append("TOP 1 ");
                 else

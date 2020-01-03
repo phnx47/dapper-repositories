@@ -8,6 +8,7 @@ using System.Text;
 using MicroOrm.Dapper.Repositories.Attributes;
 using MicroOrm.Dapper.Repositories.Attributes.Joins;
 using MicroOrm.Dapper.Repositories.Attributes.LogicalDelete;
+using MicroOrm.Dapper.Repositories.Config;
 using MicroOrm.Dapper.Repositories.Extensions;
 using MicroOrm.Dapper.Repositories.SqlGenerator.Filters;
 using MicroOrm.Dapper.Repositories.SqlGenerator.QueryExpressions;
@@ -18,40 +19,14 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
     public partial class SqlGenerator<TEntity> : ISqlGenerator<TEntity>
         where TEntity : class
     {
-        /// <inheritdoc />
         /// <summary>
         ///     Constructor
         /// </summary>
         public SqlGenerator()
-            : this(new SqlGeneratorConfig
-            {
-                SqlProvider = SqlProvider.MSSQL,
-                UseQuotationMarks = false
-            })
-        {
-        }
-
-        /// <inheritdoc />
-        /// <summary>
-        ///     Constructor
-        /// </summary>
-        public SqlGenerator(SqlProvider sqlProvider, bool useQuotationMarks = false)
-            : this(new SqlGeneratorConfig
-            {
-                SqlProvider = sqlProvider,
-                UseQuotationMarks = useQuotationMarks
-            })
-        {
-        }
-
-        /// <summary>
-        ///     Constructor
-        /// </summary>
-        public SqlGenerator(SqlGeneratorConfig sqlGeneratorConfig)
         {
             // Order is important
             InitProperties();
-            InitConfig(sqlGeneratorConfig);
+            InitConfig();
             InitLogicalDeleted();
         }
 
@@ -92,9 +67,6 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         public SqlJoinPropertyMetadata[] SqlJoinProperties { get; protected set; }
 
         /// <inheritdoc />
-        public SqlGeneratorConfig Config { get; protected set; }
-
-        /// <inheritdoc />
         public bool LogicalDelete { get; protected set; }
 
         /// <inheritdoc />
@@ -131,7 +103,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                 string.Join(", ", properties.Select(p => "@" + p.PropertyName))); // values
 
             if (IsIdentity)
-                switch (Config.SqlProvider)
+                switch (MicroOrmConfig.SqlProvider)
                 {
                     case SqlProvider.MSSQL:
                         query.SqlBuilder.Append(" SELECT SCOPE_IDENTITY() AS " + IdentitySqlProperty.ColumnName);
@@ -316,7 +288,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                     case InnerJoinAttribute _:
                         joinString = "INNER JOIN";
                         break;
-                    case RightJoinAttribute _ when Config.SqlProvider == SqlProvider.SQLite:
+                    case RightJoinAttribute _ when MicroOrmConfig.SqlProvider == SqlProvider.SQLite:
                         throw new NotSupportedException("SQLite doesn't support RIGHT JOIN");
                     case RightJoinAttribute _:
                         joinString = "RIGHT JOIN";
@@ -330,8 +302,8 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                 var properties = joinType.FindClassProperties().Where(ExpressionHelper.GetPrimitivePropertiesPredicate());
                 var props = properties.Where(p => !p.GetCustomAttributes<NotMappedAttribute>().Any()).Select(p => new SqlPropertyMetadata(p)).ToArray();
 
-                if (Config.UseQuotationMarks)
-                    switch (Config.SqlProvider)
+                if (MicroOrmConfig.UseQuotationMarks)
+                    switch (MicroOrmConfig.SqlProvider)
                     {
                         case SqlProvider.MSSQL:
                             tableName = "[" + tableName + "]";
@@ -367,7 +339,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                             break;
 
                         default:
-                            throw new ArgumentOutOfRangeException(nameof(Config.SqlProvider));
+                            throw new ArgumentOutOfRangeException(nameof(MicroOrmConfig.SqlProvider));
                     }
                 else
                     attrJoin.TableName = GetTableNameWithSchemaPrefix(attrJoin.TableName, attrJoin.TableSchema);

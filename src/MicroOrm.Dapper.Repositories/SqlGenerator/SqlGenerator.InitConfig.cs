@@ -1,4 +1,5 @@
 using System;
+using MicroOrm.Dapper.Repositories.Config;
 using MicroOrm.Dapper.Repositories.SqlGenerator.Filters;
 
 namespace MicroOrm.Dapper.Repositories.SqlGenerator
@@ -10,14 +11,13 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         /// <summary>
         ///     Init type Sql provider
         /// </summary>
-        private void InitConfig(SqlGeneratorConfig sqlGeneratorConfig)
+        private void InitConfig()
         {
-            Config = sqlGeneratorConfig;
             FilterData = new FilterData();
             
-            if (Config.UseQuotationMarks)
+            if (MicroOrmConfig.UseQuotationMarks)
             {
-                switch (Config.SqlProvider)
+                switch (MicroOrmConfig.SqlProvider)
                 {
                     case SqlProvider.MSSQL:
                         TableName = GetTableNameWithSchemaPrefix(TableName, TableSchema, "[", "]");
@@ -83,7 +83,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                         break;
 
                     default:
-                        throw new ArgumentOutOfRangeException(nameof(Config.SqlProvider));
+                        throw new ArgumentOutOfRangeException(nameof(MicroOrmConfig.SqlProvider));
                 }
             }
             else

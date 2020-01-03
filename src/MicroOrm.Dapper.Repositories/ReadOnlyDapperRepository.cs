@@ -1,4 +1,4 @@
-﻿using System.Data;
+﻿using MicroOrm.Dapper.Repositories.Factory;
 using MicroOrm.Dapper.Repositories.SqlGenerator;
 
 namespace MicroOrm.Dapper.Repositories
@@ -12,41 +12,23 @@ namespace MicroOrm.Dapper.Repositories
         /// <summary>
         ///     Constructor
         /// </summary>
-        public ReadOnlyDapperRepository(IDbConnection connection)
+        public ReadOnlyDapperRepository(IDbConnectionFactory factory)
         {
-            Connection = connection;
-            SqlGenerator = new SqlGenerator<TEntity>(SqlProvider.MSSQL);
+            Factory = factory;
+            SqlGenerator = new SqlGenerator<TEntity>();
         }
 
         /// <summary>
         ///     Constructor
         /// </summary>
-        public ReadOnlyDapperRepository(IDbConnection connection, SqlProvider sqlProvider)
+        public ReadOnlyDapperRepository(IDbConnectionFactory factory, ISqlGenerator<TEntity> sqlGenerator)
         {
-            Connection = connection;
-            SqlGenerator = new SqlGenerator<TEntity>(sqlProvider);
-        }
-
-        /// <summary>
-        ///     Constructor
-        /// </summary>
-        public ReadOnlyDapperRepository(IDbConnection connection, ISqlGenerator<TEntity> sqlGenerator)
-        {
-            Connection = connection;
+            Factory = factory;
             SqlGenerator = sqlGenerator;
         }
 
-        /// <summary>
-        ///     Constructor
-        /// </summary>
-        public ReadOnlyDapperRepository(IDbConnection connection, SqlGeneratorConfig config)
-        {
-            Connection = connection;
-            SqlGenerator = new SqlGenerator<TEntity>(config);
-        }
-
         /// <inheritdoc />
-        public IDbConnection Connection { get; }
+        public IDbConnectionFactory Factory { get; }
 
         /// <inheritdoc />
         public ISqlGenerator<TEntity> SqlGenerator { get; }

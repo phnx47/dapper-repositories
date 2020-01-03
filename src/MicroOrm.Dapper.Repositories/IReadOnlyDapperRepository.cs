@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using MicroOrm.Dapper.Repositories.Factory;
 using MicroOrm.Dapper.Repositories.SqlGenerator;
 using MicroOrm.Dapper.Repositories.SqlGenerator.Filters;
 
@@ -14,9 +15,9 @@ namespace MicroOrm.Dapper.Repositories
     public interface IReadOnlyDapperRepository<TEntity> where TEntity : class
     {
         /// <summary>
-        ///     DB Connection
+        ///     DB Connection Factory
         /// </summary>
-        IDbConnection Connection { get; }
+        IDbConnectionFactory Factory { get; }
 
         /// <summary>
         ///     SQL Genetator

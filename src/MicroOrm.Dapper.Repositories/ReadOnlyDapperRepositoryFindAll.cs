@@ -41,8 +41,11 @@ namespace MicroOrm.Dapper.Repositories
         /// <inheritdoc />
         public virtual IEnumerable<TEntity> FindAll(Expression<Func<TEntity, bool>> predicate, IDbTransaction transaction)
         {
-            var queryResult = SqlGenerator.GetSelectAll(predicate);
-            return Connection.Query<TEntity>(queryResult.GetSql(), queryResult.Param, transaction);
+            using (var Connection = Factory.OpenDbConnection())
+            {
+                var queryResult = SqlGenerator.GetSelectAll(predicate);
+                return Connection.Query<TEntity>(queryResult.GetSql(), queryResult.Param, transaction);
+            }
         }
 
         /// <inheritdoc />
@@ -66,8 +69,11 @@ namespace MicroOrm.Dapper.Repositories
         /// <inheritdoc />
         public virtual Task<IEnumerable<TEntity>> FindAllAsync(Expression<Func<TEntity, bool>> predicate, IDbTransaction transaction)
         {
-            var queryResult = SqlGenerator.GetSelectAll(predicate);
-            return Connection.QueryAsync<TEntity>(queryResult.GetSql(), queryResult.Param, transaction);
+            using (var Connection = Factory.OpenDbConnection())
+            {
+                var queryResult = SqlGenerator.GetSelectAll(predicate);
+                return Connection.QueryAsync<TEntity>(queryResult.GetSql(), queryResult.Param, transaction);
+            }
         }
     }
 }

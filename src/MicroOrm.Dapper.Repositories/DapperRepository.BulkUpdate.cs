@@ -4,6 +4,7 @@ using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 using Dapper;
+using MicroOrm.Dapper.Repositories.Config;
 using MicroOrm.Dapper.Repositories.SqlGenerator;
 
 namespace MicroOrm.Dapper.Repositories
@@ -23,30 +24,35 @@ namespace MicroOrm.Dapper.Repositories
         /// <inheritdoc />
         public bool BulkUpdate(IEnumerable<TEntity> instances, IDbTransaction transaction)
         {
-            if (SqlGenerator.Config.SqlProvider == SqlProvider.MSSQL)
+            using (var Connection = Factory.OpenDbConnection())
             {
-                int count = 0;
-                int totalInstances = instances.Count();
-
-                var properties = SqlGenerator.SqlProperties.ToList();
-
-                int exceededTimes = (int)Math.Ceiling(totalInstances * properties.Count / 2100d);
-                if (exceededTimes > 1)
+                if (MicroOrmConfig.SqlProvider == SqlProvider.MSSQL)
                 {
-                    int maxAllowedInstancesPerBatch = totalInstances / exceededTimes;
+                    int count = 0;
+                    int totalInstances = instances.Count();
 
-                    for (int i = 0; i <= exceededTimes; i++)
+                    var properties = SqlGenerator.SqlProperties.ToList();
+
+                    int exceededTimes = (int) Math.Ceiling(totalInstances * properties.Count / 2100d);
+                    if (exceededTimes > 1)
                     {
-                        var items = instances.Skip(i * maxAllowedInstancesPerBatch).Take(maxAllowedInstancesPerBatch);
-                        var msSqlQueryResult = SqlGenerator.GetBulkUpdate(items);
-                        count += Connection.Execute(msSqlQueryResult.GetSql(), msSqlQueryResult.Param, transaction);
+                        int maxAllowedInstancesPerBatch = totalInstances / exceededTimes;
+
+                        for (int i = 0; i <= exceededTimes; i++)
+                        {
+                            var items = instances.Skip(i * maxAllowedInstancesPerBatch).Take(maxAllowedInstancesPerBatch);
+                            var msSqlQueryResult = SqlGenerator.GetBulkUpdate(items);
+                            count += Connection.Execute(msSqlQueryResult.GetSql(), msSqlQueryResult.Param, transaction);
+                        }
+
+                        return count > 0;
                     }
-                    return count > 0;
                 }
+
+                var queryResult = SqlGenerator.GetBulkUpdate(instances);
+                var result = Connection.Execute(queryResult.GetSql(), queryResult.Param, transaction) > 0;
+                return result;
             }
-            var queryResult = SqlGenerator.GetBulkUpdate(instances);
-            var result = Connection.Execute(queryResult.GetSql(), queryResult.Param, transaction) > 0;
-            return result;
         }
 
         /// <inheritdoc />
@@ -58,30 +64,35 @@ namespace MicroOrm.Dapper.Repositories
         /// <inheritdoc />
         public async Task<bool> BulkUpdateAsync(IEnumerable<TEntity> instances, IDbTransaction transaction)
         {
-            if (SqlGenerator.Config.SqlProvider == SqlProvider.MSSQL)
+            using (var Connection = Factory.OpenDbConnection())
             {
-                int count = 0;
-                int totalInstances = instances.Count();
-
-                var properties = SqlGenerator.SqlProperties.ToList();
-
-                int exceededTimes = (int)Math.Ceiling(totalInstances * properties.Count / 2100d);
-                if (exceededTimes > 1)
+                if (MicroOrmConfig.SqlProvider == SqlProvider.MSSQL)
                 {
-                    int maxAllowedInstancesPerBatch = totalInstances / exceededTimes;
+                    int count = 0;
+                    int totalInstances = instances.Count();
 
-                    for (int i = 0; i <= exceededTimes; i++)
+                    var properties = SqlGenerator.SqlProperties.ToList();
+
+                    int exceededTimes = (int) Math.Ceiling(totalInstances * properties.Count / 2100d);
+                    if (exceededTimes > 1)
                     {
-                        var items = instances.Skip(i * maxAllowedInstancesPerBatch).Take(maxAllowedInstancesPerBatch);
-                        var msSqlQueryResult = SqlGenerator.GetBulkUpdate(items);
-                        count += await Connection.ExecuteAsync(msSqlQueryResult.GetSql(), msSqlQueryResult.Param, transaction);
+                        int maxAllowedInstancesPerBatch = totalInstances / exceededTimes;
+
+                        for (int i = 0; i <= exceededTimes; i++)
+                        {
+                            var items = instances.Skip(i * maxAllowedInstancesPerBatch).Take(maxAllowedInstancesPerBatch);
+                            var msSqlQueryResult = SqlGenerator.GetBulkUpdate(items);
+                            count += await Connection.ExecuteAsync(msSqlQueryResult.GetSql(), msSqlQueryResult.Param, transaction);
+                        }
+
+                        return count > 0;
                     }
-                    return count > 0;
                 }
+
+                var queryResult = SqlGenerator.GetBulkUpdate(instances);
+                var result = await Connection.ExecuteAsync(queryResult.GetSql(), queryResult.Param, transaction) > 0;
+                return result;
             }
-            var queryResult = SqlGenerator.GetBulkUpdate(instances);
-            var result = await Connection.ExecuteAsync(queryResult.GetSql(), queryResult.Param, transaction) > 0;
-            return result;
         }
     }
 }

@@ -72,8 +72,11 @@ namespace MicroOrm.Dapper.Repositories
             Expression<Func<TEntity, bool>> predicate,
             IDbTransaction transaction)
         {
-            var queryResult = SqlGenerator.GetSelectBetween(from, to, btwField, predicate);
-            return Connection.Query<TEntity>(queryResult.GetSql(), queryResult.Param, transaction);
+            using (var Connection = Factory.OpenDbConnection())
+            {
+                var queryResult = SqlGenerator.GetSelectBetween(from, to, btwField, predicate);
+                return Connection.Query<TEntity>(queryResult.GetSql(), queryResult.Param, transaction);
+            }
         }
 
         /// <inheritdoc />
@@ -131,8 +134,11 @@ namespace MicroOrm.Dapper.Repositories
             Expression<Func<TEntity, bool>> predicate,
             IDbTransaction transaction)
         {
-            var queryResult = SqlGenerator.GetSelectBetween(from, to, btwField, predicate);
-            return Connection.QueryAsync<TEntity>(queryResult.GetSql(), queryResult.Param, transaction);
+            using (var Connection = Factory.OpenDbConnection())
+            {
+                var queryResult = SqlGenerator.GetSelectBetween(from, to, btwField, predicate);
+                return Connection.QueryAsync<TEntity>(queryResult.GetSql(), queryResult.Param, transaction);
+            }
         }
     }
 }
