@@ -69,5 +69,6 @@ namespace MicroOrm.Dapper.Repositories
                 return Connection.QueryFirstOrDefaultAsync<TEntity>(queryResult.GetSql(), queryResult.Param, transaction);
             }
         }
+
     }
 }

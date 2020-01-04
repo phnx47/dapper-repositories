@@ -6,6 +6,11 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator.Filters
     public class FilterData
     {
         /// <summary>
+        /// The query select settings
+        /// </summary>
+        public SelectInfo SelectInfo { get; set; }   
+        
+        /// <summary>
         /// The query order settings
         /// </summary>
         public OrderInfo OrderInfo { get; set; }

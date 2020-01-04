@@ -11,7 +11,7 @@ namespace MicroOrm.Dapper.Repositories
         /// <inheritdoc />
         public virtual ReadOnlyDapperRepository<TEntity> SetLimit()
         {
-            SqlGenerator.FilterData.LimitInfo = null;
+            FilterData.LimitInfo = null;
             return this;
         }
 
@@ -21,11 +21,11 @@ namespace MicroOrm.Dapper.Repositories
             if (limit <= 0)
                 return this;
 
-            var data = SqlGenerator.FilterData.LimitInfo ?? new LimitInfo();
+            var data = FilterData.LimitInfo ?? new LimitInfo();
             data.Limit = limit;
             data.Offset = offset;
             data.Permanent = permanent;
-            SqlGenerator.FilterData.LimitInfo = data;
+            FilterData.LimitInfo = data;
 
             return this;
         }

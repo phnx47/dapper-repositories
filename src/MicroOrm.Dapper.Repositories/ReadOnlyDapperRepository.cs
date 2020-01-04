@@ -1,5 +1,6 @@
 ﻿using MicroOrm.Dapper.Repositories.Factory;
 using MicroOrm.Dapper.Repositories.SqlGenerator;
+using MicroOrm.Dapper.Repositories.SqlGenerator.Filters;
 
 namespace MicroOrm.Dapper.Repositories
 {
@@ -29,7 +30,10 @@ namespace MicroOrm.Dapper.Repositories
 
         /// <inheritdoc />
         public IDbConnectionFactory Factory { get; }
-
+        
+        /// <inheritdoc />
+        public FilterData FilterData { get; set; }
+        
         /// <inheritdoc />
         public ISqlGenerator<TEntity> SqlGenerator { get; }
         

@@ -17,11 +17,6 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         PropertyInfo[] AllProperties { get; }
 
         /// <summary>
-        ///     Order info (Asc,desc, cols)
-        /// </summary>
-        FilterData FilterData { get; }
-
-        /// <summary>
         ///     Has Date of changed
         /// </summary>
         bool HasUpdatedAt { get; }

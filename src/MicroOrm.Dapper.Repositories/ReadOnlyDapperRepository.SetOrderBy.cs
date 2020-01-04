@@ -15,7 +15,7 @@ namespace MicroOrm.Dapper.Repositories
         /// <inheritdoc />
         public virtual ReadOnlyDapperRepository<TEntity> SetOrderBy()
         {
-            SqlGenerator.FilterData.OrderInfo = null;
+            FilterData.OrderInfo = null;
             return this;
         }
 
@@ -26,12 +26,12 @@ namespace MicroOrm.Dapper.Repositories
             var propertyNames = cols.Select(ExpressionHelper.GetPropertyName)
                 .Select(fieldName => SqlGenerator.SqlProperties.First(x => x.PropertyName == fieldName).ColumnName).ToList();
 
-            var order = SqlGenerator.FilterData.OrderInfo ?? new OrderInfo();
+            var order = FilterData.OrderInfo ?? new OrderInfo();
             order.Direction = direction;
             order.Columns = propertyNames;
             order.Permanent = permanent;
 
-            SqlGenerator.FilterData.OrderInfo = order;
+            FilterData.OrderInfo = order;
 
             return this;
         }

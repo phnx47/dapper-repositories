@@ -18,7 +18,12 @@ namespace MicroOrm.Dapper.Repositories
         ///     DB Connection Factory
         /// </summary>
         IDbConnectionFactory Factory { get; }
-
+        
+        /// <summary>
+        ///     Order info (Asc,desc, cols)
+        /// </summary>
+        FilterData FilterData { get; }
+        
         /// <summary>
         ///     SQL Genetator
         /// </summary>
