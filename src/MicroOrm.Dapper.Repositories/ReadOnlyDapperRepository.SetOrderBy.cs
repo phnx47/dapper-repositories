@@ -1,8 +1,6 @@
 using System;
-using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Reflection;
 using MicroOrm.Dapper.Repositories.SqlGenerator;
 using MicroOrm.Dapper.Repositories.SqlGenerator.Filters;
 
@@ -25,14 +23,8 @@ namespace MicroOrm.Dapper.Repositories
         public virtual ReadOnlyDapperRepository<TEntity> SetOrderBy(OrderInfo.SortDirection direction, bool permanent,
             params Expression<Func<TEntity, object>>[] cols)
         {
-            var type = typeof(TEntity);
-
-            var propertyNames =
-                (from s in cols
-                    select ExpressionHelper.GetPropertyName(s)
-                    into prop
-                    let attr = type.GetProperty(prop)?.GetCustomAttribute<ColumnAttribute>()
-                    select attr == null ? prop : attr.Name).ToList();
+            var propertyNames = cols.Select(ExpressionHelper.GetPropertyName)
+                .Select(fieldName => SqlGenerator.SqlProperties.First(x => x.PropertyName == fieldName).ColumnName).ToList();
 
             var order = SqlGenerator.FilterData.OrderInfo ?? new OrderInfo();
             order.Direction = direction;

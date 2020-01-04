@@ -93,7 +93,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                 var col = FilterData.OrderInfo.Columns[i];
                 sqlQuery.SqlBuilder.Append(tableName);
                 sqlQuery.SqlBuilder.Append(".");
-                if (MicroOrmConfig.UseQuotationMarks)
+                if (MicroOrmConfig.UseQuotationMarks && MicroOrmConfig.SqlProvider != SqlProvider.SQLite)
                 {
                     sqlQuery.SqlBuilder.Append(MicroOrmConfig.SqlProvider == SqlProvider.MSSQL ? $"[{col}]" : $"`{col}`");
                 }
