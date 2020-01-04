@@ -20,7 +20,7 @@ namespace MicroOrm.Dapper.Repositories
         {
             return FindAllBetween(from, to, btwField, transaction: null);
         }
-        
+
         /// <inheritdoc />
         public IEnumerable<TEntity> FindAllBetween(object from, object to, Expression<Func<TEntity, object>> btwField, IDbTransaction transaction)
         {
@@ -32,7 +32,7 @@ namespace MicroOrm.Dapper.Repositories
         {
             return FindAllBetween(from, to, btwField, transaction: null);
         }
-        
+
         /// <inheritdoc />
         public IEnumerable<TEntity> FindAllBetween(DateTime from, DateTime to, Expression<Func<TEntity, object>> btwField, IDbTransaction transaction)
         {
@@ -47,9 +47,9 @@ namespace MicroOrm.Dapper.Repositories
 
         /// <inheritdoc />
         public IEnumerable<TEntity> FindAllBetween(
-            DateTime from, 
-            DateTime to, 
-            Expression<Func<TEntity, object>> btwField, 
+            DateTime from,
+            DateTime to,
+            Expression<Func<TEntity, object>> btwField,
             Expression<Func<TEntity, bool>> predicate,
             IDbTransaction transaction)
         {
@@ -66,15 +66,15 @@ namespace MicroOrm.Dapper.Repositories
 
         /// <inheritdoc />
         public IEnumerable<TEntity> FindAllBetween(
-            object from, 
-            object to, 
-            Expression<Func<TEntity, object>> btwField, 
+            object from,
+            object to,
+            Expression<Func<TEntity, object>> btwField,
             Expression<Func<TEntity, bool>> predicate,
             IDbTransaction transaction)
         {
             using (var Connection = Factory.OpenDbConnection())
             {
-                var queryResult = SqlGenerator.GetSelectBetween(from, to, btwField, predicate);
+                var queryResult = SqlGenerator.GetSelectBetween(from, to, FilterData, btwField, predicate);
                 return Connection.Query<TEntity>(queryResult.GetSql(), queryResult.Param, transaction);
             }
         }
@@ -84,19 +84,19 @@ namespace MicroOrm.Dapper.Repositories
         {
             return FindAllBetweenAsync(from, to, btwField, transaction: null);
         }
-        
+
         /// <inheritdoc />
         public Task<IEnumerable<TEntity>> FindAllBetweenAsync(object from, object to, Expression<Func<TEntity, object>> btwField, IDbTransaction transaction)
         {
             return FindAllBetweenAsync(from, to, btwField, null, transaction);
         }
-        
+
         /// <inheritdoc />
         public Task<IEnumerable<TEntity>> FindAllBetweenAsync(DateTime from, DateTime to, Expression<Func<TEntity, object>> btwField)
         {
             return FindAllBetweenAsync(from, to, btwField, transaction: null);
         }
-        
+
         /// <inheritdoc />
         public Task<IEnumerable<TEntity>> FindAllBetweenAsync(DateTime from, DateTime to, Expression<Func<TEntity, object>> btwField, IDbTransaction transaction)
         {
@@ -114,12 +114,12 @@ namespace MicroOrm.Dapper.Repositories
         {
             return FindAllBetweenAsync(from, to, btwField, predicate, null);
         }
-        
+
         /// <inheritdoc />
         public Task<IEnumerable<TEntity>> FindAllBetweenAsync(
             DateTime from,
-            DateTime to, 
-            Expression<Func<TEntity, object>> btwField, 
+            DateTime to,
+            Expression<Func<TEntity, object>> btwField,
             Expression<Func<TEntity, bool>> predicate,
             IDbTransaction transaction)
         {
@@ -128,15 +128,15 @@ namespace MicroOrm.Dapper.Repositories
 
         /// <inheritdoc />
         public Task<IEnumerable<TEntity>> FindAllBetweenAsync(
-            object from, 
+            object from,
             object to,
-            Expression<Func<TEntity, object>> btwField, 
+            Expression<Func<TEntity, object>> btwField,
             Expression<Func<TEntity, bool>> predicate,
             IDbTransaction transaction)
         {
             using (var Connection = Factory.OpenDbConnection())
             {
-                var queryResult = SqlGenerator.GetSelectBetween(from, to, btwField, predicate);
+                var queryResult = SqlGenerator.GetSelectBetween(from, to, FilterData, btwField, predicate);
                 return Connection.QueryAsync<TEntity>(queryResult.GetSql(), queryResult.Param, transaction);
             }
         }

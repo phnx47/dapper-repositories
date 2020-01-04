@@ -43,7 +43,7 @@ namespace MicroOrm.Dapper.Repositories
         {
             using (var Connection = Factory.OpenDbConnection())
             {
-                var queryResult = SqlGenerator.GetSelectAll(predicate);
+                var queryResult = SqlGenerator.GetSelectAll(predicate, FilterData);
                 return Connection.Query<TEntity>(queryResult.GetSql(), queryResult.Param, transaction);
             }
         }
@@ -71,7 +71,7 @@ namespace MicroOrm.Dapper.Repositories
         {
             using (var Connection = Factory.OpenDbConnection())
             {
-                var queryResult = SqlGenerator.GetSelectAll(predicate);
+                var queryResult = SqlGenerator.GetSelectAll(predicate, FilterData);
                 return Connection.QueryAsync<TEntity>(queryResult.GetSql(), queryResult.Param, transaction);
             }
         }

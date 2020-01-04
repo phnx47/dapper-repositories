@@ -24,7 +24,7 @@ namespace MicroOrm.Dapper.Repositories
             Expression<Func<TEntity, object>> tChild1,
             IDbTransaction transaction)
         {
-            var queryResult = SqlGenerator.GetSelectAll(predicate, tChild1);
+            var queryResult = SqlGenerator.GetSelectAll(predicate, FilterData, tChild1);
             return ExecuteJoinQuery<TChild1, DontMap, DontMap, DontMap, DontMap, DontMap>(queryResult, transaction, tChild1);
         }
 
@@ -44,7 +44,7 @@ namespace MicroOrm.Dapper.Repositories
             Expression<Func<TEntity, object>> tChild2,
             IDbTransaction transaction)
         {
-            var sqlQuery = SqlGenerator.GetSelectAll(predicate, tChild1, tChild2);
+            var sqlQuery = SqlGenerator.GetSelectAll(predicate, FilterData, tChild1, tChild2);
             return ExecuteJoinQuery<TChild1, TChild2, DontMap, DontMap, DontMap, DontMap>(sqlQuery, transaction, tChild1, tChild2);
         }
 
@@ -66,7 +66,7 @@ namespace MicroOrm.Dapper.Repositories
             Expression<Func<TEntity, object>> tChild3,
             IDbTransaction transaction)
         {
-            var sqlQuery = SqlGenerator.GetSelectAll(predicate, tChild1, tChild2, tChild3);
+            var sqlQuery = SqlGenerator.GetSelectAll(predicate, FilterData, tChild1, tChild2, tChild3);
             return ExecuteJoinQuery<TChild1, TChild2, TChild3, DontMap, DontMap, DontMap>(sqlQuery, transaction, tChild1, tChild2, tChild3);
         }
 
@@ -90,7 +90,7 @@ namespace MicroOrm.Dapper.Repositories
             Expression<Func<TEntity, object>> tChild4,
             IDbTransaction transaction)
         {
-            var sqlQuery = SqlGenerator.GetSelectAll(predicate, tChild1, tChild2, tChild3, tChild4);
+            var sqlQuery = SqlGenerator.GetSelectAll(predicate, FilterData, tChild1, tChild2, tChild3, tChild4);
             return ExecuteJoinQuery<TChild1, TChild2, TChild3, TChild4, DontMap, DontMap>(sqlQuery, transaction, tChild1, tChild2, tChild3, tChild4);
         }
 
@@ -116,7 +116,7 @@ namespace MicroOrm.Dapper.Repositories
             Expression<Func<TEntity, object>> tChild5,
             IDbTransaction transaction)
         {
-            var sqlQuery = SqlGenerator.GetSelectAll(predicate, tChild1, tChild2, tChild3, tChild4, tChild5);
+            var sqlQuery = SqlGenerator.GetSelectAll(predicate, FilterData, tChild1, tChild2, tChild3, tChild4, tChild5);
             return ExecuteJoinQuery<TChild1, TChild2, TChild3, TChild4, TChild5, DontMap>(sqlQuery, transaction, tChild1, tChild2, tChild3, tChild4, tChild5);
         }
 
@@ -144,7 +144,7 @@ namespace MicroOrm.Dapper.Repositories
             Expression<Func<TEntity, object>> tChild6,
             IDbTransaction transaction)
         {
-            var sqlQuery = SqlGenerator.GetSelectAll(predicate, tChild1, tChild2, tChild3, tChild4, tChild5, tChild6);
+            var sqlQuery = SqlGenerator.GetSelectAll(predicate, FilterData, tChild1, tChild2, tChild3, tChild4, tChild5, tChild6);
             return ExecuteJoinQuery<TChild1, TChild2, TChild3, TChild4, TChild5, TChild6>(sqlQuery, transaction, tChild1, tChild2, tChild3, tChild4, tChild5, tChild6);
         }
 
@@ -159,7 +159,7 @@ namespace MicroOrm.Dapper.Repositories
             Expression<Func<TEntity, object>> tChild1,
             IDbTransaction transaction)
         {
-            var queryResult = SqlGenerator.GetSelectAll(predicate, tChild1);
+            var queryResult = SqlGenerator.GetSelectAll(predicate, FilterData, tChild1);
             return ExecuteJoinQueryAsync<TChild1, DontMap, DontMap, DontMap, DontMap, DontMap>(queryResult, transaction, tChild1);
         }
 
@@ -179,7 +179,7 @@ namespace MicroOrm.Dapper.Repositories
             Expression<Func<TEntity, object>> tChild2,
             IDbTransaction transaction)
         {
-            var sqlQuery = SqlGenerator.GetSelectAll(predicate, tChild1, tChild2);
+            var sqlQuery = SqlGenerator.GetSelectAll(predicate, FilterData, tChild1, tChild2);
             return ExecuteJoinQueryAsync<TChild1, TChild2, DontMap, DontMap, DontMap, DontMap>(sqlQuery, transaction, tChild1, tChild2);
         }
 
@@ -201,7 +201,7 @@ namespace MicroOrm.Dapper.Repositories
             Expression<Func<TEntity, object>> tChild3,
             IDbTransaction transaction)
         {
-            var sqlQuery = SqlGenerator.GetSelectAll(predicate, tChild1, tChild2, tChild3);
+            var sqlQuery = SqlGenerator.GetSelectAll(predicate, FilterData, tChild1, tChild2, tChild3);
             return ExecuteJoinQueryAsync<TChild1, TChild2, TChild3, DontMap, DontMap, DontMap>(sqlQuery, transaction, tChild1, tChild2, tChild3);
         }
 
@@ -225,7 +225,7 @@ namespace MicroOrm.Dapper.Repositories
             Expression<Func<TEntity, object>> tChild4,
             IDbTransaction transaction)
         {
-            var sqlQuery = SqlGenerator.GetSelectAll(predicate, tChild1, tChild2, tChild3, tChild4);
+            var sqlQuery = SqlGenerator.GetSelectAll(predicate, FilterData, tChild1, tChild2, tChild3, tChild4);
             return ExecuteJoinQueryAsync<TChild1, TChild2, TChild3, TChild4, DontMap, DontMap>(sqlQuery, transaction, tChild1, tChild2, tChild3, tChild4);
         }
 
@@ -251,7 +251,7 @@ namespace MicroOrm.Dapper.Repositories
             Expression<Func<TEntity, object>> tChild5,
             IDbTransaction transaction)
         {
-            var sqlQuery = SqlGenerator.GetSelectAll(predicate, tChild1, tChild2, tChild3, tChild4, tChild5);
+            var sqlQuery = SqlGenerator.GetSelectAll(predicate, FilterData, tChild1, tChild2, tChild3, tChild4, tChild5);
             return ExecuteJoinQueryAsync<TChild1, TChild2, TChild3, TChild4, TChild5, DontMap>(sqlQuery, transaction, tChild1, tChild2, tChild3, tChild4, tChild5);
         }
 
@@ -279,7 +279,7 @@ namespace MicroOrm.Dapper.Repositories
             Expression<Func<TEntity, object>> tChild6,
             IDbTransaction transaction)
         {
-            var sqlQuery = SqlGenerator.GetSelectAll(predicate, tChild1, tChild2, tChild3, tChild4, tChild5, tChild6);
+            var sqlQuery = SqlGenerator.GetSelectAll(predicate, FilterData, tChild1, tChild2, tChild3, tChild4, tChild5, tChild6);
             return ExecuteJoinQueryAsync<TChild1, TChild2, TChild3, TChild4, TChild5, TChild6>(sqlQuery, transaction, tChild1, tChild2, tChild3, tChild4, tChild5, tChild6);
         }
     }

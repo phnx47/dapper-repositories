@@ -16,6 +16,7 @@ namespace MicroOrm.Dapper.Repositories
         public ReadOnlyDapperRepository(IDbConnectionFactory factory)
         {
             Factory = factory;
+            FilterData = new FilterData();
             SqlGenerator = new SqlGenerator<TEntity>();
         }
 
@@ -24,7 +25,8 @@ namespace MicroOrm.Dapper.Repositories
         /// </summary>
         public ReadOnlyDapperRepository(IDbConnectionFactory factory, ISqlGenerator<TEntity> sqlGenerator)
         {
-            Factory = factory;
+            Factory = factory;     
+            FilterData = new FilterData();
             SqlGenerator = sqlGenerator;
         }
 

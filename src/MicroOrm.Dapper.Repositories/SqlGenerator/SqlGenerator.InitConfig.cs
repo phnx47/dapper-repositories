@@ -1,6 +1,5 @@
 using System;
 using MicroOrm.Dapper.Repositories.Config;
-using MicroOrm.Dapper.Repositories.SqlGenerator.Filters;
 
 namespace MicroOrm.Dapper.Repositories.SqlGenerator
 {
@@ -13,8 +12,6 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         /// </summary>
         private void InitConfig()
         {
-            FilterData = new FilterData();
-            
             if (MicroOrmConfig.UseQuotationMarks)
             {
                 switch (MicroOrmConfig.SqlProvider)

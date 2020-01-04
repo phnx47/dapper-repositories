@@ -34,9 +34,6 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         public PropertyInfo[] AllProperties { get; protected set; }
 
         /// <inheritdoc />
-        public FilterData FilterData { get; protected set; }
-
-        /// <inheritdoc />
         public bool HasUpdatedAt => UpdatedAtProperty != null;
 
         /// <inheritdoc />
@@ -263,7 +260,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                 : startQuotationMark + tableName + endQuotationMark;
         }
 
-        private string AppendJoinToSelect(SqlQuery originalBuilder, params Expression<Func<TEntity, object>>[] includes)
+        private string AppendJoinToSelect(SqlQuery originalBuilder, bool hasSelectFilter, params Expression<Func<TEntity, object>>[] includes)
         {
             var joinBuilder = new StringBuilder();
 
@@ -344,7 +341,9 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                 else
                     attrJoin.TableName = GetTableNameWithSchemaPrefix(attrJoin.TableName, attrJoin.TableSchema);
 
-                originalBuilder.SqlBuilder.Append($", {GetFieldsSelect(attrJoin.TableAlias, props)}");
+                if (!hasSelectFilter)
+                    originalBuilder.SqlBuilder.Append($", {GetFieldsSelect(attrJoin.TableAlias, props)}");
+                
                 joinBuilder.Append(
                     attrJoin is CrossJoinAttribute
                         ? $"{joinString} {attrJoin.TableName} AS {attrJoin.TableAlias}"

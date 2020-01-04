@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using MicroOrm.Dapper.Repositories.Config;
+using MicroOrm.Dapper.Repositories.SqlGenerator.Filters;
 
 namespace MicroOrm.Dapper.Repositories.SqlGenerator
 {
@@ -11,13 +12,14 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         where TEntity : class
     {
         private SqlQuery GetSelect(Expression<Func<TEntity, bool>> predicate, bool firstOnly,
+            FilterData filterData,
             params Expression<Func<TEntity, object>>[] includes)
         {
-            var sqlQuery = InitBuilderSelect(firstOnly);
+            var sqlQuery = InitBuilderSelect(firstOnly, filterData);
 
             if (includes.Length > 0)
             {
-                var joinsBuilder = AppendJoinToSelect(sqlQuery, includes);
+                var joinsBuilder = AppendJoinToSelect(sqlQuery, filterData.SelectInfo != null, includes);
                 sqlQuery.SqlBuilder
                     .Append(" FROM ")
                     .Append(TableName)
@@ -35,7 +37,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
 
             AppendWherePredicateQuery(sqlQuery, predicate, QueryType.Select);
 
-            SetOrder(TableName, sqlQuery);
+            SetOrder(TableName, sqlQuery, filterData);
 
             if (firstOnly)
             {
@@ -43,12 +45,12 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                     sqlQuery.SqlBuilder.Append("LIMIT 1");
             }
             else
-                SetLimit(sqlQuery);
+                SetLimit(sqlQuery, filterData);
 
             return sqlQuery;
         }
 
-        private void SetLimit(SqlQuery sqlQuery)
+        private void SetLimit(SqlQuery sqlQuery, FilterData FilterData)
         {
             if (FilterData.LimitInfo == null)
                 return;
@@ -81,7 +83,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         /// <summary>
         /// Set order by in query; DapperRepository.SetOrderBy must be called first. 
         /// </summary>
-        private void SetOrder(string tableName, SqlQuery sqlQuery)
+        private void SetOrder(string tableName, SqlQuery sqlQuery, FilterData FilterData)
         {
             if (FilterData.OrderInfo == null) return;
 
@@ -123,13 +125,13 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         /// <inheritdoc />
         public virtual SqlQuery GetSelectFirst(Expression<Func<TEntity, bool>> predicate, params Expression<Func<TEntity, object>>[] includes)
         {
-            return GetSelect(predicate, true, includes);
+            return GetSelect(predicate, true, null, includes);
         }
 
         /// <inheritdoc />
-        public virtual SqlQuery GetSelectAll(Expression<Func<TEntity, bool>> predicate, params Expression<Func<TEntity, object>>[] includes)
+        public virtual SqlQuery GetSelectAll(Expression<Func<TEntity, bool>> predicate, FilterData filterData, params Expression<Func<TEntity, object>>[] includes)
         {
-            return GetSelect(predicate, false, includes);
+            return GetSelect(predicate, false, filterData, includes);
         }
 
         /// <inheritdoc />
@@ -140,11 +142,11 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
 
             var keyProperty = KeySqlProperties[0];
 
-            var sqlQuery = InitBuilderSelect(true);
+            var sqlQuery = InitBuilderSelect(true, null);
 
             if (includes.Length > 0)
             {
-                var joinsBuilder = AppendJoinToSelect(sqlQuery, includes);
+                var joinsBuilder = AppendJoinToSelect(sqlQuery, false, includes);
                 sqlQuery.SqlBuilder
                     .Append(" FROM ")
                     .Append(TableName)
@@ -192,17 +194,18 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         }
 
         /// <inheritdoc />
-        public virtual SqlQuery GetSelectBetween(object from, object to, Expression<Func<TEntity, object>> btwField)
+        public virtual SqlQuery GetSelectBetween(object from, object to, FilterData filterData, Expression<Func<TEntity, object>> btwField)
         {
-            return GetSelectBetween(from, to, btwField, null);
+            return GetSelectBetween(from, to, filterData, btwField, null);
         }
 
         /// <inheritdoc />
-        public virtual SqlQuery GetSelectBetween(object from, object to, Expression<Func<TEntity, object>> btwField, Expression<Func<TEntity, bool>> predicate)
+        public virtual SqlQuery GetSelectBetween(object from, object to, FilterData filterData, Expression<Func<TEntity, object>> btwField,
+            Expression<Func<TEntity, bool>> predicate)
         {
             var fieldName = ExpressionHelper.GetPropertyName(btwField);
             var columnName = SqlProperties.First(x => x.PropertyName == fieldName).ColumnName;
-            var query = GetSelectAll(predicate);
+            var query = GetSelectAll(predicate, filterData);
 
             query.SqlBuilder
                 .Append(predicate == null && !LogicalDelete ? "WHERE" : "AND")
@@ -219,7 +222,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
             return query;
         }
 
-        private SqlQuery InitBuilderSelect(bool firstOnly)
+        private SqlQuery InitBuilderSelect(bool firstOnly, FilterData filterData)
         {
             var query = new SqlQuery();
             query.SqlBuilder.Append("SELECT ");
@@ -229,17 +232,31 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                     query.SqlBuilder.Append("TOP 1 ");
                 else
                 {
-                    if (FilterData.LimitInfo != null && FilterData.OrderInfo == null)
+                    if (filterData.LimitInfo != null && filterData.OrderInfo == null)
                     {
                         query.SqlBuilder.Append("TOP (");
-                        query.SqlBuilder.Append(FilterData.LimitInfo.Limit);
+                        query.SqlBuilder.Append(filterData.LimitInfo.Limit);
                         query.SqlBuilder.Append(") ");
                     }
                 }
 
-            query.SqlBuilder.Append(GetFieldsSelect(TableName, SqlProperties));
+            query.SqlBuilder.Append(filterData.SelectInfo == null ? GetFieldsSelect(TableName, SqlProperties) : GetFieldsSelect(filterData.SelectInfo.Columns));
 
             return query;
+        }
+
+        private static string GetFieldsSelect(Dictionary<string, SqlPropertyMetadata> properties)
+        {
+            //Projection function
+            string ProjectionFunction(string tableName, SqlPropertyMetadata p)
+            {
+                return !string.IsNullOrEmpty(p.Alias)
+                    ? $"{tableName}.{p.ColumnName} AS {p.PropertyName}"
+                    : $"{tableName}.{p.ColumnName}";
+            }
+
+
+            return string.Join(", ", properties.Select(x => ProjectionFunction(x.Key, x.Value)));
         }
 
         private static string GetFieldsSelect(string tableName, IEnumerable<SqlPropertyMetadata> properties)
