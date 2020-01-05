@@ -21,7 +21,7 @@ namespace MicroOrm.Dapper.Repositories
         /// <inheritdoc />
         public virtual bool Update(TEntity instance, IDbTransaction transaction)
         {
-            using (var Connection = Factory.OpenDbConnection())
+            
             {
                 var sqlQuery = SqlGenerator.GetUpdate(instance);
                 var updated = Connection.Execute(sqlQuery.GetSql(), instance, transaction) > 0;
@@ -38,7 +38,7 @@ namespace MicroOrm.Dapper.Repositories
         /// <inheritdoc />
         public virtual async Task<bool> UpdateAsync(TEntity instance, IDbTransaction transaction)
         {
-            using (var Connection = Factory.OpenDbConnection())
+            
             {
                 var sqlQuery = SqlGenerator.GetUpdate(instance);
                 var updated = await Connection.ExecuteAsync(sqlQuery.GetSql(), instance, transaction) > 0;
@@ -55,7 +55,7 @@ namespace MicroOrm.Dapper.Repositories
         /// <inheritdoc />
         public virtual bool Update(Expression<Func<TEntity, bool>> predicate, TEntity instance, IDbTransaction transaction)
         {
-            using (var Connection = Factory.OpenDbConnection())
+            
             {
                 var sqlQuery = SqlGenerator.GetUpdate(predicate, instance);
                 var updated = Connection.Execute(sqlQuery.GetSql(), sqlQuery.Param, transaction) > 0;
@@ -72,7 +72,7 @@ namespace MicroOrm.Dapper.Repositories
         /// <inheritdoc />
         public virtual async Task<bool> UpdateAsync(Expression<Func<TEntity, bool>> predicate, TEntity instance, IDbTransaction transaction)
         {
-            using (var Connection = Factory.OpenDbConnection())
+            
             {
                 var sqlQuery = SqlGenerator.GetUpdate(predicate, instance);
                 var updated = await Connection.ExecuteAsync(sqlQuery.GetSql(), sqlQuery.Param, transaction) > 0;

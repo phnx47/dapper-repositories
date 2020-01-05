@@ -35,6 +35,16 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                     .Append(" ");
             }
 
+            if (filterData.SelectInfo != null)
+            {
+                if (!filterData.SelectInfo.Permanent)
+                {
+                    filterData.SelectInfo.Columns.Clear();
+                    filterData.SelectInfo.Columns = null;
+                    filterData.SelectInfo = null;
+                }
+            }
+
             AppendWherePredicateQuery(sqlQuery, predicate, QueryType.Select);
 
             SetOrder(TableName, sqlQuery, filterData);
@@ -116,7 +126,11 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
             sqlQuery.SqlBuilder.Append(" ");
 
             if (!FilterData.OrderInfo.Permanent)
+            {
+                FilterData.OrderInfo.Columns.Clear();
+                FilterData.OrderInfo.Columns = null;
                 FilterData.OrderInfo = null;
+            }
 
             FilterData.Ordered = true;
         }
@@ -239,7 +253,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                     }
                 }
 
-            query.SqlBuilder.Append(filterData.SelectInfo == null ? GetFieldsSelect(TableName, SqlProperties) : GetFieldsSelect(filterData.SelectInfo.Columns));
+            query.SqlBuilder.Append(filterData.SelectInfo?.Columns == null ? GetFieldsSelect(TableName, SqlProperties) : GetFieldsSelect(filterData.SelectInfo.Columns));
 
             return query;
         }

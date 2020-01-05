@@ -24,9 +24,6 @@ namespace MicroOrm.Dapper.Repositories
                 FilterData.SelectInfo = new SelectInfo();
             }
 
-            if (FilterData.SelectInfo.Columns == null)
-                FilterData.SelectInfo.Columns = new List<string>();
-
             var type = typeof(T);
             if (expr.Body.NodeType == ExpressionType.Lambda)
             {
@@ -59,9 +56,6 @@ namespace MicroOrm.Dapper.Repositories
             {
                 FilterData.SelectInfo = new SelectInfo();
             }
-
-            if (FilterData.SelectInfo.Columns == null)
-                FilterData.SelectInfo.Columns = new List<string>();
 
             FilterData.SelectInfo.Columns = customSelect.ToList();
 

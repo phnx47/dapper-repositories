@@ -21,7 +21,7 @@ namespace MicroOrm.Dapper.Repositories
         /// <inheritdoc />
         public virtual bool Insert(TEntity instance, IDbTransaction transaction)
         {
-            using (var Connection = Factory.OpenDbConnection())
+            
             {
                 var queryResult = SqlGenerator.GetInsert(instance);
                 if (SqlGenerator.IsIdentity)
@@ -43,7 +43,7 @@ namespace MicroOrm.Dapper.Repositories
         /// <inheritdoc />
         public virtual async Task<bool> InsertAsync(TEntity instance, IDbTransaction transaction)
         {
-            using (var Connection = Factory.OpenDbConnection())
+            
             {
                 var queryResult = SqlGenerator.GetInsert(instance);
                 if (SqlGenerator.IsIdentity)

@@ -19,73 +19,67 @@ namespace MicroOrm.Dapper.Repositories
         /// <inheritdoc />
         public virtual int BulkInsert(IEnumerable<TEntity> instances, IDbTransaction transaction = null)
         {
-            using (var Connection = Factory.OpenDbConnection())
+            if (MicroOrmConfig.SqlProvider == SqlProvider.MSSQL)
             {
-                if (MicroOrmConfig.SqlProvider == SqlProvider.MSSQL)
+                int count = 0;
+                int totalInstances = instances.Count();
+
+                var properties =
+                    (SqlGenerator.IsIdentity
+                        ? SqlGenerator.SqlProperties.Where(p => !p.PropertyName.Equals(SqlGenerator.IdentitySqlProperty.PropertyName, StringComparison.OrdinalIgnoreCase))
+                        : SqlGenerator.SqlProperties).ToList();
+
+                int exceededTimes = (int) Math.Ceiling(totalInstances * properties.Count / 2100d);
+                if (exceededTimes > 1)
                 {
-                    int count = 0;
-                    int totalInstances = instances.Count();
+                    int maxAllowedInstancesPerBatch = totalInstances / exceededTimes;
 
-                    var properties =
-                        (SqlGenerator.IsIdentity
-                            ? SqlGenerator.SqlProperties.Where(p => !p.PropertyName.Equals(SqlGenerator.IdentitySqlProperty.PropertyName, StringComparison.OrdinalIgnoreCase))
-                            : SqlGenerator.SqlProperties).ToList();
-
-                    int exceededTimes = (int) Math.Ceiling(totalInstances * properties.Count / 2100d);
-                    if (exceededTimes > 1)
+                    for (int i = 0; i <= exceededTimes; i++)
                     {
-                        int maxAllowedInstancesPerBatch = totalInstances / exceededTimes;
-
-                        for (int i = 0; i <= exceededTimes; i++)
-                        {
-                            var items = instances.Skip(i * maxAllowedInstancesPerBatch).Take(maxAllowedInstancesPerBatch);
-                            var msSqlQueryResult = SqlGenerator.GetBulkInsert(items);
-                            count += Connection.Execute(msSqlQueryResult.GetSql(), msSqlQueryResult.Param, transaction);
-                        }
-
-                        return count;
+                        var items = instances.Skip(i * maxAllowedInstancesPerBatch).Take(maxAllowedInstancesPerBatch);
+                        var msSqlQueryResult = SqlGenerator.GetBulkInsert(items);
+                        count += Connection.Execute(msSqlQueryResult.GetSql(), msSqlQueryResult.Param, transaction);
                     }
-                }
 
-                var queryResult = SqlGenerator.GetBulkInsert(instances);
-                return Connection.Execute(queryResult.GetSql(), queryResult.Param, transaction);
+                    return count;
+                }
             }
+
+            var queryResult = SqlGenerator.GetBulkInsert(instances);
+            return Connection.Execute(queryResult.GetSql(), queryResult.Param, transaction);
         }
 
         /// <inheritdoc />
         public virtual async Task<int> BulkInsertAsync(IEnumerable<TEntity> instances, IDbTransaction transaction = null)
         {
-            using (var Connection = Factory.OpenDbConnection())
+            if (MicroOrmConfig.SqlProvider == SqlProvider.MSSQL)
             {
-                if (MicroOrmConfig.SqlProvider == SqlProvider.MSSQL)
+                int count = 0;
+                int totalInstances = instances.Count();
+
+                var properties =
+                    (SqlGenerator.IsIdentity
+                        ? SqlGenerator.SqlProperties.Where(p => !p.PropertyName.Equals(SqlGenerator.IdentitySqlProperty.PropertyName, StringComparison.OrdinalIgnoreCase))
+                        : SqlGenerator.SqlProperties).ToList();
+
+                int exceededTimes = (int) Math.Ceiling(totalInstances * properties.Count / 2100d);
+                if (exceededTimes > 1)
                 {
-                    int count = 0;
-                    int totalInstances = instances.Count();
+                    int maxAllowedInstancesPerBatch = totalInstances / exceededTimes;
 
-                    var properties =
-                        (SqlGenerator.IsIdentity
-                            ? SqlGenerator.SqlProperties.Where(p => !p.PropertyName.Equals(SqlGenerator.IdentitySqlProperty.PropertyName, StringComparison.OrdinalIgnoreCase))
-                            : SqlGenerator.SqlProperties).ToList();
-
-                    int exceededTimes = (int) Math.Ceiling(totalInstances * properties.Count / 2100d);
-                    if (exceededTimes > 1)
+                    for (int i = 0; i <= exceededTimes; i++)
                     {
-                        int maxAllowedInstancesPerBatch = totalInstances / exceededTimes;
-
-                        for (int i = 0; i <= exceededTimes; i++)
-                        {
-                            var items = instances.Skip(i * maxAllowedInstancesPerBatch).Take(maxAllowedInstancesPerBatch);
-                            var msSqlQueryResult = SqlGenerator.GetBulkInsert(items);
-                            count += await Connection.ExecuteAsync(msSqlQueryResult.GetSql(), msSqlQueryResult.Param, transaction);
-                        }
-
-                        return count;
+                        var items = instances.Skip(i * maxAllowedInstancesPerBatch).Take(maxAllowedInstancesPerBatch);
+                        var msSqlQueryResult = SqlGenerator.GetBulkInsert(items);
+                        count += await Connection.ExecuteAsync(msSqlQueryResult.GetSql(), msSqlQueryResult.Param, transaction);
                     }
-                }
 
-                var queryResult = SqlGenerator.GetBulkInsert(instances);
-                return await Connection.ExecuteAsync(queryResult.GetSql(), queryResult.Param, transaction).ConfigureAwait(false);
+                    return count;
+                }
             }
+
+            var queryResult = SqlGenerator.GetBulkInsert(instances);
+            return await Connection.ExecuteAsync(queryResult.GetSql(), queryResult.Param, transaction).ConfigureAwait(false);
         }
     }
 }

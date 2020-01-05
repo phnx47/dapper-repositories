@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Data;
 using System.Linq.Expressions;
 using System.Reflection;
 using MicroOrm.Dapper.Repositories.Factory;
@@ -17,9 +18,9 @@ namespace MicroOrm.Dapper.Repositories
         /// <summary>
         ///     Constructor
         /// </summary>
-        public ReadOnlyDapperRepository(IDbConnectionFactory factory)
+        public ReadOnlyDapperRepository(IDbConnection connection)
         {
-            Factory = factory;
+            Connection = connection;
             FilterData = new FilterData();
             SqlGenerator = new SqlGenerator<TEntity>();
         }
@@ -27,23 +28,22 @@ namespace MicroOrm.Dapper.Repositories
         /// <summary>
         ///     Constructor
         /// </summary>
-        public ReadOnlyDapperRepository(IDbConnectionFactory factory, ISqlGenerator<TEntity> sqlGenerator)
+        public ReadOnlyDapperRepository(IDbConnection connection, ISqlGenerator<TEntity> sqlGenerator)
         {
-            Factory = factory;     
+            Connection = connection;     
             FilterData = new FilterData();
             SqlGenerator = sqlGenerator;
         }
 
         /// <inheritdoc />
-        public IDbConnectionFactory Factory { get; }
+        public IDbConnection Connection { get; set; }
         
         /// <inheritdoc />
         public FilterData FilterData { get; set; }
         
         /// <inheritdoc />
         public ISqlGenerator<TEntity> SqlGenerator { get; }
-        
-        
+
         private static string GetProperty(Expression expression, Type type)
         {
             var field = (MemberExpression) expression;
@@ -59,7 +59,29 @@ namespace MicroOrm.Dapper.Repositories
             string name = prop.GetCustomAttribute<ColumnAttribute>()?.Name ?? prop.Name;
             return $"{tableName}.{name}";
         }
+        
+        /// <inheritdoc />
+        public void Dispose()
+        {
+            Connection.Dispose();
+            Connection = null;
+            if (FilterData == null) return;
+            FilterData.LimitInfo = null;
+            if (FilterData.OrderInfo != null)
+            {
+                FilterData.OrderInfo.Columns.Clear();
+                FilterData.OrderInfo.Columns = null;
+                FilterData.OrderInfo = null;
+            }
+            if (FilterData.SelectInfo != null)
+            {
+                FilterData.SelectInfo.Columns.Clear();
+                FilterData.SelectInfo.Columns = null;
+                FilterData.SelectInfo = null;
+            }
 
+            FilterData = null;
+        }
         
     }
 }

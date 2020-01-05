@@ -19,7 +19,7 @@ namespace MicroOrm.Dapper.Repositories
         /// <inheritdoc />
         public virtual TEntity FindById(object id, IDbTransaction transaction)
         {
-            using (var Connection = Factory.OpenDbConnection())
+            
             {
                 var queryResult = SqlGenerator.GetSelectById(id);
                 return Connection.QuerySingleOrDefault<TEntity>(queryResult.GetSql(), queryResult.Param, transaction);
@@ -35,7 +35,7 @@ namespace MicroOrm.Dapper.Repositories
         /// <inheritdoc />
         public virtual Task<TEntity> FindByIdAsync(object id, IDbTransaction transaction)
         {
-            using (var Connection = Factory.OpenDbConnection())
+            
             {
                 var queryResult = SqlGenerator.GetSelectById(id);
                 return Connection.QuerySingleOrDefaultAsync<TEntity>(queryResult.GetSql(), queryResult.Param, transaction);

@@ -57,7 +57,7 @@ namespace MicroOrm.Dapper.Repositories
             const bool buffered = true;
 
             var spiltOn = string.Join(",", childKeyProperties.Select(q => q.Name));
-            using (var Connection = Factory.OpenDbConnection())
+            
             {
                 switch (includes.Length)
                 {
@@ -145,7 +145,7 @@ namespace MicroOrm.Dapper.Repositories
             const bool buffered = true;
 
             var spiltOn = string.Join(",", childKeyProperties.Select(q => q.Name));
-            using (var Connection = Factory.OpenDbConnection())
+            
             {
                 switch (includes.Length)
                 {

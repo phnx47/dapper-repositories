@@ -12,12 +12,12 @@ namespace MicroOrm.Dapper.Repositories
     /// <summary>
     ///     interface for read only repository
     /// </summary>
-    public interface IReadOnlyDapperRepository<TEntity> where TEntity : class
+    public interface IReadOnlyDapperRepository<TEntity> : IDisposable where TEntity : class
     {
         /// <summary>
-        ///     DB Connection Factory
+        ///     DB Connection
         /// </summary>
-        IDbConnectionFactory Factory { get; }
+        IDbConnection Connection { get; set; }
         
         /// <summary>
         ///     Order info (Asc,desc, cols)

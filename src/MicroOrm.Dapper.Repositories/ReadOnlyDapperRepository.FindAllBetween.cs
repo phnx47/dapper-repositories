@@ -72,7 +72,7 @@ namespace MicroOrm.Dapper.Repositories
             Expression<Func<TEntity, bool>> predicate,
             IDbTransaction transaction)
         {
-            using (var Connection = Factory.OpenDbConnection())
+            
             {
                 var queryResult = SqlGenerator.GetSelectBetween(from, to, FilterData, btwField, predicate);
                 return Connection.Query<TEntity>(queryResult.GetSql(), queryResult.Param, transaction);
@@ -134,7 +134,7 @@ namespace MicroOrm.Dapper.Repositories
             Expression<Func<TEntity, bool>> predicate,
             IDbTransaction transaction)
         {
-            using (var Connection = Factory.OpenDbConnection())
+            
             {
                 var queryResult = SqlGenerator.GetSelectBetween(from, to, FilterData, btwField, predicate);
                 return Connection.QueryAsync<TEntity>(queryResult.GetSql(), queryResult.Param, transaction);
