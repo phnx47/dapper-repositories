@@ -21,17 +21,14 @@ namespace MicroOrm.Dapper.Repositories
         /// <inheritdoc />
         public virtual bool Insert(TEntity instance, IDbTransaction transaction)
         {
-            
+            var queryResult = SqlGenerator.GetInsert(instance);
+            if (SqlGenerator.IsIdentity)
             {
-                var queryResult = SqlGenerator.GetInsert(instance);
-                if (SqlGenerator.IsIdentity)
-                {
-                    var newId = Connection.Query<long>(queryResult.GetSql(), queryResult.Param, transaction).FirstOrDefault();
-                    return SetValue(newId, instance);
-                }
-
-                return Connection.Execute(queryResult.GetSql(), instance, transaction) > 0;
+                var newId = Connection.Query<long>(queryResult.GetSql(), queryResult.Param, transaction).FirstOrDefault();
+                return SetValue(newId, instance);
             }
+
+            return Connection.Execute(queryResult.GetSql(), instance, transaction) > 0;
         }
 
         /// <inheritdoc />
@@ -43,17 +40,14 @@ namespace MicroOrm.Dapper.Repositories
         /// <inheritdoc />
         public virtual async Task<bool> InsertAsync(TEntity instance, IDbTransaction transaction)
         {
-            
+            var queryResult = SqlGenerator.GetInsert(instance);
+            if (SqlGenerator.IsIdentity)
             {
-                var queryResult = SqlGenerator.GetInsert(instance);
-                if (SqlGenerator.IsIdentity)
-                {
-                    var newId = (await Connection.QueryAsync<long>(queryResult.GetSql(), queryResult.Param, transaction)).FirstOrDefault();
-                    return SetValue(newId, instance);
-                }
-
-                return await Connection.ExecuteAsync(queryResult.GetSql(), instance, transaction) > 0;
+                var newId = (await Connection.QueryAsync<long>(queryResult.GetSql(), queryResult.Param, transaction)).FirstOrDefault();
+                return SetValue(newId, instance);
             }
+
+            return await Connection.ExecuteAsync(queryResult.GetSql(), instance, transaction) > 0;
         }
 
         private bool SetValue(long newId, TEntity instance)
