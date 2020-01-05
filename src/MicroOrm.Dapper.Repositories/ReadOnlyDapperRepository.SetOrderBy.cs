@@ -34,7 +34,7 @@ namespace MicroOrm.Dapper.Repositories
             order.Direction = direction;
 
             var type = typeof(T);
-            if (expr.NodeType == ExpressionType.Lambda)
+            if (expr.Body.NodeType == ExpressionType.Convert)
             {
                 var lambdaUnary = expr.Body as UnaryExpression;
                 var expression = lambdaUnary.Operand as MemberExpression;
@@ -56,6 +56,12 @@ namespace MicroOrm.Dapper.Repositories
 
         /// <inheritdoc />
         public virtual ReadOnlyDapperRepository<TEntity> SetOrderBy(OrderInfo.SortDirection direction, Expression<Func<TEntity, object>> expr)
+        {
+            return SetOrderBy(direction, false, expr);
+        }
+        
+        /// <inheritdoc />
+        public virtual ReadOnlyDapperRepository<TEntity> SetOrderBy<T>(OrderInfo.SortDirection direction, Expression<Func<T, object>> expr)
         {
             return SetOrderBy(direction, false, expr);
         }
