@@ -28,12 +28,7 @@ namespace MicroOrm.Dapper.Repositories.Attributes.Joins
             Key = key;
             ExternalKey = externalKey;
             TableSchema = tableSchema;
-            TableAlias = tableAlias == string.Empty ? GetAlias() : tableAlias;
-        }
-
-        private string GetAlias()
-        {
-            return $"{TableName}_{Key}";
+            TableAlias = tableAlias;
         }
 
         /// <summary>

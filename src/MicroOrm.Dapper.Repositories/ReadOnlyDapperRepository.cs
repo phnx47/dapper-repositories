@@ -1,4 +1,8 @@
-﻿using MicroOrm.Dapper.Repositories.Factory;
+﻿using System;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.Linq.Expressions;
+using System.Reflection;
+using MicroOrm.Dapper.Repositories.Factory;
 using MicroOrm.Dapper.Repositories.SqlGenerator;
 using MicroOrm.Dapper.Repositories.SqlGenerator.Filters;
 
@@ -38,6 +42,24 @@ namespace MicroOrm.Dapper.Repositories
         
         /// <inheritdoc />
         public ISqlGenerator<TEntity> SqlGenerator { get; }
+        
+        
+        private static string GetProperty(Expression expression, Type type)
+        {
+            var field = (MemberExpression) expression;
+
+            var prop = type.GetProperty(field.Member.Name);
+            TypeInfo declaringType = type.GetTypeInfo();
+            TableAttribute tableAttribute = declaringType.GetCustomAttribute<TableAttribute>();
+            string tableName = tableAttribute != null ? tableAttribute.Name : declaringType.Name;
+            
+            if (prop.GetCustomAttribute<NotMappedAttribute>() != null) 
+                return string.Empty;
+            
+            string name = prop.GetCustomAttribute<ColumnAttribute>()?.Name ?? prop.Name;
+            return $"{tableName}.{name}";
+        }
+
         
     }
 }

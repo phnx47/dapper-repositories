@@ -634,12 +634,12 @@ namespace MicroOrm.Dapper.Repositories
         /// <summary>
         /// Set query sorting
         /// </summary>
-        ReadOnlyDapperRepository<TEntity> SetOrderBy(OrderInfo.SortDirection direction, bool permanent, params Expression<Func<TEntity, object>>[] cols);
+        ReadOnlyDapperRepository<TEntity> SetOrderBy(OrderInfo.SortDirection direction, bool permanent, Expression<Func<TEntity, object>> expr);
 
         /// <summary>
         /// Set query sorting
         /// </summary>
-        ReadOnlyDapperRepository<TEntity> SetOrderBy(OrderInfo.SortDirection direction, params Expression<Func<TEntity, object>>[] cols);
+        ReadOnlyDapperRepository<TEntity> SetOrderBy(OrderInfo.SortDirection direction, Expression<Func<TEntity, object>> expr);
 
         /// <summary>
         /// Remove limit and offset

@@ -343,11 +343,19 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
 
                 if (!hasSelectFilter)
                     originalBuilder.SqlBuilder.Append($", {GetFieldsSelect(attrJoin.TableAlias, props)}");
-                
-                joinBuilder.Append(
-                    attrJoin is CrossJoinAttribute
-                        ? $"{joinString} {attrJoin.TableName} AS {attrJoin.TableAlias}"
+
+                if (attrJoin is CrossJoinAttribute)
+                {
+                    joinBuilder.Append(attrJoin.TableAlias == string.Empty
+                        ? $"{joinString} {attrJoin.TableName} "
+                        : $"{joinString} {attrJoin.TableName} AS {attrJoin.TableAlias} ");
+                }
+                else
+                {
+                    joinBuilder.Append(attrJoin.TableAlias == string.Empty
+                        ? $"{joinString} {attrJoin.TableName} ON {tableName}.{attrJoin.Key} = {attrJoin.TableName}.{attrJoin.ExternalKey} "
                         : $"{joinString} {attrJoin.TableName} AS {attrJoin.TableAlias} ON {tableName}.{attrJoin.Key} = {attrJoin.TableAlias}.{attrJoin.ExternalKey} ");
+                }
             }
 
             return joinBuilder.ToString();

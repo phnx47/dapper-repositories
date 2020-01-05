@@ -4,10 +4,9 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-using MicroOrm.Dapper.Repositories.Extensions;
-using MicroOrm.Dapper.Repositories.SqlGenerator;
+using System.Security.Principal;
+using MicroOrm.Dapper.Repositories.Attributes.Joins;
 using MicroOrm.Dapper.Repositories.SqlGenerator.Filters;
-using MicroOrm.Dapper.Repositories.SqlGenerator.QueryExpressions;
 
 namespace MicroOrm.Dapper.Repositories
 {
@@ -18,7 +17,7 @@ namespace MicroOrm.Dapper.Repositories
         where TEntity : class
     {
         /// <inheritdoc />
-        public virtual ReadOnlyDapperRepository<TEntity> SetSelect<TChild>(Expression<Func<TChild, object>> expr)
+        public virtual ReadOnlyDapperRepository<TEntity> SetSelect<T>(Expression<Func<T, object>> expr)
         {
             if (FilterData.SelectInfo == null)
             {
@@ -26,26 +25,45 @@ namespace MicroOrm.Dapper.Repositories
             }
 
             if (FilterData.SelectInfo.Columns == null)
-                FilterData.SelectInfo.Columns = new Dictionary<string, SqlPropertyMetadata>();
+                FilterData.SelectInfo.Columns = new List<string>();
 
-            var type = typeof(TChild);
-            
-            var cols = (expr.Body as NewExpression)?.Arguments;
-            foreach (var expression in cols)
+            var type = typeof(T);
+            if (expr.NodeType == ExpressionType.Lambda)
             {
-                var field = (MemberExpression) expression;
-                
-                var prop = type.GetProperty(field.Member.Name);
-                
-                var declaringType = type.GetTypeInfo();
-                var tableAttribute = declaringType.GetCustomAttribute<TableAttribute>();
-                var tableName = tableAttribute != null ? tableAttribute.Name : declaringType.Name;
-                
-                if (prop.GetCustomAttribute<NotMappedAttribute>() != null)
-                    continue;
-                
-                FilterData.SelectInfo.Columns.Add(tableName, new SqlPropertyMetadata(prop));
+                var lambdaUnary = expr.Body as UnaryExpression;
+                var expression = lambdaUnary.Operand as MemberExpression;
+                var prop = GetProperty(expression, type);
+                FilterData.SelectInfo.Columns.Add(prop);
             }
+            else
+            {
+                var cols = (expr.Body as NewExpression)?.Arguments;
+                foreach (var expression in cols)
+                {
+                    var prop = GetProperty(expression, type);
+                    if (string.IsNullOrEmpty(prop))
+                        continue;
+                    
+                    FilterData.SelectInfo.Columns.Add(prop);
+                }
+            }
+
+            return this;
+        }
+
+
+        /// <inheritdoc />
+        public virtual ReadOnlyDapperRepository<TEntity> SetSelect(params string[] customSelect)
+        {
+            if (FilterData.SelectInfo == null)
+            {
+                FilterData.SelectInfo = new SelectInfo();
+            }
+
+            if (FilterData.SelectInfo.Columns == null)
+                FilterData.SelectInfo.Columns = new List<string>();
+
+            FilterData.SelectInfo.Columns = customSelect.ToList();
 
             return this;
         }
@@ -54,34 +72,7 @@ namespace MicroOrm.Dapper.Repositories
         /// <inheritdoc />
         public virtual ReadOnlyDapperRepository<TEntity> SetSelect(Expression<Func<TEntity, object>> expr)
         {
-            if (FilterData.SelectInfo == null)
-            {
-                FilterData.SelectInfo = new SelectInfo();
-            }
-
-            if (FilterData.SelectInfo.Columns == null)
-                FilterData.SelectInfo.Columns = new Dictionary<string, SqlPropertyMetadata>();
-
-            var type = typeof(TEntity);
-            
-            var cols = (expr.Body as NewExpression)?.Arguments;
-            foreach (var expression in cols)
-            {
-                var field = (MemberExpression) expression;
-                
-                var prop = type.GetProperty(field.Member.Name);
-                
-                var declaringType = type.GetTypeInfo();
-                var tableAttribute = declaringType.GetCustomAttribute<TableAttribute>();
-                var tableName = tableAttribute != null ? tableAttribute.Name : declaringType.Name;
-                
-                if (prop.GetCustomAttribute<NotMappedAttribute>() != null)
-                    continue;
-                
-                FilterData.SelectInfo.Columns.Add(tableName, new SqlPropertyMetadata(prop));
-            }
-
-            return this;
+            return SetSelect<TEntity>(expr);
         }
     }
 }

@@ -93,8 +93,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
             for (var i = 0; i < count; i++)
             {
                 var col = FilterData.OrderInfo.Columns[i];
-                sqlQuery.SqlBuilder.Append(tableName);
-                sqlQuery.SqlBuilder.Append(".");
+
                 if (MicroOrmConfig.UseQuotationMarks && MicroOrmConfig.SqlProvider != SqlProvider.SQLite)
                 {
                     sqlQuery.SqlBuilder.Append(MicroOrmConfig.SqlProvider == SqlProvider.MSSQL ? $"[{col}]" : $"`{col}`");
@@ -245,18 +244,9 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
             return query;
         }
 
-        private static string GetFieldsSelect(Dictionary<string, SqlPropertyMetadata> properties)
+        private static string GetFieldsSelect(List<string> properties)
         {
-            //Projection function
-            string ProjectionFunction(string tableName, SqlPropertyMetadata p)
-            {
-                return !string.IsNullOrEmpty(p.Alias)
-                    ? $"{tableName}.{p.ColumnName} AS {p.PropertyName}"
-                    : $"{tableName}.{p.ColumnName}";
-            }
-
-
-            return string.Join(", ", properties.Select(x => ProjectionFunction(x.Key, x.Value)));
+            return string.Join(", ", properties);
         }
 
         private static string GetFieldsSelect(string tableName, IEnumerable<SqlPropertyMetadata> properties)

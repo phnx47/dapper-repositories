@@ -11,6 +11,6 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator.Filters
         /// <summary>
         /// Columns
         /// </summary>
-        public Dictionary<string, SqlPropertyMetadata> Columns { get; set; }
+        public List<string> Columns { get; set; }
     }
 }
