@@ -19,7 +19,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
 
             if (includes.Length > 0)
             {
-                var joinsBuilder = AppendJoinToSelect(sqlQuery, filterData.SelectInfo != null, includes);
+                var joinsBuilder = AppendJoinToSelect(sqlQuery, filterData?.SelectInfo != null, includes);
                 sqlQuery.SqlBuilder
                     .Append(" FROM ")
                     .Append(TableName)
@@ -35,7 +35,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                     .Append(" ");
             }
 
-            if (filterData.SelectInfo != null)
+            if (filterData?.SelectInfo != null)
             {
                 if (!filterData.SelectInfo.Permanent)
                 {
@@ -47,7 +47,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
 
             AppendWherePredicateQuery(sqlQuery, predicate, QueryType.Select);
 
-            SetOrder(TableName, sqlQuery, filterData);
+            SetOrder(sqlQuery, filterData);
 
             if (firstOnly)
             {
@@ -60,49 +60,49 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
             return sqlQuery;
         }
 
-        private void SetLimit(SqlQuery sqlQuery, FilterData FilterData)
+        private static void SetLimit(SqlQuery sqlQuery, FilterData filterData)
         {
-            if (FilterData.LimitInfo == null)
+            if (filterData?.LimitInfo == null)
                 return;
 
             if (MicroOrmConfig.SqlProvider == SqlProvider.MSSQL)
             {
-                if (!FilterData.Ordered)
+                if (!filterData.Ordered)
                     return;
 
                 sqlQuery.SqlBuilder.Append("OFFSET ");
-                sqlQuery.SqlBuilder.Append(FilterData.LimitInfo.Offset ?? 0);
+                sqlQuery.SqlBuilder.Append(filterData.LimitInfo.Offset ?? 0);
                 sqlQuery.SqlBuilder.Append(" ROWS FETCH NEXT ");
-                sqlQuery.SqlBuilder.Append(FilterData.LimitInfo.Limit);
+                sqlQuery.SqlBuilder.Append(filterData.LimitInfo.Limit);
                 sqlQuery.SqlBuilder.Append(" ROWS ONLY");
                 return;
             }
 
             sqlQuery.SqlBuilder.Append("LIMIT ");
-            sqlQuery.SqlBuilder.Append(FilterData.LimitInfo.Limit);
-            if (FilterData.LimitInfo.Offset != null)
+            sqlQuery.SqlBuilder.Append(filterData.LimitInfo.Limit);
+            if (filterData.LimitInfo.Offset != null)
             {
                 sqlQuery.SqlBuilder.Append(" OFFSET ");
-                sqlQuery.SqlBuilder.Append(FilterData.LimitInfo.Offset);
+                sqlQuery.SqlBuilder.Append(filterData.LimitInfo.Offset);
             }
 
-            if (!FilterData.LimitInfo.Permanent)
-                FilterData.LimitInfo = null;
+            if (!filterData.LimitInfo.Permanent)
+                filterData.LimitInfo = null;
         }
 
         /// <summary>
         /// Set order by in query; DapperRepository.SetOrderBy must be called first. 
         /// </summary>
-        private void SetOrder(string tableName, SqlQuery sqlQuery, FilterData FilterData)
+        private static void SetOrder(SqlQuery sqlQuery, FilterData filterData)
         {
-            if (FilterData.OrderInfo == null) return;
+            if (filterData?.OrderInfo == null) return;
 
             sqlQuery.SqlBuilder.Append("ORDER BY ");
 
-            var count = FilterData.OrderInfo.Columns.Count;
+            var count = filterData.OrderInfo.Columns.Count;
             for (var i = 0; i < count; i++)
             {
-                var col = FilterData.OrderInfo.Columns[i];
+                var col = filterData.OrderInfo.Columns[i];
 
                 if (MicroOrmConfig.UseQuotationMarks && MicroOrmConfig.SqlProvider != SqlProvider.SQLite)
                 {
@@ -116,7 +116,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                 if (i >= count - 1)
                 {
                     sqlQuery.SqlBuilder.Append(" ");
-                    sqlQuery.SqlBuilder.Append(FilterData.OrderInfo.Direction);
+                    sqlQuery.SqlBuilder.Append(filterData.OrderInfo.Direction);
                     break;
                 }
 
@@ -125,14 +125,14 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
 
             sqlQuery.SqlBuilder.Append(" ");
 
-            if (!FilterData.OrderInfo.Permanent)
+            if (!filterData.OrderInfo.Permanent)
             {
-                FilterData.OrderInfo.Columns.Clear();
-                FilterData.OrderInfo.Columns = null;
-                FilterData.OrderInfo = null;
+                filterData.OrderInfo.Columns.Clear();
+                filterData.OrderInfo.Columns = null;
+                filterData.OrderInfo = null;
             }
 
-            FilterData.Ordered = true;
+            filterData.Ordered = true;
         }
 
         /// <inheritdoc />
@@ -245,7 +245,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                     query.SqlBuilder.Append("TOP 1 ");
                 else
                 {
-                    if (filterData.LimitInfo != null && filterData.OrderInfo == null)
+                    if (filterData?.LimitInfo != null && filterData.OrderInfo == null)
                     {
                         query.SqlBuilder.Append("TOP (");
                         query.SqlBuilder.Append(filterData.LimitInfo.Limit);
@@ -253,7 +253,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                     }
                 }
 
-            query.SqlBuilder.Append(filterData.SelectInfo?.Columns == null ? GetFieldsSelect(TableName, SqlProperties) : GetFieldsSelect(filterData.SelectInfo.Columns));
+            query.SqlBuilder.Append(filterData?.SelectInfo?.Columns == null ? GetFieldsSelect(TableName, SqlProperties) : GetFieldsSelect(filterData.SelectInfo.Columns));
 
             return query;
         }
