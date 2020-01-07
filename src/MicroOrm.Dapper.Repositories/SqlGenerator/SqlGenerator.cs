@@ -342,7 +342,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                     attrJoin.TableName = GetTableNameWithSchemaPrefix(attrJoin.TableName, attrJoin.TableSchema);
 
                 if (!hasSelectFilter)
-                    originalBuilder.SqlBuilder.Append($", {GetFieldsSelect(attrJoin.TableAlias, props)}");
+                    originalBuilder.SqlBuilder.Append($", {GetFieldsSelect(string.IsNullOrEmpty(attrJoin.TableAlias) ? attrJoin.TableName : attrJoin.TableAlias, props)}");
 
                 if (attrJoin is CrossJoinAttribute)
                 {
