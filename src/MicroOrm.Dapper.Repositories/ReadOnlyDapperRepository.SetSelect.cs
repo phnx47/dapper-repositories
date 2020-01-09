@@ -6,6 +6,7 @@ using System.Linq.Expressions;
 using System.Reflection;
 using System.Security.Principal;
 using MicroOrm.Dapper.Repositories.Attributes.Joins;
+using MicroOrm.Dapper.Repositories.SqlGenerator;
 using MicroOrm.Dapper.Repositories.SqlGenerator.Filters;
 
 namespace MicroOrm.Dapper.Repositories

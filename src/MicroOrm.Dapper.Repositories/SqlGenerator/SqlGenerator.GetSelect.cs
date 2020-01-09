@@ -136,9 +136,9 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         }
 
         /// <inheritdoc />
-        public virtual SqlQuery GetSelectFirst(Expression<Func<TEntity, bool>> predicate, params Expression<Func<TEntity, object>>[] includes)
+        public virtual SqlQuery GetSelectFirst(Expression<Func<TEntity, bool>> predicate, FilterData filterData, params Expression<Func<TEntity, object>>[] includes)
         {
-            return GetSelect(predicate, true, null, includes);
+            return GetSelect(predicate, true, filterData, includes);
         }
 
         /// <inheritdoc />

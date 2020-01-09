@@ -80,7 +80,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                         if (qpExpr.NestedProperty)
                         {
                             var joinProperty = SqlJoinProperties.First(x => x.PropertyName == qpExpr.PropertyName);
-                            tableName = joinProperty.TableAlias;
+                            tableName = string.IsNullOrEmpty(joinProperty.TableAlias) ? joinProperty.TableName : joinProperty.TableAlias;
                             columnName = joinProperty.ColumnName;
                         }
                         else
