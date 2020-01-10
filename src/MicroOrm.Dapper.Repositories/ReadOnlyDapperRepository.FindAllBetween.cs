@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq.Expressions;
@@ -72,11 +72,8 @@ namespace MicroOrm.Dapper.Repositories
             Expression<Func<TEntity, bool>> predicate,
             IDbTransaction transaction)
         {
-            
-            {
-                var queryResult = SqlGenerator.GetSelectBetween(from, to, FilterData, btwField, predicate);
-                return Connection.Query<TEntity>(queryResult.GetSql(), queryResult.Param, transaction);
-            }
+            var queryResult = SqlGenerator.GetSelectBetween(from, to, FilterData, btwField, predicate);
+            return Connection.Query<TEntity>(queryResult.GetSql(), queryResult.Param, transaction);
         }
 
         /// <inheritdoc />
@@ -134,11 +131,8 @@ namespace MicroOrm.Dapper.Repositories
             Expression<Func<TEntity, bool>> predicate,
             IDbTransaction transaction)
         {
-            
-            {
-                var queryResult = SqlGenerator.GetSelectBetween(from, to, FilterData, btwField, predicate);
-                return Connection.QueryAsync<TEntity>(queryResult.GetSql(), queryResult.Param, transaction);
-            }
+            var queryResult = SqlGenerator.GetSelectBetween(from, to, FilterData, btwField, predicate);
+            return Connection.QueryAsync<TEntity>(queryResult.GetSql(), queryResult.Param, transaction);
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿using System.Data;
+using System.Data;
 using System.Threading.Tasks;
 using Dapper;
 
@@ -19,11 +19,8 @@ namespace MicroOrm.Dapper.Repositories
         /// <inheritdoc />
         public virtual TEntity FindById(object id, IDbTransaction transaction)
         {
-            
-            {
-                var queryResult = SqlGenerator.GetSelectById(id);
-                return Connection.QuerySingleOrDefault<TEntity>(queryResult.GetSql(), queryResult.Param, transaction);
-            }
+            var queryResult = SqlGenerator.GetSelectById(id);
+            return Connection.QuerySingleOrDefault<TEntity>(queryResult.GetSql(), queryResult.Param, transaction);
         }
 
         /// <inheritdoc />
@@ -35,11 +32,8 @@ namespace MicroOrm.Dapper.Repositories
         /// <inheritdoc />
         public virtual Task<TEntity> FindByIdAsync(object id, IDbTransaction transaction)
         {
-            
-            {
-                var queryResult = SqlGenerator.GetSelectById(id);
-                return Connection.QuerySingleOrDefaultAsync<TEntity>(queryResult.GetSql(), queryResult.Param, transaction);
-            }
+            var queryResult = SqlGenerator.GetSelectById(id);
+            return Connection.QuerySingleOrDefaultAsync<TEntity>(queryResult.GetSql(), queryResult.Param, transaction);
         }
     }
 }
