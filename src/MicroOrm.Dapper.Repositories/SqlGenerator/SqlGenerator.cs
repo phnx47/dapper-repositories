@@ -7,11 +7,8 @@ using System.Reflection;
 using System.Text;
 using MicroOrm.Dapper.Repositories.Attributes;
 using MicroOrm.Dapper.Repositories.Attributes.Joins;
-using MicroOrm.Dapper.Repositories.Attributes.LogicalDelete;
 using MicroOrm.Dapper.Repositories.Config;
 using MicroOrm.Dapper.Repositories.Extensions;
-using MicroOrm.Dapper.Repositories.SqlGenerator.Filters;
-using MicroOrm.Dapper.Repositories.SqlGenerator.QueryExpressions;
 
 namespace MicroOrm.Dapper.Repositories.SqlGenerator
 {
@@ -25,7 +22,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         public SqlGenerator()
         {
             Provider = MicroOrmConfig.SqlProvider;
-            UseQuotationMarks = MicroOrmConfig.UseQuotationMarks;
+            UseQuotationMarks = Provider != SqlProvider.SQLite && MicroOrmConfig.UseQuotationMarks;
             Initialize();
         }
 
@@ -43,7 +40,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         public SqlGenerator(SqlProvider provider, bool useQuotationMarks)
         {
             Provider = provider;
-            UseQuotationMarks = useQuotationMarks;
+            UseQuotationMarks = provider != SqlProvider.SQLite && useQuotationMarks;
             Initialize();
         }
         

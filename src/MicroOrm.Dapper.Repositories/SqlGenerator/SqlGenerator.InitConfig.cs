@@ -1,5 +1,4 @@
 using System;
-using MicroOrm.Dapper.Repositories.Config;
 
 namespace MicroOrm.Dapper.Repositories.SqlGenerator
 {
@@ -17,65 +16,18 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                 switch (Provider)
                 {
                     case SqlProvider.MSSQL:
-                        TableName = GetTableNameWithSchemaPrefix(TableName, TableSchema, "[", "]");
-
-                        foreach (var propertyMetadata in SqlProperties)
-                            propertyMetadata.ColumnName = "[" + propertyMetadata.ColumnName + "]";
-
-                        foreach (var propertyMetadata in KeySqlProperties)
-                            propertyMetadata.ColumnName = "[" + propertyMetadata.ColumnName + "]";
-
-                        foreach (var propertyMetadata in SqlJoinProperties)
-                        {
-                            propertyMetadata.TableName = GetTableNameWithSchemaPrefix(propertyMetadata.TableName, propertyMetadata.TableSchema, "[", "]");
-                            propertyMetadata.ColumnName = "[" + propertyMetadata.ColumnName + "]";
-                            propertyMetadata.TableAlias = "[" + propertyMetadata.TableAlias + "]";
-                        }
-
-                        if (IdentitySqlProperty != null)
-                            IdentitySqlProperty.ColumnName = "[" + IdentitySqlProperty.ColumnName + "]";
-
+                        InitMetaData("[", "]");
                         break;
 
                     case SqlProvider.MySQL:
-                        TableName = GetTableNameWithSchemaPrefix(TableName, TableSchema, "`", "`");
 
-                        foreach (var propertyMetadata in SqlProperties)
-                            propertyMetadata.ColumnName = "`" + propertyMetadata.ColumnName + "`";
-
-                        foreach (var propertyMetadata in KeySqlProperties)
-                            propertyMetadata.ColumnName = "`" + propertyMetadata.ColumnName + "`";
-
-                        foreach (var propertyMetadata in SqlJoinProperties)
-                        {
-                            propertyMetadata.TableName = GetTableNameWithSchemaPrefix(propertyMetadata.TableName, propertyMetadata.TableSchema, "`", "`");
-                            propertyMetadata.ColumnName = "`" + propertyMetadata.ColumnName + "`";
-                            propertyMetadata.TableAlias = "`" + propertyMetadata.TableAlias + "`";
-                        }
-
-                        if (IdentitySqlProperty != null)
-                            IdentitySqlProperty.ColumnName = "`" + IdentitySqlProperty.ColumnName + "`";
+                        InitMetaData("`", "`");
 
                         break;
 
                     case SqlProvider.PostgreSQL:
-                        TableName = GetTableNameWithSchemaPrefix(TableName, TableSchema, "\"", "\"");
 
-                        foreach (var propertyMetadata in SqlProperties)
-                            propertyMetadata.ColumnName = "\"" + propertyMetadata.ColumnName + "\"";
-
-                        foreach (var propertyMetadata in KeySqlProperties)
-                            propertyMetadata.ColumnName = "\"" + propertyMetadata.ColumnName + "\"";
-
-                        foreach (var propertyMetadata in SqlJoinProperties)
-                        {
-                            propertyMetadata.TableName = GetTableNameWithSchemaPrefix(propertyMetadata.TableName, propertyMetadata.TableSchema, "\"", "\"");
-                            propertyMetadata.ColumnName = "\"" + propertyMetadata.ColumnName + "\"";
-                            propertyMetadata.TableAlias = "\"" + propertyMetadata.TableAlias + "\"";
-                        }
-
-                        if (IdentitySqlProperty != null)
-                            IdentitySqlProperty.ColumnName = "\"" + IdentitySqlProperty.ColumnName + "\"";
+                        InitMetaData("\"", "\"");
 
                         break;
                     case SqlProvider.SQLite:
@@ -92,6 +44,27 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                 foreach (var propertyMetadata in SqlJoinProperties)
                     propertyMetadata.TableName = GetTableNameWithSchemaPrefix(propertyMetadata.TableName, propertyMetadata.TableSchema);
             }
+        }
+
+        private void InitMetaData(string startQuotationMark, string endQuotationMark)
+        {
+            TableName = GetTableNameWithSchemaPrefix(TableName, TableSchema, startQuotationMark, endQuotationMark);
+
+            foreach (var propertyMetadata in SqlProperties)
+                propertyMetadata.ColumnName = startQuotationMark + propertyMetadata.ColumnName + endQuotationMark;
+
+            foreach (var propertyMetadata in KeySqlProperties)
+                propertyMetadata.ColumnName = startQuotationMark + propertyMetadata.ColumnName + endQuotationMark;
+
+            foreach (var propertyMetadata in SqlJoinProperties)
+            {
+                propertyMetadata.TableName = GetTableNameWithSchemaPrefix(propertyMetadata.TableName, propertyMetadata.TableSchema, startQuotationMark, endQuotationMark);
+                propertyMetadata.ColumnName = startQuotationMark + propertyMetadata.ColumnName + endQuotationMark;
+                propertyMetadata.TableAlias = string.IsNullOrEmpty(propertyMetadata.TableAlias) ? string.Empty : startQuotationMark + propertyMetadata.TableAlias + endQuotationMark;
+            }
+
+            if (IdentitySqlProperty != null)
+                IdentitySqlProperty.ColumnName = startQuotationMark + IdentitySqlProperty.ColumnName + endQuotationMark;
         }
     }
 }
