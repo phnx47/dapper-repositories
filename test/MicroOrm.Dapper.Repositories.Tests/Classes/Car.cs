@@ -1,4 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations.Schema;
 using MicroOrm.Dapper.Repositories.Attributes.Joins;
 using MicroOrm.Dapper.Repositories.Attributes.LogicalDelete;
 
@@ -11,7 +11,8 @@ namespace MicroOrm.Dapper.Repositories.Tests.Classes
 
         public byte[] Data { get; set; }
 
-        public int UserId { get; set; }
+        [Column("UserId")]
+        public int UserIdentity { get; set; }
 
         [LeftJoin("Users", "UserId", "Id")]
         public User User { get; set; }
