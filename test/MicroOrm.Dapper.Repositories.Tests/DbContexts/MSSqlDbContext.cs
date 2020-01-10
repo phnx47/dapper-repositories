@@ -19,7 +19,6 @@ namespace MicroOrm.Dapper.Repositories.Tests.DbContexts
 
         private IDapperRepository<Phone> _phones;
 
-
         public MsSqlDbContext(string connectionString)
             : base(new SqlConnection(connectionString))
         {

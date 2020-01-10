@@ -1,4 +1,4 @@
-﻿using System.Data;
+using System.Data;
 using MicroOrm.Dapper.Repositories.Factory;
 using MicroOrm.Dapper.Repositories.SqlGenerator;
 
@@ -25,6 +25,5 @@ namespace MicroOrm.Dapper.Repositories
             : base(connection, sqlGenerator)
         {
         }
-
     }
 }

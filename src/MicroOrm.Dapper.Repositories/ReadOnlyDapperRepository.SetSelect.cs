@@ -49,7 +49,6 @@ namespace MicroOrm.Dapper.Repositories
             return this;
         }
 
-
         /// <inheritdoc />
         public virtual ReadOnlyDapperRepository<TEntity> SetSelect(params string[] customSelect)
         {
@@ -62,7 +61,6 @@ namespace MicroOrm.Dapper.Repositories
 
             return this;
         }
-
 
         /// <inheritdoc />
         public virtual ReadOnlyDapperRepository<TEntity> SetSelect(Expression<Func<TEntity, object>> expr)
