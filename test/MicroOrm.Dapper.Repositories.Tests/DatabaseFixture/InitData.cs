@@ -1,4 +1,4 @@
-using MicroOrm.Dapper.Repositories.Tests.Classes;
+﻿using MicroOrm.Dapper.Repositories.Tests.Classes;
 using MicroOrm.Dapper.Repositories.Tests.DbContexts;
 
 namespace MicroOrm.Dapper.Repositories.Tests.DatabaseFixture
