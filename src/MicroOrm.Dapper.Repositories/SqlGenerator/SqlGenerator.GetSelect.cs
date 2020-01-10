@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using MicroOrm.Dapper.Repositories.Config;
 using MicroOrm.Dapper.Repositories.SqlGenerator.Filters;
 
 namespace MicroOrm.Dapper.Repositories.SqlGenerator
@@ -51,7 +50,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
 
             if (firstOnly)
             {
-                if (MicroOrmConfig.SqlProvider != SqlProvider.MSSQL)
+                if (Provider != SqlProvider.MSSQL)
                     sqlQuery.SqlBuilder.Append("LIMIT 1");
             }
             else
@@ -60,12 +59,12 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
             return sqlQuery;
         }
 
-        private static void SetLimit(SqlQuery sqlQuery, FilterData filterData)
+        private void SetLimit(SqlQuery sqlQuery, FilterData filterData)
         {
             if (filterData?.LimitInfo == null)
                 return;
 
-            if (MicroOrmConfig.SqlProvider == SqlProvider.MSSQL)
+            if (Provider == SqlProvider.MSSQL)
             {
                 if (!filterData.Ordered)
                     return;
@@ -93,7 +92,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         /// <summary>
         /// Set order by in query; DapperRepository.SetOrderBy must be called first. 
         /// </summary>
-        private static void SetOrder(SqlQuery sqlQuery, FilterData filterData)
+        private void SetOrder(SqlQuery sqlQuery, FilterData filterData)
         {
             if (filterData?.OrderInfo == null) return;
 
@@ -104,9 +103,9 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
             {
                 var col = filterData.OrderInfo.Columns[i];
 
-                if (MicroOrmConfig.UseQuotationMarks && MicroOrmConfig.SqlProvider != SqlProvider.SQLite)
+                if (UseQuotationMarks && Provider != SqlProvider.SQLite)
                 {
-                    sqlQuery.SqlBuilder.Append(MicroOrmConfig.SqlProvider == SqlProvider.MSSQL ? $"[{col}]" : $"`{col}`");
+                    sqlQuery.SqlBuilder.Append(Provider == SqlProvider.MSSQL ? $"[{col}]" : $"`{col}`");
                 }
                 else
                 {
@@ -199,7 +198,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                     .Append(LogicalDeleteValue)
                     .Append(" ");
 
-            if (MicroOrmConfig.SqlProvider == SqlProvider.MySQL || MicroOrmConfig.SqlProvider == SqlProvider.PostgreSQL)
+            if (Provider == SqlProvider.MySQL || Provider == SqlProvider.PostgreSQL)
                 sqlQuery.SqlBuilder.Append("LIMIT 1");
 
             sqlQuery.SetParam(dictionary);
@@ -240,7 +239,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
             var query = new SqlQuery();
             query.SqlBuilder.Append("SELECT ");
 
-            if (MicroOrmConfig.SqlProvider == SqlProvider.MSSQL)
+            if (Provider == SqlProvider.MSSQL)
                 if (firstOnly)
                     query.SqlBuilder.Append("TOP 1 ");
                 else

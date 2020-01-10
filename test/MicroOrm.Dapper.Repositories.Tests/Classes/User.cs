@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -31,7 +31,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.Classes
         [InnerJoin("Phones", "PhoneId", "Id", "DAB")]
         public Phone Phone { get; set; }
 
-        [InnerJoin("Phones", "OfficePhoneId", "Id", "DAB")]
+        [InnerJoin("Phones", "OfficePhoneId", "Id", "DAB", TableAlias = "OfficePhone")]
         public Phone OfficePhone { get; set; }
 
         [Status]

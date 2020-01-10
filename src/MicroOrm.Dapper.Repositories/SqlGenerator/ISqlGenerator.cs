@@ -27,6 +27,16 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         PropertyInfo UpdatedAtProperty { get; }
 
         /// <summary>
+        ///     Type Sql provider
+        /// </summary>
+        SqlProvider Provider { get; }
+
+        /// <summary>
+        ///     Use quotation marks for TableName and ColumnName
+        /// </summary>
+        bool UseQuotationMarks { get; }
+
+        /// <summary>
         ///     Date of Changed Metadata Property
         /// </summary>
         SqlPropertyMetadata UpdatedAtPropertyMetadata { get; }
@@ -132,7 +142,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         ///     Get SQL for SELECT Query
         /// </summary>
         SqlQuery GetSelectAll(Expression<Func<TEntity, bool>> predicate, FilterData filterData, params Expression<Func<TEntity, object>>[] includes);
-        
+
         /// <summary>
         ///     Get SQL for SELECT Query with BETWEEN
         /// </summary>

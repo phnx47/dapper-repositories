@@ -3,7 +3,7 @@ using MicroOrm.Dapper.Repositories.SqlGenerator;
 namespace MicroOrm.Dapper.Repositories.Config
 {
     /// <summary>
-    /// 
+    /// This class is used to support dependency injection
     /// </summary>
     public static class MicroOrmConfig
     {

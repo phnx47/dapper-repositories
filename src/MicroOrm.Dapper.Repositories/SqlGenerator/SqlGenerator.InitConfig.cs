@@ -12,9 +12,9 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         /// </summary>
         private void InitConfig()
         {
-            if (MicroOrmConfig.UseQuotationMarks)
+            if (UseQuotationMarks)
             {
-                switch (MicroOrmConfig.SqlProvider)
+                switch (Provider)
                 {
                     case SqlProvider.MSSQL:
                         TableName = GetTableNameWithSchemaPrefix(TableName, TableSchema, "[", "]");
@@ -83,7 +83,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                         break;
                     
                     default:
-                        throw new ArgumentOutOfRangeException(nameof(MicroOrmConfig.SqlProvider));
+                        throw new ArgumentOutOfRangeException(nameof(Provider));
                 }
             }
             else

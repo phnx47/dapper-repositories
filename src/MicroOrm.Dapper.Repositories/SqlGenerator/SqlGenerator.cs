@@ -24,11 +24,47 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         /// </summary>
         public SqlGenerator()
         {
+            Provider = MicroOrmConfig.SqlProvider;
+            UseQuotationMarks = MicroOrmConfig.UseQuotationMarks;
+            Initialize();
+        }
+
+        private void Initialize()
+        {
             // Order is important
             InitProperties();
             InitConfig();
             InitLogicalDeleted();
         }
+
+        /// <summary>
+        /// Constructor with params
+        /// </summary>
+        public SqlGenerator(SqlProvider provider, bool useQuotationMarks)
+        {
+            Provider = provider;
+            UseQuotationMarks = useQuotationMarks;
+            Initialize();
+        }
+        
+        /// <summary>
+        /// Constructor with params
+        /// </summary>
+        public SqlGenerator(SqlProvider provider)
+        {
+            Provider = provider;
+            UseQuotationMarks = false;
+            Initialize();
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public SqlProvider Provider { get; }
+        /// <summary>
+        /// 
+        /// </summary>
+        public bool UseQuotationMarks { get; }
 
         /// <inheritdoc />
         public PropertyInfo[] AllProperties { get; protected set; }
@@ -100,7 +136,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                 string.Join(", ", properties.Select(p => "@" + p.PropertyName))); // values
 
             if (IsIdentity)
-                switch (MicroOrmConfig.SqlProvider)
+                switch (Provider)
                 {
                     case SqlProvider.MSSQL:
                         query.SqlBuilder.Append(" SELECT SCOPE_IDENTITY() AS " + IdentitySqlProperty.ColumnName);
@@ -285,7 +321,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                     case InnerJoinAttribute _:
                         joinString = "INNER JOIN";
                         break;
-                    case RightJoinAttribute _ when MicroOrmConfig.SqlProvider == SqlProvider.SQLite:
+                    case RightJoinAttribute _ when Provider == SqlProvider.SQLite:
                         throw new NotSupportedException("SQLite doesn't support RIGHT JOIN");
                     case RightJoinAttribute _:
                         joinString = "RIGHT JOIN";
@@ -299,15 +335,15 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                 var properties = joinType.FindClassProperties().Where(ExpressionHelper.GetPrimitivePropertiesPredicate());
                 var props = properties.Where(p => !p.GetCustomAttributes<NotMappedAttribute>().Any()).Select(p => new SqlPropertyMetadata(p)).ToArray();
 
-                if (MicroOrmConfig.UseQuotationMarks)
-                    switch (MicroOrmConfig.SqlProvider)
+                if (UseQuotationMarks)
+                    switch (Provider)
                     {
                         case SqlProvider.MSSQL:
                             tableName = "[" + tableName + "]";
                             attrJoin.TableName = GetTableNameWithSchemaPrefix(attrJoin.TableName, attrJoin.TableSchema, "[", "]");
                             attrJoin.Key = "[" + attrJoin.Key + "]";
                             attrJoin.ExternalKey = "[" + attrJoin.ExternalKey + "]";
-                            attrJoin.TableAlias = "[" + attrJoin.TableAlias + "]";
+                            attrJoin.TableAlias = string.IsNullOrEmpty(attrJoin.TableAlias) ? string.Empty : "[" + attrJoin.TableAlias + "]";
                             foreach (var prop in props)
                                 prop.ColumnName = "[" + prop.ColumnName + "]";
                             break;
@@ -317,7 +353,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                             attrJoin.TableName = GetTableNameWithSchemaPrefix(attrJoin.TableName, attrJoin.TableSchema, "`", "`");
                             attrJoin.Key = "`" + attrJoin.Key + "`";
                             attrJoin.ExternalKey = "`" + attrJoin.ExternalKey + "`";
-                            attrJoin.TableAlias = "`" + attrJoin.TableAlias + "`";
+                            attrJoin.TableAlias = string.IsNullOrEmpty(attrJoin.TableAlias) ? string.Empty : "`" + attrJoin.TableAlias + "`";
                             foreach (var prop in props)
                                 prop.ColumnName = "`" + prop.ColumnName + "`";
                             break;
@@ -330,13 +366,13 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                             attrJoin.TableName = GetTableNameWithSchemaPrefix(attrJoin.TableName, attrJoin.TableSchema, "\"", "\"");
                             attrJoin.Key = "\"" + attrJoin.Key + "\"";
                             attrJoin.ExternalKey = "\"" + attrJoin.ExternalKey + "\"";
-                            attrJoin.TableAlias = "\"" + attrJoin.TableAlias + "\"";
+                            attrJoin.TableAlias = string.IsNullOrEmpty(attrJoin.TableAlias) ? string.Empty : "\"" + attrJoin.TableAlias + "\"";
                             foreach (var prop in props)
                                 prop.ColumnName = "\"" + prop.ColumnName + "\"";
                             break;
 
                         default:
-                            throw new ArgumentOutOfRangeException(nameof(MicroOrmConfig.SqlProvider));
+                            throw new ArgumentOutOfRangeException(nameof(Provider));
                     }
                 else
                     attrJoin.TableName = GetTableNameWithSchemaPrefix(attrJoin.TableName, attrJoin.TableSchema);

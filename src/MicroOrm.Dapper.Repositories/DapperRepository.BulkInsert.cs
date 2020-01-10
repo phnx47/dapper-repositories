@@ -19,7 +19,7 @@ namespace MicroOrm.Dapper.Repositories
         /// <inheritdoc />
         public virtual int BulkInsert(IEnumerable<TEntity> instances, IDbTransaction transaction = null)
         {
-            if (MicroOrmConfig.SqlProvider == SqlProvider.MSSQL)
+            if (SqlGenerator.Provider == SqlProvider.MSSQL)
             {
                 int count = 0;
                 int totalInstances = instances.Count();
@@ -52,7 +52,7 @@ namespace MicroOrm.Dapper.Repositories
         /// <inheritdoc />
         public virtual async Task<int> BulkInsertAsync(IEnumerable<TEntity> instances, IDbTransaction transaction = null)
         {
-            if (MicroOrmConfig.SqlProvider == SqlProvider.MSSQL)
+            if (SqlGenerator.Provider == SqlProvider.MSSQL)
             {
                 int count = 0;
                 int totalInstances = instances.Count();

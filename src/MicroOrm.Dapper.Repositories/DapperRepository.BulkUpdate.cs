@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
@@ -24,7 +24,7 @@ namespace MicroOrm.Dapper.Repositories
         /// <inheritdoc />
         public bool BulkUpdate(IEnumerable<TEntity> instances, IDbTransaction transaction)
         {
-            if (MicroOrmConfig.SqlProvider == SqlProvider.MSSQL)
+            if (SqlGenerator.Provider == SqlProvider.MSSQL)
             {
                 int count = 0;
                 int totalInstances = instances.Count();
@@ -61,7 +61,7 @@ namespace MicroOrm.Dapper.Repositories
         /// <inheritdoc />
         public async Task<bool> BulkUpdateAsync(IEnumerable<TEntity> instances, IDbTransaction transaction)
         {
-            if (MicroOrmConfig.SqlProvider == SqlProvider.MSSQL)
+            if (SqlGenerator.Provider == SqlProvider.MSSQL)
             {
                 int count = 0;
                 int totalInstances = instances.Count();
