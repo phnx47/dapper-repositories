@@ -1,10 +1,6 @@
 version: '{build}-{branch}'
 image: Visual Studio 2019
 
-skip_commits:
-  files:
-    - '**/*.md'
-
 services:
 - mssql2017
 - mysql
