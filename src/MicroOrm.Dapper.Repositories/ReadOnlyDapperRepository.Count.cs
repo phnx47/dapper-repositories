@@ -68,7 +68,7 @@ namespace MicroOrm.Dapper.Repositories
         {
             return CountAsync(transaction: null);
         }
-        
+
         /// <inheritdoc />
         public virtual Task<int> CountAsync(IDbTransaction transaction)
         {
@@ -84,11 +84,8 @@ namespace MicroOrm.Dapper.Repositories
         /// <inheritdoc />
         public virtual Task<int> CountAsync(Expression<Func<TEntity, bool>> predicate, IDbTransaction transaction)
         {
-            
-            {
-                var queryResult = SqlGenerator.GetCount(predicate);
-                return Connection.QueryFirstOrDefaultAsync<int>(queryResult.GetSql(), queryResult.Param, transaction);
-            }
+            var queryResult = SqlGenerator.GetCount(predicate);
+            return Connection.QueryFirstOrDefaultAsync<int>(queryResult.GetSql(), queryResult.Param, transaction);
         }
 
         /// <inheritdoc />
