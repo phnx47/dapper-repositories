@@ -12,7 +12,9 @@
 
 ## Installation
 
-    dotnet add package MicroOrm.Dapper.Repositories
+```
+ dotnet add package MicroOrm.Dapper.Repositories
+```
 
 ## Docs
 
@@ -22,6 +24,7 @@ Documentation in [GitHub Pages](http://dapper.phnx47.net)
 
 * [Sergey Kuznetsov](https://github.com/phnx47)
 * [Borys Iermakov](https://github.com/borisermakof)
+* [Paulo Victor Lund](https://github.com/pvictorlv)
 * [Other Community Contributors](https://github.com/phnx47/MicroOrm.Dapper.Repositories/graphs/contributors)
 
 ## Contribute
