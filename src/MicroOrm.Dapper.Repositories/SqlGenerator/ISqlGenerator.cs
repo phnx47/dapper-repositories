@@ -77,6 +77,11 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         SqlJoinPropertyMetadata[] SqlJoinProperties { get; }
 
         /// <summary>
+        ///     Joined tables with logical delete
+        /// </summary>
+        Dictionary<string, PropertyInfo> JoinsLogicalDelete { get; }
+
+        /// <summary>
         ///     Has Logical delete
         /// </summary>
         bool LogicalDelete { get; }

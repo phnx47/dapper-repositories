@@ -7,6 +7,7 @@ using System.Reflection;
 using System.Text;
 using MicroOrm.Dapper.Repositories.Attributes;
 using MicroOrm.Dapper.Repositories.Attributes.Joins;
+using MicroOrm.Dapper.Repositories.Attributes.LogicalDelete;
 using MicroOrm.Dapper.Repositories.Config;
 using MicroOrm.Dapper.Repositories.Extensions;
 
@@ -43,7 +44,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
             UseQuotationMarks = provider != SqlProvider.SQLite && useQuotationMarks;
             Initialize();
         }
-        
+
         /// <summary>
         /// Constructor with params
         /// </summary>
@@ -58,6 +59,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         /// 
         /// </summary>
         public SqlProvider Provider { get; }
+
         /// <summary>
         /// 
         /// </summary>
@@ -98,6 +100,9 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
 
         /// <inheritdoc />
         public bool LogicalDelete { get; protected set; }
+
+        /// <inheritdoc />
+        public Dictionary<string, PropertyInfo> JoinsLogicalDelete { get; protected set; }
 
         /// <inheritdoc />
         public string StatusPropertyName { get; protected set; }
@@ -385,9 +390,31 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                 }
                 else
                 {
+                    var customFilter = string.Empty;
+                    if (JoinsLogicalDelete != null && JoinsLogicalDelete.TryGetValue(attrJoin.TableName, out var deleteAttr))
+                    {
+                        var colAttr = deleteAttr.GetCustomAttribute<ColumnAttribute>();
+                        var colName = colAttr == null ? deleteAttr.Name : colAttr.Name;
+                        object deleteValue = 1;
+                        if (deleteAttr.PropertyType.IsEnum)
+                        {
+                            var deleteOption = deleteAttr.PropertyType.GetFields().FirstOrDefault(f => f.GetCustomAttribute<DeletedAttribute>() != null);
+
+                            if (deleteOption != null)
+                            {
+                                var enumValue = Enum.Parse(deleteAttr.PropertyType, deleteOption.Name);
+                                deleteValue = Convert.ChangeType(enumValue, Enum.GetUnderlyingType(deleteAttr.PropertyType));
+                            }
+                        }
+
+                        customFilter = attrJoin.TableAlias == string.Empty
+                            ? $"AND {attrJoin.TableName}.{colName} != {deleteValue} "
+                            : $"AND {attrJoin.TableAlias}.{colName} != {deleteValue} ";
+                    }
+
                     joinBuilder.Append(attrJoin.TableAlias == string.Empty
-                        ? $"{joinString} {attrJoin.TableName} ON {tableName}.{attrJoin.Key} = {attrJoin.TableName}.{attrJoin.ExternalKey} "
-                        : $"{joinString} {attrJoin.TableName} AS {attrJoin.TableAlias} ON {tableName}.{attrJoin.Key} = {attrJoin.TableAlias}.{attrJoin.ExternalKey} ");
+                        ? $"{joinString} {attrJoin.TableName} ON {tableName}.{attrJoin.Key} = {attrJoin.TableName}.{attrJoin.ExternalKey} {customFilter}"
+                        : $"{joinString} {attrJoin.TableName} AS {attrJoin.TableAlias} ON {tableName}.{attrJoin.Key} = {attrJoin.TableAlias}.{attrJoin.ExternalKey} {customFilter}");
                 }
             }
 

@@ -22,13 +22,13 @@ namespace MicroOrm.Dapper.Repositories.Tests.Classes
 
         public int OfficePhoneId { get; set; }
 
-        [LeftJoin("Cars", "Id", "UserId")]
+        [LeftJoin("Cars", "Id", "UserId", TableAlias = "Cars_Id")]
         public List<Car> Cars { get; set; }
 
         [LeftJoin("Addresses", "AddressId", "Id")]
         public Address Addresses { get; set; }
 
-        [InnerJoin("Phones", "PhoneId", "Id", "DAB")]
+        [InnerJoin("Phones", "PhoneId", "Id", "DAB", TableAlias = "Phones_PhoneId")]
         public Phone Phone { get; set; }
 
         [InnerJoin("Phones", "OfficePhoneId", "Id", "DAB", TableAlias = "OfficePhone")]
