@@ -136,7 +136,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         /// <summary>
         ///     Get SQL for SELECT Query by Id
         /// </summary>
-        SqlQuery GetSelectById(object id, params Expression<Func<TEntity, object>>[] includes);
+        SqlQuery GetSelectById(object id, FilterData filterData, params Expression<Func<TEntity, object>>[] includes);
 
         /// <summary>
         ///     Get SQL for SELECT Query

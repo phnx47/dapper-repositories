@@ -147,14 +147,14 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         }
 
         /// <inheritdoc />
-        public SqlQuery GetSelectById(object id, params Expression<Func<TEntity, object>>[] includes)
+        public SqlQuery GetSelectById(object id, FilterData filterData, params Expression<Func<TEntity, object>>[] includes)
         {
             if (KeySqlProperties.Length != 1)
                 throw new NotSupportedException("GetSelectById support only 1 key");
 
             var keyProperty = KeySqlProperties[0];
 
-            var sqlQuery = InitBuilderSelect(true, null);
+            var sqlQuery = InitBuilderSelect(true, filterData);
 
             if (includes.Length > 0)
             {
