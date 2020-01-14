@@ -3,7 +3,7 @@
     <Description>CRUD for Dapper</Description>
     <Copyright>2019 © Sergey Kuznetsov</Copyright>
     <AssemblyTitle>MicroOrm.Dapper.Repositories</AssemblyTitle>
-    <VersionPrefix>1.12.0</VersionPrefix>
+    <VersionPrefix>1.13.0</VersionPrefix>
     <Authors>Sergey Kuznetsov</Authors>
     <TargetFrameworks Condition=" '$(OS)' == 'Windows_NT' ">net461;netstandard2.0</TargetFrameworks>
     <TargetFramework Condition=" '$(OS)' != 'Windows_NT' ">netstandard2.0</TargetFramework>
