@@ -119,7 +119,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.SqlGeneratorTests
         public void SelectById()
         {
             ISqlGenerator<Address> sqlGenerator = new SqlGenerator<Address>(_sqlConnector, false);
-            var sqlQuery = sqlGenerator.GetSelectById(1);
+            var sqlQuery = sqlGenerator.GetSelectById(1, null);
             Assert.Equal("SELECT Addresses.Id, Addresses.Street, Addresses.CityId FROM Addresses WHERE Addresses.Id = @Id LIMIT 1", sqlQuery.GetSql());
         }
 
