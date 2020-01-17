@@ -38,10 +38,6 @@ Contributions to the package are always welcome!
 
 If you are having problems, send a mail to [dapper@phnx47.net](mailto://dapper@phnx47.net). I will try to help you.
 
-I would also very much appreciate your support by buying me a coffee.
-
-<a href="https://www.buymeacoffee.com/phnx47" target="_blank"><img src="https://www.buymeacoffee.com/assets/img/custom_images/yellow_img.png" alt="Buy Me A Coffee" style="height: auto !important;width: auto !important;" ></a>
-
 ## License
 
 All contents of this package are licensed under the [MIT license](https://opensource.org/licenses/MIT).
