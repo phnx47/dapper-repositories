@@ -13,21 +13,21 @@ namespace MicroOrm.Dapper.Repositories
         where TEntity : class
     {
         /// <inheritdoc />
-        public virtual ReadOnlyDapperRepository<TEntity> SetOrderBy()
+        public virtual IReadOnlyDapperRepository<TEntity> SetOrderBy()
         {
             FilterData.OrderInfo = null;
             return this;
         }
 
         /// <inheritdoc />
-        public virtual ReadOnlyDapperRepository<TEntity> SetOrderBy(OrderInfo.SortDirection direction, bool permanent,
+        public virtual IReadOnlyDapperRepository<TEntity> SetOrderBy(OrderInfo.SortDirection direction, bool permanent,
             Expression<Func<TEntity, object>> expr)
         {
             return SetOrderBy<TEntity>(direction, permanent, expr);
         }
 
         /// <inheritdoc />
-        public virtual ReadOnlyDapperRepository<TEntity> SetOrderBy<T>(OrderInfo.SortDirection direction, bool permanent,
+        public virtual IReadOnlyDapperRepository<TEntity> SetOrderBy<T>(OrderInfo.SortDirection direction, bool permanent,
             Expression<Func<T, object>> expr)
         {
             var order = FilterData.OrderInfo ?? new OrderInfo();
@@ -55,13 +55,13 @@ namespace MicroOrm.Dapper.Repositories
         }
 
         /// <inheritdoc />
-        public virtual ReadOnlyDapperRepository<TEntity> SetOrderBy(OrderInfo.SortDirection direction, Expression<Func<TEntity, object>> expr)
+        public virtual IReadOnlyDapperRepository<TEntity> SetOrderBy(OrderInfo.SortDirection direction, Expression<Func<TEntity, object>> expr)
         {
             return SetOrderBy(direction, false, expr);
         }
         
         /// <inheritdoc />
-        public virtual ReadOnlyDapperRepository<TEntity> SetOrderBy<T>(OrderInfo.SortDirection direction, Expression<Func<T, object>> expr)
+        public virtual IReadOnlyDapperRepository<TEntity> SetOrderBy<T>(OrderInfo.SortDirection direction, Expression<Func<T, object>> expr)
         {
             return SetOrderBy(direction, false, expr);
         }

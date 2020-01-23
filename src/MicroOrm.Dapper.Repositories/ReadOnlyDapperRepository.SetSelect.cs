@@ -1,12 +1,6 @@
 using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Reflection;
-using System.Security.Principal;
-using MicroOrm.Dapper.Repositories.Attributes.Joins;
-using MicroOrm.Dapper.Repositories.SqlGenerator;
 using MicroOrm.Dapper.Repositories.SqlGenerator.Filters;
 
 namespace MicroOrm.Dapper.Repositories
@@ -18,12 +12,14 @@ namespace MicroOrm.Dapper.Repositories
         where TEntity : class
     {
         /// <inheritdoc />
-        public virtual ReadOnlyDapperRepository<TEntity> SetSelect<T>(Expression<Func<T, object>> expr)
+        public virtual IReadOnlyDapperRepository<TEntity> SetSelect<T>(Expression<Func<T, object>> expr, bool permanent)
         {
             if (FilterData.SelectInfo == null)
             {
                 FilterData.SelectInfo = new SelectInfo();
             }
+
+            FilterData.SelectInfo.Permanent = permanent;
 
             var type = typeof(T);
             if (expr.Body.NodeType == ExpressionType.Lambda)
@@ -41,7 +37,7 @@ namespace MicroOrm.Dapper.Repositories
                     var prop = GetProperty(expression, type);
                     if (string.IsNullOrEmpty(prop))
                         continue;
-                    
+
                     FilterData.SelectInfo.Columns.Add(prop);
                 }
             }
@@ -50,7 +46,7 @@ namespace MicroOrm.Dapper.Repositories
         }
 
         /// <inheritdoc />
-        public virtual ReadOnlyDapperRepository<TEntity> SetSelect(params string[] customSelect)
+        public virtual IReadOnlyDapperRepository<TEntity> SetSelect(params string[] customSelect)
         {
             if (FilterData.SelectInfo == null)
             {
@@ -63,9 +59,15 @@ namespace MicroOrm.Dapper.Repositories
         }
 
         /// <inheritdoc />
-        public virtual ReadOnlyDapperRepository<TEntity> SetSelect(Expression<Func<TEntity, object>> expr)
+        public virtual IReadOnlyDapperRepository<TEntity> SetSelect(Expression<Func<TEntity, object>> expr)
         {
-            return SetSelect<TEntity>(expr);
+            return SetSelect(expr, false);
+        }
+
+        /// <inheritdoc />
+        public virtual IReadOnlyDapperRepository<TEntity> SetSelect<T>(Expression<Func<T, object>> expr)
+        {
+            return SetSelect(expr, false);
         }
     }
 }

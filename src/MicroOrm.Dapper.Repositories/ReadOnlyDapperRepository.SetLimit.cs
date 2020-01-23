@@ -1,4 +1,4 @@
-﻿using MicroOrm.Dapper.Repositories.SqlGenerator.Filters;
+using MicroOrm.Dapper.Repositories.SqlGenerator.Filters;
 
 namespace MicroOrm.Dapper.Repositories
 {
@@ -9,14 +9,14 @@ namespace MicroOrm.Dapper.Repositories
         where TEntity : class
     {
         /// <inheritdoc />
-        public virtual ReadOnlyDapperRepository<TEntity> SetLimit()
+        public virtual IReadOnlyDapperRepository<TEntity> SetLimit()
         {
             FilterData.LimitInfo = null;
             return this;
         }
 
         /// <inheritdoc />
-        public virtual ReadOnlyDapperRepository<TEntity> SetLimit(uint limit, uint? offset, bool permanent)
+        public virtual IReadOnlyDapperRepository<TEntity> SetLimit(uint limit, uint? offset, bool permanent)
         {
             if (limit <= 0)
                 return this;
@@ -31,13 +31,13 @@ namespace MicroOrm.Dapper.Repositories
         }
 
         /// <inheritdoc />
-        public virtual ReadOnlyDapperRepository<TEntity> SetLimit(uint limit)
+        public virtual IReadOnlyDapperRepository<TEntity> SetLimit(uint limit)
         {
             return SetLimit(limit, null, false);
         }
 
         /// <inheritdoc />
-        public virtual ReadOnlyDapperRepository<TEntity> SetLimit(uint limit, uint offset)
+        public virtual IReadOnlyDapperRepository<TEntity> SetLimit(uint limit, uint offset)
         {
             return SetLimit(limit, offset, false);
         }
