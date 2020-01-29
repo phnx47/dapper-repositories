@@ -122,7 +122,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                     offset = offset.ToOffset(TimeSpan.FromHours(attribute.OffSet));
                 }
 
-                UpdatedAtProperty.SetValue(entity, offset.Date);
+                UpdatedAtProperty.SetValue(entity, offset.DateTime);
             }
 
             var query = new SqlQuery(entity);
@@ -189,7 +189,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                         offset = offset.ToOffset(TimeSpan.FromHours(attribute.OffSet));
                     }
 
-                    UpdatedAtProperty.SetValue(entity, offset.Date);
+                    UpdatedAtProperty.SetValue(entity, offset.DateTime);
                 }
 
                 foreach (var property in properties)
@@ -238,7 +238,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                         offset = offset.ToOffset(TimeSpan.FromHours(attribute.OffSet));
                     }
 
-                    UpdatedAtProperty.SetValue(entity, offset.Date);
+                    UpdatedAtProperty.SetValue(entity, offset.DateTime);
                 }
 
                 if (i > 0)
