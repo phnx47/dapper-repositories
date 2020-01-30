@@ -46,7 +46,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                         offset = offset.ToOffset(TimeSpan.FromHours(attribute.OffSet));
                     }
                     
-                    UpdatedAtProperty.SetValue(entity, offset.Date);
+                    UpdatedAtProperty.SetValue(entity, offset.DateTime);
 
                     sqlQuery.SqlBuilder
                         .Append(", ")
