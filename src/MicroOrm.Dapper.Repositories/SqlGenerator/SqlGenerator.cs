@@ -8,9 +8,8 @@ using System.Text;
 using MicroOrm.Dapper.Repositories.Attributes;
 using MicroOrm.Dapper.Repositories.Attributes.Joins;
 using MicroOrm.Dapper.Repositories.Attributes.LogicalDelete;
+using MicroOrm.Dapper.Repositories.Config;
 using MicroOrm.Dapper.Repositories.Extensions;
-using MicroOrm.Dapper.Repositories.SqlGenerator.Filters;
-using MicroOrm.Dapper.Repositories.SqlGenerator.QueryExpressions;
 
 namespace MicroOrm.Dapper.Repositories.SqlGenerator
 {
@@ -18,48 +17,56 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
     public partial class SqlGenerator<TEntity> : ISqlGenerator<TEntity>
         where TEntity : class
     {
-        /// <inheritdoc />
         /// <summary>
         ///     Constructor
         /// </summary>
         public SqlGenerator()
-            : this(new SqlGeneratorConfig
-            {
-                SqlProvider = SqlProvider.MSSQL,
-                UseQuotationMarks = false
-            })
         {
+            Provider = MicroOrmConfig.SqlProvider;
+            UseQuotationMarks = Provider != SqlProvider.SQLite && MicroOrmConfig.UseQuotationMarks;
+            Initialize();
         }
 
-        /// <inheritdoc />
-        /// <summary>
-        ///     Constructor
-        /// </summary>
-        public SqlGenerator(SqlProvider sqlProvider, bool useQuotationMarks = false)
-            : this(new SqlGeneratorConfig
-            {
-                SqlProvider = sqlProvider,
-                UseQuotationMarks = useQuotationMarks
-            })
-        {
-        }
-
-        /// <summary>
-        ///     Constructor
-        /// </summary>
-        public SqlGenerator(SqlGeneratorConfig sqlGeneratorConfig)
+        private void Initialize()
         {
             // Order is important
             InitProperties();
-            InitConfig(sqlGeneratorConfig);
+            InitConfig();
             InitLogicalDeleted();
         }
 
-        /// <inheritdoc />
-        public PropertyInfo[] AllProperties { get; protected set; }
+        /// <summary>
+        /// Constructor with params
+        /// </summary>
+        public SqlGenerator(SqlProvider provider, bool useQuotationMarks)
+        {
+            Provider = provider;
+            UseQuotationMarks = provider != SqlProvider.SQLite && useQuotationMarks;
+            Initialize();
+        }
+
+        /// <summary>
+        /// Constructor with params
+        /// </summary>
+        public SqlGenerator(SqlProvider provider)
+        {
+            Provider = provider;
+            UseQuotationMarks = false;
+            Initialize();
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public SqlProvider Provider { get; }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public bool UseQuotationMarks { get; }
 
         /// <inheritdoc />
-        public FilterData FilterData { get; protected set; }
+        public PropertyInfo[] AllProperties { get; protected set; }
 
         /// <inheritdoc />
         public bool HasUpdatedAt => UpdatedAtProperty != null;
@@ -92,10 +99,10 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         public SqlJoinPropertyMetadata[] SqlJoinProperties { get; protected set; }
 
         /// <inheritdoc />
-        public SqlGeneratorConfig Config { get; protected set; }
+        public bool LogicalDelete { get; protected set; }
 
         /// <inheritdoc />
-        public bool LogicalDelete { get; protected set; }
+        public Dictionary<string, PropertyInfo> JoinsLogicalDelete { get; protected set; }
 
         /// <inheritdoc />
         public string StatusPropertyName { get; protected set; }
@@ -131,7 +138,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                 string.Join(", ", properties.Select(p => "@" + p.PropertyName))); // values
 
             if (IsIdentity)
-                switch (Config.SqlProvider)
+                switch (Provider)
                 {
                     case SqlProvider.MSSQL:
                         query.SqlBuilder.Append(" SELECT SCOPE_IDENTITY() AS " + IdentitySqlProperty.ColumnName);
@@ -291,7 +298,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                 : startQuotationMark + tableName + endQuotationMark;
         }
 
-        private string AppendJoinToSelect(SqlQuery originalBuilder, params Expression<Func<TEntity, object>>[] includes)
+        private string AppendJoinToSelect(SqlQuery originalBuilder, bool hasSelectFilter, params Expression<Func<TEntity, object>>[] includes)
         {
             var joinBuilder = new StringBuilder();
 
@@ -316,7 +323,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                     case InnerJoinAttribute _:
                         joinString = "INNER JOIN";
                         break;
-                    case RightJoinAttribute _ when Config.SqlProvider == SqlProvider.SQLite:
+                    case RightJoinAttribute _ when Provider == SqlProvider.SQLite:
                         throw new NotSupportedException("SQLite doesn't support RIGHT JOIN");
                     case RightJoinAttribute _:
                         joinString = "RIGHT JOIN";
@@ -330,15 +337,15 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                 var properties = joinType.FindClassProperties().Where(ExpressionHelper.GetPrimitivePropertiesPredicate());
                 var props = properties.Where(p => !p.GetCustomAttributes<NotMappedAttribute>().Any()).Select(p => new SqlPropertyMetadata(p)).ToArray();
 
-                if (Config.UseQuotationMarks)
-                    switch (Config.SqlProvider)
+                if (UseQuotationMarks)
+                    switch (Provider)
                     {
                         case SqlProvider.MSSQL:
                             tableName = "[" + tableName + "]";
                             attrJoin.TableName = GetTableNameWithSchemaPrefix(attrJoin.TableName, attrJoin.TableSchema, "[", "]");
                             attrJoin.Key = "[" + attrJoin.Key + "]";
                             attrJoin.ExternalKey = "[" + attrJoin.ExternalKey + "]";
-                            attrJoin.TableAlias = "[" + attrJoin.TableAlias + "]";
+                            attrJoin.TableAlias = string.IsNullOrEmpty(attrJoin.TableAlias) ? string.Empty : "[" + attrJoin.TableAlias + "]";
                             foreach (var prop in props)
                                 prop.ColumnName = "[" + prop.ColumnName + "]";
                             break;
@@ -348,7 +355,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                             attrJoin.TableName = GetTableNameWithSchemaPrefix(attrJoin.TableName, attrJoin.TableSchema, "`", "`");
                             attrJoin.Key = "`" + attrJoin.Key + "`";
                             attrJoin.ExternalKey = "`" + attrJoin.ExternalKey + "`";
-                            attrJoin.TableAlias = "`" + attrJoin.TableAlias + "`";
+                            attrJoin.TableAlias = string.IsNullOrEmpty(attrJoin.TableAlias) ? string.Empty : "`" + attrJoin.TableAlias + "`";
                             foreach (var prop in props)
                                 prop.ColumnName = "`" + prop.ColumnName + "`";
                             break;
@@ -361,22 +368,54 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                             attrJoin.TableName = GetTableNameWithSchemaPrefix(attrJoin.TableName, attrJoin.TableSchema, "\"", "\"");
                             attrJoin.Key = "\"" + attrJoin.Key + "\"";
                             attrJoin.ExternalKey = "\"" + attrJoin.ExternalKey + "\"";
-                            attrJoin.TableAlias = "\"" + attrJoin.TableAlias + "\"";
+                            attrJoin.TableAlias = string.IsNullOrEmpty(attrJoin.TableAlias) ? string.Empty : "\"" + attrJoin.TableAlias + "\"";
                             foreach (var prop in props)
                                 prop.ColumnName = "\"" + prop.ColumnName + "\"";
                             break;
 
                         default:
-                            throw new ArgumentOutOfRangeException(nameof(Config.SqlProvider));
+                            throw new ArgumentOutOfRangeException(nameof(Provider));
                     }
                 else
                     attrJoin.TableName = GetTableNameWithSchemaPrefix(attrJoin.TableName, attrJoin.TableSchema);
 
-                originalBuilder.SqlBuilder.Append($", {GetFieldsSelect(attrJoin.TableAlias, props)}");
-                joinBuilder.Append(
-                    attrJoin is CrossJoinAttribute
-                        ? $"{joinString} {attrJoin.TableName} AS {attrJoin.TableAlias}"
-                        : $"{joinString} {attrJoin.TableName} AS {attrJoin.TableAlias} ON {tableName}.{attrJoin.Key} = {attrJoin.TableAlias}.{attrJoin.ExternalKey} ");
+                if (!hasSelectFilter)
+                    originalBuilder.SqlBuilder.Append($", {GetFieldsSelect(string.IsNullOrEmpty(attrJoin.TableAlias) ? attrJoin.TableName : attrJoin.TableAlias, props)}");
+
+                if (attrJoin is CrossJoinAttribute)
+                {
+                    joinBuilder.Append(attrJoin.TableAlias == string.Empty
+                        ? $"{joinString} {attrJoin.TableName} "
+                        : $"{joinString} {attrJoin.TableName} AS {attrJoin.TableAlias} ");
+                }
+                else
+                {
+                    var customFilter = string.Empty;
+                    if (JoinsLogicalDelete != null && JoinsLogicalDelete.TryGetValue(attrJoin.TableName, out var deleteAttr))
+                    {
+                        var colAttr = deleteAttr.GetCustomAttribute<ColumnAttribute>();
+                        var colName = colAttr == null ? deleteAttr.Name : colAttr.Name;
+                        object deleteValue = 1;
+                        if (deleteAttr.PropertyType.IsEnum)
+                        {
+                            var deleteOption = deleteAttr.PropertyType.GetFields().FirstOrDefault(f => f.GetCustomAttribute<DeletedAttribute>() != null);
+
+                            if (deleteOption != null)
+                            {
+                                var enumValue = Enum.Parse(deleteAttr.PropertyType, deleteOption.Name);
+                                deleteValue = Convert.ChangeType(enumValue, Enum.GetUnderlyingType(deleteAttr.PropertyType));
+                            }
+                        }
+
+                        customFilter = attrJoin.TableAlias == string.Empty
+                            ? $"AND {attrJoin.TableName}.{colName} != {deleteValue} "
+                            : $"AND {attrJoin.TableAlias}.{colName} != {deleteValue} ";
+                    }
+
+                    joinBuilder.Append(attrJoin.TableAlias == string.Empty
+                        ? $"{joinString} {attrJoin.TableName} ON {tableName}.{attrJoin.Key} = {attrJoin.TableName}.{attrJoin.ExternalKey} {customFilter}"
+                        : $"{joinString} {attrJoin.TableName} AS {attrJoin.TableAlias} ON {tableName}.{attrJoin.Key} = {attrJoin.TableAlias}.{attrJoin.ExternalKey} {customFilter}");
+                }
             }
 
             return joinBuilder.ToString();

@@ -17,11 +17,6 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         PropertyInfo[] AllProperties { get; }
 
         /// <summary>
-        ///     Order info (Asc,desc, cols)
-        /// </summary>
-        FilterData FilterData { get; }
-
-        /// <summary>
         ///     Has Date of changed
         /// </summary>
         bool HasUpdatedAt { get; }
@@ -30,6 +25,16 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         ///     Date of Changed Property
         /// </summary>
         PropertyInfo UpdatedAtProperty { get; }
+
+        /// <summary>
+        ///     Type Sql provider
+        /// </summary>
+        SqlProvider Provider { get; }
+
+        /// <summary>
+        ///     Use quotation marks for TableName and ColumnName
+        /// </summary>
+        bool UseQuotationMarks { get; }
 
         /// <summary>
         ///     Date of Changed Metadata Property
@@ -72,9 +77,9 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         SqlJoinPropertyMetadata[] SqlJoinProperties { get; }
 
         /// <summary>
-        ///     Config for queries
+        ///     Joined tables with logical delete
         /// </summary>
-        SqlGeneratorConfig Config { get; }
+        Dictionary<string, PropertyInfo> JoinsLogicalDelete { get; }
 
         /// <summary>
         ///     Has Logical delete
@@ -131,27 +136,27 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         /// <summary>
         ///     Get SQL for SELECT Query by Id
         /// </summary>
-        SqlQuery GetSelectById(object id, params Expression<Func<TEntity, object>>[] includes);
+        SqlQuery GetSelectById(object id, FilterData filterData, params Expression<Func<TEntity, object>>[] includes);
 
         /// <summary>
         ///     Get SQL for SELECT Query
         /// </summary>
-        SqlQuery GetSelectFirst(Expression<Func<TEntity, bool>> predicate, params Expression<Func<TEntity, object>>[] includes);
+        SqlQuery GetSelectFirst(Expression<Func<TEntity, bool>> predicate, FilterData filterData, params Expression<Func<TEntity, object>>[] includes);
 
         /// <summary>
         ///     Get SQL for SELECT Query
         /// </summary>
-        SqlQuery GetSelectAll(Expression<Func<TEntity, bool>> predicate, params Expression<Func<TEntity, object>>[] includes);
-        
-        /// <summary>
-        ///     Get SQL for SELECT Query with BETWEEN
-        /// </summary>
-        SqlQuery GetSelectBetween(object from, object to, Expression<Func<TEntity, object>> btwField);
+        SqlQuery GetSelectAll(Expression<Func<TEntity, bool>> predicate, FilterData filterData, params Expression<Func<TEntity, object>>[] includes);
 
         /// <summary>
         ///     Get SQL for SELECT Query with BETWEEN
         /// </summary>
-        SqlQuery GetSelectBetween(object from, object to, Expression<Func<TEntity, object>> btwField, Expression<Func<TEntity, bool>> predicate);
+        SqlQuery GetSelectBetween(object from, object to, FilterData filterData, Expression<Func<TEntity, object>> btwField);
+
+        /// <summary>
+        ///     Get SQL for SELECT Query with BETWEEN
+        /// </summary>
+        SqlQuery GetSelectBetween(object from, object to, FilterData filterData, Expression<Func<TEntity, object>> btwField, Expression<Func<TEntity, bool>> predicate);
 
         /// <summary>
         ///     Get SQL for DELETE Query

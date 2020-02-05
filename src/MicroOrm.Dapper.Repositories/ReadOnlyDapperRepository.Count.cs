@@ -1,7 +1,6 @@
-﻿using System;
+using System;
 using System.Data;
 using System.Linq.Expressions;
-using System.Threading;
 using System.Threading.Tasks;
 using Dapper;
 
@@ -69,7 +68,7 @@ namespace MicroOrm.Dapper.Repositories
         {
             return CountAsync(transaction: null);
         }
-        
+
         /// <inheritdoc />
         public virtual Task<int> CountAsync(IDbTransaction transaction)
         {

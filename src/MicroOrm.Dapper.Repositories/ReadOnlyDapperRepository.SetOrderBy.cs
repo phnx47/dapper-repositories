@@ -1,9 +1,7 @@
 using System;
-using System.ComponentModel.DataAnnotations.Schema;
+using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Reflection;
-using MicroOrm.Dapper.Repositories.SqlGenerator;
 using MicroOrm.Dapper.Repositories.SqlGenerator.Filters;
 
 namespace MicroOrm.Dapper.Repositories
@@ -15,39 +13,57 @@ namespace MicroOrm.Dapper.Repositories
         where TEntity : class
     {
         /// <inheritdoc />
-        public virtual ReadOnlyDapperRepository<TEntity> SetOrderBy()
+        public virtual IReadOnlyDapperRepository<TEntity> SetOrderBy()
         {
-            SqlGenerator.FilterData.OrderInfo = null;
+            FilterData.OrderInfo = null;
             return this;
         }
 
         /// <inheritdoc />
-        public virtual ReadOnlyDapperRepository<TEntity> SetOrderBy(OrderInfo.SortDirection direction, bool permanent,
-            params Expression<Func<TEntity, object>>[] cols)
+        public virtual IReadOnlyDapperRepository<TEntity> SetOrderBy(OrderInfo.SortDirection direction, bool permanent,
+            Expression<Func<TEntity, object>> expr)
         {
-            var type = typeof(TEntity);
+            return SetOrderBy<TEntity>(direction, permanent, expr);
+        }
 
-            var propertyNames =
-                (from s in cols
-                    select ExpressionHelper.GetPropertyName(s)
-                    into prop
-                    let attr = type.GetProperty(prop)?.GetCustomAttribute<ColumnAttribute>()
-                    select attr == null ? prop : attr.Name).ToList();
-
-            var order = SqlGenerator.FilterData.OrderInfo ?? new OrderInfo();
+        /// <inheritdoc />
+        public virtual IReadOnlyDapperRepository<TEntity> SetOrderBy<T>(OrderInfo.SortDirection direction, bool permanent,
+            Expression<Func<T, object>> expr)
+        {
+            var order = FilterData.OrderInfo ?? new OrderInfo();
             order.Direction = direction;
-            order.Columns = propertyNames;
+
+            var type = typeof(T);
+            if (expr.Body.NodeType == ExpressionType.Convert)
+            {
+                var lambdaUnary = expr.Body as UnaryExpression;
+                var expression = lambdaUnary.Operand as MemberExpression;
+                order.Columns = new List<string> {GetProperty(expression, type)};
+            }
+            else
+            {
+                var cols = (expr.Body as NewExpression)?.Arguments;
+                var propertyNames = cols.Select(expression => GetProperty(expression, type)).ToList();
+                order.Columns = propertyNames;
+            }
+
             order.Permanent = permanent;
 
-            SqlGenerator.FilterData.OrderInfo = order;
+            FilterData.OrderInfo = order;
 
             return this;
         }
 
         /// <inheritdoc />
-        public virtual ReadOnlyDapperRepository<TEntity> SetOrderBy(OrderInfo.SortDirection direction, params Expression<Func<TEntity, object>>[] cols)
+        public virtual IReadOnlyDapperRepository<TEntity> SetOrderBy(OrderInfo.SortDirection direction, Expression<Func<TEntity, object>> expr)
         {
-            return SetOrderBy(direction, false, cols);
+            return SetOrderBy(direction, false, expr);
+        }
+        
+        /// <inheritdoc />
+        public virtual IReadOnlyDapperRepository<TEntity> SetOrderBy<T>(OrderInfo.SortDirection direction, Expression<Func<T, object>> expr)
+        {
+            return SetOrderBy(direction, false, expr);
         }
     }
 }

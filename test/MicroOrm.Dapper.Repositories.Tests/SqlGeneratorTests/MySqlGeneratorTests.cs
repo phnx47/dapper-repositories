@@ -82,7 +82,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.SqlGeneratorTests
         public void IsNotNull()
         {
             ISqlGenerator<User> userSqlGenerator = new SqlGenerator<User>(_sqlConnector, true);
-            var sqlQuery = userSqlGenerator.GetSelectAll(user => user.UpdatedAt != null);
+            var sqlQuery = userSqlGenerator.GetSelectAll(user => user.UpdatedAt != null, null);
 
             Assert.Equal("SELECT `Users`.`Id`, `Users`.`Name`, `Users`.`AddressId`, `Users`.`PhoneId`, `Users`.`OfficePhoneId`, `Users`.`Deleted`, `Users`.`UpdatedAt` FROM `Users` " +
                          "WHERE (`Users`.`UpdatedAt` IS NOT NULL) AND `Users`.`Deleted` != 1", sqlQuery.GetSql());
@@ -93,13 +93,13 @@ namespace MicroOrm.Dapper.Repositories.Tests.SqlGeneratorTests
         public void IsNotNullAnd()
         {
             ISqlGenerator<User> userSqlGenerator = new SqlGenerator<User>(_sqlConnector, true);
-            var sqlQuery = userSqlGenerator.GetSelectAll(user => user.Name == "Frank" && user.UpdatedAt != null);
+            var sqlQuery = userSqlGenerator.GetSelectAll(user => user.Name == "Frank" && user.UpdatedAt != null, null);
 
             Assert.Equal("SELECT `Users`.`Id`, `Users`.`Name`, `Users`.`AddressId`, `Users`.`PhoneId`, `Users`.`OfficePhoneId`, `Users`.`Deleted`, `Users`.`UpdatedAt` FROM `Users` " +
                          "WHERE (`Users`.`Name` = @Name_p0 AND `Users`.`UpdatedAt` IS NOT NULL) AND `Users`.`Deleted` != 1", sqlQuery.GetSql());
             Assert.DoesNotContain("!= NULL", sqlQuery.GetSql());
 
-            sqlQuery = userSqlGenerator.GetSelectAll(user => user.UpdatedAt != null && user.Name == "Frank");
+            sqlQuery = userSqlGenerator.GetSelectAll(user => user.UpdatedAt != null && user.Name == "Frank", null);
             Assert.Equal("SELECT `Users`.`Id`, `Users`.`Name`, `Users`.`AddressId`, `Users`.`PhoneId`, `Users`.`OfficePhoneId`, `Users`.`Deleted`, `Users`.`UpdatedAt` FROM `Users` " +
                          "WHERE (`Users`.`UpdatedAt` IS NOT NULL AND `Users`.`Name` = @Name_p1) AND `Users`.`Deleted` != 1", sqlQuery.GetSql());
             Assert.DoesNotContain("!= NULL", sqlQuery.GetSql());
@@ -109,7 +109,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.SqlGeneratorTests
         public void SelectBetween()
         {
             ISqlGenerator<User> userSqlGenerator = new SqlGenerator<User>(_sqlConnector, true);
-            var sqlQuery = userSqlGenerator.GetSelectBetween(1, 10, x => x.Id);
+            var sqlQuery = userSqlGenerator.GetSelectBetween(1, 10, null, x => x.Id);
 
             Assert.Equal("SELECT `Users`.`Id`, `Users`.`Name`, `Users`.`AddressId`, `Users`.`PhoneId`, `Users`.`OfficePhoneId`, `Users`.`Deleted`, `Users`.`UpdatedAt` FROM `Users` " +
                          "WHERE `Users`.`Deleted` != 1 AND `Users`.`Id` BETWEEN '1' AND '10'", sqlQuery.GetSql());
@@ -119,7 +119,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.SqlGeneratorTests
         public void SelectById()
         {
             ISqlGenerator<Address> sqlGenerator = new SqlGenerator<Address>(_sqlConnector, false);
-            var sqlQuery = sqlGenerator.GetSelectById(1);
+            var sqlQuery = sqlGenerator.GetSelectById(1, null);
             Assert.Equal("SELECT Addresses.Id, Addresses.Street, Addresses.CityId FROM Addresses WHERE Addresses.Id = @Id LIMIT 1", sqlQuery.GetSql());
         }
 
@@ -127,7 +127,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.SqlGeneratorTests
         public void SelectFirst()
         {
             ISqlGenerator<City> sqlGenerator = new SqlGenerator<City>(_sqlConnector, false);
-            var sqlQuery = sqlGenerator.GetSelectFirst(x => x.Identifier == Guid.Empty);
+            var sqlQuery = sqlGenerator.GetSelectFirst(x => x.Identifier == Guid.Empty, null);
             Assert.Equal("SELECT Cities.Identifier, Cities.Name FROM Cities WHERE Cities.Identifier = @Identifier_p0 LIMIT 1", sqlQuery.GetSql());
         }
 
@@ -135,12 +135,12 @@ namespace MicroOrm.Dapper.Repositories.Tests.SqlGeneratorTests
         public void SelectLimit()
         {
             ISqlGenerator<City> sqlGenerator = new SqlGenerator<City>(_sqlConnector, false);
-
-            var data = sqlGenerator.FilterData.LimitInfo ?? new LimitInfo();
+            var filterData = new FilterData();
+            var data = filterData.LimitInfo ?? new LimitInfo();
             data.Limit = 10u;
-            sqlGenerator.FilterData.LimitInfo = data;
+            filterData.LimitInfo = data;
 
-            var sqlQuery = sqlGenerator.GetSelectAll(x => x.Identifier == Guid.Empty);
+            var sqlQuery = sqlGenerator.GetSelectAll(x => x.Identifier == Guid.Empty, filterData);
             Assert.Equal("SELECT Cities.Identifier, Cities.Name FROM Cities WHERE Cities.Identifier = @Identifier_p0 LIMIT 10", sqlQuery.GetSql());
         }
 
@@ -148,27 +148,27 @@ namespace MicroOrm.Dapper.Repositories.Tests.SqlGeneratorTests
         public void SelectOrderBy()
         {
             ISqlGenerator<City> sqlGenerator = new SqlGenerator<City>(_sqlConnector, false);
-
-            var data = sqlGenerator.FilterData.OrderInfo ?? new OrderInfo();
+            var filterData = new FilterData();
+            var data = filterData.OrderInfo ?? new OrderInfo();
             data.Columns = new List<string> {"Name"};
             data.Direction = OrderInfo.SortDirection.ASC;
-            sqlGenerator.FilterData.OrderInfo = data;
+            filterData.OrderInfo = data;
 
-            var sqlQuery = sqlGenerator.GetSelectAll(x => x.Identifier == Guid.Empty);
-            Assert.Equal("SELECT Cities.Identifier, Cities.Name FROM Cities WHERE Cities.Identifier = @Identifier_p0 ORDER BY Cities.Name ASC", sqlQuery.GetSql());
+            var sqlQuery = sqlGenerator.GetSelectAll(x => x.Identifier == Guid.Empty, filterData);
+            Assert.Equal("SELECT Cities.Identifier, Cities.Name FROM Cities WHERE Cities.Identifier = @Identifier_p0 ORDER BY Name ASC", sqlQuery.GetSql());
         }
 
         [Fact]
         public void SelectPaged()
         {
             ISqlGenerator<City> sqlGenerator = new SqlGenerator<City>(_sqlConnector, false);
-
-            var data = sqlGenerator.FilterData.LimitInfo ?? new LimitInfo();
+            var filterData = new FilterData();
+            var data = filterData.LimitInfo ?? new LimitInfo();
             data.Limit = 10u;
             data.Offset = 5u;
-            sqlGenerator.FilterData.LimitInfo = data;
+            filterData.LimitInfo = data;
             
-            var sqlQuery = sqlGenerator.GetSelectAll(x => x.Identifier == Guid.Empty);
+            var sqlQuery = sqlGenerator.GetSelectAll(x => x.Identifier == Guid.Empty, filterData);
             Assert.Equal("SELECT Cities.Identifier, Cities.Name FROM Cities WHERE Cities.Identifier = @Identifier_p0 LIMIT 10 OFFSET 5", sqlQuery.GetSql());
         }
 
@@ -176,7 +176,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.SqlGeneratorTests
         public void SelectFirst2()
         {
             ISqlGenerator<City> sqlGenerator = new SqlGenerator<City>(_sqlConnector, false);
-            var sqlQuery = sqlGenerator.GetSelectFirst(x => x.Identifier == Guid.Empty && x.Name == "");
+            var sqlQuery = sqlGenerator.GetSelectFirst(x => x.Identifier == Guid.Empty && x.Name == "", null);
             Assert.Equal("SELECT Cities.Identifier, Cities.Name FROM Cities WHERE Cities.Identifier = @Identifier_p0 AND Cities.Name = @Name_p1 LIMIT 1", sqlQuery.GetSql());
         }
 
@@ -184,7 +184,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.SqlGeneratorTests
         public void SelectFirst_QuoMarks()
         {
             ISqlGenerator<City> sqlGenerator = new SqlGenerator<City>(_sqlConnector, true);
-            var sqlQuery = sqlGenerator.GetSelectFirst(x => x.Identifier == Guid.Empty);
+            var sqlQuery = sqlGenerator.GetSelectFirst(x => x.Identifier == Guid.Empty, null);
             Assert.Equal("SELECT `Cities`.`Identifier`, `Cities`.`Name` FROM `Cities` WHERE `Cities`.`Identifier` = @Identifier_p0 LIMIT 1", sqlQuery.GetSql());
         }
 
@@ -192,7 +192,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.SqlGeneratorTests
         public void SelectFirstWithDeleted()
         {
             ISqlGenerator<User> userSqlGenerator = new SqlGenerator<User>(_sqlConnector, true);
-            var sqlQuery = userSqlGenerator.GetSelectFirst(x => x.Id == 6);
+            var sqlQuery = userSqlGenerator.GetSelectFirst(x => x.Id == 6, null);
             Assert.Equal("SELECT `Users`.`Id`, `Users`.`Name`, `Users`.`AddressId`, `Users`.`PhoneId`, `Users`.`OfficePhoneId`, `Users`.`Deleted`, `Users`.`UpdatedAt` FROM `Users` WHERE (`Users`.`Id` = @Id_p0) AND `Users`.`Deleted` != 1 LIMIT 1", sqlQuery.GetSql());
         }
     }

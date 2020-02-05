@@ -1,4 +1,4 @@
-﻿using System.Data;
+using System.Data;
 using MicroOrm.Dapper.Repositories.SqlGenerator;
 
 namespace MicroOrm.Dapper.Repositories
@@ -20,24 +20,8 @@ namespace MicroOrm.Dapper.Repositories
         /// <summary>
         ///     Constructor
         /// </summary>
-        public DapperRepository(IDbConnection connection, SqlProvider sqlProvider)
-            : base(connection, sqlProvider)
-        {
-        }
-
-        /// <summary>
-        ///     Constructor
-        /// </summary>
         public DapperRepository(IDbConnection connection, ISqlGenerator<TEntity> sqlGenerator)
             : base(connection, sqlGenerator)
-        {
-        }
-
-        /// <summary>
-        ///     Constructor
-        /// </summary>
-        public DapperRepository(IDbConnection connection, SqlGeneratorConfig config)
-            : base(connection, config)
         {
         }
     }

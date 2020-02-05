@@ -11,15 +11,20 @@ namespace MicroOrm.Dapper.Repositories
     /// <summary>
     ///     interface for read only repository
     /// </summary>
-    public interface IReadOnlyDapperRepository<TEntity> where TEntity : class
+    public interface IReadOnlyDapperRepository<TEntity> : IDisposable where TEntity : class
     {
         /// <summary>
         ///     DB Connection
         /// </summary>
-        IDbConnection Connection { get; }
+        IDbConnection Connection { get; set; }
 
         /// <summary>
-        ///     SQL Genetator
+        ///     Order info (Asc,desc, cols)
+        /// </summary>
+        FilterData FilterData { get; }
+
+        /// <summary>
+        ///     SQL Generator
         /// </summary>
         ISqlGenerator<TEntity> SqlGenerator { get; }
 
@@ -599,7 +604,7 @@ namespace MicroOrm.Dapper.Repositories
         ///     Get all objects
         /// </summary>
         IEnumerable<TEntity> FindAll();
-        
+
         /// <summary>
         ///     Get all objects
         /// </summary>
@@ -621,39 +626,78 @@ namespace MicroOrm.Dapper.Repositories
         IEnumerable<TEntity> FindAll(Expression<Func<TEntity, bool>> predicate, Expression<Func<TEntity, string, string>> orderBy);
 
         /// <summary>
+        /// Set columns to select in specified table (model)
+        /// </summary>
+        IReadOnlyDapperRepository<TEntity> SetSelect<T>(Expression<Func<T, object>> expr);
+
+        /// <summary>
+        /// Set columns to select in specified table (model)
+        /// <param name="expr">The columns to use in order</param>
+        /// <param name="permanent">If true, then will be used in all queries</param>
+        /// </summary>
+        IReadOnlyDapperRepository<TEntity> SetSelect<T>(Expression<Func<T, object>> expr, bool permanent);
+
+        /// <summary>
+        /// Set custom select expression string
+        /// </summary>
+        IReadOnlyDapperRepository<TEntity> SetSelect(params string[] customSelect);
+
+        /// <summary>
+        /// Set custom select expression
+        /// </summary>
+        IReadOnlyDapperRepository<TEntity> SetSelect(Expression<Func<TEntity, object>> expr);
+
+        /// <summary>
         /// Remove query sorting
         /// </summary>
-        ReadOnlyDapperRepository<TEntity> SetOrderBy();
+        IReadOnlyDapperRepository<TEntity> SetOrderBy();
+
+        /// <summary>
+        /// Set query sorting
+        /// <param name="direction">The sort direction (asc;desc)</param>
+        /// <param name="permanent">If true, then will be used in all queries</param>
+        /// <param name="expr">The columns to use in order</param>
+        /// </summary>
+        IReadOnlyDapperRepository<TEntity> SetOrderBy(OrderInfo.SortDirection direction, bool permanent, Expression<Func<TEntity, object>> expr);
 
         /// <summary>
         /// Set query sorting
         /// </summary>
-        ReadOnlyDapperRepository<TEntity> SetOrderBy(OrderInfo.SortDirection direction, bool permanent, params Expression<Func<TEntity, object>>[] cols);
+        IReadOnlyDapperRepository<TEntity> SetOrderBy(OrderInfo.SortDirection direction, Expression<Func<TEntity, object>> expr);
 
         /// <summary>
-        /// Set query sorting
+        /// Set query sorting for another model (use this when need to sort joined table)
         /// </summary>
-        ReadOnlyDapperRepository<TEntity> SetOrderBy(OrderInfo.SortDirection direction, params Expression<Func<TEntity, object>>[] cols);
+        IReadOnlyDapperRepository<TEntity> SetOrderBy<T>(OrderInfo.SortDirection direction, Expression<Func<T, object>> expr);
+
+        /// <summary>
+        /// Set query sorting for another model (use this when need to sort joined table)
+        /// <param name="direction">The sort direction (asc;desc)</param>
+        /// <param name="permanent">If true, then will be used in all query</param>
+        /// <param name="expr">The columns to use in order</param>
+        /// </summary>
+        IReadOnlyDapperRepository<TEntity> SetOrderBy<T>(OrderInfo.SortDirection direction, bool permanent,
+            Expression<Func<T, object>> expr);
 
         /// <summary>
         /// Remove limit and offset
         /// </summary>
-        ReadOnlyDapperRepository<TEntity> SetLimit();
-        
+        IReadOnlyDapperRepository<TEntity> SetLimit();
+
         /// <summary>
         /// Set query offset and limit
         /// </summary>
-        ReadOnlyDapperRepository<TEntity> SetLimit(uint limit, uint? offset, bool permanent);
-        
+        IReadOnlyDapperRepository<TEntity> SetLimit(uint limit, uint? offset, bool permanent);
+
         /// <summary>
         /// Set query offset and limit
         /// </summary>
-        ReadOnlyDapperRepository<TEntity> SetLimit(uint limit, uint offset);
-        
+        IReadOnlyDapperRepository<TEntity> SetLimit(uint limit, uint offset);
+
         /// <summary>
         /// Set query limit
         /// </summary>
-        ReadOnlyDapperRepository<TEntity> SetLimit(uint limit);
+        IReadOnlyDapperRepository<TEntity> SetLimit(uint limit);
 
         /// <summary>
         ///     Get all objects with join objects
