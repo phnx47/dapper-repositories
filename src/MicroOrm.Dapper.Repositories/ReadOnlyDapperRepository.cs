@@ -48,14 +48,14 @@ namespace MicroOrm.Dapper.Repositories
             var field = (MemberExpression) expression;
 
             var prop = type.GetProperty(field.Member.Name);
-            TypeInfo declaringType = type.GetTypeInfo();
-            TableAttribute tableAttribute = declaringType.GetCustomAttribute<TableAttribute>();
-            string tableName = tableAttribute != null ? tableAttribute.Name : declaringType.Name;
+            var declaringType = type.GetTypeInfo();
+            var tableAttribute = declaringType.GetCustomAttribute<TableAttribute>();
+            var tableName = tableAttribute != null ? tableAttribute.Name : declaringType.Name;
             
-            if (prop.GetCustomAttribute<NotMappedAttribute>() != null) 
+            if (prop == null || prop.GetCustomAttribute<NotMappedAttribute>() != null) 
                 return string.Empty;
             
-            string name = prop.GetCustomAttribute<ColumnAttribute>()?.Name ?? prop.Name;
+            var name = prop.GetCustomAttribute<ColumnAttribute>()?.Name ?? prop.Name;
             return $"{tableName}.{name}";
         }
         
