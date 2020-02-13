@@ -121,7 +121,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         /// <summary>
         ///     Get SQL for UPDATE Query
         /// </summary>
-        SqlQuery GetUpdate(TEntity entity);
+        SqlQuery GetUpdate(TEntity entity, params Expression<Func<TEntity, object>>[] includes);
 
         /// <summary>
         ///     Get SQL for UPDATE Query

@@ -14,11 +14,19 @@ namespace MicroOrm.Dapper.Repositories
         where TEntity : class
     {
         /// <inheritdoc />
-        public virtual TEntity Update<TChild1>(Expression<Func<TEntity, bool>> predicate, Expression<Func<TEntity, object>> tChild1, TEntity instance, IDbTransaction transaction)
+        public virtual bool Update<TChild1>(Expression<Func<TEntity, bool>> predicate, TEntity instance, Expression<Func<TEntity, object>> tChild1, IDbTransaction transaction)
         {
-            var sqlQuery = SqlGenerator.GetUpdate(predicate, instance);
-            var queryResult = SqlGenerator.GetSelectFirst(predicate, FilterData, tChild1);
-            return ExecuteJoinQuery<TChild1, DontMap, DontMap, DontMap, DontMap, DontMap>(queryResult, transaction, tChild1).FirstOrDefault();
+            var sqlQuery = SqlGenerator.GetUpdate(predicate, instance, tChild1);
+            var updated = Connection.Execute(sqlQuery.GetSql(), sqlQuery.Param, transaction) > 0;
+            return updated;
+        }
+
+        /// <inheritdoc />
+        public virtual bool Update<TChild1>(TEntity instance, Expression<Func<TEntity, object>> tChild1, IDbTransaction transaction)
+        {
+            var sqlQuery = SqlGenerator.GetUpdate(instance, tChild1);
+            var updated = Connection.Execute(sqlQuery.GetSql(), sqlQuery.Param, transaction) > 0;
+            return updated;
         }
     }
 }
