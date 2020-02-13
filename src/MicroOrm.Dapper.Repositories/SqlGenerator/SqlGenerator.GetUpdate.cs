@@ -97,5 +97,58 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
 
             return query;
         }
+
+        private static string GetFieldsUpdate(string tableName, IEnumerable<SqlPropertyMetadata> properties)
+        {
+            return string.Join(", ", properties
+                .Select(p => $"{tableName}.{p.ColumnName} = @{p.PropertyName}"));
+        }
+
+        /// <inheritdoc />
+        public virtual SqlQuery GetUpdate(Expression<Func<TEntity, bool>> predicate, TEntity entity, params Expression<Func<TEntity, object>>[] includes)
+        {
+            var properties = SqlProperties.Where(p =>
+                !KeySqlProperties.Any(k => k.PropertyName.Equals(p.PropertyName, StringComparison.OrdinalIgnoreCase)) && !p.IgnoreUpdate).ToArray();
+
+            if (HasUpdatedAt)
+            {
+                var attribute = UpdatedAtProperty.GetCustomAttribute<UpdatedAtAttribute>();
+                var offset = attribute.TimeKind == DateTimeKind.Local
+                    ? new DateTimeOffset(DateTime.Now)
+                    : new DateTimeOffset(DateTime.UtcNow);
+                if (attribute.OffSet != 0)
+                {
+                    offset = offset.ToOffset(TimeSpan.FromHours(attribute.OffSet));
+                }
+
+                UpdatedAtProperty.SetValue(entity, offset.DateTime);
+            }
+
+            var query = new SqlQuery(entity);
+
+            query.SqlBuilder
+                .Append("UPDATE ")
+                .Append(TableName);
+
+            var joinsBuilder = AppendJoinToUpdate(query, includes);
+            query.SqlBuilder.Append(" SET ");
+            query.SqlBuilder.Append(GetFieldsUpdate(TableName, properties));
+            query.SqlBuilder.Append(joinsBuilder);
+
+            query.SqlBuilder
+                .Append(" ");
+
+            AppendWherePredicateQuery(query, predicate, QueryType.Update);
+
+            var entityType = entity.GetType();
+            var parameters = properties.ToDictionary(property => property.PropertyName, property => entityType.GetProperty(property.PropertyName)?.GetValue(entity, null));
+
+            if (query.Param is Dictionary<string, object> whereParam)
+                parameters.AddRange(whereParam);
+
+            query.SetParam(parameters);
+
+            return query;
+        }
     }
 }

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -275,7 +275,7 @@ namespace MicroOrm.Dapper.Repositories
         ///     Dummy type for excluding from multi-map
         /// </summary>
         // ReSharper disable once ClassNeverInstantiated.Local
-        private class DontMap
+        internal class DontMap
         {
         }
     }
