@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 
 namespace MicroOrm.Dapper.Repositories.Attributes
 {
@@ -9,4 +9,5 @@ namespace MicroOrm.Dapper.Repositories.Attributes
     public sealed class IdentityAttribute : Attribute
     {
     }
+
 }

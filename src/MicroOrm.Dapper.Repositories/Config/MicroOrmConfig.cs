@@ -16,5 +16,10 @@ namespace MicroOrm.Dapper.Repositories.Config
         ///     Use quotation marks for TableName and ColumnName
         /// </summary>
         public static bool UseQuotationMarks { get; set; }
+
+        /// <summary>
+        ///     Prefix for tables
+        /// </summary>
+        public static string TablePrefix { get; set; }
     }
 }

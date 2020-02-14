@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using MicroOrm.Dapper.Repositories.Config;
 
 namespace MicroOrm.Dapper.Repositories.Attributes.Joins
 {
@@ -24,7 +25,7 @@ namespace MicroOrm.Dapper.Repositories.Attributes.Joins
         /// </summary>
         protected JoinAttributeBase(string tableName, string key, string externalKey, string tableSchema, string tableAlias)
         {
-            TableName = tableName;
+            TableName = MicroOrmConfig.TablePrefix + tableName;
             Key = key;
             ExternalKey = externalKey;
             TableSchema = tableSchema;

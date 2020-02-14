@@ -343,7 +343,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
             return tableName;
         }
 
-        private string AppendJoinToUpdate<TBaseEntity>(TBaseEntity entity, SqlQuery originalBuilder, params Expression<Func<TEntity, object>>[] includes)
+        private string AppendJoinToUpdate<TBase>(TBase entity, SqlQuery originalBuilder, params Expression<Func<TEntity, object>>[] includes)
         {
             var joinBuilder = new StringBuilder();
 
@@ -357,7 +357,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
 
                 var declaringType = joinProperty.DeclaringType.GetTypeInfo();
                 var tableAttribute = declaringType.GetCustomAttribute<TableAttribute>();
-                var tableName = tableAttribute != null ? tableAttribute.Name : declaringType.Name;
+                var tableName = MicroOrmConfig.TablePrefix + (tableAttribute != null ? tableAttribute.Name : declaringType.Name);
 
                 var joinString = "";
                 switch (attrJoin)
@@ -381,10 +381,10 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                 var joinType = joinProperty.PropertyType.IsGenericType ? joinProperty.PropertyType.GenericTypeArguments[0] : joinProperty.PropertyType;
                 var properties = joinType.FindClassProperties().Where(ExpressionHelper.GetPrimitivePropertiesPredicate());
                 SqlPropertyMetadata[] props = properties.Where(p => !p.GetCustomAttributes<NotMappedAttribute>().Any() && !p.GetCustomAttributes<IgnoreUpdateAttribute>().Any() && p.GetCustomAttribute<KeyAttribute>() == null).Select(p => new SqlPropertyMetadata(p)).ToArray();
-                var dict = (Dictionary<string, object>)originalBuilder.Param;
 
                 var joinEntity = entity.GetType().GetProperty(joinProperty.Name).GetValue(entity, null);
-                
+
+                var dict = (Dictionary<string, object>)originalBuilder.Param;
                 foreach (var prop in props)
                 {
                     dict.Add($"{prop.PropertyInfo.DeclaringType.Name}{prop.PropertyName}", joinType.GetProperty(prop.PropertyName).GetValue(joinEntity, null));
@@ -455,7 +455,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
 
                 var declaringType = joinProperty.DeclaringType.GetTypeInfo();
                 var tableAttribute = declaringType.GetCustomAttribute<TableAttribute>();
-                var tableName = tableAttribute != null ? tableAttribute.Name : declaringType.Name;
+                var tableName = MicroOrmConfig.TablePrefix + (tableAttribute != null ? tableAttribute.Name : declaringType.Name);
 
                 var joinString = "";
                 switch (attrJoin)
