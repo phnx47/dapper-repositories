@@ -355,8 +355,6 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                 if (attrJoin == null)
                     continue;
 
-
-
                 var declaringType = joinProperty.DeclaringType.GetTypeInfo();
                 var tableAttribute = declaringType.GetCustomAttribute<TableAttribute>();
                 var tableName = tableAttribute != null ? tableAttribute.Name : declaringType.Name;
@@ -442,7 +440,6 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
 
             return joinBuilder.ToString();
         }
-
 
         private string AppendJoinToSelect(SqlQuery originalBuilder, bool hasSelectFilter, params Expression<Func<TEntity, object>>[] includes)
         {

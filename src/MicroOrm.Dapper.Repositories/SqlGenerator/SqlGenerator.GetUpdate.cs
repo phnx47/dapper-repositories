@@ -35,7 +35,6 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                 UpdatedAtProperty.SetValue(entity, offset.DateTime);
             }
 
-
             var parameters = properties.Concat(KeySqlProperties).ToDictionary(prop => $"{entity.GetType().Name}{prop.PropertyName}", prop => entity.GetType().GetProperty(prop.PropertyName).GetValue(entity, null));
 
             var query = new SqlQuery(parameters);
