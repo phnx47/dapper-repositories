@@ -275,7 +275,7 @@ namespace MicroOrm.Dapper.Repositories
         ///     Dummy type for excluding from multi-map
         /// </summary>
         // ReSharper disable once ClassNeverInstantiated.Local
-        internal class DontMap
+        private class DontMap
         {
         }
     }

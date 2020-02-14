@@ -36,7 +36,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
             }
 
 
-            var parameters = properties.Concat(KeySqlProperties).ToDictionary(prop => $"{prop.PropertyInfo.DeclaringType.Name}{prop.PropertyName}", prop => entity.GetType().GetProperty(prop.PropertyName).GetValue(entity, null));
+            var parameters = properties.Concat(KeySqlProperties).ToDictionary(prop => $"{entity.GetType().Name}{prop.PropertyName}", prop => entity.GetType().GetProperty(prop.PropertyName).GetValue(entity, null));
 
             var query = new SqlQuery(parameters);
 
@@ -61,7 +61,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
             query.SqlBuilder.Append(" WHERE ");
 
             query.SqlBuilder.Append(string.Join(" AND ", KeySqlProperties.Where(p => !p.IgnoreUpdate)
-                .Select(p => $"{TableName}.{p.ColumnName} = @{p.PropertyInfo.DeclaringType.Name}{p.PropertyName}")));
+                .Select(p => $"{TableName}.{p.ColumnName} = @{entity.GetType().Name}{p.PropertyName}")));
 
             return query;
         }

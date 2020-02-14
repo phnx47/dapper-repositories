@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Data;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
@@ -13,57 +13,57 @@ namespace MicroOrm.Dapper.Repositories
         where TEntity : class
     {
         /// <inheritdoc />
-        public virtual bool Update(TEntity instance)
+        public virtual bool Update(TEntity instance, params Expression<Func<TEntity, object>>[] includes)
         {
-            return Update(instance, null);
+            return Update(instance, null, includes);
         }
 
         /// <inheritdoc />
-        public virtual bool Update(TEntity instance, IDbTransaction transaction)
+        public virtual bool Update(TEntity instance, IDbTransaction transaction, params Expression<Func<TEntity, object>>[] includes)
         {
-            var sqlQuery = SqlGenerator.GetUpdate(instance);
-            var updated = Connection.Execute(sqlQuery.GetSql(), instance, transaction) > 0;
-            return updated;
-        }
-
-        /// <inheritdoc />
-        public virtual Task<bool> UpdateAsync(TEntity instance)
-        {
-            return UpdateAsync(instance, null);
-        }
-
-        /// <inheritdoc />
-        public virtual async Task<bool> UpdateAsync(TEntity instance, IDbTransaction transaction)
-        {
-            var sqlQuery = SqlGenerator.GetUpdate(instance);
-            var updated = await Connection.ExecuteAsync(sqlQuery.GetSql(), instance, transaction) > 0;
-            return updated;
-        }
-
-        /// <inheritdoc />
-        public virtual bool Update(Expression<Func<TEntity, bool>> predicate, TEntity instance)
-        {
-            return Update(predicate, instance, null);
-        }
-
-        /// <inheritdoc />
-        public virtual bool Update(Expression<Func<TEntity, bool>> predicate, TEntity instance, IDbTransaction transaction)
-        {
-            var sqlQuery = SqlGenerator.GetUpdate(predicate, instance);
+            var sqlQuery = SqlGenerator.GetUpdate(instance,includes);
             var updated = Connection.Execute(sqlQuery.GetSql(), sqlQuery.Param, transaction) > 0;
             return updated;
         }
 
         /// <inheritdoc />
-        public virtual Task<bool> UpdateAsync(Expression<Func<TEntity, bool>> predicate, TEntity instance)
+        public virtual Task<bool> UpdateAsync(TEntity instance, params Expression<Func<TEntity, object>>[] includes)
         {
-            return UpdateAsync(predicate, instance, null);
+            return UpdateAsync(instance, null, includes);
         }
 
         /// <inheritdoc />
-        public virtual async Task<bool> UpdateAsync(Expression<Func<TEntity, bool>> predicate, TEntity instance, IDbTransaction transaction)
+        public virtual async Task<bool> UpdateAsync(TEntity instance, IDbTransaction transaction, params Expression<Func<TEntity, object>>[] includes)
         {
-            var sqlQuery = SqlGenerator.GetUpdate(predicate, instance);
+            var sqlQuery = SqlGenerator.GetUpdate(instance,includes);
+            var updated = await Connection.ExecuteAsync(sqlQuery.GetSql(), sqlQuery.Param, transaction) > 0;
+            return updated;
+        }
+
+        /// <inheritdoc />
+        public virtual bool Update(Expression<Func<TEntity, bool>> predicate, TEntity instance, params Expression<Func<TEntity, object>>[] includes)
+        {
+            return Update(predicate, instance, null, includes);
+        }
+
+        /// <inheritdoc />
+        public virtual bool Update(Expression<Func<TEntity, bool>> predicate, TEntity instance, IDbTransaction transaction, params Expression<Func<TEntity, object>>[] includes)
+        {
+            var sqlQuery = SqlGenerator.GetUpdate(predicate, instance, includes);
+            var updated = Connection.Execute(sqlQuery.GetSql(), sqlQuery.Param, transaction) > 0;
+            return updated;
+        }
+
+        /// <inheritdoc />
+        public virtual Task<bool> UpdateAsync(Expression<Func<TEntity, bool>> predicate, TEntity instance, params Expression<Func<TEntity, object>>[] includes)
+        {
+            return UpdateAsync(predicate, instance, null, includes);
+        }
+
+        /// <inheritdoc />
+        public virtual async Task<bool> UpdateAsync(Expression<Func<TEntity, bool>> predicate, TEntity instance, IDbTransaction transaction, params Expression<Func<TEntity, object>>[] includes)
+        {
+            var sqlQuery = SqlGenerator.GetUpdate(predicate, instance, includes);
             var updated = await Connection.ExecuteAsync(sqlQuery.GetSql(), sqlQuery.Param, transaction) > 0;
             return updated;
         }
