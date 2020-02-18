@@ -359,25 +359,6 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                 var tableAttribute = declaringType.GetCustomAttribute<TableAttribute>();
                 var tableName = MicroOrmConfig.TablePrefix + (tableAttribute != null ? tableAttribute.Name : declaringType.Name);
 
-                var joinString = "";
-                switch (attrJoin)
-                {
-                    case LeftJoinAttribute _:
-                        joinString = "LEFT JOIN";
-                        break;
-                    case InnerJoinAttribute _:
-                        joinString = "INNER JOIN";
-                        break;
-                    case RightJoinAttribute _ when Provider == SqlProvider.SQLite:
-                        throw new NotSupportedException("SQLite doesn't support RIGHT JOIN");
-                    case RightJoinAttribute _:
-                        joinString = "RIGHT JOIN";
-                        break;
-                    case CrossJoinAttribute _:
-                        joinString = "CROSS JOIN";
-                        break;
-                }
-
                 var joinType = joinProperty.PropertyType.IsGenericType ? joinProperty.PropertyType.GenericTypeArguments[0] : joinProperty.PropertyType;
                 var properties = joinType.FindClassProperties().Where(ExpressionHelper.GetPrimitivePropertiesPredicate());
                 SqlPropertyMetadata[] props = properties
@@ -388,7 +369,8 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                 if (joinEntity == null)
                     return string.Empty;
 
-                var dict = props.ToDictionary(prop => $"{prop.PropertyInfo.DeclaringType.Name}{prop.PropertyName}", prop => joinType.GetProperty(prop.PropertyName).GetValue(joinEntity, null));
+                var dict = props.ToDictionary(prop => $"{prop.PropertyInfo.DeclaringType.Name}{prop.PropertyName}",
+                    prop => joinType.GetProperty(prop.PropertyName).GetValue(joinEntity, null));
                 originalBuilder.SetParam(dict);
 
                 if (UseQuotationMarks)
@@ -399,44 +381,49 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                     attrJoin.TableName = GetTableNameWithSchemaPrefix(attrJoin.TableName, attrJoin.TableSchema);
 
                 joinBuilder.Append($", {GetFieldsUpdate(string.IsNullOrEmpty(attrJoin.TableAlias) ? attrJoin.TableName : attrJoin.TableAlias, props)}");
-
-                if (attrJoin is CrossJoinAttribute)
-                {
-                    originalBuilder.SqlBuilder.Append(attrJoin.TableAlias == string.Empty
-                        ? $"{joinString} {attrJoin.TableName} "
-                        : $"{joinString} {attrJoin.TableName} AS {attrJoin.TableAlias} ");
-                }
-                else
-                {
-                    var customFilter = string.Empty;
-                    if (JoinsLogicalDelete != null && JoinsLogicalDelete.TryGetValue(attrJoin.TableName, out var deleteAttr))
-                    {
-                        var colAttr = deleteAttr.GetCustomAttribute<ColumnAttribute>();
-                        var colName = colAttr == null ? deleteAttr.Name : colAttr.Name;
-                        object deleteValue = 1;
-                        if (deleteAttr.PropertyType.IsEnum)
-                        {
-                            var deleteOption = deleteAttr.PropertyType.GetFields().FirstOrDefault(f => f.GetCustomAttribute<DeletedAttribute>() != null);
-
-                            if (deleteOption != null)
-                            {
-                                var enumValue = Enum.Parse(deleteAttr.PropertyType, deleteOption.Name);
-                                deleteValue = Convert.ChangeType(enumValue, Enum.GetUnderlyingType(deleteAttr.PropertyType));
-                            }
-                        }
-
-                        customFilter = attrJoin.TableAlias == string.Empty
-                            ? $"AND {attrJoin.TableName}.{colName} != {deleteValue} "
-                            : $"AND {attrJoin.TableAlias}.{colName} != {deleteValue} ";
-                    }
-
-                    originalBuilder.SqlBuilder.Append(attrJoin.TableAlias == string.Empty
-                        ? $"{joinString} {attrJoin.TableName} ON {tableName}.{attrJoin.Key} = {attrJoin.TableName}.{attrJoin.ExternalKey} {customFilter}"
-                        : $"{joinString} {attrJoin.TableName} AS {attrJoin.TableAlias} ON {tableName}.{attrJoin.Key} = {attrJoin.TableAlias}.{attrJoin.ExternalKey} {customFilter}");
-                }
+                AppendJoinQuery(attrJoin, originalBuilder.SqlBuilder, tableName);
             }
 
             return joinBuilder.ToString();
+        }
+
+        private void AppendJoinQuery(JoinAttributeBase attrJoin, StringBuilder joinBuilder, string tableName)
+        {
+            var joinString = attrJoin.ToString();
+            if (attrJoin is CrossJoinAttribute)
+            {
+                joinBuilder.Append(attrJoin.TableAlias == string.Empty
+                    ? $"{joinString} {attrJoin.TableName} "
+                    : $"{joinString} {attrJoin.TableName} AS {attrJoin.TableAlias} ");
+            }
+            else
+            {
+                var customFilter = string.Empty;
+                if (JoinsLogicalDelete != null && JoinsLogicalDelete.TryGetValue(attrJoin.TableName, out var deleteAttr))
+                {
+                    var colAttr = deleteAttr.GetCustomAttribute<ColumnAttribute>();
+                    var colName = colAttr == null ? deleteAttr.Name : colAttr.Name;
+                    object deleteValue = 1;
+                    if (deleteAttr.PropertyType.IsEnum)
+                    {
+                        var deleteOption = deleteAttr.PropertyType.GetFields().FirstOrDefault(f => f.GetCustomAttribute<DeletedAttribute>() != null);
+
+                        if (deleteOption != null)
+                        {
+                            var enumValue = Enum.Parse(deleteAttr.PropertyType, deleteOption.Name);
+                            deleteValue = Convert.ChangeType(enumValue, Enum.GetUnderlyingType(deleteAttr.PropertyType));
+                        }
+                    }
+
+                    customFilter = attrJoin.TableAlias == string.Empty
+                        ? $"AND {attrJoin.TableName}.{colName} != {deleteValue} "
+                        : $"AND {attrJoin.TableAlias}.{colName} != {deleteValue} ";
+                }
+
+                joinBuilder.Append(attrJoin.TableAlias == string.Empty
+                    ? $"{joinString} {attrJoin.TableName} ON {tableName}.{attrJoin.Key} = {attrJoin.TableName}.{attrJoin.ExternalKey} {customFilter}"
+                    : $"{joinString} {attrJoin.TableName} AS {attrJoin.TableAlias} ON {tableName}.{attrJoin.Key} = {attrJoin.TableAlias}.{attrJoin.ExternalKey} {customFilter}");
+            }
         }
 
         private string AppendJoinToSelect(SqlQuery originalBuilder, bool hasSelectFilter, params Expression<Func<TEntity, object>>[] includes)
@@ -455,24 +442,6 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                 var tableAttribute = declaringType.GetCustomAttribute<TableAttribute>();
                 var tableName = MicroOrmConfig.TablePrefix + (tableAttribute != null ? tableAttribute.Name : declaringType.Name);
 
-                var joinString = "";
-                switch (attrJoin)
-                {
-                    case LeftJoinAttribute _:
-                        joinString = "LEFT JOIN";
-                        break;
-                    case InnerJoinAttribute _:
-                        joinString = "INNER JOIN";
-                        break;
-                    case RightJoinAttribute _ when Provider == SqlProvider.SQLite:
-                        throw new NotSupportedException("SQLite doesn't support RIGHT JOIN");
-                    case RightJoinAttribute _:
-                        joinString = "RIGHT JOIN";
-                        break;
-                    case CrossJoinAttribute _:
-                        joinString = "CROSS JOIN";
-                        break;
-                }
 
                 var joinType = joinProperty.PropertyType.IsGenericType ? joinProperty.PropertyType.GenericTypeArguments[0] : joinProperty.PropertyType;
                 var properties = joinType.FindClassProperties().Where(ExpressionHelper.GetPrimitivePropertiesPredicate());
@@ -490,40 +459,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                 if (!hasSelectFilter)
                     originalBuilder.SqlBuilder.Append($", {GetFieldsSelect(string.IsNullOrEmpty(attrJoin.TableAlias) ? attrJoin.TableName : attrJoin.TableAlias, props)}");
 
-                if (attrJoin is CrossJoinAttribute)
-                {
-                    joinBuilder.Append(attrJoin.TableAlias == string.Empty
-                        ? $"{joinString} {attrJoin.TableName} "
-                        : $"{joinString} {attrJoin.TableName} AS {attrJoin.TableAlias} ");
-                }
-                else
-                {
-                    var customFilter = string.Empty;
-                    if (JoinsLogicalDelete != null && JoinsLogicalDelete.TryGetValue(attrJoin.TableName, out var deleteAttr))
-                    {
-                        var colAttr = deleteAttr.GetCustomAttribute<ColumnAttribute>();
-                        var colName = colAttr == null ? deleteAttr.Name : colAttr.Name;
-                        object deleteValue = 1;
-                        if (deleteAttr.PropertyType.IsEnum)
-                        {
-                            var deleteOption = deleteAttr.PropertyType.GetFields().FirstOrDefault(f => f.GetCustomAttribute<DeletedAttribute>() != null);
-
-                            if (deleteOption != null)
-                            {
-                                var enumValue = Enum.Parse(deleteAttr.PropertyType, deleteOption.Name);
-                                deleteValue = Convert.ChangeType(enumValue, Enum.GetUnderlyingType(deleteAttr.PropertyType));
-                            }
-                        }
-
-                        customFilter = attrJoin.TableAlias == string.Empty
-                            ? $"AND {attrJoin.TableName}.{colName} != {deleteValue} "
-                            : $"AND {attrJoin.TableAlias}.{colName} != {deleteValue} ";
-                    }
-
-                    joinBuilder.Append(attrJoin.TableAlias == string.Empty
-                        ? $"{joinString} {attrJoin.TableName} ON {tableName}.{attrJoin.Key} = {attrJoin.TableName}.{attrJoin.ExternalKey} {customFilter}"
-                        : $"{joinString} {attrJoin.TableName} AS {attrJoin.TableAlias} ON {tableName}.{attrJoin.Key} = {attrJoin.TableAlias}.{attrJoin.ExternalKey} {customFilter}");
-                }
+                AppendJoinQuery(attrJoin, joinBuilder, tableName);
             }
 
             return joinBuilder.ToString();

@@ -35,7 +35,6 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                 UpdatedAtProperty.SetValue(entity, offset.DateTime);
             }
 
-          
             var query = new SqlQuery();
 
             query.SqlBuilder
@@ -60,10 +59,14 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
 
             query.SqlBuilder.Append(string.Join(" AND ", KeySqlProperties.Where(p => !p.IgnoreUpdate)
                 .Select(p => $"{TableName}.{p.ColumnName} = @{entity.GetType().Name}{p.PropertyName}")));
+            
+            if (query.Param == null || !(query.Param is Dictionary<string,object> parameters))
+                parameters = new Dictionary<string, object>();
 
-            var parameters = (Dictionary<string, object>) query.Param;
             foreach (var metadata in properties.Concat(KeySqlProperties))
                 parameters.Add($"{entity.GetType().Name}{metadata.PropertyName}", entity.GetType().GetProperty(metadata.PropertyName).GetValue(entity, null));
+            
+            query.SetParam(parameters);
 
             return query;
         }
@@ -88,7 +91,6 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                 UpdatedAtProperty.SetValue(entity, offset.DateTime);
             }
 
-            
             var query = new SqlQuery();
 
             query.SqlBuilder

@@ -1,6 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using MicroOrm.Dapper.Repositories.Config;
 
 namespace MicroOrm.Dapper.Repositories.Attributes.Joins
@@ -23,14 +21,21 @@ namespace MicroOrm.Dapper.Repositories.Attributes.Joins
         /// <summary>
         ///     Constructor
         /// </summary>
-        protected JoinAttributeBase(string tableName, string key, string externalKey, string tableSchema, string tableAlias)
+        protected JoinAttributeBase(string tableName, string key, string externalKey, string tableSchema, string tableAlias,
+            string attrString = "JOIN")
         {
             TableName = MicroOrmConfig.TablePrefix + tableName;
             Key = key;
             ExternalKey = externalKey;
             TableSchema = tableSchema;
             TableAlias = tableAlias;
+            JoinAttribute = attrString;
         }
+
+        /// <summary>
+        /// Join attribute string
+        /// </summary>
+        private string JoinAttribute { get; }
 
         /// <summary>
         ///     Name of external table
@@ -56,5 +61,14 @@ namespace MicroOrm.Dapper.Repositories.Attributes.Joins
         ///     Table abbreviation override
         /// </summary>
         public string TableAlias { get; set; }
+
+        /// <summary>
+        ///     Convert to string
+        /// </summary>
+        /// <returns></returns>
+        public override string ToString()
+        {
+            return JoinAttribute;
+        }
     }
 }

@@ -20,7 +20,7 @@ namespace MicroOrm.Dapper.Repositories.Attributes.Joins
         /// </summary>
         /// <param name="tableName">Name of external table</param>
         public CrossJoinAttribute(string tableName)
-            : base(tableName, string.Empty, string.Empty, string.Empty, string.Empty)
+            : base(tableName, string.Empty, string.Empty, string.Empty, string.Empty, "CROSS JOIN")
         {
         }
     }

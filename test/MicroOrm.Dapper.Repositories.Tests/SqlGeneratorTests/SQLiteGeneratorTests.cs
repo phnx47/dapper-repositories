@@ -11,17 +11,13 @@ namespace MicroOrm.Dapper.Repositories.Tests.SqlGeneratorTests
     public class SQLiteGeneratorTests
     {
         private const SqlProvider _sqlConnector = SqlProvider.SQLite;
-        public SQLiteGeneratorTests()
-        {
-            MicroOrmConfig.TablePrefix = "db1_";
-        }
 
         [Fact]
         public void Count()
         {
             ISqlGenerator<User> userSqlGenerator = new SqlGenerator<User>(_sqlConnector, true);
             var sqlQuery = userSqlGenerator.GetCount(null);
-            Assert.Equal("SELECT COUNT(*) FROM db1_Users WHERE db1_Users.Deleted != 1", sqlQuery.GetSql());
+            Assert.Equal("SELECT COUNT(*) FROM Users WHERE Users.Deleted != 1", sqlQuery.GetSql());
         }
 
         [Fact]
@@ -35,7 +31,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.SqlGeneratorTests
             filterData.OrderInfo = data;
 
             var sqlQuery = sqlGenerator.GetSelectAll(x => x.Identifier == Guid.Empty, filterData);
-            Assert.Equal("SELECT db1_Cities.Identifier, db1_Cities.Name FROM db1_Cities WHERE db1_Cities.Identifier = @Identifier_p0 ORDER BY Name ASC", sqlQuery.GetSql());
+            Assert.Equal("SELECT Cities.Identifier, Cities.Name FROM Cities WHERE Cities.Identifier = @Identifier_p0 ORDER BY Name ASC", sqlQuery.GetSql());
         }
 
         [Fact]
@@ -49,7 +45,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.SqlGeneratorTests
             filterData.LimitInfo = data;
 
             var sqlQuery = sqlGenerator.GetSelectAll(x => x.Identifier == Guid.Empty, filterData);
-            Assert.Equal("SELECT db1_Cities.Identifier, db1_Cities.Name FROM db1_Cities WHERE db1_Cities.Identifier = @Identifier_p0 LIMIT 10 OFFSET 5", sqlQuery.GetSql());
+            Assert.Equal("SELECT Cities.Identifier, Cities.Name FROM Cities WHERE Cities.Identifier = @Identifier_p0 LIMIT 10 OFFSET 5", sqlQuery.GetSql());
         }
 
         [Fact]
@@ -57,7 +53,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.SqlGeneratorTests
         {
             ISqlGenerator<City> sqlGenerator = new SqlGenerator<City>(_sqlConnector, false);
             var sqlQuery = sqlGenerator.GetSelectFirst(x => x.Identifier == Guid.Empty && x.Name == "", null);
-            Assert.Equal("SELECT db1_Cities.Identifier, db1_Cities.Name FROM db1_Cities WHERE db1_Cities.Identifier = @Identifier_p0 AND db1_Cities.Name = @Name_p1 LIMIT 1", sqlQuery.GetSql());
+            Assert.Equal("SELECT Cities.Identifier, Cities.Name FROM Cities WHERE Cities.Identifier = @Identifier_p0 AND Cities.Name = @Name_p1 LIMIT 1", sqlQuery.GetSql());
         }
     }
 }
