@@ -35,9 +35,8 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                 UpdatedAtProperty.SetValue(entity, offset.DateTime);
             }
 
-            var parameters = properties.Concat(KeySqlProperties).ToDictionary(prop => $"{entity.GetType().Name}{prop.PropertyName}", prop => entity.GetType().GetProperty(prop.PropertyName).GetValue(entity, null));
-
-            var query = new SqlQuery(parameters);
+          
+            var query = new SqlQuery();
 
             query.SqlBuilder
                 .Append("UPDATE ")
@@ -62,6 +61,10 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
             query.SqlBuilder.Append(string.Join(" AND ", KeySqlProperties.Where(p => !p.IgnoreUpdate)
                 .Select(p => $"{TableName}.{p.ColumnName} = @{entity.GetType().Name}{p.PropertyName}")));
 
+            var parameters = (Dictionary<string, object>) query.Param;
+            foreach (var metadata in properties.Concat(KeySqlProperties))
+                parameters.Add($"{entity.GetType().Name}{metadata.PropertyName}", entity.GetType().GetProperty(metadata.PropertyName).GetValue(entity, null));
+
             return query;
         }
 
@@ -85,8 +88,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                 UpdatedAtProperty.SetValue(entity, offset.DateTime);
             }
 
-            var parameters = properties.Concat(KeySqlProperties).ToDictionary(prop => $"{entity.GetType().Name}{prop.PropertyName}", prop => entity.GetType().GetProperty(prop.PropertyName).GetValue(entity, null));
-
+            
             var query = new SqlQuery();
 
             query.SqlBuilder
@@ -112,10 +114,9 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
 
             AppendWherePredicateQuery(query, predicate, QueryType.Update);
 
-            if (query.Param is Dictionary<string, object> whereParam)
-                parameters.AddRange(whereParam);
-
-            query.SetParam(parameters);
+            var parameters = (Dictionary<string, object>)query.Param;
+            foreach (var metadata in properties)
+                parameters.Add($"{entity.GetType().Name}{metadata.PropertyName}", entity.GetType().GetProperty(metadata.PropertyName).GetValue(entity, null));
 
             return query;
         }

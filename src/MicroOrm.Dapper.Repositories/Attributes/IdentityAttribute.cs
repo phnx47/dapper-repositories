@@ -9,5 +9,4 @@ namespace MicroOrm.Dapper.Repositories.Attributes
     public sealed class IdentityAttribute : Attribute
     {
     }
-
 }

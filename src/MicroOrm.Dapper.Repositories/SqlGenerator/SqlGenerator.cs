@@ -380,17 +380,15 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
 
                 var joinType = joinProperty.PropertyType.IsGenericType ? joinProperty.PropertyType.GenericTypeArguments[0] : joinProperty.PropertyType;
                 var properties = joinType.FindClassProperties().Where(ExpressionHelper.GetPrimitivePropertiesPredicate());
-                SqlPropertyMetadata[] props = properties.Where(p => !p.GetCustomAttributes<NotMappedAttribute>().Any() && !p.GetCustomAttributes<IgnoreUpdateAttribute>().Any() && p.GetCustomAttribute<KeyAttribute>() == null).Select(p => new SqlPropertyMetadata(p)).ToArray();
+                SqlPropertyMetadata[] props = properties
+                    .Where(p => !p.GetCustomAttributes<NotMappedAttribute>().Any() && !p.GetCustomAttributes<IgnoreUpdateAttribute>().Any() &&
+                                p.GetCustomAttribute<KeyAttribute>() == null).Select(p => new SqlPropertyMetadata(p)).ToArray();
 
                 var joinEntity = entity.GetType().GetProperty(joinProperty.Name).GetValue(entity, null);
+                if (joinEntity == null)
+                    return string.Empty;
 
-                var dict = (Dictionary<string, object>)originalBuilder.Param;
-                foreach (var prop in props)
-                {
-                    dict.Add($"{prop.PropertyInfo.DeclaringType.Name}{prop.PropertyName}", joinType.GetProperty(prop.PropertyName).GetValue(joinEntity, null));
-                }
-
-                //check this.
+                var dict = props.ToDictionary(prop => $"{prop.PropertyInfo.DeclaringType.Name}{prop.PropertyName}", prop => joinType.GetProperty(prop.PropertyName).GetValue(joinEntity, null));
                 originalBuilder.SetParam(dict);
 
                 if (UseQuotationMarks)

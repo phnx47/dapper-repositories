@@ -24,8 +24,6 @@ namespace MicroOrm.Dapper.Repositories.Tests.SqlGeneratorTests
             Assert.Equal("SELECT COUNT(*) FROM db1_Users WHERE db1_Users.Deleted != 1", sqlQuery.GetSql());
         }
 
-
-
         [Fact]
         public void SelectOrderBy()
         {

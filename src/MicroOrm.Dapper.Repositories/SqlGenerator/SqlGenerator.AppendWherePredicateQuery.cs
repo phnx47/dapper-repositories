@@ -14,7 +14,15 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
     {
         private void AppendWherePredicateQuery(SqlQuery sqlQuery, Expression<Func<TEntity, bool>> predicate, QueryType queryType)
         {
-            IDictionary<string, object> dictionaryParams = new Dictionary<string, object>();
+            IDictionary<string, object> dictionaryParams;
+            if (sqlQuery.Param is Dictionary<string, object> param)
+            {
+                dictionaryParams = param;
+            }
+            else
+            {
+                dictionaryParams = new Dictionary<string, object>();
+            }
 
             if (predicate != null)
             {
@@ -46,7 +54,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
 
             sqlQuery.SetParam(dictionaryParams);
         }
-        
+
         /// <summary>
         /// Build the final `query statement and parameters`
         /// </summary>
@@ -58,7 +66,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         /// Support `group conditions` syntax
         /// </remarks>
         private void BuildQuerySql(IList<QueryExpression> queryProperties,
-           ref StringBuilder sqlBuilder, ref List<KeyValuePair<string, object>> conditions, ref int qLevel)
+            ref StringBuilder sqlBuilder, ref List<KeyValuePair<string, object>> conditions, ref int qLevel)
         {
             foreach (var expr in queryProperties)
             {
@@ -66,7 +74,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                 {
                     if (sqlBuilder.Length > 0)
                         sqlBuilder.Append(" ");
-                    
+
                     sqlBuilder
                         .Append(expr.LinkingOperator)
                         .Append(" ");
@@ -95,7 +103,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                         else
                         {
                             var vKey = string.Format("{0}_p{1}", qpExpr.PropertyName, qLevel); //Handle multiple uses of a field
-                            
+
                             sqlBuilder.AppendFormat("{0}.{1} {2} @{3}", tableName, columnName, qpExpr.QueryOperator, vKey);
                             conditions.Add(new KeyValuePair<string, object>(vKey, qpExpr.PropertyValue));
                         }
@@ -118,7 +126,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                 }
             }
         }
-        
+
         /// <summary>
         /// Get query properties
         /// </summary>
@@ -129,7 +137,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
             switch (queryNode)
             {
                 case QueryParameterExpression qpExpr:
-                    return new List<QueryExpression> { queryNode };
+                    return new List<QueryExpression> {queryNode};
 
                 case QueryBinaryExpression qbExpr:
                     return qbExpr.Nodes;
