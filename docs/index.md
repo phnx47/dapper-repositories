@@ -26,7 +26,7 @@ that generates all the CRUD sentences for a POCO class based on its definition a
 
 The original idea was taken from [Yoinbol](https://github.com/Yoinbol/MicroOrm.Pocos.SqlGenerator).
 
-All tests with MSSQL, PostgreSQL and MySQL has passed, SQLite still not tested.
+All tests with MSSQL, PostgreSQL and MySQL has passed, SQLite tests are being developed.
 
 ## Installation
 
@@ -170,7 +170,44 @@ Query with OrderBy:
     
     var users = await userRepository.SetOrderBy(OrderInfo.SortDirection.DESC, x => x.CreatedAt).FindAllAsync();
 
+Query with SetSelect:
+    
+    var users = await userRepository.SetSelect(x => new {x.Id, x.Name}).FindAllAsync();
 
 Find all users for AccountId equals to 3 and not logical deleted:
 
     var allUsers = await userRepository.FindAllAsync(x => x.AccountId == 3 && x.Deleted != false);
+
+Update with join:
+
+    userRepository.Update();
+### Example with Asp.Net Core and D.I
+- ConfigureServices:
+
+
+    //Your DB Provider
+    MicroOrmConfig.SqlProvider = SqlProvider.MySQL;
+    //Not required
+    MicroOrmConfig.TablePrefix = "db1_";
+    //Add generic SqlGenerator as singleton
+    services.AddSingleton(typeof(ISqlGenerator<>), typeof(SqlGenerator<>));
+    //Your db factory
+    services.AddSingleton<IDbConnectionFactory, DbFactory>(x => new DbFactory(appSettings.DbConnectionString));
+
+- Example Repository:
+
+
+    public class BaseRepository<T> : DapperRepository<T> where T : class
+    {
+        private readonly IDbConnectionFactory _factory;
+        public BaseRepository(IDbConnectionFactory factory, ISqlGenerator<T> generator)
+            : base(factory.OpenDbConnection(), generator)
+        {
+            _factory = factory;
+        }
+        
+        protected IDbConnection GetConnection()
+        {
+            return _factory.OpenDbConnection();
+        }
+    }
