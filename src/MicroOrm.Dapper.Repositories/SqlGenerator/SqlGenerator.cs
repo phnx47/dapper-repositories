@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Linq.Expressions;
@@ -298,6 +299,133 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                 : startQuotationMark + tableName + endQuotationMark;
         }
 
+        private string GetTableNameWithQuotes(JoinAttributeBase attrJoin, SqlPropertyMetadata[] props, string tableName)
+        {
+            switch (Provider)
+            {
+                case SqlProvider.MSSQL:
+                    tableName = "[" + tableName + "]";
+                    attrJoin.TableName = GetTableNameWithSchemaPrefix(attrJoin.TableName, attrJoin.TableSchema, "[", "]");
+                    attrJoin.Key = "[" + attrJoin.Key + "]";
+                    attrJoin.ExternalKey = "[" + attrJoin.ExternalKey + "]";
+                    attrJoin.TableAlias = string.IsNullOrEmpty(attrJoin.TableAlias) ? string.Empty : "[" + attrJoin.TableAlias + "]";
+                    foreach (var prop in props)
+                        prop.ColumnName = "[" + prop.ColumnName + "]";
+                    break;
+
+                case SqlProvider.MySQL:
+                    tableName = "`" + tableName + "`";
+                    attrJoin.TableName = GetTableNameWithSchemaPrefix(attrJoin.TableName, attrJoin.TableSchema, "`", "`");
+                    attrJoin.Key = "`" + attrJoin.Key + "`";
+                    attrJoin.ExternalKey = "`" + attrJoin.ExternalKey + "`";
+                    attrJoin.TableAlias = string.IsNullOrEmpty(attrJoin.TableAlias) ? string.Empty : "`" + attrJoin.TableAlias + "`";
+                    foreach (var prop in props)
+                        prop.ColumnName = "`" + prop.ColumnName + "`";
+                    break;
+
+                case SqlProvider.SQLite:
+                    break;
+
+                case SqlProvider.PostgreSQL:
+                    tableName = "\"" + tableName + "\"";
+                    attrJoin.TableName = GetTableNameWithSchemaPrefix(attrJoin.TableName, attrJoin.TableSchema, "\"", "\"");
+                    attrJoin.Key = "\"" + attrJoin.Key + "\"";
+                    attrJoin.ExternalKey = "\"" + attrJoin.ExternalKey + "\"";
+                    attrJoin.TableAlias = string.IsNullOrEmpty(attrJoin.TableAlias) ? string.Empty : "\"" + attrJoin.TableAlias + "\"";
+                    foreach (var prop in props)
+                        prop.ColumnName = "\"" + prop.ColumnName + "\"";
+                    break;
+
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(Provider));
+            }
+
+            return tableName;
+        }
+
+        private string AppendJoinToUpdate<TBase>(TBase entity, SqlQuery originalBuilder, params Expression<Func<TEntity, object>>[] includes)
+        {
+            var joinBuilder = new StringBuilder();
+
+            foreach (var include in includes)
+            {
+                var joinProperty = AllProperties.First(q => q.Name == ExpressionHelper.GetPropertyName(include));
+                var attrJoin = joinProperty.GetCustomAttribute<JoinAttributeBase>();
+
+                if (attrJoin == null)
+                    continue;
+
+                var declaringType = joinProperty.DeclaringType.GetTypeInfo();
+                var tableAttribute = declaringType.GetCustomAttribute<TableAttribute>();
+                var tableName = MicroOrmConfig.TablePrefix + (tableAttribute != null ? tableAttribute.Name : declaringType.Name);
+
+                var joinType = joinProperty.PropertyType.IsGenericType ? joinProperty.PropertyType.GenericTypeArguments[0] : joinProperty.PropertyType;
+                var properties = joinType.FindClassProperties().Where(ExpressionHelper.GetPrimitivePropertiesPredicate());
+                SqlPropertyMetadata[] props = properties
+                    .Where(p => !p.GetCustomAttributes<NotMappedAttribute>().Any() && !p.GetCustomAttributes<IgnoreUpdateAttribute>().Any() &&
+                                p.GetCustomAttribute<KeyAttribute>() == null).Select(p => new SqlPropertyMetadata(p)).ToArray();
+
+                var joinEntity = entity.GetType().GetProperty(joinProperty.Name).GetValue(entity, null);
+                if (joinEntity == null)
+                    return string.Empty;
+
+                var dict = props.ToDictionary(prop => $"{prop.PropertyInfo.DeclaringType.Name}{prop.PropertyName}",
+                    prop => joinType.GetProperty(prop.PropertyName).GetValue(joinEntity, null));
+                originalBuilder.SetParam(dict);
+
+                if (UseQuotationMarks)
+                {
+                    tableName = GetTableNameWithQuotes(attrJoin, props, tableName);
+                }
+                else
+                    attrJoin.TableName = GetTableNameWithSchemaPrefix(attrJoin.TableName, attrJoin.TableSchema);
+
+                joinBuilder.Append($", {GetFieldsUpdate(string.IsNullOrEmpty(attrJoin.TableAlias) ? attrJoin.TableName : attrJoin.TableAlias, props)}");
+                AppendJoinQuery(attrJoin, originalBuilder.SqlBuilder, tableName);
+            }
+
+            return joinBuilder.ToString();
+        }
+
+        private void AppendJoinQuery(JoinAttributeBase attrJoin, StringBuilder joinBuilder, string tableName)
+        {
+            var joinString = attrJoin.ToString();
+            if (attrJoin is CrossJoinAttribute)
+            {
+                joinBuilder.Append(attrJoin.TableAlias == string.Empty
+                    ? $"{joinString} {attrJoin.TableName} "
+                    : $"{joinString} {attrJoin.TableName} AS {attrJoin.TableAlias} ");
+            }
+            else
+            {
+                var customFilter = string.Empty;
+                if (JoinsLogicalDelete != null && JoinsLogicalDelete.TryGetValue(attrJoin.TableName, out var deleteAttr))
+                {
+                    var colAttr = deleteAttr.GetCustomAttribute<ColumnAttribute>();
+                    var colName = colAttr == null ? deleteAttr.Name : colAttr.Name;
+                    object deleteValue = 1;
+                    if (deleteAttr.PropertyType.IsEnum)
+                    {
+                        var deleteOption = deleteAttr.PropertyType.GetFields().FirstOrDefault(f => f.GetCustomAttribute<DeletedAttribute>() != null);
+
+                        if (deleteOption != null)
+                        {
+                            var enumValue = Enum.Parse(deleteAttr.PropertyType, deleteOption.Name);
+                            deleteValue = Convert.ChangeType(enumValue, Enum.GetUnderlyingType(deleteAttr.PropertyType));
+                        }
+                    }
+
+                    customFilter = attrJoin.TableAlias == string.Empty
+                        ? $"AND {attrJoin.TableName}.{colName} != {deleteValue} "
+                        : $"AND {attrJoin.TableAlias}.{colName} != {deleteValue} ";
+                }
+
+                joinBuilder.Append(attrJoin.TableAlias == string.Empty
+                    ? $"{joinString} {attrJoin.TableName} ON {tableName}.{attrJoin.Key} = {attrJoin.TableName}.{attrJoin.ExternalKey} {customFilter}"
+                    : $"{joinString} {attrJoin.TableName} AS {attrJoin.TableAlias} ON {tableName}.{attrJoin.Key} = {attrJoin.TableAlias}.{attrJoin.ExternalKey} {customFilter}");
+            }
+        }
+
         private string AppendJoinToSelect(SqlQuery originalBuilder, bool hasSelectFilter, params Expression<Func<TEntity, object>>[] includes)
         {
             var joinBuilder = new StringBuilder();
@@ -312,110 +440,25 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
 
                 var declaringType = joinProperty.DeclaringType.GetTypeInfo();
                 var tableAttribute = declaringType.GetCustomAttribute<TableAttribute>();
-                var tableName = tableAttribute != null ? tableAttribute.Name : declaringType.Name;
-
-                var joinString = "";
-                switch (attrJoin)
-                {
-                    case LeftJoinAttribute _:
-                        joinString = "LEFT JOIN";
-                        break;
-                    case InnerJoinAttribute _:
-                        joinString = "INNER JOIN";
-                        break;
-                    case RightJoinAttribute _ when Provider == SqlProvider.SQLite:
-                        throw new NotSupportedException("SQLite doesn't support RIGHT JOIN");
-                    case RightJoinAttribute _:
-                        joinString = "RIGHT JOIN";
-                        break;
-                    case CrossJoinAttribute _:
-                        joinString = "CROSS JOIN";
-                        break;
-                }
+                var tableName = MicroOrmConfig.TablePrefix + (tableAttribute != null ? tableAttribute.Name : declaringType.Name);
 
                 var joinType = joinProperty.PropertyType.IsGenericType ? joinProperty.PropertyType.GenericTypeArguments[0] : joinProperty.PropertyType;
                 var properties = joinType.FindClassProperties().Where(ExpressionHelper.GetPrimitivePropertiesPredicate());
-                var props = properties.Where(p => !p.GetCustomAttributes<NotMappedAttribute>().Any()).Select(p => new SqlPropertyMetadata(p)).ToArray();
+                SqlPropertyMetadata[] props = null;
+                if (UseQuotationMarks || !hasSelectFilter)
+                    props = properties.Where(p => !p.GetCustomAttributes<NotMappedAttribute>().Any()).Select(p => new SqlPropertyMetadata(p)).ToArray();
 
                 if (UseQuotationMarks)
-                    switch (Provider)
-                    {
-                        case SqlProvider.MSSQL:
-                            tableName = "[" + tableName + "]";
-                            attrJoin.TableName = GetTableNameWithSchemaPrefix(attrJoin.TableName, attrJoin.TableSchema, "[", "]");
-                            attrJoin.Key = "[" + attrJoin.Key + "]";
-                            attrJoin.ExternalKey = "[" + attrJoin.ExternalKey + "]";
-                            attrJoin.TableAlias = string.IsNullOrEmpty(attrJoin.TableAlias) ? string.Empty : "[" + attrJoin.TableAlias + "]";
-                            foreach (var prop in props)
-                                prop.ColumnName = "[" + prop.ColumnName + "]";
-                            break;
-
-                        case SqlProvider.MySQL:
-                            tableName = "`" + tableName + "`";
-                            attrJoin.TableName = GetTableNameWithSchemaPrefix(attrJoin.TableName, attrJoin.TableSchema, "`", "`");
-                            attrJoin.Key = "`" + attrJoin.Key + "`";
-                            attrJoin.ExternalKey = "`" + attrJoin.ExternalKey + "`";
-                            attrJoin.TableAlias = string.IsNullOrEmpty(attrJoin.TableAlias) ? string.Empty : "`" + attrJoin.TableAlias + "`";
-                            foreach (var prop in props)
-                                prop.ColumnName = "`" + prop.ColumnName + "`";
-                            break;
-
-                        case SqlProvider.SQLite:
-                            break;
-
-                        case SqlProvider.PostgreSQL:
-                            tableName = "\"" + tableName + "\"";
-                            attrJoin.TableName = GetTableNameWithSchemaPrefix(attrJoin.TableName, attrJoin.TableSchema, "\"", "\"");
-                            attrJoin.Key = "\"" + attrJoin.Key + "\"";
-                            attrJoin.ExternalKey = "\"" + attrJoin.ExternalKey + "\"";
-                            attrJoin.TableAlias = string.IsNullOrEmpty(attrJoin.TableAlias) ? string.Empty : "\"" + attrJoin.TableAlias + "\"";
-                            foreach (var prop in props)
-                                prop.ColumnName = "\"" + prop.ColumnName + "\"";
-                            break;
-
-                        default:
-                            throw new ArgumentOutOfRangeException(nameof(Provider));
-                    }
+                {
+                    tableName = GetTableNameWithQuotes(attrJoin, props, tableName);
+                }
                 else
                     attrJoin.TableName = GetTableNameWithSchemaPrefix(attrJoin.TableName, attrJoin.TableSchema);
 
                 if (!hasSelectFilter)
                     originalBuilder.SqlBuilder.Append($", {GetFieldsSelect(string.IsNullOrEmpty(attrJoin.TableAlias) ? attrJoin.TableName : attrJoin.TableAlias, props)}");
 
-                if (attrJoin is CrossJoinAttribute)
-                {
-                    joinBuilder.Append(attrJoin.TableAlias == string.Empty
-                        ? $"{joinString} {attrJoin.TableName} "
-                        : $"{joinString} {attrJoin.TableName} AS {attrJoin.TableAlias} ");
-                }
-                else
-                {
-                    var customFilter = string.Empty;
-                    if (JoinsLogicalDelete != null && JoinsLogicalDelete.TryGetValue(attrJoin.TableName, out var deleteAttr))
-                    {
-                        var colAttr = deleteAttr.GetCustomAttribute<ColumnAttribute>();
-                        var colName = colAttr == null ? deleteAttr.Name : colAttr.Name;
-                        object deleteValue = 1;
-                        if (deleteAttr.PropertyType.IsEnum)
-                        {
-                            var deleteOption = deleteAttr.PropertyType.GetFields().FirstOrDefault(f => f.GetCustomAttribute<DeletedAttribute>() != null);
-
-                            if (deleteOption != null)
-                            {
-                                var enumValue = Enum.Parse(deleteAttr.PropertyType, deleteOption.Name);
-                                deleteValue = Convert.ChangeType(enumValue, Enum.GetUnderlyingType(deleteAttr.PropertyType));
-                            }
-                        }
-
-                        customFilter = attrJoin.TableAlias == string.Empty
-                            ? $"AND {attrJoin.TableName}.{colName} != {deleteValue} "
-                            : $"AND {attrJoin.TableAlias}.{colName} != {deleteValue} ";
-                    }
-
-                    joinBuilder.Append(attrJoin.TableAlias == string.Empty
-                        ? $"{joinString} {attrJoin.TableName} ON {tableName}.{attrJoin.Key} = {attrJoin.TableName}.{attrJoin.ExternalKey} {customFilter}"
-                        : $"{joinString} {attrJoin.TableName} AS {attrJoin.TableAlias} ON {tableName}.{attrJoin.Key} = {attrJoin.TableAlias}.{attrJoin.ExternalKey} {customFilter}");
-                }
+                AppendJoinQuery(attrJoin, joinBuilder, tableName);
             }
 
             return joinBuilder.ToString();

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -313,7 +313,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.RepositoriesTests
             {
                 Name = "Sergey"
             };
-
+            
             var insert = _db.Users.Insert(user);
             Assert.True(insert);
 

@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reflection;
 using MicroOrm.Dapper.Repositories.Attributes;
 using MicroOrm.Dapper.Repositories.Attributes.Joins;
+using MicroOrm.Dapper.Repositories.Config;
 using MicroOrm.Dapper.Repositories.Extensions;
 
 namespace MicroOrm.Dapper.Repositories.SqlGenerator
@@ -19,7 +20,8 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
             var entityTypeInfo = entityType.GetTypeInfo();
             var tableAttribute = entityTypeInfo.GetCustomAttribute<TableAttribute>();
 
-            TableName = tableAttribute != null ? tableAttribute.Name : entityTypeInfo.Name;
+            TableName = MicroOrmConfig.TablePrefix + (tableAttribute != null ? tableAttribute.Name : entityTypeInfo.Name);
+
             TableSchema = tableAttribute != null ? tableAttribute.Schema : string.Empty;
 
             AllProperties = entityType.FindClassProperties().Where(q => q.CanWrite).ToArray();

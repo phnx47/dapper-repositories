@@ -451,7 +451,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.SqlGeneratorTests
             var phone = new Phone { Id = 10, Code = "ZZZ", IsActive = true, Number = "111" };
             var sqlQuery = userSqlGenerator.GetUpdate(phone);
 
-            Assert.Equal("UPDATE [DAB].[Phones] SET [Number] = @Number, [IsActive] = @IsActive WHERE [Id] = @Id", sqlQuery.GetSql());
+            Assert.Equal("UPDATE [DAB].[Phones] SET [DAB].[Phones].[Number] = @PhoneNumber, [DAB].[Phones].[IsActive] = @PhoneIsActive WHERE [DAB].[Phones].[Id] = @PhoneId", sqlQuery.GetSql());
         }
 
         [Fact]
@@ -460,7 +460,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.SqlGeneratorTests
             ISqlGenerator<City> sqlGenerator = new SqlGenerator<City>(_sqlConnector);
             var sqlQuery = sqlGenerator.GetUpdate(q => q.Identifier == Guid.Empty, new City());
             var sql = sqlQuery.GetSql();
-            Assert.Equal("UPDATE Cities SET Identifier = @Identifier, Name = @Name WHERE Cities.Identifier = @Identifier_p0", sql);
+            Assert.Equal("UPDATE Cities SET Cities.Identifier = @CityIdentifier, Cities.Name = @CityName WHERE Cities.Identifier = @Identifier_p0", sql);
         }
 
         #region Support `group conditions` syntax
