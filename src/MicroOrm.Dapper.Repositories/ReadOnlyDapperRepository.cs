@@ -51,7 +51,7 @@ namespace MicroOrm.Dapper.Repositories
             var prop = type.GetProperty(field.Member.Name);
             var declaringType = type.GetTypeInfo();
             var tableAttribute = declaringType.GetCustomAttribute<TableAttribute>();
-            var tableName = tableAttribute != null ? tableAttribute.Name : declaringType.Name;
+            var tableName = MicroOrmConfig.TablePrefix + (tableAttribute != null ? tableAttribute.Name : declaringType.Name);
 
             if (prop == null || prop.GetCustomAttribute<NotMappedAttribute>() != null)
                 return string.Empty;
