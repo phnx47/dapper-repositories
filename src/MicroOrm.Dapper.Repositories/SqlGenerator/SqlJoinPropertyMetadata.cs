@@ -1,5 +1,6 @@
 ﻿using System.Reflection;
 using MicroOrm.Dapper.Repositories.Attributes.Joins;
+using System;
 
 namespace MicroOrm.Dapper.Repositories.SqlGenerator
 {

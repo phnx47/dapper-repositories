@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
@@ -27,7 +27,7 @@ namespace MicroOrm.Dapper.Repositories
                 var newId = Connection.Query<long>(queryResult.GetSql(), queryResult.Param, transaction).FirstOrDefault();
                 return SetValue(newId, instance);
             }
-            
+
             return Connection.Execute(queryResult.GetSql(), instance, transaction) > 0;
         }
 
