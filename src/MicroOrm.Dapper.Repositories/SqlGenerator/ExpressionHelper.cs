@@ -5,8 +5,6 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text;
 
-using MicroOrm.Dapper.Repositories.Extensions;
-
 [assembly: InternalsVisibleTo("MicroOrm.Dapper.Repositories.Tests")]
 
 namespace MicroOrm.Dapper.Repositories.SqlGenerator
