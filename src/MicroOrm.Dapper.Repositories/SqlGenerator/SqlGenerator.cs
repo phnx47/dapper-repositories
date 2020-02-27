@@ -449,8 +449,8 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                 if (UseQuotationMarks || !hasSelectFilter)
                     props = properties.Where(p => !p.GetCustomAttributes<NotMappedAttribute>().Any())
                         .OrderByDescending(x=> x.GetCustomAttribute<IdentityAttribute>() != null)
-                        .ThenBy(x=> x.GetCustomAttribute<KeyAttribute>() != null)
-                        .ThenBy(x=> x.GetCustomAttribute<ColumnAttribute>() != null ? x.GetCustomAttribute<ColumnAttribute>().Order : properties.Length)
+                        .ThenByDescending(x=> x.GetCustomAttribute<KeyAttribute>() != null)
+                        .ThenByDescending(x=> x.GetCustomAttribute<ColumnAttribute>() != null ? x.GetCustomAttribute<ColumnAttribute>().Order : properties.Length)
                         .Select(p => new SqlPropertyMetadata(p)).ToArray();
 
                 if (UseQuotationMarks)
