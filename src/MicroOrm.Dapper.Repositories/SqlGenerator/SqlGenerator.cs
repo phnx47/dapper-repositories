@@ -355,7 +355,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                 if (attrJoin == null)
                     continue;
 
-                var declaringType = joinProperty.DeclaringType.GetTypeInfo();
+                var declaringType = joinProperty.ReflectedType.GetTypeInfo();
                 var tableAttribute = declaringType.GetCustomAttribute<TableAttribute>();
                 var tableName = MicroOrmConfig.TablePrefix + (tableAttribute != null ? tableAttribute.Name : declaringType.Name);
 
@@ -369,7 +369,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                 if (joinEntity == null)
                     return string.Empty;
 
-                var dict = props.ToDictionary(prop => $"{prop.PropertyInfo.DeclaringType.Name}{prop.PropertyName}",
+                var dict = props.ToDictionary(prop => $"{prop.PropertyInfo.ReflectedType.Name}{prop.PropertyName}",
                     prop => joinType.GetProperty(prop.PropertyName).GetValue(joinEntity, null));
                 originalBuilder.SetParam(dict);
 
@@ -438,7 +438,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                 if (attrJoin == null)
                     continue;
 
-                var declaringType = joinProperty.DeclaringType.GetTypeInfo();
+                var declaringType = joinProperty.ReflectedType.GetTypeInfo();
                 var tableAttribute = declaringType.GetCustomAttribute<TableAttribute>();
                 var tableName = MicroOrmConfig.TablePrefix + (tableAttribute != null ? tableAttribute.Name : declaringType.Name);
 

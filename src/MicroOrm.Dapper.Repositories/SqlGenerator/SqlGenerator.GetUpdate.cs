@@ -126,7 +126,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         private static string GetFieldsUpdate(string tableName, IEnumerable<SqlPropertyMetadata> properties)
         {
             return string.Join(", ", properties
-                .Select(p => $"{tableName}.{p.ColumnName} = @{p.PropertyInfo.DeclaringType.Name}{p.PropertyName}"));
+                .Select(p => $"{tableName}.{p.ColumnName} = @{p.PropertyInfo.ReflectedType.Name}{p.PropertyName}"));
         }
     }
 }
