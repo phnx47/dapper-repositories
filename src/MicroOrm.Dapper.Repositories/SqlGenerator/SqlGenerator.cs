@@ -360,7 +360,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                 var tableName = MicroOrmConfig.TablePrefix + (tableAttribute != null ? tableAttribute.Name : declaringType.Name);
 
                 var joinType = joinProperty.PropertyType.IsGenericType ? joinProperty.PropertyType.GenericTypeArguments[0] : joinProperty.PropertyType;
-                var properties = joinType.FindClassProperties().Where(ExpressionHelper.GetPrimitivePropertiesPredicate());
+                var properties = joinType.FindClassPrimitiveProperties();
                 SqlPropertyMetadata[] props = properties
                     .Where(p => !p.GetCustomAttributes<NotMappedAttribute>().Any() && !p.GetCustomAttributes<IgnoreUpdateAttribute>().Any() &&
                                 p.GetCustomAttribute<KeyAttribute>() == null).Select(p => new SqlPropertyMetadata(p)).ToArray();
@@ -443,10 +443,15 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                 var tableName = MicroOrmConfig.TablePrefix + (tableAttribute != null ? tableAttribute.Name : declaringType.Name);
 
                 var joinType = joinProperty.PropertyType.IsGenericType ? joinProperty.PropertyType.GenericTypeArguments[0] : joinProperty.PropertyType;
-                var properties = joinType.FindClassProperties().Where(ExpressionHelper.GetPrimitivePropertiesPredicate());
+                var properties = joinType.FindClassPrimitiveProperties();
                 SqlPropertyMetadata[] props = null;
+                
                 if (UseQuotationMarks || !hasSelectFilter)
-                    props = properties.Where(p => !p.GetCustomAttributes<NotMappedAttribute>().Any()).Select(p => new SqlPropertyMetadata(p)).ToArray();
+                    props = properties.Where(p => !p.GetCustomAttributes<NotMappedAttribute>().Any())
+                        .OrderByDescending(x=> x.GetCustomAttribute<IdentityAttribute>() != null)
+                        .ThenBy(x=> x.GetCustomAttribute<KeyAttribute>() != null)
+                        .ThenBy(x=> x.GetCustomAttribute<ColumnAttribute>() != null ? x.GetCustomAttribute<ColumnAttribute>().Order : properties.Length)
+                        .Select(p => new SqlPropertyMetadata(p)).ToArray();
 
                 if (UseQuotationMarks)
                 {

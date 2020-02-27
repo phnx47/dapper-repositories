@@ -39,6 +39,9 @@ namespace MicroOrm.Dapper.Repositories
                 var lambdaUnary = expr.Body as UnaryExpression;
                 var expression = lambdaUnary.Operand as MemberExpression;
                 order.Columns = new List<string> {GetProperty(expression, type)};
+            } else if (expr.Body.NodeType == ExpressionType.MemberAccess)
+            {
+                order.Columns = new List<string> { GetProperty(expr.Body, type) };
             }
             else
             {
