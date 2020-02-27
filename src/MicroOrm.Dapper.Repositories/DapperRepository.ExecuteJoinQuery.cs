@@ -46,7 +46,8 @@ namespace MicroOrm.Dapper.Repositories
                 
                 childProperties.Add(childProp);
                 var childType = childProp.PropertyType.IsGenericType ? childProp.PropertyType.GenericTypeArguments[0] : childProp.PropertyType;
-                var properties = childType.FindClassProperties().Where(ExpressionHelper.GetPrimitivePropertiesPredicate());
+                var properties = childType.FindClassPrimitiveProperties();
+               
                 childKeyProperties.AddRange(properties.Where(p => p.GetCustomAttributes<KeyAttribute>().Any()));
             }
 
@@ -137,7 +138,7 @@ namespace MicroOrm.Dapper.Repositories
                 
                 childProperties.Add(childProp);
                 var childType = childProp.PropertyType.IsGenericType ? childProp.PropertyType.GenericTypeArguments[0] : childProp.PropertyType;
-                var properties = childType.FindClassProperties().Where(ExpressionHelper.GetPrimitivePropertiesPredicate());
+                var properties = childType.FindClassPrimitiveProperties();
                 childKeyProperties.AddRange(properties.Where(p => p.GetCustomAttributes<KeyAttribute>().Any()));
             }
             
