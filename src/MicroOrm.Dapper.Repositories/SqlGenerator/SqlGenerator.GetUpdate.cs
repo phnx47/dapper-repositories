@@ -46,13 +46,13 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
             {
                 var joinsBuilder = AppendJoinToUpdate(entity, query, includes);
                 query.SqlBuilder.Append("SET ");
-                query.SqlBuilder.Append(GetFieldsUpdate(TableName, properties));
+                query.SqlBuilder.Append(GetFieldsUpdate(TableName, properties, UseQuotationMarks));
                 query.SqlBuilder.Append(joinsBuilder);
             }
             else
             {
                 query.SqlBuilder.Append("SET ");
-                query.SqlBuilder.Append(GetFieldsUpdate(TableName, properties));
+                query.SqlBuilder.Append(GetFieldsUpdate(TableName, properties, UseQuotationMarks));
             }
 
             query.SqlBuilder.Append(" WHERE ");
@@ -102,13 +102,13 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
             {
                 var joinsBuilder = AppendJoinToUpdate(entity, query, includes);
                 query.SqlBuilder.Append("SET ");
-                query.SqlBuilder.Append(GetFieldsUpdate(TableName, properties));
+                query.SqlBuilder.Append(GetFieldsUpdate(TableName, properties, UseQuotationMarks));
                 query.SqlBuilder.Append(joinsBuilder);
             }
             else
             {
                 query.SqlBuilder.Append("SET ");
-                query.SqlBuilder.Append(GetFieldsUpdate(TableName, properties));
+                query.SqlBuilder.Append(GetFieldsUpdate(TableName, properties, UseQuotationMarks));
             }
 
             query.SqlBuilder
@@ -123,10 +123,10 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
             return query;
         }
 
-        private static string GetFieldsUpdate(string tableName, IEnumerable<SqlPropertyMetadata> properties)
+        private static string GetFieldsUpdate(string tableName, IEnumerable<SqlPropertyMetadata> properties, bool useMarks)
         {
             return string.Join(", ", properties
-                .Select(p => $"{tableName}.{p.ColumnName} = @{p.PropertyInfo.ReflectedType.Name}{p.PropertyName}"));
+                .Select(p => $"{tableName}.{(useMarks ? p.ColumnName : p.CleanColumnName)} = @{p.PropertyInfo.ReflectedType.Name}{p.PropertyName}"));
         }
     }
 }

@@ -310,7 +310,10 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                     attrJoin.ExternalKey = "[" + attrJoin.ExternalKey + "]";
                     attrJoin.TableAlias = string.IsNullOrEmpty(attrJoin.TableAlias) ? string.Empty : "[" + attrJoin.TableAlias + "]";
                     foreach (var prop in props)
-                        prop.ColumnName = "[" + prop.ColumnName + "]";
+                    {
+                        prop.ColumnName = "[" + prop.CleanColumnName + "]";
+                    }
+
                     break;
 
                 case SqlProvider.MySQL:
@@ -320,7 +323,10 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                     attrJoin.ExternalKey = "`" + attrJoin.ExternalKey + "`";
                     attrJoin.TableAlias = string.IsNullOrEmpty(attrJoin.TableAlias) ? string.Empty : "`" + attrJoin.TableAlias + "`";
                     foreach (var prop in props)
-                        prop.ColumnName = "`" + prop.ColumnName + "`";
+                    {
+                        prop.ColumnName = "`" + prop.CleanColumnName + "`";
+                    }
+
                     break;
 
                 case SqlProvider.SQLite:
@@ -333,7 +339,10 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                     attrJoin.ExternalKey = "\"" + attrJoin.ExternalKey + "\"";
                     attrJoin.TableAlias = string.IsNullOrEmpty(attrJoin.TableAlias) ? string.Empty : "\"" + attrJoin.TableAlias + "\"";
                     foreach (var prop in props)
-                        prop.ColumnName = "\"" + prop.ColumnName + "\"";
+                    {
+                        prop.ColumnName = "\"" + prop.CleanColumnName + "\"";
+                    }
+
                     break;
 
                 default:
@@ -360,27 +369,24 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                 var tableName = MicroOrmConfig.TablePrefix + (tableAttribute != null ? tableAttribute.Name : declaringType.Name);
 
                 var joinType = joinProperty.PropertyType.IsGenericType ? joinProperty.PropertyType.GenericTypeArguments[0] : joinProperty.PropertyType;
-                var properties = joinType.FindClassPrimitiveProperties();
-                SqlPropertyMetadata[] props = properties
-                    .Where(p => !p.GetCustomAttributes<NotMappedAttribute>().Any() && !p.GetCustomAttributes<IgnoreUpdateAttribute>().Any() &&
-                                p.GetCustomAttribute<KeyAttribute>() == null).Select(p => new SqlPropertyMetadata(p)).ToArray();
+                var properties = joinType.FindClassMetaDataProperties().Where(p=> !p.IgnoreUpdate).ToArray();
 
                 var joinEntity = entity.GetType().GetProperty(joinProperty.Name).GetValue(entity, null);
                 if (joinEntity == null)
                     return string.Empty;
 
-                var dict = props.ToDictionary(prop => $"{prop.PropertyInfo.ReflectedType.Name}{prop.PropertyName}",
+                var dict = properties.ToDictionary(prop => $"{prop.PropertyInfo.ReflectedType.Name}{prop.PropertyName}",
                     prop => joinType.GetProperty(prop.PropertyName).GetValue(joinEntity, null));
                 originalBuilder.SetParam(dict);
 
                 if (UseQuotationMarks)
                 {
-                    tableName = GetTableNameWithQuotes(attrJoin, props, tableName);
+                    tableName = GetTableNameWithQuotes(attrJoin, properties, tableName);
                 }
                 else
                     attrJoin.TableName = GetTableNameWithSchemaPrefix(attrJoin.TableName, attrJoin.TableSchema);
 
-                joinBuilder.Append($", {GetFieldsUpdate(string.IsNullOrEmpty(attrJoin.TableAlias) ? attrJoin.TableName : attrJoin.TableAlias, props)}");
+                joinBuilder.Append($", {GetFieldsUpdate(string.IsNullOrEmpty(attrJoin.TableAlias) ? attrJoin.TableName : attrJoin.TableAlias, properties, UseQuotationMarks)}");
                 AppendJoinQuery(attrJoin, originalBuilder.SqlBuilder, tableName);
             }
 
@@ -443,25 +449,17 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                 var tableName = MicroOrmConfig.TablePrefix + (tableAttribute != null ? tableAttribute.Name : declaringType.Name);
 
                 var joinType = joinProperty.PropertyType.IsGenericType ? joinProperty.PropertyType.GenericTypeArguments[0] : joinProperty.PropertyType;
-                var properties = joinType.FindClassPrimitiveProperties();
-                SqlPropertyMetadata[] props = null;
+                var properties = joinType.FindClassMetaDataProperties();
                 
-                if (UseQuotationMarks || !hasSelectFilter)
-                    props = properties.Where(p => !p.GetCustomAttributes<NotMappedAttribute>().Any())
-                        .OrderByDescending(x=> x.GetCustomAttribute<IdentityAttribute>() != null)
-                        .ThenByDescending(x=> x.GetCustomAttribute<KeyAttribute>() != null)
-                        .ThenByDescending(x=> x.GetCustomAttribute<ColumnAttribute>() != null ? x.GetCustomAttribute<ColumnAttribute>().Order : properties.Length)
-                        .Select(p => new SqlPropertyMetadata(p)).ToArray();
-
                 if (UseQuotationMarks)
                 {
-                    tableName = GetTableNameWithQuotes(attrJoin, props, tableName);
+                    tableName = GetTableNameWithQuotes(attrJoin, properties, tableName);
                 }
                 else
                     attrJoin.TableName = GetTableNameWithSchemaPrefix(attrJoin.TableName, attrJoin.TableSchema);
 
                 if (!hasSelectFilter)
-                    originalBuilder.SqlBuilder.Append($", {GetFieldsSelect(string.IsNullOrEmpty(attrJoin.TableAlias) ? attrJoin.TableName : attrJoin.TableAlias, props)}");
+                    originalBuilder.SqlBuilder.Append($", {GetFieldsSelect(string.IsNullOrEmpty(attrJoin.TableAlias) ? attrJoin.TableName : attrJoin.TableAlias, properties, UseQuotationMarks)}");
 
                 AppendJoinQuery(attrJoin, joinBuilder, tableName);
             }
