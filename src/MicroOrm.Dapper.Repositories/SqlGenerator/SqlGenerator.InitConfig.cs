@@ -51,20 +51,20 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
             TableName = GetTableNameWithSchemaPrefix(TableName, TableSchema, startQuotationMark, endQuotationMark);
 
             foreach (var propertyMetadata in SqlProperties)
-                propertyMetadata.ColumnName = startQuotationMark + propertyMetadata.ColumnName + endQuotationMark;
+                propertyMetadata.ColumnName = startQuotationMark + propertyMetadata.CleanColumnName + endQuotationMark;
 
             foreach (var propertyMetadata in KeySqlProperties)
-                propertyMetadata.ColumnName = startQuotationMark + propertyMetadata.ColumnName + endQuotationMark;
+                propertyMetadata.ColumnName = startQuotationMark + propertyMetadata.CleanColumnName + endQuotationMark;
 
             foreach (var propertyMetadata in SqlJoinProperties)
             {
                 propertyMetadata.TableName = GetTableNameWithSchemaPrefix(propertyMetadata.TableName, propertyMetadata.TableSchema, startQuotationMark, endQuotationMark);
-                propertyMetadata.ColumnName = startQuotationMark + propertyMetadata.ColumnName + endQuotationMark;
+                propertyMetadata.ColumnName = startQuotationMark + propertyMetadata.CleanColumnName + endQuotationMark;
                 propertyMetadata.TableAlias = string.IsNullOrEmpty(propertyMetadata.TableAlias) ? string.Empty : startQuotationMark + propertyMetadata.TableAlias + endQuotationMark;
             }
 
             if (IdentitySqlProperty != null)
-                IdentitySqlProperty.ColumnName = startQuotationMark + IdentitySqlProperty.ColumnName + endQuotationMark;
+                IdentitySqlProperty.ColumnName = startQuotationMark + IdentitySqlProperty.CleanColumnName + endQuotationMark;
         }
     }
 }

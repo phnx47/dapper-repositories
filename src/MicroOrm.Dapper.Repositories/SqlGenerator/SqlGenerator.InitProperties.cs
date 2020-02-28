@@ -26,7 +26,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
 
             AllProperties = entityType.FindClassProperties().Where(q => q.CanWrite).ToArray();
 
-            var props = AllProperties.Where(ExpressionHelper.GetPrimitivePropertiesPredicate()).ToArray();
+            var props = entityType.FindClassPrimitiveProperties();
 
             var joinProperties = AllProperties.Where(p => p.GetCustomAttributes<JoinAttributeBase>().Any()).ToArray();
 

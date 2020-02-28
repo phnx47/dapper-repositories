@@ -11,7 +11,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.Classes
     public class Address
     {
         [Key]
-        [Identity]
+        [Identity, IgnoreUpdate]
         public int Id { get; set; }
 
         public string Street { get; set; }

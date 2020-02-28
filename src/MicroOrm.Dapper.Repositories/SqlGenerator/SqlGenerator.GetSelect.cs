@@ -252,7 +252,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                     }
                 }
 
-            query.SqlBuilder.Append(filterData?.SelectInfo?.Columns == null ? GetFieldsSelect(TableName, SqlProperties) : GetFieldsSelect(filterData.SelectInfo.Columns));
+            query.SqlBuilder.Append(filterData?.SelectInfo?.Columns == null ? GetFieldsSelect(TableName, SqlProperties, UseQuotationMarks) : GetFieldsSelect(filterData.SelectInfo.Columns));
 
             return query;
         }
@@ -262,14 +262,14 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
             return string.Join(", ", properties);
         }
 
-        private static string GetFieldsSelect(string tableName, IEnumerable<SqlPropertyMetadata> properties)
+        private static string GetFieldsSelect(string tableName, IEnumerable<SqlPropertyMetadata> properties, bool useQuotation)
         {
             //Projection function
             string ProjectionFunction(SqlPropertyMetadata p)
             {
                 return !string.IsNullOrEmpty(p.Alias)
-                    ? $"{tableName}.{p.ColumnName} AS {p.PropertyName}"
-                    : $"{tableName}.{p.ColumnName}";
+                    ? $"{tableName}.{(useQuotation ? p.ColumnName : p.CleanColumnName)} AS {p.PropertyName}"
+                    : $"{tableName}.{(useQuotation ? p.ColumnName : p.CleanColumnName)}";
             }
 
             return string.Join(", ", properties.Select(ProjectionFunction));
