@@ -284,7 +284,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
             foreach (var propertyInfo in singleJoinTypes)
             {
                 var joinInnerProperties = propertyInfo.PropertyType.GetProperties().Where(q => q.CanWrite)
-                    .Where(ExpressionHelper.GetPrimitivePropertiesPredicate()).ToArray();
+                    .Where(ExpressionHelper.GetPrimitivePropertiesPredicate());
                 joinPropertyMetadatas.AddRange(joinInnerProperties.Where(p => !p.GetCustomAttributes<NotMappedAttribute>().Any())
                     .Select(p => new SqlJoinPropertyMetadata(propertyInfo, p)).ToArray());
             }
