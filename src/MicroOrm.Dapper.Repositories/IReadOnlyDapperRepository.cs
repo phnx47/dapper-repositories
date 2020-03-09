@@ -653,6 +653,13 @@ namespace MicroOrm.Dapper.Repositories
         IReadOnlyDapperRepository<TEntity> SetOrderBy();
 
         /// <summary>
+        /// Set custom query sorting (using string)
+        /// </summary>
+        /// <param name="direction">The sort direction (asc;desc)</param>
+        /// <param name="cols">cols name, can be an sql comamnd too.</param>
+        IReadOnlyDapperRepository<TEntity> SetOrderBy(OrderInfo.SortDirection direction, params string[] cols);
+
+        /// <summary>
         /// Set query sorting
         /// <param name="direction">The sort direction (asc;desc)</param>
         /// <param name="permanent">If true, then will be used in all queries</param>

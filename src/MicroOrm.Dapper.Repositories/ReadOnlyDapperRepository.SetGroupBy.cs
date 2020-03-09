@@ -13,38 +13,24 @@ namespace MicroOrm.Dapper.Repositories
         where TEntity : class
     {
         /// <inheritdoc />
-        public virtual IReadOnlyDapperRepository<TEntity> SetOrderBy()
+        public virtual IReadOnlyDapperRepository<TEntity> SetGroupBy()
         {
             FilterData.OrderInfo = null;
             return this;
         }
-        
-        /// <inheritdoc />
-        public virtual IReadOnlyDapperRepository<TEntity> SetOrderBy(OrderInfo.SortDirection direction, params string[] cols)
-        {
-            var order = FilterData.OrderInfo ?? new OrderInfo();
-
-            order.Direction = direction;
-            order.Columns = cols.ToList();
-
-            FilterData.OrderInfo = order;
-
-            return this;
-        }
 
         /// <inheritdoc />
-        public virtual IReadOnlyDapperRepository<TEntity> SetOrderBy(OrderInfo.SortDirection direction, bool permanent,
+        public virtual IReadOnlyDapperRepository<TEntity> SetGroupBy(bool permanent,
             Expression<Func<TEntity, object>> expr)
         {
-            return SetOrderBy<TEntity>(direction, permanent, expr);
+            return SetGroupBy<TEntity>(permanent, expr);
         }
 
         /// <inheritdoc />
-        public virtual IReadOnlyDapperRepository<TEntity> SetOrderBy<T>(OrderInfo.SortDirection direction, bool permanent,
+        public virtual IReadOnlyDapperRepository<TEntity> SetGroupBy<T>(bool permanent,
             Expression<Func<T, object>> expr)
         {
             var order = FilterData.OrderInfo ?? new OrderInfo();
-            order.Direction = direction;
 
             var type = typeof(T);
             if (expr.Body.NodeType == ExpressionType.Convert)
@@ -71,15 +57,15 @@ namespace MicroOrm.Dapper.Repositories
         }
 
         /// <inheritdoc />
-        public virtual IReadOnlyDapperRepository<TEntity> SetOrderBy(OrderInfo.SortDirection direction, Expression<Func<TEntity, object>> expr)
+        public virtual IReadOnlyDapperRepository<TEntity> SetGroupBy(Expression<Func<TEntity, object>> expr)
         {
-            return SetOrderBy(direction, false, expr);
+            return SetGroupBy(false, expr);
         }
         
         /// <inheritdoc />
-        public virtual IReadOnlyDapperRepository<TEntity> SetOrderBy<T>(OrderInfo.SortDirection direction, Expression<Func<T, object>> expr)
+        public virtual IReadOnlyDapperRepository<TEntity> SetOrderBy<T>(Expression<Func<T, object>> expr)
         {
-            return SetOrderBy(direction, false, expr);
+            return SetGroupBy(false, expr);
         }
     }
 }
