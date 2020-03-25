@@ -97,6 +97,17 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
             if (filterData?.OrderInfo == null) return;
 
             sqlQuery.SqlBuilder.Append("ORDER BY ");
+            if (!string.IsNullOrEmpty(filterData.OrderInfo.CustomQuery))
+            {
+                sqlQuery.SqlBuilder.Append(filterData.OrderInfo.CustomQuery);
+                if (!filterData.OrderInfo.Permanent)
+                {
+                    filterData.OrderInfo.CustomQuery = null;
+                }
+
+                filterData.Ordered = true;
+                return;
+            }
 
             var count = filterData.OrderInfo.Columns.Count;
             for (var i = 0; i < count; i++)
@@ -252,7 +263,9 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                     }
                 }
 
-            query.SqlBuilder.Append(filterData?.SelectInfo?.Columns == null ? GetFieldsSelect(TableName, SqlProperties, UseQuotationMarks == true) : GetFieldsSelect(filterData.SelectInfo.Columns));
+            query.SqlBuilder.Append(filterData?.SelectInfo?.Columns == null
+                ? GetFieldsSelect(TableName, SqlProperties, UseQuotationMarks == true)
+                : GetFieldsSelect(filterData.SelectInfo.Columns));
 
             return query;
         }
