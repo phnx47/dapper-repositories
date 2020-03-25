@@ -16,6 +16,11 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator.Filters
         public OrderInfo OrderInfo { get; set; }
 
         /// <summary>
+        /// The query group settings
+        /// </summary>
+        public GroupInfo GroupInfo { get; set; }
+
+        /// <summary>
         /// The query limits settings
         /// </summary>
         public LimitInfo LimitInfo { get; set; }

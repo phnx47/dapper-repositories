@@ -16,5 +16,10 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator.Filters
         /// If true, will be used for all queries
         /// </summary>
         public bool Permanent { get; set; }
+
+        /// <summary>
+        /// You can specify a custom query if you need more "liberty"
+        /// </summary>
+        public string CustomQuery { get; set; }
     }
 }
