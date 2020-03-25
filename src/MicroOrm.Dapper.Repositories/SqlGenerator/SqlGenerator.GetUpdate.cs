@@ -46,13 +46,13 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
             {
                 var joinsBuilder = AppendJoinToUpdate(entity, query, includes);
                 query.SqlBuilder.Append("SET ");
-                query.SqlBuilder.Append(GetFieldsUpdate(TableName, properties, UseQuotationMarks));
+                query.SqlBuilder.Append(GetFieldsUpdate(TableName, properties, UseQuotationMarks == true));
                 query.SqlBuilder.Append(joinsBuilder);
             }
             else
             {
                 query.SqlBuilder.Append("SET ");
-                query.SqlBuilder.Append(GetFieldsUpdate(TableName, properties, UseQuotationMarks));
+                query.SqlBuilder.Append(GetFieldsUpdate(TableName, properties, UseQuotationMarks == true));
             }
 
             query.SqlBuilder.Append(" WHERE ");
@@ -102,13 +102,13 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
             {
                 var joinsBuilder = AppendJoinToUpdate(entity, query, includes);
                 query.SqlBuilder.Append("SET ");
-                query.SqlBuilder.Append(GetFieldsUpdate(TableName, properties, UseQuotationMarks));
+                query.SqlBuilder.Append(GetFieldsUpdate(TableName, properties, UseQuotationMarks == true));
                 query.SqlBuilder.Append(joinsBuilder);
             }
             else
             {
                 query.SqlBuilder.Append("SET ");
-                query.SqlBuilder.Append(GetFieldsUpdate(TableName, properties, UseQuotationMarks));
+                query.SqlBuilder.Append(GetFieldsUpdate(TableName, properties, UseQuotationMarks == true));
             }
 
             query.SqlBuilder

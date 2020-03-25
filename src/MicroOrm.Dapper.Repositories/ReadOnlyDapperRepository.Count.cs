@@ -41,7 +41,7 @@ namespace MicroOrm.Dapper.Repositories
         /// <inheritdoc />
         public virtual int Count(Expression<Func<TEntity, object>> distinctField)
         {
-            return Count(distinctField, null);
+            return Count(distinctField, transaction: null);
         }
 
         /// <inheritdoc />
@@ -53,7 +53,7 @@ namespace MicroOrm.Dapper.Repositories
         /// <inheritdoc />
         public virtual int Count(Expression<Func<TEntity, bool>> predicate, Expression<Func<TEntity, object>> distinctField)
         {
-            return Count(predicate, distinctField, null);
+            return Count(predicate, distinctField, transaction: null);
         }
 
         /// <inheritdoc />
@@ -91,7 +91,7 @@ namespace MicroOrm.Dapper.Repositories
         /// <inheritdoc />
         public virtual Task<int> CountAsync(Expression<Func<TEntity, object>> distinctField)
         {
-            return CountAsync(distinctField, null);
+            return CountAsync(distinctField, transaction: null);
         }
 
         /// <inheritdoc />
@@ -103,7 +103,7 @@ namespace MicroOrm.Dapper.Repositories
         /// <inheritdoc />
         public virtual Task<int> CountAsync(Expression<Func<TEntity, bool>> predicate, Expression<Func<TEntity, object>> distinctField)
         {
-            return CountAsync(predicate, distinctField, null);
+            return CountAsync(predicate, distinctField, transaction: null);
         }
 
         /// <inheritdoc />

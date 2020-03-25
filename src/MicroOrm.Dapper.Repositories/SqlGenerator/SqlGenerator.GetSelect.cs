@@ -103,7 +103,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
             {
                 var col = filterData.OrderInfo.Columns[i];
 
-                if (UseQuotationMarks && Provider != SqlProvider.SQLite)
+                if (UseQuotationMarks == true && Provider != SqlProvider.SQLite)
                 {
                     sqlQuery.SqlBuilder.Append(Provider == SqlProvider.MSSQL ? $"[{col}]" : $"`{col}`");
                 }
@@ -252,7 +252,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                     }
                 }
 
-            query.SqlBuilder.Append(filterData?.SelectInfo?.Columns == null ? GetFieldsSelect(TableName, SqlProperties, UseQuotationMarks) : GetFieldsSelect(filterData.SelectInfo.Columns));
+            query.SqlBuilder.Append(filterData?.SelectInfo?.Columns == null ? GetFieldsSelect(TableName, SqlProperties, UseQuotationMarks == true) : GetFieldsSelect(filterData.SelectInfo.Columns));
 
             return query;
         }

@@ -9,14 +9,30 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         where TEntity : class
     {
         /// <inheritdoc />
-        public virtual SqlQuery GetCount(Expression<Func<TEntity, bool>> predicate)
+        public virtual SqlQuery GetCount(Expression<Func<TEntity, bool>> predicate, params Expression<Func<TEntity, object>>[] includes)
         {
             var sqlQuery = new SqlQuery();
 
             sqlQuery.SqlBuilder
-                .Append("SELECT COUNT(*) FROM ")
-                .Append(TableName)
-                .Append(" ");
+                .Append("SELECT COUNT(*)");
+
+            if (includes.Length > 0)
+            {
+                var joinsBuilder = AppendJoinToSelect(sqlQuery, true, includes);
+                sqlQuery.SqlBuilder
+                    .Append(" FROM ")
+                    .Append(TableName)
+                    .Append(" ");
+
+                sqlQuery.SqlBuilder.Append(joinsBuilder);
+            }
+            else
+            {
+                sqlQuery.SqlBuilder
+                    .Append(" FROM ")
+                    .Append(TableName)
+                    .Append(" ");
+            }
 
             AppendWherePredicateQuery(sqlQuery, predicate, QueryType.Select);
 
@@ -24,16 +40,29 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         }
 
         /// <inheritdoc />
-        public virtual SqlQuery GetCount(Expression<Func<TEntity, bool>> predicate, Expression<Func<TEntity, object>> distinctField)
+        public virtual SqlQuery GetCount(Expression<Func<TEntity, bool>> predicate, Expression<Func<TEntity, object>> distinctField, params Expression<Func<TEntity, object>>[] includes)
         {
             var propertyName = ExpressionHelper.GetPropertyName(distinctField);
             var property = SqlProperties.First(x => x.PropertyName == propertyName);
             var sqlQuery = InitBuilderCountWithDistinct(property);
 
-            sqlQuery.SqlBuilder
-                .Append(" FROM ")
-                .Append(TableName)
-                .Append(" ");
+            if (includes.Length > 0)
+            {
+                var joinsBuilder = AppendJoinToSelect(sqlQuery, true, includes);
+                sqlQuery.SqlBuilder
+                    .Append(" FROM ")
+                    .Append(TableName)
+                    .Append(" ");
+
+                sqlQuery.SqlBuilder.Append(joinsBuilder);
+            }
+            else
+            {
+                sqlQuery.SqlBuilder
+                    .Append(" FROM ")
+                    .Append(TableName)
+                    .Append(" ");
+            }
 
             AppendWherePredicateQuery(sqlQuery, predicate, QueryType.Select);
 
