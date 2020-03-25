@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
@@ -57,12 +57,12 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                             return new QueryParameterExpression(link, propertyName, propertyValue, opr, isNested);
                         }
                     case "StringContains":
+                    case "Equals":
                     case "StartsWith":
                     case "EndsWith":
                         {
                             if (exprObj == null
-                                || exprObj.NodeType != ExpressionType.MemberAccess
-                                || exprObj.Type != typeof(string))
+                                || exprObj.NodeType != ExpressionType.MemberAccess)
                             {
                                 goto default;
                             }

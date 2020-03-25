@@ -93,6 +93,9 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
 
             switch (methodName)
             {
+                case "Equals":
+                    return value.ToString();
+
                 case "StartsWith":
                     return string.Format("{0}%", value);
 
@@ -118,6 +121,8 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
 
                 case "Contains":
                     return isNotUnary ? "NOT IN" : "IN";
+                case "Equals":
+                    return isNotUnary ? "!=" : "=";
 
                 case "Any":
                 case "All":

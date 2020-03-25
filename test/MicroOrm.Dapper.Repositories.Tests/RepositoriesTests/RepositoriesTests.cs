@@ -42,6 +42,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.RepositoriesTests
                     .ExecuteScalar<int>("SELECT COUNT(*) FROM Users WHERE Users.Deleted != 1");
             Assert.Equal(countHandQuery, count);
         }
+        
 
         [Fact]
         public void CountWithCondition()
