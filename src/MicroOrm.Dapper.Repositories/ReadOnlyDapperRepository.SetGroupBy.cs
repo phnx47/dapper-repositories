@@ -45,7 +45,7 @@ namespace MicroOrm.Dapper.Repositories
             else
             {
                 var cols = (expr.Body as NewExpression)?.Arguments;
-                var propertyNames = cols.Select(expression => GetProperty(expression, type)).ToList();
+                var propertyNames = cols?.Select(expression => GetProperty(expression, type)).ToList();
                 order.Columns = propertyNames;
             }
 
