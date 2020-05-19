@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <Description>CRUD for Dapper</Description>
-    <Copyright>2020 © Sergey Kuznetsov</Copyright>
+    <Copyright>2015 © Sergey Kuznetsov</Copyright>
     <AssemblyTitle>MicroOrm.Dapper.Repositories</AssemblyTitle>
     <VersionPrefix>1.14.2</VersionPrefix>
     <Authors>Sergey Kuznetsov, Paulo Victor Lund</Authors>
