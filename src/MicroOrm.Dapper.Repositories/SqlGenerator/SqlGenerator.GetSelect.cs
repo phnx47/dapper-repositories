@@ -49,13 +49,10 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
             SetOrder(sqlQuery, filterData);
             GroupBy(sqlQuery, filterData);
 
-            if (firstOnly)
+            if (!firstOnly)
             {
-                if (Provider != SqlProvider.MSSQL)
-                    sqlQuery.SqlBuilder.Append("LIMIT 1");
-            }
-            else
                 SetLimit(sqlQuery, filterData);
+            }
 
             return sqlQuery;
         }
@@ -263,9 +260,6 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                     .Append(" != ")
                     .Append(LogicalDeleteValue)
                     .Append(" ");
-
-            if (Provider == SqlProvider.MySQL || Provider == SqlProvider.PostgreSQL)
-                sqlQuery.SqlBuilder.Append("LIMIT 1");
 
             sqlQuery.SetParam(dictionary);
             return sqlQuery;
