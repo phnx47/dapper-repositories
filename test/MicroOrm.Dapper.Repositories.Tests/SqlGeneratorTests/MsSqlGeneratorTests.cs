@@ -79,6 +79,71 @@ namespace MicroOrm.Dapper.Repositories.Tests.SqlGeneratorTests
             Assert.True(isExceptions, "Contains no cast exception");
         }
 
+        public class ExpressionArgumentMemberAccessException_TmpObj
+        {
+            public const string ConstName = "CC-456";
+
+            public int Id = 456;
+            public string Name = "FF-456";
+            public string PropertName { get; } = "PP-456";
+
+            public static string StaticName = "SS-456";
+            public static string StaticPropertyName { get; } = "SS-PP-789";
+
+            public string[] FieldNames = { "456", "654" };
+            public int[] FieldArIds = { 1, 2, 3 };
+            public string[] PropertyNames { get; } = { "456", "654" };
+
+            public static string[] StaticFieldNames = { "456", "654" };
+            public static int[] StaticFieldArIds = { 1, 2, 3 };
+            public static string[] StaticPropertyNames { get; } = { "456", "654" };
+        }
+
+        [Fact]
+        public static void ExpressionArgumentMemberAccessException()
+        {
+            ISqlGenerator<User> userSqlGenerator = new SqlGenerator<User>(_sqlConnector, true);
+
+            var isExceptions = false;
+
+            try
+            {
+                var tmp = new ExpressionArgumentMemberAccessException_TmpObj();
+
+                var id = 1;
+                var ids = new List<int> { 1, 2, 3 };
+                var farIds = tmp.FieldArIds;
+                var pNames = tmp.PropertyNames;
+
+                var sfarIds = ExpressionArgumentMemberAccessException_TmpObj.StaticFieldArIds;
+                var spNames = ExpressionArgumentMemberAccessException_TmpObj.StaticPropertyNames;
+
+                userSqlGenerator.GetSelectAll(
+                     x => (
+                             (ids.Contains(x.Id) || farIds.Contains(x.Id) || sfarIds.Contains(x.Id)
+                                     || tmp.FieldArIds.Contains(x.Id) || x.Id == tmp.Id
+                                     || ExpressionArgumentMemberAccessException_TmpObj.StaticFieldArIds.Contains(x.Id)
+                                     || x.Id == id)
+                             && (pNames.Contains(x.Name) || spNames.Contains(x.Name)
+                                 || tmp.PropertyNames.Contains(x.Name) || tmp.FieldNames.Contains(x.Name)
+                                 || ExpressionArgumentMemberAccessException_TmpObj.StaticFieldNames.Contains(x.Name)
+                                 || ExpressionArgumentMemberAccessException_TmpObj.StaticPropertyNames.Contains(x.Name)
+                                 || x.Name == ExpressionArgumentMemberAccessException_TmpObj.StaticName
+                                 || x.Name == ExpressionArgumentMemberAccessException_TmpObj.StaticPropertyName
+                                 || x.Name == tmp.PropertName
+                                 || x.Name == Guid.NewGuid().ToString()
+                                 || x.Name == string.Empty)
+                          ), null);
+            }
+            catch (NotSupportedException ex)
+            {
+                Assert.Contains("isn't supported", ex.Message);
+                isExceptions = true;
+            }
+
+            Assert.False(isExceptions, "MemberAccess exception");
+        }
+
         [Fact]
         public static void BoolFalseEqualNotPredicate()
         {
@@ -395,7 +460,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.SqlGeneratorTests
             var sqlQuery = userSqlGenerator.GetSelectFirst(x => x.Id == 2, null);
             Assert.Equal("SELECT TOP 1 [Users].[Id], [Users].[Name], [Users].[AddressId], [Users].[PhoneId], [Users].[OfficePhoneId], [Users].[Deleted], [Users].[UpdatedAt] FROM [Users] WHERE ([Users].[Id] = @Id_p0) AND [Users].[Deleted] != 1", sqlQuery.GetSql());
         }
-        
+
         [Fact]
         public static void SelectLimit()
         {
