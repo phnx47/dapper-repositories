@@ -79,28 +79,8 @@ namespace MicroOrm.Dapper.Repositories.Tests.SqlGeneratorTests
             Assert.True(isExceptions, "Contains no cast exception");
         }
 
-        public class ExpressionArgumentMemberAccessException_TmpObj
-        {
-            public const string ConstName = "CC-456";
-
-            public int Id = 456;
-            public string Name = "FF-456";
-            public string PropertName { get; } = "PP-456";
-
-            public static string StaticName = "SS-456";
-            public static string StaticPropertyName { get; } = "SS-PP-789";
-
-            public string[] FieldNames = { "456", "654" };
-            public int[] FieldArIds = { 1, 2, 3 };
-            public string[] PropertyNames { get; } = { "456", "654" };
-
-            public static string[] StaticFieldNames = { "456", "654" };
-            public static int[] StaticFieldArIds = { 1, 2, 3 };
-            public static string[] StaticPropertyNames { get; } = { "456", "654" };
-        }
-
         [Fact]
-        public static void ExpressionArgumentMemberAccessException()
+        public static void ExpressionComplicatedCollectionContains()
         {
             ISqlGenerator<User> userSqlGenerator = new SqlGenerator<User>(_sqlConnector, true);
 
@@ -108,28 +88,28 @@ namespace MicroOrm.Dapper.Repositories.Tests.SqlGeneratorTests
 
             try
             {
-                var tmp = new ExpressionArgumentMemberAccessException_TmpObj();
+                var tmp = new ComplicatedObj();
 
                 var id = 1;
                 var ids = new List<int> { 1, 2, 3 };
                 var farIds = tmp.FieldArIds;
                 var pNames = tmp.PropertyNames;
 
-                var sfarIds = ExpressionArgumentMemberAccessException_TmpObj.StaticFieldArIds;
-                var spNames = ExpressionArgumentMemberAccessException_TmpObj.StaticPropertyNames;
+                var sfarIds = ComplicatedObj.StaticFieldArIds;
+                var spNames = ComplicatedObj.StaticPropertyNames;
 
                 userSqlGenerator.GetSelectAll(
                      x => (
                              (ids.Contains(x.Id) || farIds.Contains(x.Id) || sfarIds.Contains(x.Id)
                                      || tmp.FieldArIds.Contains(x.Id) || x.Id == tmp.Id
-                                     || ExpressionArgumentMemberAccessException_TmpObj.StaticFieldArIds.Contains(x.Id)
+                                     || ComplicatedObj.StaticFieldArIds.Contains(x.Id)
                                      || x.Id == id)
                              && (pNames.Contains(x.Name) || spNames.Contains(x.Name)
                                  || tmp.PropertyNames.Contains(x.Name) || tmp.FieldNames.Contains(x.Name)
-                                 || ExpressionArgumentMemberAccessException_TmpObj.StaticFieldNames.Contains(x.Name)
-                                 || ExpressionArgumentMemberAccessException_TmpObj.StaticPropertyNames.Contains(x.Name)
-                                 || x.Name == ExpressionArgumentMemberAccessException_TmpObj.StaticName
-                                 || x.Name == ExpressionArgumentMemberAccessException_TmpObj.StaticPropertyName
+                                 || ComplicatedObj.StaticFieldNames.Contains(x.Name)
+                                 || ComplicatedObj.StaticPropertyNames.Contains(x.Name)
+                                 || x.Name == ComplicatedObj.StaticName
+                                 || x.Name == ComplicatedObj.StaticPropertyName
                                  || x.Name == tmp.PropertName
                                  || x.Name == Guid.NewGuid().ToString()
                                  || x.Name == string.Empty)
@@ -141,7 +121,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.SqlGeneratorTests
                 isExceptions = true;
             }
 
-            Assert.False(isExceptions, "MemberAccess exception");
+            Assert.False(isExceptions, "Complicated_Collection_Contains MemberAccess exception");
         }
 
         [Fact]
