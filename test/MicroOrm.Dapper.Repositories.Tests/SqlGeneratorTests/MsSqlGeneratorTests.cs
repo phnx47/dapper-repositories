@@ -80,6 +80,51 @@ namespace MicroOrm.Dapper.Repositories.Tests.SqlGeneratorTests
         }
 
         [Fact]
+        public static void ExpressionComplicatedCollectionContains()
+        {
+            ISqlGenerator<User> userSqlGenerator = new SqlGenerator<User>(_sqlConnector, true);
+
+            var isExceptions = false;
+
+            try
+            {
+                var tmp = new ComplicatedObj();
+
+                var id = 1;
+                var ids = new List<int> { 1, 2, 3 };
+                var farIds = tmp.FieldArIds;
+                var pNames = tmp.PropertyNames;
+
+                var sfarIds = ComplicatedObj.StaticFieldArIds;
+                var spNames = ComplicatedObj.StaticPropertyNames;
+
+                userSqlGenerator.GetSelectAll(
+                     x => (
+                             (ids.Contains(x.Id) || farIds.Contains(x.Id) || sfarIds.Contains(x.Id)
+                                     || tmp.FieldArIds.Contains(x.Id) || x.Id == tmp.Id
+                                     || ComplicatedObj.StaticFieldArIds.Contains(x.Id)
+                                     || x.Id == id)
+                             && (pNames.Contains(x.Name) || spNames.Contains(x.Name)
+                                 || tmp.PropertyNames.Contains(x.Name) || tmp.FieldNames.Contains(x.Name)
+                                 || ComplicatedObj.StaticFieldNames.Contains(x.Name)
+                                 || ComplicatedObj.StaticPropertyNames.Contains(x.Name)
+                                 || x.Name == ComplicatedObj.StaticName
+                                 || x.Name == ComplicatedObj.StaticPropertyName
+                                 || x.Name == tmp.PropertName
+                                 || x.Name == Guid.NewGuid().ToString()
+                                 || x.Name == string.Empty)
+                          ), null);
+            }
+            catch (NotSupportedException ex)
+            {
+                Assert.Contains("isn't supported", ex.Message);
+                isExceptions = true;
+            }
+
+            Assert.False(isExceptions, "Complicated_Collection_Contains MemberAccess exception");
+        }
+
+        [Fact]
         public static void BoolFalseEqualNotPredicate()
         {
             ISqlGenerator<Phone> userSqlGenerator = new SqlGenerator<Phone>(_sqlConnector, true);
@@ -395,7 +440,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.SqlGeneratorTests
             var sqlQuery = userSqlGenerator.GetSelectFirst(x => x.Id == 2, null);
             Assert.Equal("SELECT TOP 1 [Users].[Id], [Users].[Name], [Users].[AddressId], [Users].[PhoneId], [Users].[OfficePhoneId], [Users].[Deleted], [Users].[UpdatedAt] FROM [Users] WHERE ([Users].[Id] = @Id_p0) AND [Users].[Deleted] != 1", sqlQuery.GetSql());
         }
-        
+
         [Fact]
         public static void SelectLimit()
         {
