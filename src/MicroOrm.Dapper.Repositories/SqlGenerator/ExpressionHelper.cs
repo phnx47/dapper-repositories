@@ -6,6 +6,8 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text;
 
+using MicroOrm.Dapper.Repositories.Extensions;
+
 [assembly: InternalsVisibleTo("MicroOrm.Dapper.Repositories.Tests")]
 
 namespace MicroOrm.Dapper.Repositories.SqlGenerator
@@ -38,21 +40,29 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
 
         public static object GetValue(Expression member)
         {
+            return GetValue(member, out _);
+        }
+
+        private static object GetValue(Expression member, out string parameterName)
+        {
+            parameterName = null;
             if (member == null)
                 return null;
 
             switch (member)
             {
                 case MemberExpression memberExpression:
-                    var instanceValue = GetValue(memberExpression.Expression);
+                    var instanceValue = GetValue(memberExpression.Expression, out parameterName);
                     try
                     {
                         switch (memberExpression.Member)
                         {
                             case FieldInfo fieldInfo:
+                                parameterName = (parameterName != null ? parameterName + "_" : "") + fieldInfo.Name;
                                 return fieldInfo.GetValue(instanceValue);
 
                             case PropertyInfo propertyInfo:
+                                parameterName = (parameterName != null ? parameterName + "_" : "") + propertyInfo.Name;
                                 return propertyInfo.GetValue(instanceValue);
                         }
                     }
@@ -65,6 +75,16 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
 
                 case ConstantExpression constantExpression:
                     return constantExpression.Value;
+
+                case MethodCallExpression methodCallExpression:
+                    parameterName = methodCallExpression.Method.Name;
+                    break;
+
+                case UnaryExpression unaryExpression
+                    when (unaryExpression.NodeType == ExpressionType.Convert
+                        || unaryExpression.NodeType == ExpressionType.ConvertChecked)
+                    && (unaryExpression.Type.UnwrapNullableType() == unaryExpression.Operand.Type):
+                    return GetValue(unaryExpression.Operand, out parameterName);
             }
 
             var objectMember = Expression.Convert(member, typeof(object));

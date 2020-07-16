@@ -125,6 +125,23 @@ namespace MicroOrm.Dapper.Repositories.Tests.SqlGeneratorTests
         }
 
         [Fact]
+        public static void ExpressionNullablePerformance()
+        {
+            ISqlGenerator<User> userSqlGenerator = new SqlGenerator<User>(_sqlConnector, true);
+
+            var i = 0;
+            var today = DateTime.Now.Date;
+            var tomorrow = today.AddDays(1);
+            while (i++ < 10)
+            {
+                userSqlGenerator.GetSelectAll(x => x.UpdatedAt >= today, null);
+                userSqlGenerator.GetSelectAll(x => x.UpdatedAt < tomorrow, null);
+                userSqlGenerator.GetSelectAll(x => x.UpdatedAt >= today && x.UpdatedAt < tomorrow, null);
+            }
+            Assert.False(false, "dual ExpressionNullablePerformance");
+        }
+
+        [Fact]
         public static void BoolFalseEqualNotPredicate()
         {
             ISqlGenerator<Phone> userSqlGenerator = new SqlGenerator<Phone>(_sqlConnector, true);

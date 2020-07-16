@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Reflection;
+
 using MicroOrm.Dapper.Repositories.Attributes;
 using MicroOrm.Dapper.Repositories.SqlGenerator;
 
@@ -51,6 +52,7 @@ namespace MicroOrm.Dapper.Repositories.Extensions
 
             return propertyInfos;
         }
+
         public static SqlPropertyMetadata[] FindClassMetaDataProperties(this Type objectType)
         {
             if (_metaDataPropertyCache.TryGetValue(objectType, out var cachedEntry))
@@ -70,5 +72,7 @@ namespace MicroOrm.Dapper.Repositories.Extensions
 
             return propertyInfos;
         }
+
+        public static Type UnwrapNullableType(this Type type) => Nullable.GetUnderlyingType(type) ?? type;
     }
 }
