@@ -40,6 +40,53 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
 
         public static object GetValue(Expression member)
         {
+            return GetValue(member, out _);
+        }
+
+        private static object GetValue(Expression member, out string parameterName)
+        {
+            parameterName = null;
+            if (member == null)
+                return null;
+
+            switch (member)
+            {
+                case MemberExpression memberExpression:
+                    var instanceValue = GetValue(memberExpression.Expression, out parameterName);
+                    try
+                    {
+                        switch (memberExpression.Member)
+                        {
+                            case FieldInfo fieldInfo:
+                                parameterName = (parameterName != null ? parameterName + "_" : "") + fieldInfo.Name;
+                                return fieldInfo.GetValue(instanceValue);
+
+                            case PropertyInfo propertyInfo:
+                                parameterName = (parameterName != null ? parameterName + "_" : "") + propertyInfo.Name;
+                                return propertyInfo.GetValue(instanceValue);
+                        }
+                    }
+                    catch
+                    {
+                        // Try again when we compile the delegate
+                    }
+
+                    break;
+
+                case ConstantExpression constantExpression:
+                    return constantExpression.Value;
+
+                case MethodCallExpression methodCallExpression:
+                    parameterName = methodCallExpression.Method.Name;
+                    break;
+
+                case UnaryExpression unaryExpression
+                    when (unaryExpression.NodeType == ExpressionType.Convert
+                        || unaryExpression.NodeType == ExpressionType.ConvertChecked)
+                    && (unaryExpression.Type.UnwrapNullableType() == unaryExpression.Operand.Type):
+                    return GetValue(unaryExpression.Operand, out parameterName);
+            }
+
             var objectMember = Expression.Convert(member, typeof(object));
             var getterLambda = Expression.Lambda<Func<object>>(objectMember);
             var getter = getterLambda.Compile();
@@ -161,13 +208,14 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
             var expr = (callExpr.Method.IsStatic ? callExpr.Arguments.First() : callExpr.Object)
                             as MemberExpression;
 
-            if (!(expr?.Expression is ConstantExpression))
+            try
+            {
+                return GetValue(expr);
+            }
+            catch
+            {
                 throw new NotSupportedException(callExpr.Method.Name + " isn't supported");
-
-            var constExpr = (ConstantExpression)expr.Expression;
-
-            var constExprType = constExpr.Value.GetType();
-            return constExprType.GetField(expr.Member.Name).GetValue(constExpr.Value);
+            }
         }
 
         public static MemberExpression GetMemberExpression(Expression expression)
