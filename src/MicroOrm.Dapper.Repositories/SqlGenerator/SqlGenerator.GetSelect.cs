@@ -94,7 +94,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         {
             if (filterData?.OrderInfo == null) return;
 
-            sqlQuery.SqlBuilder.Append("GROUP BY ");
+            sqlQuery.SqlBuilder.Append("ORDER BY ");
             if (!string.IsNullOrEmpty(filterData.OrderInfo.CustomQuery))
             {
                 sqlQuery.SqlBuilder.Append(filterData.OrderInfo.CustomQuery);
@@ -150,7 +150,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         {
             if (filterData?.GroupInfo == null) return;
 
-            sqlQuery.SqlBuilder.Append("ORDER BY ");
+            sqlQuery.SqlBuilder.Append("GROUP BY ");
             if (!string.IsNullOrEmpty(filterData.GroupInfo.CustomQuery))
             {
                 sqlQuery.SqlBuilder.Append(filterData.GroupInfo.CustomQuery);

@@ -30,7 +30,7 @@ namespace MicroOrm.Dapper.Repositories
         public virtual IReadOnlyDapperRepository<TEntity> SetGroupBy<T>(bool permanent,
             Expression<Func<T, object>> expr)
         {
-            var order = FilterData.OrderInfo ?? new OrderInfo();
+            var order = FilterData.GroupInfo ?? new GroupInfo();
 
             var type = typeof(T);
             if (expr.Body.NodeType == ExpressionType.Convert)
@@ -51,7 +51,7 @@ namespace MicroOrm.Dapper.Repositories
 
             order.Permanent = permanent;
 
-            FilterData.OrderInfo = order;
+            FilterData.GroupInfo = order;
 
             return this;
         }
