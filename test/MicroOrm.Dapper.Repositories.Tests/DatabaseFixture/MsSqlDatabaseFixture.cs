@@ -11,7 +11,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.DatabaseFixture
 
         public MsSqlDatabaseFixture()
         {
-            var connString = "Server=localhost\\SQLEXPRESS;Database=master;Trusted_Connection=True;";
+            var connString = "Server=.;Database=XSTOCK;User Id=sa;Password=M1n3rvaM1ll!123;Max Pool Size=20000;";
 
             if (Environments.IsAppVeyor)
                 connString = "Server=(local)\\SQL2017;Database=master;User ID=sa;Password=Password12!";

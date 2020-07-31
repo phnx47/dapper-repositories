@@ -700,6 +700,41 @@ namespace MicroOrm.Dapper.Repositories
             Expression<Func<T, object>> expr);
 
         /// <summary>
+        /// Remove query grouping
+        /// </summary>
+        IReadOnlyDapperRepository<TEntity> SetGroupBy();
+
+
+        /// <summary>
+        /// Set query grouping
+        /// <param name="permanent">If true, then will be used in all queries</param>
+        /// <param name="expr">The columns to use in group</param>
+        /// </summary>
+        IReadOnlyDapperRepository<TEntity> SetGroupBy(bool permanent,
+            Expression<Func<TEntity, object>> expr);
+
+        /// <summary>
+        /// Set query group by using another model (use this when need to group by joined table)
+        /// <param name="permanent">If true, then will be used in all queries</param>
+        /// <param name="expr">The columns to use in group</param>
+        /// </summary>
+        IReadOnlyDapperRepository<TEntity> SetGroupBy<T>(bool permanent,
+            Expression<Func<T, object>> expr);
+
+        /// <summary>
+        /// Set query group by using another model (use this when need to group by joined table)
+        /// <param name="expr">The columns to use in group</param>
+        /// </summary>
+        IReadOnlyDapperRepository<TEntity> SetOrderBy<T>(Expression<Func<T, object>> expr);
+
+
+        /// <summary>
+        /// Set query grouping
+        /// <param name="expr">The columns to use in group</param>
+        /// </summary>
+        IReadOnlyDapperRepository<TEntity> SetGroupBy(Expression<Func<TEntity, object>> expr);
+
+        /// <summary>
         /// Remove limit and offset
         /// </summary>
         IReadOnlyDapperRepository<TEntity> SetLimit();

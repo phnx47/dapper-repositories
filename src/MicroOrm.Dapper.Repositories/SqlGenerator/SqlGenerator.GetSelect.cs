@@ -55,7 +55,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
             }
             else
             {
-                if (includes.Length == 0 && Provider != SqlProvider.MSSQL)
+                if (Provider != SqlProvider.MSSQL)
                     sqlQuery.SqlBuilder
                         .Append("LIMIT 1");
             }
@@ -223,7 +223,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
 
             var keyProperty = KeySqlProperties[0];
 
-            var sqlQuery = InitBuilderSelect(true, filterData);
+            var sqlQuery = InitBuilderSelect(includes.Length == 0, filterData);
 
             if (includes.Length > 0)
             {

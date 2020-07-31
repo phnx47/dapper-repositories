@@ -118,7 +118,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.RepositoriesTests
             Assert.False(user.Deleted);
             Assert.Equal("TestName0", user.Name);
 
-            Assert.True(user.Cars.Count == 2);
+            Assert.True(user.Cars.Count == 1);
         }
 
         [Fact]
@@ -128,7 +128,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.RepositoriesTests
             Assert.False(user.Deleted);
             Assert.Equal("TestName0", user.Name);
 
-            Assert.True(user.Cars.Count == 2);
+            Assert.True(user.Cars.Count == 1);
         }
 
         [Fact]
@@ -276,7 +276,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.RepositoriesTests
         public void FindJoin_User()
         {
             var user = _db.Users.Find<Car>(x => x.Id == 1, q => q.Cars);
-            Assert.True(user.Cars.Count == 2);
+            Assert.True(user.Cars.Count == 1);
             Assert.Equal("TestCar0", user.Cars.First().Name);
         }
 
@@ -293,7 +293,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.RepositoriesTests
         public async Task FindJoinAsync_User()
         {
             var user = await _db.Users.FindAsync<Car>(x => x.Id == 1, q => q.Cars);
-            Assert.True(user.Cars.Count == 2);
+            Assert.True(user.Cars.Count == 1);
             Assert.Equal("TestCar0", user.Cars.First().Name);
         }
 
