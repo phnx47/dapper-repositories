@@ -53,6 +53,12 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
             {
                 SetLimit(sqlQuery, filterData);
             }
+            else
+            {
+                if (includes.Length == 0 && Provider != SqlProvider.MSSQL)
+                    sqlQuery.SqlBuilder
+                        .Append("LIMIT 1");
+            }
 
             return sqlQuery;
         }
@@ -260,6 +266,10 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                     .Append(" != ")
                     .Append(LogicalDeleteValue)
                     .Append(" ");
+
+            if (includes.Length == 0 && Provider != SqlProvider.MSSQL)
+                sqlQuery.SqlBuilder
+                    .Append("LIMIT 1");
 
             sqlQuery.SetParam(dictionary);
             return sqlQuery;
