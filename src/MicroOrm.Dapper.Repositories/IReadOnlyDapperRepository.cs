@@ -942,7 +942,6 @@ namespace MicroOrm.Dapper.Repositories
             Expression<Func<TEntity, object>> tChild3,
             IDbTransaction transaction);
 
-
         /// <summary>
         ///     Get all objects with join objects
         /// </summary>
@@ -974,7 +973,6 @@ namespace MicroOrm.Dapper.Repositories
             Expression<Func<TEntity, object>> tChild3,
             Expression<Func<TEntity, object>> tChild4,
             Expression<Func<TEntity, object>> tChild5);
-
 
         /// <summary>
         ///     Get all objects with join objects

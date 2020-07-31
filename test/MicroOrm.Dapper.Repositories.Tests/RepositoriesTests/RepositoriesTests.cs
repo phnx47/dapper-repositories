@@ -43,7 +43,6 @@ namespace MicroOrm.Dapper.Repositories.Tests.RepositoriesTests
             Assert.Equal(countHandQuery, count);
         }
 
-
         [Fact]
         public void CountWithCondition()
         {
