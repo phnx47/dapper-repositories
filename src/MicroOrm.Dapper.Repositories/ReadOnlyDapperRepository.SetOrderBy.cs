@@ -48,7 +48,6 @@ namespace MicroOrm.Dapper.Repositories
             order.Permanent = permanent;
             FilterData.OrderInfo = order;
 
-
             return this;
         }
 

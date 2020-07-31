@@ -33,7 +33,6 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
             if (ignoreUpdate != null)
                 IgnoreUpdate = true;
 
-
             IsNullable = propertyInfo.PropertyType.IsGenericType && propertyInfo.PropertyType.GetGenericTypeDefinition() == typeof(Nullable<>);
         }
 
