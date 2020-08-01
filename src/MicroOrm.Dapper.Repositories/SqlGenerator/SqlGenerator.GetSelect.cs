@@ -47,14 +47,18 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
             AppendWherePredicateQuery(sqlQuery, predicate, QueryType.Select);
 
             SetOrder(sqlQuery, filterData);
+            GroupBy(sqlQuery, filterData);
 
-            if (firstOnly)
+            if (!firstOnly)
             {
-                if (Provider != SqlProvider.MSSQL)
-                    sqlQuery.SqlBuilder.Append("LIMIT 1");
+                SetLimit(sqlQuery, filterData);
             }
             else
-                SetLimit(sqlQuery, filterData);
+            {
+                if (Provider != SqlProvider.MSSQL)
+                    sqlQuery.SqlBuilder
+                        .Append("LIMIT 1");
+            }
 
             return sqlQuery;
         }
@@ -97,13 +101,23 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
             if (filterData?.OrderInfo == null) return;
 
             sqlQuery.SqlBuilder.Append("ORDER BY ");
-
-            var count = filterData.OrderInfo.Columns.Count;
-            for (var i = 0; i < count; i++)
+            if (!string.IsNullOrEmpty(filterData.OrderInfo.CustomQuery))
             {
-                var col = filterData.OrderInfo.Columns[i];
+                sqlQuery.SqlBuilder.Append(filterData.OrderInfo.CustomQuery);
+                if (!filterData.OrderInfo.Permanent)
+                {
+                    filterData.OrderInfo.CustomQuery = null;
+                }
 
-                if (UseQuotationMarks && Provider != SqlProvider.SQLite)
+                filterData.Ordered = true;
+                return;
+            }
+
+            var i = 0;
+            var count = filterData.OrderInfo.Columns.Count;
+            foreach (var col in filterData.OrderInfo.Columns)
+            {
+                if (UseQuotationMarks == true && Provider != SqlProvider.SQLite)
                 {
                     sqlQuery.SqlBuilder.Append(Provider == SqlProvider.MSSQL ? $"[{col}]" : $"`{col}`");
                 }
@@ -120,6 +134,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                 }
 
                 sqlQuery.SqlBuilder.Append(",");
+                i++;
             }
 
             sqlQuery.SqlBuilder.Append(" ");
@@ -129,6 +144,60 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                 filterData.OrderInfo.Columns.Clear();
                 filterData.OrderInfo.Columns = null;
                 filterData.OrderInfo = null;
+            }
+
+            filterData.Ordered = true;
+        }
+
+        /// <summary>
+        /// Set group by in query; DapperRepository.GroupBy must be called first. 
+        /// </summary>
+        private void GroupBy(SqlQuery sqlQuery, FilterData filterData)
+        {
+            if (filterData?.GroupInfo == null) return;
+
+            sqlQuery.SqlBuilder.Append("GROUP BY ");
+            if (!string.IsNullOrEmpty(filterData.GroupInfo.CustomQuery))
+            {
+                sqlQuery.SqlBuilder.Append(filterData.GroupInfo.CustomQuery);
+                if (!filterData.GroupInfo.Permanent)
+                {
+                    filterData.GroupInfo.CustomQuery = null;
+                }
+
+                filterData.Ordered = true;
+                return;
+            }
+
+            var i = 0;
+            var count = filterData.GroupInfo.Columns.Count;
+            foreach (var col in filterData.GroupInfo.Columns)
+            {
+                if (UseQuotationMarks == true && Provider != SqlProvider.SQLite)
+                {
+                    sqlQuery.SqlBuilder.Append(Provider == SqlProvider.MSSQL ? $"[{col}]" : $"`{col}`");
+                }
+                else
+                {
+                    sqlQuery.SqlBuilder.Append(col);
+                }
+
+                if (i >= count - 1)
+                {
+                    break;
+                }
+
+                sqlQuery.SqlBuilder.Append(",");
+                i++;
+            }
+
+            sqlQuery.SqlBuilder.Append(" ");
+
+            if (!filterData.GroupInfo.Permanent)
+            {
+                filterData.GroupInfo.Columns.Clear();
+                filterData.GroupInfo.Columns = null;
+                filterData.GroupInfo = null;
             }
 
             filterData.Ordered = true;
@@ -154,7 +223,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
 
             var keyProperty = KeySqlProperties[0];
 
-            var sqlQuery = InitBuilderSelect(true, filterData);
+            var sqlQuery = InitBuilderSelect(includes.Length == 0, filterData);
 
             if (includes.Length > 0)
             {
@@ -198,8 +267,9 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                     .Append(LogicalDeleteValue)
                     .Append(" ");
 
-            if (Provider == SqlProvider.MySQL || Provider == SqlProvider.PostgreSQL)
-                sqlQuery.SqlBuilder.Append("LIMIT 1");
+            if (includes.Length == 0 && Provider != SqlProvider.MSSQL)
+                sqlQuery.SqlBuilder
+                    .Append("LIMIT 1");
 
             sqlQuery.SetParam(dictionary);
             return sqlQuery;
@@ -252,7 +322,9 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                     }
                 }
 
-            query.SqlBuilder.Append(filterData?.SelectInfo?.Columns == null ? GetFieldsSelect(TableName, SqlProperties, UseQuotationMarks) : GetFieldsSelect(filterData.SelectInfo.Columns));
+            query.SqlBuilder.Append(filterData?.SelectInfo?.Columns == null
+                ? GetFieldsSelect(TableName, SqlProperties, UseQuotationMarks == true)
+                : GetFieldsSelect(filterData.SelectInfo.Columns));
 
             return query;
         }

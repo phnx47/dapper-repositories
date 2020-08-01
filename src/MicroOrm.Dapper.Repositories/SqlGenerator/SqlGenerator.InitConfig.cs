@@ -11,7 +11,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         /// </summary>
         private void InitConfig()
         {
-            if (UseQuotationMarks)
+            if (UseQuotationMarks == true)
             {
                 switch (Provider)
                 {

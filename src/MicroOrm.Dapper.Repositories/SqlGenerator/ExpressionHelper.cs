@@ -140,6 +140,10 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
 
             switch (methodName)
             {
+                case "CompareString":
+                case "Equals":
+                    return value.ToString();
+
                 case "StartsWith":
                     return string.Format("{0}%", value);
 
@@ -165,6 +169,10 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
 
                 case "Contains":
                     return isNotUnary ? "NOT IN" : "IN";
+
+                case "Equals":
+                case "CompareString":
+                    return isNotUnary ? "!=" : "=";
 
                 case "Any":
                 case "All":
@@ -268,6 +276,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                 count++;
                 if (path.Length > 0)
                     path.Insert(0, "");
+
                 path.Insert(0, memberExpression.Member.Name);
                 memberExpression = GetMemberExpression(memberExpression.Expression);
             } while (memberExpression != null);

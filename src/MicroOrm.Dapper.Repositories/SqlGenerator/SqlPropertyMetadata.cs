@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+using System;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Reflection;
 using MicroOrm.Dapper.Repositories.Attributes;
 
@@ -31,6 +32,8 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
             var ignoreUpdate = PropertyInfo.GetCustomAttribute<IgnoreUpdateAttribute>();
             if (ignoreUpdate != null)
                 IgnoreUpdate = true;
+
+            IsNullable = propertyInfo.PropertyType.IsGenericType && propertyInfo.PropertyType.GetGenericTypeDefinition() == typeof(Nullable<>);
         }
 
         /// <summary>
@@ -47,7 +50,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         ///     ColumnName
         /// </summary>
         public string ColumnName { get; set; }
-        
+
         /// <summary>
         ///     ColumnName
         /// </summary>
@@ -57,6 +60,11 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         ///     Exclude property from update
         /// </summary>
         public bool IgnoreUpdate { get; set; }
+
+        /// <summary>
+        ///     Check if is nullable
+        /// </summary>
+        public bool IsNullable { get; set; }
 
         /// <summary>
         ///     PropertyName

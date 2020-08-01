@@ -653,6 +653,26 @@ namespace MicroOrm.Dapper.Repositories
         IReadOnlyDapperRepository<TEntity> SetOrderBy();
 
         /// <summary>
+        /// Set columns name (manually) and sorting order (using string)
+        /// </summary>
+        /// <param name="direction">The sort direction (asc;desc)</param>
+        /// <param name="cols">cols name, can be an sql comamnd too.</param>
+        IReadOnlyDapperRepository<TEntity> SetOrderBy(OrderInfo.SortDirection direction, params string[] cols);
+
+        /// <summary>
+        /// Set custom query sorting (using string)
+        /// </summary>
+        /// <param name="query">Your query, must not start with ORDER BY</param>
+        IReadOnlyDapperRepository<TEntity> SetOrderBy(string query);
+
+        /// <summary>
+        /// Set custom query sorting (using string)
+        /// </summary>
+        /// <param name="query">Your query, must not start with ORDER BY</param>
+        /// <param name="permanent">If you want it to all query in this repository, set to true.</param>
+        IReadOnlyDapperRepository<TEntity> SetOrderBy(string query, bool permanent);
+
+        /// <summary>
         /// Set query sorting
         /// <param name="direction">The sort direction (asc;desc)</param>
         /// <param name="permanent">If true, then will be used in all queries</param>
@@ -678,6 +698,41 @@ namespace MicroOrm.Dapper.Repositories
         /// </summary>
         IReadOnlyDapperRepository<TEntity> SetOrderBy<T>(OrderInfo.SortDirection direction, bool permanent,
             Expression<Func<T, object>> expr);
+
+        /// <summary>
+        /// Remove query grouping
+        /// </summary>
+        IReadOnlyDapperRepository<TEntity> SetGroupBy();
+
+
+        /// <summary>
+        /// Set query grouping
+        /// <param name="permanent">If true, then will be used in all queries</param>
+        /// <param name="expr">The columns to use in group</param>
+        /// </summary>
+        IReadOnlyDapperRepository<TEntity> SetGroupBy(bool permanent,
+            Expression<Func<TEntity, object>> expr);
+
+        /// <summary>
+        /// Set query group by using another model (use this when need to group by joined table)
+        /// <param name="permanent">If true, then will be used in all queries</param>
+        /// <param name="expr">The columns to use in group</param>
+        /// </summary>
+        IReadOnlyDapperRepository<TEntity> SetGroupBy<T>(bool permanent,
+            Expression<Func<T, object>> expr);
+
+        /// <summary>
+        /// Set query group by using another model (use this when need to group by joined table)
+        /// <param name="expr">The columns to use in group</param>
+        /// </summary>
+        IReadOnlyDapperRepository<TEntity> SetOrderBy<T>(Expression<Func<T, object>> expr);
+
+
+        /// <summary>
+        /// Set query grouping
+        /// <param name="expr">The columns to use in group</param>
+        /// </summary>
+        IReadOnlyDapperRepository<TEntity> SetGroupBy(Expression<Func<TEntity, object>> expr);
 
         /// <summary>
         /// Remove limit and offset
@@ -887,7 +942,6 @@ namespace MicroOrm.Dapper.Repositories
             Expression<Func<TEntity, object>> tChild3,
             IDbTransaction transaction);
 
-
         /// <summary>
         ///     Get all objects with join objects
         /// </summary>
@@ -919,7 +973,6 @@ namespace MicroOrm.Dapper.Repositories
             Expression<Func<TEntity, object>> tChild3,
             Expression<Func<TEntity, object>> tChild4,
             Expression<Func<TEntity, object>> tChild5);
-
 
         /// <summary>
         ///     Get all objects with join objects

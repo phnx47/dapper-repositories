@@ -34,7 +34,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         /// <summary>
         ///     Use quotation marks for TableName and ColumnName
         /// </summary>
-        bool UseQuotationMarks { get; }
+        bool? UseQuotationMarks { get; set; }
 
         /// <summary>
         ///     Date of Changed Metadata Property
@@ -99,12 +99,12 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         /// <summary>
         ///     Get SQL for COUNT Query
         /// </summary>
-        SqlQuery GetCount(Expression<Func<TEntity, bool>> predicate);
+        SqlQuery GetCount(Expression<Func<TEntity, bool>> predicate, params Expression<Func<TEntity, object>>[] includes);
 
         /// <summary>
         ///     Get SQL for COUNT with DISTINCT Query
         /// </summary>
-        SqlQuery GetCount(Expression<Func<TEntity, bool>> predicate, Expression<Func<TEntity, object>> distinctField);
+        SqlQuery GetCount(Expression<Func<TEntity, bool>> predicate, Expression<Func<TEntity, object>> distinctField, params Expression<Func<TEntity, object>>[] includes);
 
         /// <summary>
         ///     Get SQL for INSERT Query
