@@ -1,9 +1,9 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <Description>CRUD for Dapper</Description>
-    <Copyright>2015 © Sergey Kuznetsov</Copyright>
+    <Copyright>2020 © Sergey Kuznetsov, Paulo Victor Lund</Copyright>
     <AssemblyTitle>MicroOrm.Dapper.Repositories</AssemblyTitle>
-    <VersionPrefix>1.14.2</VersionPrefix>
+    <VersionPrefix>1.15.0</VersionPrefix>
     <Authors>Sergey Kuznetsov, Paulo Victor Lund</Authors>
     <TargetFrameworks Condition=" '$(OS)' == 'Windows_NT' ">net461;netstandard2.0</TargetFrameworks>
     <TargetFramework Condition=" '$(OS)' != 'Windows_NT' ">netstandard2.0</TargetFramework>
