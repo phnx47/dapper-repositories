@@ -10,6 +10,8 @@
 [![CodeFactor](https://www.codefactor.io/repository/github/microorm-dotnet/microorm.dapper.repositories/badge)](https://www.codefactor.io/repository/github/microorm-dotnet/microorm.dapper.repositories)
 [![License MIT](https://img.shields.io/badge/license-MIT-green.svg)](https://opensource.org/licenses/MIT)
 
+**I see a lot Issues, but I don't have enough time to solve them. Feel free to open Pull Request or ask to add you as Member to support project!**
+
 ## Installation
 
 ```
