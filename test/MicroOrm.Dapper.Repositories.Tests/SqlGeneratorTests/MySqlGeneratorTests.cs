@@ -68,6 +68,31 @@ namespace MicroOrm.Dapper.Repositories.Tests.SqlGeneratorTests
         }
 
         [Fact]
+        public void Update_Dictionary()
+        {
+            ISqlGenerator<Phone> userSqlGenerator = new SqlGenerator<Phone>(_sqlConnector, true);
+            Dictionary<string, object> fieldDict = new Dictionary<string, object>();
+            fieldDict.Add("Number", "18573175437");
+
+            var sqlQuery = userSqlGenerator.GetUpdate(p => p.Id == 1, fieldDict);
+            string sql = sqlQuery.GetSql();
+            Assert.Equal("UPDATE `DAB`.`Phones` SET `DAB`.`Phones`.`Number` = @PhoneNumber WHERE `DAB`.`Phones`.`Id` = @Id_p0", sql);
+        }
+
+        [Fact]
+        public void Update_Anonymous()
+        {
+            ISqlGenerator<Phone> userSqlGenerator = new SqlGenerator<Phone>(_sqlConnector, true);
+
+            var sqlQuery = userSqlGenerator.GetUpdate(p => p.Id == 1, new
+            {
+                Number = "18573175437"
+            });
+            string sql = sqlQuery.GetSql();
+            Assert.Equal("UPDATE `DAB`.`Phones` SET `DAB`.`Phones`.`Number` = @PhoneNumber WHERE `DAB`.`Phones`.`Id` = @Id_p0", sql);
+        }
+
+        [Fact]
         public void Insert_QuoMarks()
         {
             ISqlGenerator<Address> userSqlGenerator = new SqlGenerator<Address>(_sqlConnector, true);
@@ -81,7 +106,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.SqlGeneratorTests
         {
             ISqlGenerator<User> userSqlGenerator = new SqlGenerator<User>(_sqlConnector, true);
             var sqlQuery = userSqlGenerator.GetSelectAll(user => user.UpdatedAt != null, null);
-            var sqlQuery2= userSqlGenerator.GetSelectAll(user => !user.UpdatedAt.HasValue, null);
+            var sqlQuery2 = userSqlGenerator.GetSelectAll(user => !user.UpdatedAt.HasValue, null);
 
             Assert.Equal(
                 "SELECT `Users`.`Id`, `Users`.`Name`, `Users`.`AddressId`, `Users`.`PhoneId`, `Users`.`OfficePhoneId`, `Users`.`Deleted`, `Users`.`UpdatedAt` FROM `Users` " +
@@ -153,7 +178,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.SqlGeneratorTests
             ISqlGenerator<City> sqlGenerator = new SqlGenerator<City>(_sqlConnector, false);
             var filterData = new FilterData();
             var data = filterData.OrderInfo ?? new OrderInfo();
-            data.Columns = new List<string> {"Name"};
+            data.Columns = new List<string> { "Name" };
             data.Direction = OrderInfo.SortDirection.ASC;
             filterData.OrderInfo = data;
 
@@ -205,7 +230,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.SqlGeneratorTests
         public static void UpdateWithPredicateAndJoin()
         {
             ISqlGenerator<User> sqlGenerator = new SqlGenerator<User>(_sqlConnector);
-            var model = new User {Addresses = new Address()};
+            var model = new User { Addresses = new Address() };
             var sqlQuery = sqlGenerator.GetUpdate(q => q.AddressId == 1, model, x => x.Addresses);
             var sql = sqlQuery.GetSql();
             Assert.Equal("UPDATE Users LEFT JOIN Addresses ON Users.AddressId = Addresses.Id SET Users.Name = @UserName, Users.AddressId = @UserAddressId, Users.PhoneId = @UserPhoneId, Users.OfficePhoneId = @UserOfficePhoneId, Users.Deleted = @UserDeleted, Users.UpdatedAt = @UserUpdatedAt, Addresses.Street = @AddressStreet, Addresses.CityId = @AddressCityId WHERE Users.AddressId = @AddressId_p0", sql);
@@ -215,7 +240,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.SqlGeneratorTests
         public static void UpdateWithJoin()
         {
             ISqlGenerator<User> sqlGenerator = new SqlGenerator<User>(_sqlConnector);
-            var model = new User {Addresses = new Address()};
+            var model = new User { Addresses = new Address() };
             var sqlQuery = sqlGenerator.GetUpdate(model, x => x.Addresses);
             var sql = sqlQuery.GetSql();
             Assert.Equal("UPDATE Users LEFT JOIN Addresses ON Users.AddressId = Addresses.Id SET Users.Name = @UserName, Users.AddressId = @UserAddressId, Users.PhoneId = @UserPhoneId, Users.OfficePhoneId = @UserOfficePhoneId, Users.Deleted = @UserDeleted, Users.UpdatedAt = @UserUpdatedAt, Addresses.Street = @AddressStreet, Addresses.CityId = @AddressCityId WHERE Users.Id = @UserId", sql);

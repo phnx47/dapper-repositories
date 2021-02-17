@@ -123,6 +123,68 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
             return query;
         }
 
+        /// <inheritdoc />
+        public virtual SqlQuery GetUpdate(Expression<Func<TEntity, bool>> predicate, object setPropertyObj)
+        {
+            var setProperties = setPropertyObj.GetType().GetProperties();
+            var properties = SqlProperties
+                .Where(p => !KeySqlProperties.Any(k => k.PropertyName.Equals(p.PropertyName, StringComparison.OrdinalIgnoreCase)) && !p.IgnoreUpdate
+                 && setProperties.Any(k => k.Name.Equals(p.PropertyName, StringComparison.OrdinalIgnoreCase)))
+                .ToArray();
+
+            var query = new SqlQuery();
+            query.SqlBuilder
+                .Append("UPDATE ")
+                .Append(TableName)
+                .Append(" ");
+            query.SqlBuilder.Append("SET ");
+            query.SqlBuilder.Append(GetFieldsUpdate(TableName, properties, UseQuotationMarks == true));
+            query.SqlBuilder.Append(" ");
+            AppendWherePredicateQuery(query, predicate, QueryType.Update);
+
+            var parameters = (Dictionary<string, object>)query.Param;
+            foreach (var metadata in properties)
+            {
+                var setProp = setProperties.FirstOrDefault(p => p.Name.Equals(metadata.PropertyName, StringComparison.OrdinalIgnoreCase));
+                if (setProp == null) continue;
+                parameters.Add($"{typeof(TEntity).Name}{metadata.PropertyName}", setProp.GetValue(setPropertyObj));
+            }
+            return query;
+        }
+
+        /// <inheritdoc />
+        public virtual SqlQuery GetUpdate(Expression<Func<TEntity, bool>> predicate, Dictionary<string, object> setPropertyDict)
+        {
+            var propNameExceptItems = setPropertyDict.Keys.Except(SqlProperties.Select(p => p.PropertyName));
+            if (propNameExceptItems.Any())
+            {
+                string keys = string.Join(",", propNameExceptItems.Select(p => p));
+                throw new ArgumentException(string.Concat(nameof(setPropertyDict), "content error detail:", $" [{keys}] not equal entity column name"));
+            }
+            var properties = SqlProperties
+                .Where(p => !KeySqlProperties.Any(k => k.PropertyName.Equals(p.PropertyName, StringComparison.OrdinalIgnoreCase)) && !p.IgnoreUpdate
+                 && setPropertyDict.Any(k => k.Key.Equals(p.PropertyName, StringComparison.OrdinalIgnoreCase)))
+                .ToArray();
+
+            var query = new SqlQuery();
+            query.SqlBuilder
+                .Append("UPDATE ")
+                .Append(TableName)
+                .Append(" ");
+            query.SqlBuilder.Append("SET ");
+            query.SqlBuilder.Append(GetFieldsUpdate(TableName, properties, UseQuotationMarks == true));
+            query.SqlBuilder.Append(" ");
+            AppendWherePredicateQuery(query, predicate, QueryType.Update);
+
+            var parameters = (Dictionary<string, object>)query.Param;
+            foreach (var metadata in properties)
+            {
+                var value = setPropertyDict.FirstOrDefault(p => p.Key.Equals(metadata.PropertyName, StringComparison.OrdinalIgnoreCase)).Value;
+                parameters.Add($"{typeof(TEntity).Name}{metadata.PropertyName}", value);
+            }
+            return query;
+        }
+
         private static string GetFieldsUpdate(string tableName, IEnumerable<SqlPropertyMetadata> properties, bool useMarks)
         {
             return string.Join(", ", properties
