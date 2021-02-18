@@ -24,7 +24,7 @@ deploy:
 
 - provider: NuGet
   api_key:
-    secure: An+Cm24p8nt1T8n2ocBaFyrjIOzGI//Hs4gBMF7OcCLOHkZTmB60X6EP/+pWGIrN
+    secure: c7cEyPKwa2sV+LsQZO1QTgAgoSukaNuX5qkGMbxvwYOv6oqS2vU3cZgh5X56PLVf
   artifact: NuGet
   on:
     appveyor_repo_tag: true
