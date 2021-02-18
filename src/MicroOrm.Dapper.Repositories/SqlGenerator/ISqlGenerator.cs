@@ -129,6 +129,27 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         SqlQuery GetUpdate(Expression<Func<TEntity, bool>> predicate, TEntity entity, params Expression<Func<TEntity, object>>[] includes);
 
         /// <summary>
+        /// 获取更新匿名类下字段的SQL语句(过滤匿名类中与TEntity类型不一致的字段)
+        /// SET的字段内容是通过反射setPropertyObj对象的属性获取
+        /// Get the SQL statement to update the fields under the anonymous class
+        /// (Filtering fields in anonymous classes that are inconsistent with the tentity type)
+        /// </summary>
+        /// <param name="predicate"></param>
+        /// <param name="setPropertyObj"></param>
+        /// <returns></returns>
+        SqlQuery GetUpdate(Expression<Func<TEntity, bool>> predicate, object setPropertyObj);
+
+        /// <summary>
+        /// 获取更新setPropertyDict字典下字段的SQL语句(会验证字典中与TEntity类型不一致的字段)
+        /// Get the SQL statement to update the fields in the setPropertyDict dictionary
+        /// (Validates fields in the dictionary that are inconsistent with the tenity type)
+        /// </summary>
+        /// <param name="predicate"></param>
+        /// <param name="setPropertyDict"></param>
+        /// <returns></returns>
+        SqlQuery GetUpdate(Expression<Func<TEntity, bool>> predicate, Dictionary<string, object> setPropertyDict);
+
+        /// <summary>
         ///     Get SQL for bulk UPDATE Query
         /// </summary>
         SqlQuery GetBulkUpdate(IEnumerable<TEntity> entities);
