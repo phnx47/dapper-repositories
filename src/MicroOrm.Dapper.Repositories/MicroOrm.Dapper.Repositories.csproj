@@ -4,7 +4,7 @@
     <Copyright>2020 © Serge K, Paulo Victor Lund</Copyright>
     <AssemblyTitle>MicroOrm.Dapper.Repositories</AssemblyTitle>
     <VersionPrefix>1.16.1</VersionPrefix>
-    <Authors>Sergey Kuznetsov, Paulo Victor Lund</Authors>
+    <Authors>Serge K, Paulo Victor Lund</Authors>
     <TargetFrameworks Condition=" '$(OS)' == 'Windows_NT' ">net461;netstandard2.0</TargetFrameworks>
     <TargetFramework Condition=" '$(OS)' != 'Windows_NT' ">netstandard2.0</TargetFramework>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
@@ -15,7 +15,7 @@
     <PackageProjectUrl>http://dapper.phnx47.net</PackageProjectUrl>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <RepositoryType>git</RepositoryType>
-    <RepositoryUrl>https://github.com/phnx47/MicroOrm.Dapper.Repositories</RepositoryUrl>
+    <RepositoryUrl>https://github.com/microorm-dotnet/MicroOrm.Dapper.Repositories</RepositoryUrl>
   </PropertyGroup>
   <ItemGroup>
     <None Include="../../icon.png">
