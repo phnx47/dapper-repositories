@@ -1,6 +1,4 @@
 {
-  "branchPrefix": "renovate/",
-  "separateMajorMinor": false,
   "labels": [
     "dependencies"
   ],
@@ -9,8 +7,5 @@
   ],
   "extends": [
     "config:base"
-  ],
-  "nuget": {
-    "enabled": true
-  }
+  ]
 }
