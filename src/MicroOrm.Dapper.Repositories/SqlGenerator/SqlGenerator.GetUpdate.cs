@@ -190,7 +190,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
             if (Provider == SqlProvider.SQLite)
             {
                 //***
-                //*** Building query update query for sqlite
+                //*** Building update query for sqlite
                 //***
                 return string.Join(", ", properties
                     .Select(p => $"{(useMarks ? p.ColumnName : p.CleanColumnName)} = @{p.PropertyInfo.ReflectedType.Name}{p.PropertyName}"));
