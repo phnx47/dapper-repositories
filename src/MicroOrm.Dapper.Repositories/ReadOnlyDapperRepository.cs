@@ -63,7 +63,7 @@ namespace MicroOrm.Dapper.Repositories
         /// <inheritdoc />
         public void Dispose()
         {
-            Connection.Dispose();
+            Connection?.Dispose();
             Connection = null;
             if (FilterData == null) return;
             FilterData.LimitInfo = null;

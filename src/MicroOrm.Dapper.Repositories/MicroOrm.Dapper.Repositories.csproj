@@ -16,6 +16,7 @@
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/microorm-dotnet/MicroOrm.Dapper.Repositories</RepositoryUrl>
+    <Version>1.16.2.0</Version>
   </PropertyGroup>
   <ItemGroup>
     <None Include="../../icon.png">
