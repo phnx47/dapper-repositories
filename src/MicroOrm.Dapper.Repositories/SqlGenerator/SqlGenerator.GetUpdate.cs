@@ -17,7 +17,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         {
             var properties = SqlProperties.Where(p =>
                 !KeySqlProperties.Any(k => k.PropertyName.Equals(p.PropertyName, StringComparison.OrdinalIgnoreCase)) && !p.IgnoreUpdate).ToArray();
-            
+
             if (!properties.Any())
                 throw new ArgumentException("Can't update without [Key]");
 
@@ -59,13 +59,13 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
 
             query.SqlBuilder.Append(string.Join(" AND ", KeySqlProperties.Where(p => !p.IgnoreUpdate)
                 .Select(p => $"{TableName}.{p.ColumnName} = @{entity.GetType().Name}{p.PropertyName}")));
-            
-            if (query.Param == null || !(query.Param is Dictionary<string,object> parameters))
+
+            if (query.Param == null || !(query.Param is Dictionary<string, object> parameters))
                 parameters = new Dictionary<string, object>();
 
             foreach (var metadata in properties.Concat(KeySqlProperties))
                 parameters.Add($"{entity.GetType().Name}{metadata.PropertyName}", entity.GetType().GetProperty(metadata.PropertyName).GetValue(entity, null));
-            
+
             query.SetParam(parameters);
 
             return query;
@@ -185,10 +185,21 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
             return query;
         }
 
-        private static string GetFieldsUpdate(string tableName, IEnumerable<SqlPropertyMetadata> properties, bool useMarks)
+        private string GetFieldsUpdate(string tableName, IEnumerable<SqlPropertyMetadata> properties, bool useMarks)
         {
-            return string.Join(", ", properties
-                .Select(p => $"{tableName}.{(useMarks ? p.ColumnName : p.CleanColumnName)} = @{p.PropertyInfo.ReflectedType.Name}{p.PropertyName}"));
+            if (Provider == SqlProvider.SQLite)
+            {
+                //***
+                //*** Building update query for sqlite
+                //***
+                return string.Join(", ", properties
+                    .Select(p => $"{(useMarks ? p.ColumnName : p.CleanColumnName)} = @{p.PropertyInfo.ReflectedType.Name}{p.PropertyName}"));
+            }
+            else
+            {
+                return string.Join(", ", properties
+                    .Select(p => $"{tableName}.{(useMarks ? p.ColumnName : p.CleanColumnName)} = @{p.PropertyInfo.ReflectedType.Name}{p.PropertyName}"));
+            }
         }
     }
 }
