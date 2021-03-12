@@ -15,9 +15,9 @@ after_test:
 - pwsh: ./pack.ps1
 
 artifacts:
-- path: '**\artifacts\nuget\*.nupkg'
+- path: '**\artifacts\nuget\*nupkg'
   name: NuGet
-- path: '**\artifacts\myget\*.nupkg'
+- path: '**\artifacts\myget\*nupkg'
   name: MyGet
 
 deploy:
