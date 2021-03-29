@@ -38,7 +38,12 @@ namespace MicroOrm.Dapper.Repositories
 
                     for (int i = 0; i <= exceededTimes; i++)
                     {
-                        var items = instances.Skip(i * maxAllowedInstancesPerBatch).Take(maxAllowedInstancesPerBatch);
+                        var skips = i * maxAllowedInstancesPerBatch;
+                        
+                        if (skips >= totalInstances)
+                            break;
+
+                        var items = instances.Skip(skips).Take(maxAllowedInstancesPerBatch);
                         var msSqlQueryResult = SqlGenerator.GetBulkUpdate(items);
                         count += Connection.Execute(msSqlQueryResult.GetSql(), msSqlQueryResult.Param, transaction);
                     }
@@ -75,7 +80,12 @@ namespace MicroOrm.Dapper.Repositories
 
                     for (int i = 0; i <= exceededTimes; i++)
                     {
-                        var items = instances.Skip(i * maxAllowedInstancesPerBatch).Take(maxAllowedInstancesPerBatch);
+                        var skips = i * maxAllowedInstancesPerBatch;
+                        
+                        if (skips >= totalInstances)
+                            break;
+
+                        var items = instances.Skip(skips).Take(maxAllowedInstancesPerBatch);
                         var msSqlQueryResult = SqlGenerator.GetBulkUpdate(items);
                         count += await Connection.ExecuteAsync(msSqlQueryResult.GetSql(), msSqlQueryResult.Param, transaction);
                     }
