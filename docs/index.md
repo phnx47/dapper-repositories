@@ -26,11 +26,13 @@ that generates all the CRUD sentences for a POCO class based on its definition a
 
 The original idea was taken from [Yoinbol](https://github.com/Yoinbol/MicroOrm.Pocos.SqlGenerator).
 
-All tests with MSSQL, PostgreSQL and MySQL has passed, SQLite tests are being developed.
+All tests with MSSQL and MySQL has passed, PostgreSQL and SQLite tests are being developed.
 
 ## Installation
 
-    dotnet add package MicroOrm.Dapper.Repositories
+```sh
+dotnet add package MicroOrm.Dapper.Repositories
+```
 
 ## Metadata attributes
 
@@ -79,135 +81,150 @@ Automatically set DataTime.UtcNow (You can use local date or define offset) for 
 
 "Users" POCO:
 
-    [Table("Users")]
-    public class User
-    {
-        [Key, Identity]
-        public int Id { get; set; }
+```c#
+[Table("Users")]
+public class User
+{
+    [Key, Identity]
+    public int Id { get; set; }
 
-        public string ReadOnly => "test"; // because don't have set
+    public string ReadOnly => "test"; // because don't have set
 
-        public string Name { get; set; }
+    public string Name { get; set; }
 
-        public int AddressId { get; set; }
+    public int AddressId { get; set; }
 
-        [LeftJoin("Cars", "Id", "UserId")]
-        public List<Car> Cars { get; set; }
+    [LeftJoin("Cars", "Id", "UserId")]
+    public List<Car> Cars { get; set; }
 
-        [LeftJoin("Addresses", "AddressId", "Id")]
-        public Address Address { get; set; }
+    [LeftJoin("Addresses", "AddressId", "Id")]
+    public Address Address { get; set; }
 
-        [Status, Deleted]
-        public bool Deleted { get; set; }
+    [Status, Deleted]
+    public bool Deleted { get; set; }
 
-        [UpdatedAt]
-        public DateTime? UpdatedAt { get; set; }
-    }
+    [UpdatedAt]
+    public DateTime? UpdatedAt { get; set; }
+}
+```
 
 "Cars" POCO:
 
-    [Table("Cars")]
-    public class Car
+```c#
+[Table("Cars")]
+public class Car
+{
+    [Key, Identity]
+    public int Id { get; set; }
+
+    public string Name { get; set; }
+
+    public byte[] Data { get; set; }
+
+    public int UserId { get; set; }
+
+    [LeftJoin("Users", "UserId", "Id")]
+    public User User { get; set; }
+
+    [Status]
+    public StatusCar Status { get; set; }
+}
+
+public enum StatusCar
+{
+    Inactive = 0,
+
+    Active = 1,
+
+    [Deleted]
+    Deleted = -1
+}
+```
+
+Example Implements the simple repository:
+
+```c#
+public class UserRepository : DapperRepository<User>
+{
+    public UserRepository(IDbConnection connection, ISqlGenerator<User> sqlGenerator)
+        : base(connection, sqlGenerator)
     {
-        [Key, Identity]
-        public int Id { get; set; }
 
-        public string Name { get; set; }
-
-        public byte[] Data { get; set; }
-
-        public int UserId { get; set; }
-
-        [LeftJoin("Users", "UserId", "Id")]
-        public User User { get; set; }
-
-        [Status]
-        public StatusCar Status { get; set; }
     }
-
-    public enum StatusCar
-    {
-        Inactive = 0,
-
-        Active = 1,
-
-        [Deleted]
-        Deleted = -1
-    }
-
-Implements the repository:
-
-    public class UserRepository : DapperRepository<User>
-    {
-
-        public UserRepository(IDbConnection connection, ISqlGenerator<User> sqlGenerator)
-            : base(connection, sqlGenerator)
-        {
-
-        }
-    }
+}
+```
 
 ### Queries
 
 Find by ID:
 
-    var user = await userRepository.FindAsync(x => x.Id == 5);
-    
+```c#
+var user = await userRepository.FindAsync(x => x.Id == 5);
+```  
+
 Query with limit:
 
-    var limit = 10u;
-    var users = await userRepository.SetLimit(limit).FindAllAsync();
-
+```c#
+var limit = 10u;
+var users = await userRepository.SetLimit(limit).FindAllAsync();
+```
 
 Query with limit and offset:
 
-    var limit = 10u;
-    var offset = 5u;
-    var users = await userRepository.SetLimit(limit, offset).FindAllAsync();
-
+```c#
+var limit = 10u;
+var offset = 5u;
+var users = await userRepository.SetLimit(limit, offset).FindAllAsync();
+```
 
 Query with OrderBy:
-    
-    var users = await userRepository.SetOrderBy(OrderInfo.SortDirection.DESC, x => x.CreatedAt).FindAllAsync();
+
+```c#
+var users = await userRepository.SetOrderBy(OrderInfo.SortDirection.DESC, x => x.CreatedAt).FindAllAsync();
+```
 
 Query with SetSelect:
-    
-    var users = await userRepository.SetSelect(x => new {x.Id, x.Name}).FindAllAsync();
+
+```c#
+var users = await userRepository.SetSelect(x => new {x.Id, x.Name}).FindAllAsync();
+```
 
 Find all users for AccountId equals to 3 and not logical deleted:
 
-    var allUsers = await userRepository.FindAllAsync(x => x.AccountId == 3 && x.Deleted != false);
+```c#
+var allUsers = await userRepository.FindAllAsync(x => x.AccountId == 3 && x.Deleted != false);
+```
 
-Update with join:
-
-    userRepository.Update();
 ### Example with Asp.Net Core and D.I
-- ConfigureServices:
 
+#### Configure Services
 
-    //Your DB Provider
-    MicroOrmConfig.SqlProvider = SqlProvider.MySQL;
-    //Not required
-    MicroOrmConfig.TablePrefix = "db1_";
-    //Add generic SqlGenerator as singleton
-    services.AddSingleton(typeof(ISqlGenerator<>), typeof(SqlGenerator<>));
-    //Your db factory
-    services.AddSingleton<IDbConnectionFactory, DbFactory>(x => new DbFactory(appSettings.DbConnectionString));
+```c#
+//Your DB Provider
+MicroOrmConfig.SqlProvider = SqlProvider.MySQL;
+//Not required
+MicroOrmConfig.TablePrefix = "db1_";
+//Add generic SqlGenerator as singleton
+services.AddSingleton(typeof(ISqlGenerator<>), typeof(SqlGenerator<>));
+//Your db factory
+services.AddSingleton<IDbConnectionFactory, DbFactory>(x => new DbFactory(appSettings.DbConnectionString));
+```c#
 
-- Example Repository:
+#### Example BaseRepository with `IDbConnectionFactory`
 
-
-    public class BaseRepository<T> : DapperRepository<T> where T : class
+```c#
+public class BaseRepository<T> : DapperRepository<T> where T : class
+{
+    private readonly IDbConnectionFactory _factory;
+    public BaseRepository(IDbConnectionFactory factory, ISqlGenerator<T> generator)
+        : base(factory.OpenDbConnection(), generator)
     {
-        private readonly IDbConnectionFactory _factory;
-        public BaseRepository(IDbConnectionFactory factory, ISqlGenerator<T> generator)
-            : base(factory.OpenDbConnection(), generator)
-        {
-            _factory = factory;
-        }
-        
-        protected IDbConnection GetConnection()
-        {
-            return _factory.OpenDbConnection();
-        }
+        _factory = factory;
     }
+        
+    protected IDbConnection GetConnection()
+    {
+        return _factory.OpenDbConnection();
+    }
+ }
+```
