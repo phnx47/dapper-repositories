@@ -208,9 +208,9 @@ MicroOrmConfig.TablePrefix = "db1_";
 services.AddSingleton(typeof(ISqlGenerator<>), typeof(SqlGenerator<>));
 //Your db factory
 services.AddSingleton<IDbConnectionFactory, DbFactory>(x => new DbFactory(appSettings.DbConnectionString));
-```c#
+```
 
-#### Example BaseRepository with `IDbConnectionFactory`
+#### Example implements BaseRepository with `IDbConnectionFactory`
 
 ```c#
 public class BaseRepository<T> : DapperRepository<T> where T : class
