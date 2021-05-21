@@ -33,20 +33,28 @@ namespace MicroOrm.Dapper.Repositories
             var order = FilterData.GroupInfo ?? new GroupInfo();
 
             var type = typeof(T);
-            if (expr.Body.NodeType == ExpressionType.Convert)
+            switch (expr.Body.NodeType)
             {
-                var lambdaUnary = expr.Body as UnaryExpression;
-                var expression = lambdaUnary.Operand as MemberExpression;
-                order.Columns = new List<string> {GetProperty(expression, type)};
-            } else if (expr.Body.NodeType == ExpressionType.MemberAccess)
-            {
-                order.Columns = new List<string> { GetProperty(expr.Body, type) };
-            }
-            else
-            {
-                var cols = (expr.Body as NewExpression)?.Arguments;
-                var propertyNames = cols?.Select(expression => GetProperty(expression, type)).ToList();
-                order.Columns = propertyNames;
+                case ExpressionType.Convert:
+                {
+                    if (expr.Body is UnaryExpression lambdaUnary)
+                    {
+                        var expression = lambdaUnary.Operand as MemberExpression;
+                        order.Columns = new List<string> {GetProperty(expression, type)};
+                    }
+
+                    break;
+                }
+                case ExpressionType.MemberAccess:
+                    order.Columns = new List<string> { GetProperty(expr.Body, type) };
+                    break;
+                default:
+                {
+                    var cols = (expr.Body as NewExpression)?.Arguments;
+                    var propertyNames = cols?.Select(expression => GetProperty(expression, type)).ToList();
+                    order.Columns = propertyNames;
+                    break;
+                }
             }
 
             order.Permanent = permanent;

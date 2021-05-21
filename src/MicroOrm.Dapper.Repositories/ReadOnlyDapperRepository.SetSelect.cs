@@ -24,21 +24,26 @@ namespace MicroOrm.Dapper.Repositories
             var type = typeof(T);
             if (expr.Body.NodeType == ExpressionType.Lambda)
             {
-                var lambdaUnary = expr.Body as UnaryExpression;
-                var expression = lambdaUnary.Operand as MemberExpression;
-                var prop = GetProperty(expression, type);
-                FilterData.SelectInfo.Columns.Add(prop);
+                if (expr.Body is UnaryExpression lambdaUnary)
+                {
+                    var expression = lambdaUnary.Operand as MemberExpression;
+                    var prop = GetProperty(expression, type);
+                    FilterData.SelectInfo.Columns.Add(prop);
+                }
             }
             else
             {
                 var cols = (expr.Body as NewExpression)?.Arguments;
-                foreach (var expression in cols)
+                if (cols != null)
                 {
-                    var prop = GetProperty(expression, type);
-                    if (string.IsNullOrEmpty(prop))
-                        continue;
+                    foreach (var expression in cols)
+                    {
+                        var prop = GetProperty(expression, type);
+                        if (string.IsNullOrEmpty(prop))
+                            continue;
 
-                    FilterData.SelectInfo.Columns.Add(prop);
+                        FilterData.SelectInfo.Columns.Add(prop);
+                    }
                 }
             }
 

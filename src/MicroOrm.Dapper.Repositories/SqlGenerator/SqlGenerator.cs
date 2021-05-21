@@ -374,12 +374,12 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                 var joinType = joinProperty.PropertyType.IsGenericType ? joinProperty.PropertyType.GenericTypeArguments[0] : joinProperty.PropertyType;
                 var properties = joinType.FindClassMetaDataProperties().Where(p=> !p.IgnoreUpdate).ToArray();
 
-                var joinEntity = entity.GetType().GetProperty(joinProperty.Name).GetValue(entity, null);
+                var joinEntity = entity.GetType().GetProperty(joinProperty.Name)?.GetValue(entity, null);
                 if (joinEntity == null)
                     return string.Empty;
 
-                var dict = properties.ToDictionary(prop => $"{prop.PropertyInfo.ReflectedType.Name}{prop.PropertyName}",
-                    prop => joinType.GetProperty(prop.PropertyName).GetValue(joinEntity, null));
+                var dict = properties.ToDictionary(prop => $"{prop.PropertyInfo.ReflectedType?.Name}{prop.PropertyName}",
+                    prop => joinType.GetProperty(prop.PropertyName)?.GetValue(joinEntity, null));
                 originalBuilder.SetParam(dict);
 
                 if (UseQuotationMarks == true)
