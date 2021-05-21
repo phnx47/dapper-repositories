@@ -6,7 +6,6 @@ init:
   - net start MSSQL$SQL2019
 
 services:
-  - mssql2017
   - mysql
 
 build_script:
