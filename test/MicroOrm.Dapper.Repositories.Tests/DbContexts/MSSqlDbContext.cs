@@ -1,5 +1,4 @@
 ﻿using MicroOrm.Dapper.Repositories.DbContext;
-using MicroOrm.Dapper.Repositories.SqlGenerator;
 using MicroOrm.Dapper.Repositories.Tests.Classes;
 using Microsoft.Data.SqlClient;
 

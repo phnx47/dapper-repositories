@@ -4,9 +4,9 @@ using Xunit.Abstractions;
 
 namespace MicroOrm.Dapper.Repositories.Tests.RepositoriesTests
 {
-    public class MsSqlRepositoriesTests : RepositoriesTests, IClassFixture<MsSqlDatabaseFixture>
+    public class MsSql2017RepositoriesTests : RepositoriesTests, IClassFixture<MsSql2017DatabaseFixture>
     {
-        public MsSqlRepositoriesTests(MsSqlDatabaseFixture msSqlDatabaseFixture, ITestOutputHelper testOutputHelper)
+        public MsSql2017RepositoriesTests(MsSql2017DatabaseFixture msSqlDatabaseFixture, ITestOutputHelper testOutputHelper)
             : base(msSqlDatabaseFixture.Db, testOutputHelper)
         {
         }

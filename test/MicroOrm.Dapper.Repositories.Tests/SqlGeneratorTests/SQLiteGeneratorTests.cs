@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using MicroOrm.Dapper.Repositories.Config;
 using MicroOrm.Dapper.Repositories.SqlGenerator;
 using MicroOrm.Dapper.Repositories.SqlGenerator.Filters;
 using MicroOrm.Dapper.Repositories.Tests.Classes;
