@@ -20,15 +20,11 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                         break;
 
                     case SqlProvider.MySQL:
-
                         InitMetaData("`", "`");
-
                         break;
 
                     case SqlProvider.PostgreSQL:
-
                         InitMetaData("\"", "\"");
-
                         break;
                     case SqlProvider.SQLite:
                         //SQLite doesn't use it.
