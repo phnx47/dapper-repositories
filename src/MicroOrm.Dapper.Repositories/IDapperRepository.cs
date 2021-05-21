@@ -46,22 +46,22 @@ namespace MicroOrm.Dapper.Repositories
         /// <summary>
         ///     Delete object from DB
         /// </summary>
-        bool Delete(TEntity instance, IDbTransaction transaction = null);
+        bool Delete(TEntity instance, IDbTransaction transaction = null, TimeSpan? timeout = null);
 
         /// <summary>
         ///     Delete object from DB
         /// </summary>
-        Task<bool> DeleteAsync(TEntity instance, IDbTransaction transaction = null);
+        Task<bool> DeleteAsync(TEntity instance, IDbTransaction transaction = null, TimeSpan? timeout = null);
 
         /// <summary>
         ///     Delete objects from DB
         /// </summary>
-        bool Delete(Expression<Func<TEntity, bool>> predicate, IDbTransaction transaction = null);
+        bool Delete(Expression<Func<TEntity, bool>> predicate, IDbTransaction transaction = null, TimeSpan? timeout = null);
 
         /// <summary>
         ///     Delete objects from DB
         /// </summary>
-        Task<bool> DeleteAsync(Expression<Func<TEntity, bool>> predicate, IDbTransaction transaction = null);
+        Task<bool> DeleteAsync(Expression<Func<TEntity, bool>> predicate, IDbTransaction transaction = null, TimeSpan? timeout = null);
 
         /// <summary>
         ///     Update object in DB

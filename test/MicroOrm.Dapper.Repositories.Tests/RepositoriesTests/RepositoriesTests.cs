@@ -556,6 +556,35 @@ namespace MicroOrm.Dapper.Repositories.Tests.RepositoriesTests
 
             Assert.Equal(1, objectsCount);
         }
+        
+        [Fact]
+        public void Delete_Timeout()
+        {
+            List<Address> adresses = new List<Address>
+            {
+                new Address {Street = "aaa10", CityId = "110"},
+                new Address {Street = "aaa10", CityId = "111"},
+                new Address {Street = "aaa10", CityId = "112"}
+            };
+
+            int inserted = _db.Address.BulkInsert(adresses);
+            Assert.Equal(3, inserted);
+
+            var adresses0 = _db.Address.Find(x => x.CityId == "110");
+            var adresses1 = _db.Address.Find(x => x.CityId == "111");
+            var objectsCount = _db.Address.FindAll(x => x.Street == "aaa10").Count();
+
+            Assert.Equal(3, objectsCount);
+
+            Assert.Equal("aaa10", adresses0.Street);
+            Assert.Equal("aaa10", adresses1.Street);
+
+            _db.Address.Delete(x => x.Street == "aaa10" && x.CityId != "112", timeout: TimeSpan.FromSeconds(5));
+
+            objectsCount = _db.Address.FindAll(x => x.Street == "aaa10").Count();
+
+            Assert.Equal(1, objectsCount);
+        }
 
         [Fact]
         public void BulkUpdate()
