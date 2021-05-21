@@ -562,26 +562,26 @@ namespace MicroOrm.Dapper.Repositories.Tests.RepositoriesTests
         {
             List<Address> adresses = new List<Address>
             {
-                new Address {Street = "aaa10", CityId = "110"},
-                new Address {Street = "aaa10", CityId = "111"},
-                new Address {Street = "aaa10", CityId = "112"}
+                new Address {Street = "xaaa10", CityId = "x110"},
+                new Address {Street = "xaaa10", CityId = "x111"},
+                new Address {Street = "xaaa10", CityId = "x112"}
             };
 
             int inserted = _db.Address.BulkInsert(adresses);
             Assert.Equal(3, inserted);
 
-            var adresses0 = _db.Address.Find(x => x.CityId == "110");
-            var adresses1 = _db.Address.Find(x => x.CityId == "111");
-            var objectsCount = _db.Address.FindAll(x => x.Street == "aaa10").Count();
+            var adresses0 = _db.Address.Find(x => x.CityId == "x110");
+            var adresses1 = _db.Address.Find(x => x.CityId == "x111");
+            var objectsCount = _db.Address.FindAll(x => x.Street == "xaaa10").Count();
 
             Assert.Equal(3, objectsCount);
 
-            Assert.Equal("aaa10", adresses0.Street);
-            Assert.Equal("aaa10", adresses1.Street);
+            Assert.Equal("xaaa10", adresses0.Street);
+            Assert.Equal("xaaa10", adresses1.Street);
 
-            _db.Address.Delete(x => x.Street == "aaa10" && x.CityId != "112", timeout: TimeSpan.FromSeconds(5));
+            _db.Address.Delete(x => x.Street == "xaaa10" && x.CityId != "x112", timeout: TimeSpan.FromSeconds(5));
 
-            objectsCount = _db.Address.FindAll(x => x.Street == "aaa10").Count();
+            objectsCount = _db.Address.FindAll(x => x.Street == "xaaa10").Count();
 
             Assert.Equal(1, objectsCount);
         }
