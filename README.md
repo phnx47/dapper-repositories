@@ -244,8 +244,8 @@ public class BaseRepository<T> : DapperRepository<T> where T : class
 
 Contributions to the package are always welcome!
 
-* Report any bugs or issues you find on the [issue tracker](https://github.com/phnx47/MicroOrm.Dapper.Repositories/issues).
-* You can grab the source code at the package's [git repository](https://github.com/phnx47/MicroOrm.Dapper.Repositories).
+* Report any bugs or issues you find on the [issue tracker](https://github.com/phnx47/dapper-repositories/issues).
+* You can grab the source code at the package's [git repository](https://github.com/phnx47/dapper-repositories).
 
 ## Support
 

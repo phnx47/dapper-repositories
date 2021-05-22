@@ -12,10 +12,10 @@
     <PackageId>MicroOrm.Dapper.Repositories</PackageId>
     <PackageTags>dapper;micro-orm;repositories;crud</PackageTags>
     <PackageIcon>icon.png</PackageIcon>
-    <PackageProjectUrl>https://github.com/microorm-dotnet/MicroOrm.Dapper.Repositories</PackageProjectUrl>
+    <PackageProjectUrl>https://github.com/phnx47/dapper-repositories</PackageProjectUrl>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <RepositoryType>git</RepositoryType>
-    <RepositoryUrl>https://github.com/microorm-dotnet/MicroOrm.Dapper.Repositories</RepositoryUrl>
+    <RepositoryUrl>https://github.com/phnx47/dapper-repositories</RepositoryUrl>
     <IncludeSymbols>true</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
   </PropertyGroup>
