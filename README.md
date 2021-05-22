@@ -8,10 +8,9 @@
 [![NuGet](https://img.shields.io/nuget/v/MicroOrm.Dapper.Repositories.svg)](https://www.nuget.org/packages/MicroOrm.Dapper.Repositories)
 [![NuGet](https://img.shields.io/nuget/dt/MicroOrm.Dapper.Repositories.svg)](https://www.nuget.org/packages/MicroOrm.Dapper.Repositories)
 
-[![Build status](https://ci.appveyor.com/api/projects/status/v4105ivo9emm3qus/branch/master?svg=true)](https://ci.appveyor.com/project/phnx47/microorm-dapper-repositories/branch/master)
-[![AppVeyor tests](https://img.shields.io/appveyor/tests/phnx47/microorm-dapper-repositories.svg)](https://ci.appveyor.com/project/phnx47/microorm-dapper-repositories/build/tests)
-[![GitHub contributors](https://img.shields.io/github/contributors/microorm-dotnet/MicroOrm.Dapper.Repositories.svg)](https://github.com/phnx47/MicroOrm.Dapper.Repositories/graphs/contributors)
-[![CodeFactor](https://www.codefactor.io/repository/github/microorm-dotnet/microorm.dapper.repositories/badge)](https://www.codefactor.io/repository/github/microorm-dotnet/microorm.dapper.repositories)
+[![Build status](https://ci.appveyor.com/api/projects/status/v4105ivo9emm3qus/branch/master?svg=true)](https://ci.appveyor.com/project/phnx47/dapper-repositories/branch/master)
+[![AppVeyor tests](https://img.shields.io/appveyor/tests/phnx47/dapper-repositories.svg)](https://ci.appveyor.com/project/phnx47/dapper-repositories/build/tests)
+[![CodeFactor](https://www.codefactor.io/repository/github/phnx47/dapper-repositories/badge)](https://www.codefactor.io/repository/github/phnx47/dapper-repositories)
 [![License MIT](https://img.shields.io/badge/license-MIT-green.svg)](https://opensource.org/licenses/MIT)
 
 **I see a lot Issues, but I don't have enough time to solve them. Feel free to open Pull Request or ask to add you as Member to support project!**
