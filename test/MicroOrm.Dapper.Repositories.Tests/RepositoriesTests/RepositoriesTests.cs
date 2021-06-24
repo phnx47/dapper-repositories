@@ -131,7 +131,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.RepositoriesTests
         }
         
         [Fact]
-        public async void FindAllJoinAsync_NullPredicate_CheckCount()
+        public async void FindAllAsync_NullPredicate_CheckCount()
         {
             var addresses = (await _db.Address.FindAllAsync<User>(null, x => x.Users)).ToArray();
             var address = addresses.First();
