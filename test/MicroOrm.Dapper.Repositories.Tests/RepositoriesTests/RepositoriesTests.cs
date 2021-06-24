@@ -99,7 +99,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.RepositoriesTests
         }
 
         [Fact]
-        public async void FindByIdWithJoinAsync_NotNullJoins()
+        public async void FindByIdAsync_WithJoins_NotNull()
         {
             var user = await _db.Users.FindByIdAsync<Car, Phone, Address>(1, x => x.Cars, x => x.Phone, x => x.Addresses);
             Assert.False(user.Deleted);
@@ -108,6 +108,36 @@ namespace MicroOrm.Dapper.Repositories.Tests.RepositoriesTests
             Assert.NotNull(user.Phone);
             Assert.NotNull(user.Cars);
             Assert.NotNull(user.Addresses);
+        }
+        
+        [Fact]
+        public async void FindByIdAsync_WithJoins_CheckCount()
+        {
+            var address = await _db.Address.FindByIdAsync<User>(1, x => x.Users);
+            Assert.Equal("Street0", address.Street);
+            Assert.NotNull(address.Users);
+            Assert.True(address.Users.Count == 10);
+        }
+        
+        [Fact]
+        public async void FindAllAsync_WithPredicate_CheckCount()
+        {
+            var addresses = (await _db.Address.FindAllAsync<User>(q => q.Id == 1, x => x.Users)).ToArray();
+            Assert.Single(addresses);
+            var address = addresses.Single();
+            Assert.Equal("Street0", address.Street);
+            Assert.NotNull(address.Users);
+            Assert.True(address.Users.Count == 10);
+        }
+        
+        [Fact]
+        public async void FindAllJoinAsync_NullPredicate_CheckCount()
+        {
+            var addresses = (await _db.Address.FindAllAsync<User>(null, x => x.Users)).ToArray();
+            var address = addresses.First();
+            Assert.Equal("Street0", address.Street);
+            Assert.NotNull(address.Users);
+            Assert.True(address.Users.Count == 10);
         }
 
         [Fact]
@@ -129,6 +159,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.RepositoriesTests
 
             Assert.True(user.Cars.Count == 1);
         }
+        
 
         [Fact]
         public async Task FindThroughtNavigationProperty()
@@ -592,14 +623,12 @@ namespace MicroOrm.Dapper.Repositories.Tests.RepositoriesTests
             var user1 = new User
             {
                 Name = "Bulk1",
-                AddressId = 1,
                 PhoneId = 1,
                 OfficePhoneId = 2
             };
             var user2 = new User
             {
                 Name = "Bulk2",
-                AddressId = 1,
                 PhoneId = 1,
                 OfficePhoneId = 2
             };
@@ -627,25 +656,23 @@ namespace MicroOrm.Dapper.Repositories.Tests.RepositoriesTests
         }
 
         [Fact]
-        public async void BulkUpdateAsync()
+        public async Task BulkUpdateAsync()
         {
             var user1 = new User
             {
                 Name = "Bulk1",
-                AddressId = 1,
                 PhoneId = 1,
                 OfficePhoneId = 2
             };
             var user2 = new User
             {
                 Name = "Bulk2",
-                AddressId = 1,
                 PhoneId = 1,
                 OfficePhoneId = 2
             };
 
-            _db.Users.Insert(user1);
-            _db.Users.Insert(user2);
+            await _db.Users.InsertAsync(user1);
+            await _db.Users.InsertAsync(user2);
 
             var insertedUser1 = await _db.Users.FindByIdAsync(user1.Id);
             var insertedUser2 = await _db.Users.FindByIdAsync(user2.Id);

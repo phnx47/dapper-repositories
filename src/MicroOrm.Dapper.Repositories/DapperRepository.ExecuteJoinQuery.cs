@@ -119,7 +119,6 @@ namespace MicroOrm.Dapper.Repositories
             IDbTransaction transaction,
             params Expression<Func<TEntity, object>>[] includes)
         {
-            
             if (!SqlGenerator.KeySqlProperties.Any())
                 throw new NotSupportedException("Join doesn't support without [Key] attribute");
 

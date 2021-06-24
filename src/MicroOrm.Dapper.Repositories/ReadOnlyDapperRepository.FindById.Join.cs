@@ -145,7 +145,7 @@ namespace MicroOrm.Dapper.Repositories
         public virtual Task<TEntity> FindByIdAsync<TChild1>(object id,
             Expression<Func<TEntity, object>> tChild1)
         {
-            return FindByIdAsync<TEntity>(id, tChild1, null);
+            return FindByIdAsync<TChild1>(id, tChild1, null);
         }
 
         /// <inheritdoc />
