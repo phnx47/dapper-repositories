@@ -10,7 +10,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.RepositoriesTests
             : base(msSqlDatabaseFixture.Db, testOutputHelper)
         {
         }
-        
+
         // only Databse specific tests
     }
 }
