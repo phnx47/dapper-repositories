@@ -26,7 +26,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.RepositoriesTests
         {
             const int diff = 12;
             var dateTime = DateTime.Now.AddDays(-diff);
-            var user = new User {Name = "Sergey Phoenix", UpdatedAt = dateTime};
+            var user = new User { Name = "Sergey Phoenix", UpdatedAt = dateTime };
             await _db.Users.InsertAsync(user);
             var userFromDb = await _db.Users.FindAsync(q => q.Id == user.Id);
 
@@ -109,7 +109,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.RepositoriesTests
             Assert.NotNull(user.Cars);
             Assert.NotNull(user.Addresses);
         }
-        
+
         [Fact]
         public async void FindByIdAsync_WithJoins_CheckCount()
         {
@@ -118,7 +118,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.RepositoriesTests
             Assert.NotNull(address.Users);
             Assert.True(address.Users.Count == 10);
         }
-        
+
         [Fact]
         public async void FindAllAsync_WithPredicate_CheckCount()
         {
@@ -129,7 +129,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.RepositoriesTests
             Assert.NotNull(address.Users);
             Assert.True(address.Users.Count == 10);
         }
-        
+
         [Fact]
         public async void FindAllAsync_NullPredicate_CheckCount()
         {
@@ -159,7 +159,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.RepositoriesTests
 
             Assert.True(user.Cars.Count == 1);
         }
-        
+
 
         [Fact]
         public async Task FindThroughtNavigationProperty()
@@ -174,7 +174,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.RepositoriesTests
         [Fact]
         public async Task FindAllByContainsMultipleList()
         {
-            List<int> keyList = new List<int> {2, 3, 4};
+            List<int> keyList = new List<int> { 2, 3, 4 };
             var users = (await _db.Users.FindAllAsync(x => keyList.Contains(x.Id))).ToArray();
             var usersArray = users.ToArray();
             Assert.Equal(3, usersArray.Length);
@@ -526,8 +526,8 @@ namespace MicroOrm.Dapper.Repositories.Tests.RepositoriesTests
         {
             List<Address> adresses = new List<Address>
             {
-                new Address {Street = "aaa0", CityId = "10"},
-                new Address {Street = "aaa1", CityId = "11"}
+                new Address { Street = "aaa0", CityId = "10" },
+                new Address { Street = "aaa1", CityId = "11" }
             };
 
             int inserted = await _db.Address.BulkInsertAsync(adresses);
@@ -545,8 +545,8 @@ namespace MicroOrm.Dapper.Repositories.Tests.RepositoriesTests
         {
             List<Address> adresses = new List<Address>
             {
-                new Address {Street = "aaa0", CityId = "10"},
-                new Address {Street = "aaa1", CityId = "11"}
+                new Address { Street = "aaa0", CityId = "10" },
+                new Address { Street = "aaa1", CityId = "11" }
             };
 
             int inserted = _db.Address.BulkInsert(adresses);
@@ -564,9 +564,9 @@ namespace MicroOrm.Dapper.Repositories.Tests.RepositoriesTests
         {
             List<Address> adresses = new List<Address>
             {
-                new Address {Street = "aaa10", CityId = "110"},
-                new Address {Street = "aaa10", CityId = "111"},
-                new Address {Street = "aaa10", CityId = "112"}
+                new Address { Street = "aaa10", CityId = "110" },
+                new Address { Street = "aaa10", CityId = "111" },
+                new Address { Street = "aaa10", CityId = "112" }
             };
 
             int inserted = _db.Address.BulkInsert(adresses);
@@ -587,15 +587,15 @@ namespace MicroOrm.Dapper.Repositories.Tests.RepositoriesTests
 
             Assert.Equal(1, objectsCount);
         }
-        
+
         [Fact]
         public void Delete_Timeout()
         {
             List<Address> adresses = new List<Address>
             {
-                new Address {Street = "xaaa10", CityId = "x110"},
-                new Address {Street = "xaaa10", CityId = "x111"},
-                new Address {Street = "xaaa10", CityId = "x112"}
+                new Address { Street = "xaaa10", CityId = "x110" },
+                new Address { Street = "xaaa10", CityId = "x111" },
+                new Address { Street = "xaaa10", CityId = "x112" }
             };
 
             int inserted = _db.Address.BulkInsert(adresses);
@@ -644,7 +644,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.RepositoriesTests
             insertedUser1.Name = "Bulk11";
             insertedUser2.Name = "Bulk22";
 
-            bool result = _db.Users.BulkUpdate(new List<User> {insertedUser1, insertedUser2});
+            bool result = _db.Users.BulkUpdate(new List<User> { insertedUser1, insertedUser2 });
 
             Assert.True(result);
 
@@ -682,7 +682,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.RepositoriesTests
             insertedUser1.Name = "Bulk11";
             insertedUser2.Name = "Bulk22";
 
-            bool result = await _db.Users.BulkUpdateAsync(new List<User> {insertedUser1, insertedUser2});
+            bool result = await _db.Users.BulkUpdateAsync(new List<User> { insertedUser1, insertedUser2 });
 
             Assert.True(result);
 
@@ -737,7 +737,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.RepositoriesTests
         public void InsertAndUpdate_WithGuid_WithoutKey()
         {
             var identifier = Guid.NewGuid();
-            var city = new City {Identifier = identifier, Name = "Moscow"};
+            var city = new City { Identifier = identifier, Name = "Moscow" };
 
             _db.Cities.Insert(city);
             city = _db.Cities.Find(q => q.Identifier == identifier);
@@ -755,7 +755,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.RepositoriesTests
         public async Task InsertAndUpdate_WithGuid_WithoutKey_Async()
         {
             var identifier = Guid.NewGuid();
-            var city = new City {Identifier = identifier, Name = "Moscow"};
+            var city = new City { Identifier = identifier, Name = "Moscow" };
 
             await _db.Cities.InsertAsync(city);
             city = await _db.Cities.FindAsync(q => q.Identifier == identifier);
@@ -772,7 +772,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.RepositoriesTests
         [Fact]
         public async Task FindAllByContainsArrayMultipleList()
         {
-            var keyList = new int[] {2, 3, 4};
+            var keyList = new int[] { 2, 3, 4 };
             var users = (await _db.Users.FindAllAsync(x => keyList.Contains(x.Id))).ToArray();
             var usersArray = users.ToArray();
             Assert.Equal(3, usersArray.Length);
