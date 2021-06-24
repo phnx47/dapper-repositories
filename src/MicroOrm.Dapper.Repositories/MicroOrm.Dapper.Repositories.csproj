@@ -2,17 +2,16 @@
   <PropertyGroup>
     <Description>CRUD for Dapper</Description>
     <Copyright>2020 © Serge K, Paulo Victor Lund</Copyright>
-    <AssemblyTitle>MicroOrm.Dapper.Repositories</AssemblyTitle>
     <VersionPrefix>1.18.1</VersionPrefix>
     <Authors>Serge K, Paulo Victor Lund</Authors>
     <TargetFrameworks Condition=" '$(OS)' == 'Windows_NT' ">net461;netstandard2.0;net5.0</TargetFrameworks>
     <TargetFrameworks Condition=" '$(OS)' != 'Windows_NT' ">netstandard2.0;net5.0</TargetFrameworks>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <AssemblyName>MicroOrm.Dapper.Repositories</AssemblyName>
     <PackageId>MicroOrm.Dapper.Repositories</PackageId>
     <PackageTags>dapper;micro-orm;repositories;crud</PackageTags>
     <PackageIcon>icon.png</PackageIcon>
-    <PackageProjectUrl>https://github.com/phnx47/dapper-repositories</PackageProjectUrl>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/phnx47/dapper-repositories</RepositoryUrl>
