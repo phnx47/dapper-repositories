@@ -150,6 +150,16 @@ namespace MicroOrm.Dapper.Repositories.Tests.SqlGeneratorTests
             var sqlQuery = sqlGenerator.GetSelectById(1, null);
             Assert.Equal("SELECT Addresses.Id, Addresses.Street, Addresses.CityId FROM Addresses WHERE Addresses.Id = @Id LIMIT 1", sqlQuery.GetSql());
         }
+        
+        [Fact]
+        public static void SelectByIdJoin()
+        {
+            var generator = new SqlGenerator<Address>(_sqlConnector, true);
+            var sqlQuery = generator.GetSelectById(1, null, q => q.Users);
+            Assert.Equal("SELECT `Addresses`.`Id`, `Addresses`.`Street`, `Addresses`.`CityId`, `Users`.`Id`, `Users`.`Name`, `Users`.`AddressId`, `Users`.`PhoneId`, " +
+                         "`Users`.`OfficePhoneId`, `Users`.`Deleted`, `Users`.`UpdatedAt` FROM `Addresses` " +
+                         "LEFT JOIN `Users` ON `Addresses`.`Id` = `Users`.`AddressId` WHERE `Addresses`.`Id` = @Id", sqlQuery.GetSql());
+        }
 
         [Fact]
         public void SelectFirst()

@@ -450,6 +450,17 @@ namespace MicroOrm.Dapper.Repositories.Tests.SqlGeneratorTests
                          "FROM [Users] WHERE [Users].[Id] = @Id AND [Users].[Deleted] != 1", sqlQuery.GetSql());
         }
 
+        
+        [Fact]
+        public static void SelectByIdJoin()
+        {
+            var generator = new SqlGenerator<Address>(_sqlConnector, true);
+            var sqlQuery = generator.GetSelectById(1, null, q => q.Users);
+            Assert.Equal("SELECT [Addresses].[Id], [Addresses].[Street], [Addresses].[CityId], [Users].[Id], [Users].[Name], [Users].[AddressId], [Users].[PhoneId], " +
+                         "[Users].[OfficePhoneId], [Users].[Deleted], [Users].[UpdatedAt] FROM [Addresses] " +
+                         "LEFT JOIN [Users] ON [Addresses].[Id] = [Users].[AddressId] WHERE [Addresses].[Id] = @Id", sqlQuery.GetSql());
+        }
+        
         [Fact]
         public static void SelectFirst()
         {
@@ -525,8 +536,6 @@ namespace MicroOrm.Dapper.Repositories.Tests.SqlGeneratorTests
             Assert.Equal("UPDATE Cities SET Cities.Identifier = @CityIdentifier, Cities.Name = @CityName WHERE Cities.Identifier = @Identifier_p0", sql);
         }
 
-        #region Support `group conditions` syntax
-
         [Fact]
         public static void SelectGroupConditionsWithPredicate()
         {
@@ -579,10 +588,6 @@ namespace MicroOrm.Dapper.Repositories.Tests.SqlGeneratorTests
             Assert.Equal(sPrefix + "([Phones_PhoneId].[Number] != @PhoneNumber_p0 AND ([Users].[Name] != @Name_p1 OR [Phones_PhoneId].[IsActive] = @PhoneIsActive_p2 OR [Users].[PhoneId] NOT IN @PhoneId_p3 OR [Phones_PhoneId].[Id] NOT IN @PhoneId_p4) AND ([Users].[Name] = @Name_p5 OR [Phones_PhoneId].[IsActive] = @PhoneIsActive_p6)) AND [Users].[Deleted] != 1", sqlQuery2.GetSql());
         }
 
-        #endregion
-
-        #region Support `like` syntax
-
         [Fact]
         public static void SelectLikeWithPredicate()
         {
@@ -609,7 +614,5 @@ namespace MicroOrm.Dapper.Repositories.Tests.SqlGeneratorTests
             Assert.True("123%" == parameters21["PhoneNumber_p0"].ToString());
             Assert.True("%abc%" == parameters21["Name_p1"].ToString());
         }
-
-        #endregion
     }
 }
