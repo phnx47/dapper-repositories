@@ -23,8 +23,8 @@ namespace MicroOrm.Dapper.Repositories.Config
         public static string TablePrefix { get; set; }
         
         /// <summary>
-        ///     Use Key attribute as Identity
+        ///     Allow Key attribute as Identity if Identity is not set
         /// </summary>
-        public static bool UseKeyAsIdentity { get; set; }
+        public static bool AllowKeyAsIdentity { get; set; }
     }
 }

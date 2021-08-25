@@ -20,7 +20,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.RepositoriesTests
         {
             _db = db;
             _testOutputHelper = testOutputHelper;
-            MicroOrmConfig.UseKeyAsIdentity = false;
+            MicroOrmConfig.AllowKeyAsIdentity = false;
         }
 
         [Fact]

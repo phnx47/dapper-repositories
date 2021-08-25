@@ -218,12 +218,12 @@ namespace MicroOrm.Dapper.Repositories.Tests.SqlGeneratorTests
         [Fact]
         public static void BulkInsertOneKeyAsIdentity()
         {
-            MicroOrmConfig.UseKeyAsIdentity = true;
+            MicroOrmConfig.AllowKeyAsIdentity = true;
             ISqlGenerator<AddressKeyAsIdentity> userSqlGenerator = new SqlGenerator<AddressKeyAsIdentity>(_sqlConnector, true);
             var sqlQuery = userSqlGenerator.GetBulkInsert(new List<AddressKeyAsIdentity> { new AddressKeyAsIdentity() });
 
             Assert.Equal("INSERT INTO [Addresses] ([Street], [CityId]) VALUES (@Street0, @CityId0)", sqlQuery.GetSql());
-            MicroOrmConfig.UseKeyAsIdentity = false;
+            MicroOrmConfig.AllowKeyAsIdentity = false;
         }
 
         [Fact]
@@ -373,14 +373,14 @@ namespace MicroOrm.Dapper.Repositories.Tests.SqlGeneratorTests
         }
 
         [Fact]
-        public void Insert_UseKeyAsIdentity_QuoMarks()
+        public void Insert_AllowKeyAsIdentity_QuoMarks()
         {
-            MicroOrmConfig.UseKeyAsIdentity = true;
+            MicroOrmConfig.AllowKeyAsIdentity = true;
             ISqlGenerator<AddressKeyAsIdentity> userSqlGenerator = new SqlGenerator<AddressKeyAsIdentity>(_sqlConnector, true);
             var sqlQuery = userSqlGenerator.GetInsert(new AddressKeyAsIdentity());
 
             Assert.Equal("INSERT INTO [Addresses] ([Street], [CityId]) VALUES (@Street, @CityId) SELECT SCOPE_IDENTITY() AS [Id]", sqlQuery.GetSql());
-            MicroOrmConfig.UseKeyAsIdentity = false;
+            MicroOrmConfig.AllowKeyAsIdentity = false;
         }
 
         [Fact]
