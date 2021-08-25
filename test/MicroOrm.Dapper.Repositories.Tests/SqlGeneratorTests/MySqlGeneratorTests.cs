@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using MicroOrm.Dapper.Repositories.Config;
 using MicroOrm.Dapper.Repositories.SqlGenerator;
 using MicroOrm.Dapper.Repositories.SqlGenerator.Filters;
 using MicroOrm.Dapper.Repositories.Tests.Classes;
@@ -97,6 +98,16 @@ namespace MicroOrm.Dapper.Repositories.Tests.SqlGeneratorTests
         {
             ISqlGenerator<Address> userSqlGenerator = new SqlGenerator<Address>(_sqlConnector, true);
             var sqlQuery = userSqlGenerator.GetInsert(new Address());
+
+            Assert.Equal("INSERT INTO `Addresses` (`Street`, `CityId`) VALUES (@Street, @CityId); SELECT CONVERT(LAST_INSERT_ID(), SIGNED INTEGER) AS `Id`", sqlQuery.GetSql());
+        }
+        
+        [Fact]
+        public void Insert_UseKeyAsIdentity_QuoMarks()
+        {
+            MicroOrmConfig.UseKeyAsIdentity = true;
+            ISqlGenerator<AddressKeyAsIdentity> userSqlGenerator = new SqlGenerator<AddressKeyAsIdentity>(_sqlConnector, true);
+            var sqlQuery = userSqlGenerator.GetInsert(new AddressKeyAsIdentity());
 
             Assert.Equal("INSERT INTO `Addresses` (`Street`, `CityId`) VALUES (@Street, @CityId); SELECT CONVERT(LAST_INSERT_ID(), SIGNED INTEGER) AS `Id`", sqlQuery.GetSql());
         }

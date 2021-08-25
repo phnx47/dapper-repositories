@@ -39,7 +39,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
             KeySqlProperties = props.Where(p => p.GetCustomAttributes<KeyAttribute>().Any()).Select(p => new SqlPropertyMetadata(p)).ToArray();
 
             // Use identity as key pattern
-            var identityProperty = props.FirstOrDefault(p => p.GetCustomAttributes<IdentityAttribute>().Any());
+            var identityProperty = props.FirstOrDefault(p => MicroOrmConfig.UseKeyAsIdentity ? p.GetCustomAttributes<KeyAttribute>().Any() : p.GetCustomAttributes<IdentityAttribute>().Any());
             IdentitySqlProperty = identityProperty != null ? new SqlPropertyMetadata(identityProperty) : null;
 
             var dateChangedProperty = props.FirstOrDefault(p => p.GetCustomAttributes<UpdatedAtAttribute>().Any());
