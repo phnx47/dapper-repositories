@@ -110,6 +110,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.SqlGeneratorTests
             var sqlQuery = userSqlGenerator.GetInsert(new AddressKeyAsIdentity());
 
             Assert.Equal("INSERT INTO `Addresses` (`Street`, `CityId`) VALUES (@Street, @CityId); SELECT CONVERT(LAST_INSERT_ID(), SIGNED INTEGER) AS `Id`", sqlQuery.GetSql());
+            MicroOrmConfig.UseKeyAsIdentity = false;
         }
 
         [Fact]
