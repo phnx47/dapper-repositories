@@ -9,7 +9,7 @@ services:
   - mysql
 
 build_script:
-  - pwsh: dotnet build -c Release
+  - pwsh: dotnet build -c Release /p:ContinuousIntegrationBuild=true
 
 test_script:
   - pwsh: dotnet test ./test/MicroOrm.Dapper.Repositories.Tests -c Release --no-build
