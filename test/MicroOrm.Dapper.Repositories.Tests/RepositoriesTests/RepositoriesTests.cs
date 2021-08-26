@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Dapper;
+using MicroOrm.Dapper.Repositories.Config;
 using MicroOrm.Dapper.Repositories.Tests.Classes;
 using MicroOrm.Dapper.Repositories.Tests.DbContexts;
 using Xunit;
@@ -19,6 +20,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.RepositoriesTests
         {
             _db = db;
             _testOutputHelper = testOutputHelper;
+            MicroOrmConfig.AllowKeyAsIdentity = false;
         }
 
         [Fact]
