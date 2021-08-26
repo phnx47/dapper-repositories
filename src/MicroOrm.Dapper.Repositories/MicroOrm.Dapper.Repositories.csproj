@@ -1,14 +1,13 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <Description>CRUD for Dapper</Description>
-    <Copyright>2020 © Serge K, Paulo Victor Lund</Copyright>
-    <VersionPrefix>1.18.1</VersionPrefix>
-    <Authors>Serge K, Paulo Victor Lund</Authors>
+    <Copyright>2015 © Serge K</Copyright>
+    <VersionPrefix>1.19.0</VersionPrefix>
+    <Authors>Serge K and Contributors</Authors>
     <TargetFrameworks Condition=" '$(OS)' == 'Windows_NT' ">net461;netstandard2.0;net5.0</TargetFrameworks>
     <TargetFrameworks Condition=" '$(OS)' != 'Windows_NT' ">netstandard2.0;net5.0</TargetFrameworks>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <AssemblyName>MicroOrm.Dapper.Repositories</AssemblyName>
     <PackageId>MicroOrm.Dapper.Repositories</PackageId>
     <PackageTags>dapper;micro-orm;repositories;crud</PackageTags>
     <PackageIcon>icon.png</PackageIcon>
