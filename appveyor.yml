@@ -20,7 +20,7 @@ after_test:
 artifacts:
   - path: '**\artifacts\nuget\*nupkg'
     name: NuGet
-  - path: '**\artifacts\github\*nupkg'
+  - path: '**\artifacts\github\*.nupkg'
     name: GitHub
 
 deploy:
