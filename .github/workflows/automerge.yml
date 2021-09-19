@@ -20,4 +20,6 @@ jobs:
         uses: pascalgn/automerge-action@main
         env:
           GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
-          MERGE_RETRIES: "10"
+          MERGE_RETRY_SLEEP: 15000
+          MERGE_FORKS: false
+          MERGE_RETRIES: "5"
