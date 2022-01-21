@@ -35,7 +35,7 @@ deploy:
   - provider: NuGet
     server: https://nuget.pkg.github.com/prom-client-net/index.json
     api_key:
-      secure: U02HA+rgKPHNAQJ3u/r2Sr25u70JMpX/Gym5Z5VsWyrbe1b8c9lDJI8H8J/MdJZv
+      secure: GrwQQIM+lZ0ZnKAS1u6QXGwzebuOQL2LIohYZsrkLCEPRXcx83DQsHWTzFxFD3Uu
     artifact: GitHub
     on:
       branch: master
