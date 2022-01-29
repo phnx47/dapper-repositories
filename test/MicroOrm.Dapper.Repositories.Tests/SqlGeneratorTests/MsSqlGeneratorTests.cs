@@ -413,7 +413,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.SqlGeneratorTests
             ISqlGenerator<User> userSqlGenerator = new SqlGenerator<User>(_sqlConnector, true);
             var sqlQuery = userSqlGenerator.GetSelectFirst(x => x.Phone.Number == "123", null, user => user.Phone);
 
-            Assert.Equal("SELECT TOP 1 [Users].[Id], [Users].[Name], [Users].[AddressId], [Users].[PhoneId], [Users].[OfficePhoneId], [Users].[Deleted], [Users].[UpdatedAt], " +
+            Assert.Equal("SELECT [Users].[Id], [Users].[Name], [Users].[AddressId], [Users].[PhoneId], [Users].[OfficePhoneId], [Users].[Deleted], [Users].[UpdatedAt], " +
                          "[Phones_PhoneId].[Id], [Phones_PhoneId].[Number], [Phones_PhoneId].[IsActive], [Phones_PhoneId].[Code] " +
                          "FROM [Users] INNER JOIN [DAB].[Phones] AS [Phones_PhoneId] ON [Users].[PhoneId] = [Phones_PhoneId].[Id] " +
                          "WHERE ([Phones_PhoneId].[Number] = @PhoneNumber_p0) AND [Users].[Deleted] != 1", sqlQuery.GetSql());
@@ -425,7 +425,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.SqlGeneratorTests
             ISqlGenerator<User> userSqlGenerator = new SqlGenerator<User>(_sqlConnector, false);
             var sqlQuery = userSqlGenerator.GetSelectFirst(x => x.Phone.Number == "123", null, user => user.Phone);
 
-            Assert.Equal("SELECT TOP 1 Users.Id, Users.Name, Users.AddressId, Users.PhoneId, Users.OfficePhoneId, Users.Deleted, Users.UpdatedAt, " +
+            Assert.Equal("SELECT Users.Id, Users.Name, Users.AddressId, Users.PhoneId, Users.OfficePhoneId, Users.Deleted, Users.UpdatedAt, " +
                          "Phones_PhoneId.Id, Phones_PhoneId.Number, Phones_PhoneId.IsActive, Phones_PhoneId.Code " +
                          "FROM Users INNER JOIN DAB.Phones AS Phones_PhoneId ON Users.PhoneId = Phones_PhoneId.Id " +
                          "WHERE (Phones_PhoneId.Number = @PhoneNumber_p0) AND Users.Deleted != 1", sqlQuery.GetSql());
@@ -633,7 +633,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.SqlGeneratorTests
         public static void SelectGroupConditionsNavigationPredicate()
         {
             ISqlGenerator<User> userSqlGenerator = new SqlGenerator<User>(_sqlConnector, true);
-            var sPrefix = "SELECT TOP 1 [Users].[Id], [Users].[Name], [Users].[AddressId], [Users].[PhoneId], [Users].[OfficePhoneId], [Users].[Deleted], [Users].[UpdatedAt], " +
+            var sPrefix = "SELECT [Users].[Id], [Users].[Name], [Users].[AddressId], [Users].[PhoneId], [Users].[OfficePhoneId], [Users].[Deleted], [Users].[UpdatedAt], " +
                           "[Phones_PhoneId].[Id], [Phones_PhoneId].[Number], [Phones_PhoneId].[IsActive], [Phones_PhoneId].[Code] " +
                           "FROM [Users] INNER JOIN [DAB].[Phones] AS [Phones_PhoneId] ON [Users].[PhoneId] = [Phones_PhoneId].[Id] " +
                           "WHERE ";
@@ -670,7 +670,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.SqlGeneratorTests
             Assert.True("%789%" == parameters11["Code_p2"].ToString());
 
             ISqlGenerator<User> userSqlGenerator2 = new SqlGenerator<User>(_sqlConnector, true);
-            var sPrefix2 = "SELECT TOP 1 [Users].[Id], [Users].[Name], [Users].[AddressId], [Users].[PhoneId], [Users].[OfficePhoneId], [Users].[Deleted], [Users].[UpdatedAt], " +
+            var sPrefix2 = "SELECT [Users].[Id], [Users].[Name], [Users].[AddressId], [Users].[PhoneId], [Users].[OfficePhoneId], [Users].[Deleted], [Users].[UpdatedAt], " +
                            "[Phones_PhoneId].[Id], [Phones_PhoneId].[Number], [Phones_PhoneId].[IsActive], [Phones_PhoneId].[Code] " +
                            "FROM [Users] INNER JOIN [DAB].[Phones] AS [Phones_PhoneId] ON [Users].[PhoneId] = [Phones_PhoneId].[Id] " +
                            "WHERE ";
