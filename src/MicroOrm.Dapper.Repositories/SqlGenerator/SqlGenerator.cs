@@ -23,10 +23,10 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         public SqlGenerator()
         {
             Provider = MicroOrmConfig.SqlProvider;
-            
+
             if (UseQuotationMarks == null)
                 UseQuotationMarks = Provider != SqlProvider.SQLite && MicroOrmConfig.UseQuotationMarks;
-            
+
             Initialize();
         }
 
@@ -112,57 +112,6 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
 
         /// <inheritdoc />
         public object LogicalDeleteValue { get; protected set; }
-
-        /// <inheritdoc />
-        public virtual SqlQuery GetBulkInsert(IEnumerable<TEntity> entities)
-        {
-            var entitiesArray = entities as TEntity[] ?? entities.ToArray();
-            if (!entitiesArray.Any())
-                throw new ArgumentException("collection is empty");
-
-            var entityType = entitiesArray[0].GetType();
-
-            var properties =
-                (IsIdentity
-                    ? SqlProperties.Where(p => !p.PropertyName.Equals(IdentitySqlProperty.PropertyName, StringComparison.OrdinalIgnoreCase))
-                    : SqlProperties).ToList();
-
-            var query = new SqlQuery();
-
-            var values = new List<string>();
-            var parameters = new Dictionary<string, object>();
-
-            for (var i = 0; i < entitiesArray.Length; i++)
-            {
-                var entity = entitiesArray[i];
-                if (HasUpdatedAt)
-                {
-                    var attribute = UpdatedAtProperty.GetCustomAttribute<UpdatedAtAttribute>();
-                    var offset = attribute.TimeKind == DateTimeKind.Local
-                        ? new DateTimeOffset(DateTime.Now)
-                        : new DateTimeOffset(DateTime.UtcNow);
-                    if (attribute.OffSet != 0)
-                    {
-                        offset = offset.ToOffset(TimeSpan.FromHours(attribute.OffSet));
-                    }
-
-                    UpdatedAtProperty.SetValue(entity, offset.DateTime);
-                }
-
-                foreach (var property in properties)
-                    // ReSharper disable once PossibleNullReferenceException
-                    parameters.Add(property.PropertyName + i, entityType.GetProperty(property.PropertyName).GetValue(entity, null));
-
-                values.Add(string.Format("({0})", string.Join(", ", properties.Select(p => "@" + p.PropertyName + i))));
-            }
-
-            query.SqlBuilder.AppendFormat("INSERT INTO {0} ({1}) VALUES {2}", TableName, string.Join(", ", properties.Select(p => p.ColumnName)),
-                string.Join(",", values)); // values
-
-            query.SetParam(parameters);
-
-            return query;
-        }
 
 
         /// <inheritdoc />
@@ -318,7 +267,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                 var tableName = MicroOrmConfig.TablePrefix + (tableAttribute != null ? tableAttribute.Name : declaringType.Name);
 
                 var joinType = joinProperty.PropertyType.IsGenericType ? joinProperty.PropertyType.GenericTypeArguments[0] : joinProperty.PropertyType;
-                var properties = joinType.FindClassMetaDataProperties().Where(p=> !p.IgnoreUpdate).ToArray();
+                var properties = joinType.FindClassMetaDataProperties().Where(p => !p.IgnoreUpdate).ToArray();
 
                 var joinEntity = entity.GetType().GetProperty(joinProperty.Name)?.GetValue(entity, null);
                 if (joinEntity == null)
@@ -335,7 +284,8 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                 else
                     attrJoin.TableName = GetTableNameWithSchemaPrefix(attrJoin.TableName, attrJoin.TableSchema);
 
-                joinBuilder.Append($", {GetFieldsUpdate(string.IsNullOrEmpty(attrJoin.TableAlias) ? attrJoin.TableName : attrJoin.TableAlias, properties, UseQuotationMarks == true)}");
+                joinBuilder.Append(
+                    $", {GetFieldsUpdate(string.IsNullOrEmpty(attrJoin.TableAlias) ? attrJoin.TableName : attrJoin.TableAlias, properties, UseQuotationMarks == true)}");
                 AppendJoinQuery(attrJoin, originalBuilder.SqlBuilder, tableName);
             }
 
@@ -399,7 +349,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
 
                 var joinType = joinProperty.PropertyType.IsGenericType ? joinProperty.PropertyType.GenericTypeArguments[0] : joinProperty.PropertyType;
                 var properties = joinType.FindClassMetaDataProperties();
-                
+
                 if (UseQuotationMarks == true)
                 {
                     tableName = GetTableNameWithQuotes(attrJoin, properties, tableName);
@@ -408,7 +358,8 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                     attrJoin.TableName = GetTableNameWithSchemaPrefix(attrJoin.TableName, attrJoin.TableSchema);
 
                 if (!hasSelectFilter)
-                    originalBuilder.SqlBuilder.Append($", {GetFieldsSelect(string.IsNullOrEmpty(attrJoin.TableAlias) ? attrJoin.TableName : attrJoin.TableAlias, properties, UseQuotationMarks == true)}");
+                    originalBuilder.SqlBuilder.Append(
+                        $", {GetFieldsSelect(string.IsNullOrEmpty(attrJoin.TableAlias) ? attrJoin.TableName : attrJoin.TableAlias, properties, UseQuotationMarks == true)}");
 
                 AppendJoinQuery(attrJoin, joinBuilder, tableName);
             }
