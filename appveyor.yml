@@ -1,6 +1,6 @@
 version: '{build}-{branch}'
 image:
-  - Visual Studio 2019
+  - Visual Studio 2022
 
 init:
   - net start MSSQL$SQL2019
