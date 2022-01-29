@@ -143,23 +143,23 @@ namespace MicroOrm.Dapper.Repositories.Tests.RepositoriesTests
         }
 
         [Fact]
-        public void FindJoin_CollectionneRecord()
+        protected void FindJoin_CollectionnRecord()
         {
             var user = _db.Users.Find<Car>(q => q.Id == 1, q => q.Cars);
             Assert.False(user.Deleted);
             Assert.Equal("TestName0", user.Name);
 
-            Assert.True(user.Cars.Count == 1);
+            Assert.True(user.Cars.Count == 2);
         }
 
         [Fact]
-        public async void FindJoinAsync_CollectionneRecord()
+        public async void FindJoinAsync_CollectionnRecord()
         {
             var user = await _db.Users.FindAsync<Car>(q => q.Id == 1, q => q.Cars);
             Assert.False(user.Deleted);
             Assert.Equal("TestName0", user.Name);
 
-            Assert.True(user.Cars.Count == 1);
+            Assert.True(user.Cars.Count == 2);
         }
 
 
@@ -308,7 +308,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.RepositoriesTests
         public void FindJoin_User()
         {
             var user = _db.Users.Find<Car>(x => x.Id == 1, q => q.Cars);
-            Assert.True(user.Cars.Count == 1);
+            Assert.True(user.Cars.Count == 2);
             Assert.Equal("TestCar0", user.Cars.First().Name);
         }
 
@@ -325,7 +325,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.RepositoriesTests
         public async Task FindJoinAsync_User()
         {
             var user = await _db.Users.FindAsync<Car>(x => x.Id == 1, q => q.Cars);
-            Assert.True(user.Cars.Count == 1);
+            Assert.True(user.Cars.Count == 2);
             Assert.Equal("TestCar0", user.Cars.First().Name);
         }
 
