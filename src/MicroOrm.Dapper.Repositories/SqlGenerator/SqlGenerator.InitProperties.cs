@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
@@ -44,7 +45,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
             {
                 identityProperty = props.FirstOrDefault(p => p.GetCustomAttributes<KeyAttribute>().Any());
             }
-            
+
             IdentitySqlProperty = identityProperty != null ? new SqlPropertyMetadata(identityProperty) : null;
 
             var dateChangedProperty = props.FirstOrDefault(p => p.GetCustomAttributes<UpdatedAtAttribute>().Any());
@@ -53,6 +54,28 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                 UpdatedAtProperty = dateChangedProperty;
                 UpdatedAtPropertyMetadata = new SqlPropertyMetadata(UpdatedAtProperty);
             }
+        }
+
+        /// <summary>
+        ///     Get join/nested properties
+        /// </summary>
+        /// <returns></returns>
+        private static SqlJoinPropertyMetadata[] GetJoinPropertyMetadata(PropertyInfo[] joinPropertiesInfo)
+        {
+            // Filter and get only non collection nested properties
+            var singleJoinTypes = joinPropertiesInfo.Where(p => !p.PropertyType.IsConstructedGenericType).ToArray();
+
+            var joinPropertyMetadatas = new List<SqlJoinPropertyMetadata>();
+
+            foreach (var propertyInfo in singleJoinTypes)
+            {
+                var joinInnerProperties = propertyInfo.PropertyType.GetProperties().Where(q => q.CanWrite)
+                    .Where(ExpressionHelper.GetPrimitivePropertiesPredicate());
+                joinPropertyMetadatas.AddRange(joinInnerProperties.Where(p => !p.GetCustomAttributes<NotMappedAttribute>().Any())
+                    .Select(p => new SqlJoinPropertyMetadata(propertyInfo, p)).ToArray());
+            }
+
+            return joinPropertyMetadatas.ToArray();
         }
     }
 }
