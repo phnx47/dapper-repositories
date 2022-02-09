@@ -34,12 +34,22 @@ namespace MicroOrm.Dapper.Repositories
         /// <summary>
         ///     Bulk Insert objects to DB
         /// </summary>
-        int BulkInsert(IEnumerable<TEntity> instances, IDbTransaction transaction = null);
+        int BulkInsert(IEnumerable<TEntity> instances);
 
         /// <summary>
         ///     Bulk Insert objects to DB
         /// </summary>
-        Task<int> BulkInsertAsync(IEnumerable<TEntity> instances, IDbTransaction transaction = null);
+        int BulkInsert(IEnumerable<TEntity> instances, IDbTransaction transaction);
+
+        /// <summary>
+        ///     Bulk Insert objects to DB
+        /// </summary>
+        Task<int> BulkInsertAsync(IEnumerable<TEntity> instances);
+
+        /// <summary>
+        ///     Bulk Insert objects to DB
+        /// </summary>
+        Task<int> BulkInsertAsync(IEnumerable<TEntity> instances, IDbTransaction transaction);
 
         /// <summary>
         ///     Delete object from DB
