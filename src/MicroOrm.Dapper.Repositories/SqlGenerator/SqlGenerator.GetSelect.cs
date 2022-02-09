@@ -78,15 +78,16 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                 sqlQuery.SqlBuilder.Append(" ROWS FETCH NEXT ");
                 sqlQuery.SqlBuilder.Append(filterData.LimitInfo.Limit);
                 sqlQuery.SqlBuilder.Append(" ROWS ONLY");
-                return;
             }
-
-            sqlQuery.SqlBuilder.Append("LIMIT ");
-            sqlQuery.SqlBuilder.Append(filterData.LimitInfo.Limit);
-            if (filterData.LimitInfo.Offset != null)
+            else
             {
-                sqlQuery.SqlBuilder.Append(" OFFSET ");
-                sqlQuery.SqlBuilder.Append(filterData.LimitInfo.Offset);
+                sqlQuery.SqlBuilder.Append("LIMIT ");
+                sqlQuery.SqlBuilder.Append(filterData.LimitInfo.Limit);
+                if (filterData.LimitInfo.Offset != null)
+                {
+                    sqlQuery.SqlBuilder.Append(" OFFSET ");
+                    sqlQuery.SqlBuilder.Append(filterData.LimitInfo.Offset);
+                }
             }
 
             if (!filterData.LimitInfo.Permanent)
