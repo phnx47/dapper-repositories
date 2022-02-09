@@ -16,27 +16,33 @@ namespace MicroOrm.Dapper.Repositories
         where TEntity : class
     {
         /// <inheritdoc />
-        public virtual int BulkInsert(IEnumerable<TEntity> instances, IDbTransaction transaction = null)
+        public virtual int BulkInsert(IEnumerable<TEntity> instances)
+        {
+            return BulkInsert(instances, null);
+        }
+
+        /// <inheritdoc />
+        public virtual int BulkInsert(IEnumerable<TEntity> instances, IDbTransaction transaction)
         {
             if (SqlGenerator.Provider == SqlProvider.MSSQL)
             {
-                int count = 0;
-                int totalInstances = instances.Count();
+                var count = 0;
+                var totalInstances = instances.Count();
 
                 var properties =
                     (SqlGenerator.IsIdentity
                         ? SqlGenerator.SqlProperties.Where(p => !p.PropertyName.Equals(SqlGenerator.IdentitySqlProperty.PropertyName, StringComparison.OrdinalIgnoreCase))
                         : SqlGenerator.SqlProperties).ToList();
 
-                int exceededTimes = (int) Math.Ceiling(totalInstances * properties.Count / 2099d);
+                var exceededTimes = (int)Math.Ceiling(totalInstances * properties.Count / 2099d);
                 if (exceededTimes > 1)
                 {
-                    int maxAllowedInstancesPerBatch = totalInstances / exceededTimes;
+                    var maxAllowedInstancesPerBatch = totalInstances / exceededTimes;
 
-                    for (int i = 0; i <= exceededTimes; i++)
+                    for (var i = 0; i <= exceededTimes; i++)
                     {
                         var skips = i * maxAllowedInstancesPerBatch;
-                        
+
                         if (skips >= totalInstances)
                             break;
 
@@ -54,24 +60,30 @@ namespace MicroOrm.Dapper.Repositories
         }
 
         /// <inheritdoc />
-        public virtual async Task<int> BulkInsertAsync(IEnumerable<TEntity> instances, IDbTransaction transaction = null)
+        public virtual Task<int> BulkInsertAsync(IEnumerable<TEntity> instances)
+        {
+            return BulkInsertAsync(instances, null);
+        }
+
+        /// <inheritdoc />
+        public virtual async Task<int> BulkInsertAsync(IEnumerable<TEntity> instances, IDbTransaction transaction)
         {
             if (SqlGenerator.Provider == SqlProvider.MSSQL)
             {
-                int count = 0;
-                int totalInstances = instances.Count();
+                var count = 0;
+                var totalInstances = instances.Count();
 
                 var properties =
                     (SqlGenerator.IsIdentity
                         ? SqlGenerator.SqlProperties.Where(p => !p.PropertyName.Equals(SqlGenerator.IdentitySqlProperty.PropertyName, StringComparison.OrdinalIgnoreCase))
                         : SqlGenerator.SqlProperties).ToList();
 
-                int exceededTimes = (int) Math.Ceiling(totalInstances * properties.Count / 2099d);
+                var exceededTimes = (int)Math.Ceiling(totalInstances * properties.Count / 2099d);
                 if (exceededTimes > 1)
                 {
-                    int maxAllowedInstancesPerBatch = totalInstances / exceededTimes;
+                    var maxAllowedInstancesPerBatch = totalInstances / exceededTimes;
 
-                    for (int i = 0; i <= exceededTimes; i++)
+                    for (var i = 0; i <= exceededTimes; i++)
                     {
                         var skips = i * maxAllowedInstancesPerBatch;
 
