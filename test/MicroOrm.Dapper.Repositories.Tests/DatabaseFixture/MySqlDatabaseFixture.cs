@@ -40,7 +40,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.DatabaseFixture
 
             Db.Connection.Execute($"USE `DAB`");
             Db.Connection.Execute("CREATE TABLE IF NOT EXISTS `Phones` " +
-                                  "(`Id` int not null auto_increment, `Number` varchar(256) not null, " +
+                                  "(`Id` int not null auto_increment, `PNumber` varchar(256) not null, " +
                                   "`IsActive` boolean not null, `Code` varchar(256) not null, PRIMARY KEY  (`Id`));");
 
             Db.Connection.Execute($"USE `{_dbName}`");

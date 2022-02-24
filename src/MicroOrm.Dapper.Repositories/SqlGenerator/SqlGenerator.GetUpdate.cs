@@ -57,7 +57,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
             query.SqlBuilder.Append(" WHERE ");
 
             query.SqlBuilder.Append(string.Join(" AND ", KeySqlProperties.Where(p => !p.IgnoreUpdate)
-                .Select(p => $"{TableName}.{p.ColumnName} = @{entity.GetType().Name}{p.PropertyName}")));
+                .Select(p => $"{TableName}.{p.ColumnName} = {ParameterSymbol}{entity.GetType().Name}{p.PropertyName}")));
 
             if (query.Param == null || !(query.Param is Dictionary<string, object> parameters))
                 parameters = new Dictionary<string, object>();
@@ -192,12 +192,12 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                 //*** Building update query for sqlite
                 //***
                 return string.Join(", ", properties
-                    .Select(p => $"{(useMarks ? p.ColumnName : p.CleanColumnName)} = @{p.PropertyInfo.ReflectedType.Name}{p.PropertyName}"));
+                    .Select(p => $"{(useMarks ? p.ColumnName : p.CleanColumnName)} = {ParameterSymbol}{p.PropertyInfo.ReflectedType.Name}{p.PropertyName}"));
             }
             else
             {
                 return string.Join(", ", properties
-                    .Select(p => $"{tableName}.{(useMarks ? p.ColumnName : p.CleanColumnName)} = @{p.PropertyInfo.ReflectedType.Name}{p.PropertyName}"));
+                    .Select(p => $"{tableName}.{(useMarks ? p.ColumnName : p.CleanColumnName)} = {ParameterSymbol}{p.PropertyInfo.ReflectedType.Name}{p.PropertyName}"));
             }
         }
     }

@@ -1,8 +1,10 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
+using Dapper;
 using MicroOrm.Dapper.Repositories.Extensions;
 using MicroOrm.Dapper.Repositories.SqlGenerator.QueryExpressions;
 
@@ -104,8 +106,21 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                         {
                             var vKey = string.Format("{0}_p{1}", qpExpr.PropertyName, qLevel); //Handle multiple uses of a field
 
-                            sqlBuilder.AppendFormat("{0}.{1} {2} @{3}", tableName, columnName, qpExpr.QueryOperator, vKey);
+                            sqlBuilder.AppendFormat("{0}.{1} {2} " + ParameterSymbol + "{3}", tableName, columnName, qpExpr.QueryOperator, vKey);
                             conditions.Add(new KeyValuePair<string, object>(vKey, qpExpr.PropertyValue));
+
+                            // in oracle, we should pass a null value instead of an empty list in case of query something like "select * from sometable where id in :id " and :id is empty.
+                            // make sure firsty the value in params is a type of generic list.
+                            // i dont like this solution. if anyone has a better way plz commit.
+                            if (Provider == SqlProvider.Oracle)
+                            {
+                                if(conditions[0].Value.GetType() != null && conditions[0].Value.GetType().IsGenericType && conditions[0].Value.GetType().GetGenericTypeDefinition() == typeof(List<>))
+                                {
+                                    var value = conditions[0].Value as IList;
+                                    if (value.Count == 0)
+                                        conditions[0] = new KeyValuePair<string, object>(vKey, null);
+                                }
+                            }
                         }
 
                         qLevel++;

@@ -1,4 +1,6 @@
+using Dapper;
 using System;
+using System.Data;
 
 namespace MicroOrm.Dapper.Repositories.SqlGenerator
 {
@@ -29,7 +31,9 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                     case SqlProvider.SQLite:
                         //SQLite doesn't use it.
                         break;
-                    
+                    case SqlProvider.Oracle:
+                        //Oracle doesn't use it.
+                        break;
                     default:
                         throw new ArgumentOutOfRangeException(nameof(Provider));
                 }
@@ -40,6 +44,14 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                 foreach (var propertyMetadata in SqlJoinProperties)
                     propertyMetadata.TableName = GetTableNameWithSchemaPrefix(propertyMetadata.TableName, propertyMetadata.TableSchema);
             }
+
+            // set ParameterSymbol with : and mapping Boolean type to Int
+            if (Provider == SqlProvider.Oracle)
+            {
+                ParameterSymbol = ":" ;
+                SqlMapper.AddTypeMap(typeof(bool), DbType.Int32);
+            }
+            
         }
 
         private void InitMetaData(string startQuotationMark, string endQuotationMark)

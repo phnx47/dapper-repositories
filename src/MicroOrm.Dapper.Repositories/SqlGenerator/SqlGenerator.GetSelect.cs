@@ -55,7 +55,9 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
             }
             else
             {
-                if (Provider != SqlProvider.MSSQL)
+                if (Provider == SqlProvider.Oracle)
+                    sqlQuery.SqlBuilder.Append("FETCH FIRST 1 ROW ONLY");
+                else if (Provider != SqlProvider.MSSQL)
                     sqlQuery.SqlBuilder
                         .Append("LIMIT 1");
             }
@@ -73,6 +75,14 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                 if (!filterData.Ordered)
                     return;
 
+                sqlQuery.SqlBuilder.Append("OFFSET ");
+                sqlQuery.SqlBuilder.Append(filterData.LimitInfo.Offset ?? 0);
+                sqlQuery.SqlBuilder.Append(" ROWS FETCH NEXT ");
+                sqlQuery.SqlBuilder.Append(filterData.LimitInfo.Limit);
+                sqlQuery.SqlBuilder.Append(" ROWS ONLY");
+            }
+            else if (Provider == SqlProvider.Oracle)
+            {
                 sqlQuery.SqlBuilder.Append("OFFSET ");
                 sqlQuery.SqlBuilder.Append(filterData.LimitInfo.Offset ?? 0);
                 sqlQuery.SqlBuilder.Append(" ROWS FETCH NEXT ");
@@ -118,7 +128,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
             var count = filterData.OrderInfo.Columns.Count;
             foreach (var col in filterData.OrderInfo.Columns)
             {
-                if (UseQuotationMarks == true && Provider != SqlProvider.SQLite)
+                if (UseQuotationMarks == true && Provider != SqlProvider.SQLite && Provider != SqlProvider.Oracle)
                 {
                     sqlQuery.SqlBuilder.Append(Provider == SqlProvider.MSSQL ? $"[{col}]" : $"`{col}`");
                 }
@@ -254,7 +264,8 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                 .Append(TableName)
                 .Append(".")
                 .Append(keyProperty.ColumnName)
-                .Append(" = @")
+                .Append(" = ")
+                .Append(ParameterSymbol)
                 .Append(keyProperty.PropertyName)
                 .Append(" ");
 
@@ -269,8 +280,12 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                     .Append(" ");
 
             if (includes.Length == 0 && Provider != SqlProvider.MSSQL)
-                sqlQuery.SqlBuilder
-                    .Append("LIMIT 1");
+            {
+                if(Provider == SqlProvider.Oracle)
+                    sqlQuery.SqlBuilder.Append("FETCH FIRST 1 ROWS ONLY");
+                else
+                    sqlQuery.SqlBuilder.Append("LIMIT 1");
+            }
 
             sqlQuery.SetParam(dictionary);
             return sqlQuery;
@@ -326,7 +341,6 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
             query.SqlBuilder.Append(filterData?.SelectInfo?.Columns == null
                 ? GetFieldsSelect(TableName, SqlProperties, UseQuotationMarks == true)
                 : GetFieldsSelect(filterData.SelectInfo.Columns));
-
             return query;
         }
 

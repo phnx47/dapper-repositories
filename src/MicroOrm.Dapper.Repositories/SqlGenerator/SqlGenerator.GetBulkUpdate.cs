@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Text;
 using MicroOrm.Dapper.Repositories.Attributes;
 
 namespace MicroOrm.Dapper.Repositories.SqlGenerator
@@ -26,6 +27,9 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
 
             var parameters = new Dictionary<string, object>();
 
+            //In Oracle we use MERGE INTO to excute multipe update with argument.
+            List<string> singleSelectsForOracle = new List<string>();
+
             for (var i = 0; i < entitiesArray.Length; i++)
             {
                 var entity = entitiesArray[i];
@@ -43,11 +47,19 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                     UpdatedAtProperty.SetValue(entity, offset.DateTime);
                 }
 
-                if (i > 0)
-                    query.SqlBuilder.Append("; ");
+                if (Provider != SqlProvider.Oracle)
+                {
+                    if (i > 0)
+                        query.SqlBuilder.Append("; ");
 
-                query.SqlBuilder.Append(
-                    $"UPDATE {TableName} SET {string.Join(", ", properties.Select(p => $"{p.ColumnName} = @{p.PropertyName}{i}"))} WHERE {string.Join(" AND ", KeySqlProperties.Where(p => !p.IgnoreUpdate).Select(p => $"{p.ColumnName} = @{p.PropertyName}{i}"))}");
+                    query.SqlBuilder.Append(
+                        $"UPDATE {TableName} SET {string.Join(", ", properties.Select(p => $"{p.ColumnName} = {ParameterSymbol}{p.PropertyName}{i}"))} WHERE {string.Join(" AND ", KeySqlProperties.Where(p => !p.IgnoreUpdate).Select(p => $"{p.ColumnName} = {ParameterSymbol}{p.PropertyName}{i}"))}");
+                }
+                else
+                {
+                    var singleSelect = $"SELECT {string.Join(", ", properties.Select(p => $"{ParameterSymbol}{p.PropertyName}{i} AS {p.ColumnName}"))}, {string.Join(" , ", KeySqlProperties.Where(p => !p.IgnoreUpdate).Select(p => $"{ParameterSymbol}{p.PropertyName}{i} AS {p.ColumnName}"))} FROM DUAL";
+                    singleSelectsForOracle.Add(singleSelect);
+                }
 
                 // ReSharper disable PossibleNullReferenceException
                 foreach (var property in properties)
@@ -60,6 +72,16 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
             }
 
             query.SetParam(parameters);
+
+            if (Provider == SqlProvider.Oracle)
+            {
+                var unionTName = $"{TableName}_BULKUPDATE";
+                var unionSelect = string.Join(" UNION ALL ", singleSelectsForOracle);
+                var unionOn = $"({string.Join(" AND ", KeySqlProperties.Where(p => !p.IgnoreUpdate).Select(p => $"{unionTName}.{p.ColumnName} = {TableName}.{p.ColumnName}"))})";
+                var unionSet = $"{string.Join(",", properties.Select(p => $"{p.ColumnName} = {unionTName}.{p.ColumnName} "))}";
+
+                query.SqlBuilder.Append($"MERGE INTO {TableName} {TableName} USING ({unionSelect}) {unionTName} ON {unionOn} WHEN MATCHED THEN UPDATE SET {unionSet}");
+            }
 
             return query;
         }

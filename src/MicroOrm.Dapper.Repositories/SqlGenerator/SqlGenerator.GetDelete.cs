@@ -15,7 +15,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         {
             var sqlQuery = new SqlQuery();
             var whereAndSql = 
-                string.Join(" AND ", KeySqlProperties.Select(p => string.Format("{0}.{1} = @{2}", TableName, p.ColumnName, p.PropertyName)));
+                string.Join(" AND ", KeySqlProperties.Select(p => string.Format("{0}.{1} = {2}", TableName, p.ColumnName, ParameterSymbol+p.PropertyName)));
 
             if (!LogicalDelete)
             {
@@ -51,7 +51,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                     sqlQuery.SqlBuilder
                         .Append(", ")
                         .Append(UpdatedAtPropertyMetadata.ColumnName)
-                        .Append(" = @")
+                        .Append($" = {ParameterSymbol}")
                         .Append(UpdatedAtPropertyMetadata.PropertyName);
                 }
 
@@ -89,7 +89,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                     sqlQuery.SqlBuilder
                         .Append(", ")
                         .Append(UpdatedAtPropertyMetadata.ColumnName)
-                        .Append(" = @")
+                        .Append($" = {ParameterSymbol}")
                         .Append(UpdatedAtPropertyMetadata.PropertyName);
 
                

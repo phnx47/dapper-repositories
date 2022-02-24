@@ -24,8 +24,18 @@ namespace MicroOrm.Dapper.Repositories
             var queryResult = SqlGenerator.GetInsert(instance);
             if (SqlGenerator.IsIdentity)
             {
-                var newId = Connection.Query<long>(queryResult.GetSql(), queryResult.Param, transaction).FirstOrDefault();
-                return SetValue(newId, instance);
+                if (SqlGenerator.Provider == Repositories.SqlGenerator.SqlProvider.Oracle)
+                {
+                    Connection.Execute(queryResult.GetSql(), queryResult.Param, transaction);
+                    int newId = ((DynamicParameters)(queryResult.Param)).Get<int>(":newId");
+                    return SetValue(newId, instance);
+                }
+                else
+                {
+                    var newId = Connection.Query<long>(queryResult.GetSql(), queryResult.Param, transaction).FirstOrDefault();
+                    return SetValue(newId, instance);
+                }
+                
             }
 
             return Connection.Execute(queryResult.GetSql(), instance, transaction) > 0;
@@ -43,8 +53,17 @@ namespace MicroOrm.Dapper.Repositories
             var queryResult = SqlGenerator.GetInsert(instance);
             if (SqlGenerator.IsIdentity)
             {
-                var newId = (await Connection.QueryAsync<long>(queryResult.GetSql(), queryResult.Param, transaction)).FirstOrDefault();
-                return SetValue(newId, instance);
+                if(SqlGenerator.Provider == Repositories.SqlGenerator.SqlProvider.Oracle)
+                {
+                    await Connection.ExecuteAsync(queryResult.GetSql(), queryResult.Param, transaction);
+                    int newId = ((DynamicParameters)(queryResult.Param)).Get<int>(":newId");
+                    return SetValue(newId, instance);
+                }
+                else
+                {
+                    var newId = (await Connection.QueryAsync<long>(queryResult.GetSql(), queryResult.Param, transaction)).FirstOrDefault();
+                    return SetValue(newId, instance);
+                }
             }
 
             return await Connection.ExecuteAsync(queryResult.GetSql(), instance, transaction) > 0;
