@@ -16,3 +16,8 @@ services:
     ports:
       - "1433:1433"
     restart: always
+  oracle:
+    image: quay.io/maksymbilenko/oracle-12c:latest
+    ports:
+      - "1521:1521"
+    restart: always
