@@ -7,7 +7,8 @@ services:
       - "3306:3306"
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: Password12!
+      - MYSQL_ROOT_PASSWORD=Password12!
+
   mssql:
     image: mcr.microsoft.com/mssql/server:2019-latest
     environment:
@@ -16,8 +17,10 @@ services:
     ports:
       - "1433:1433"
     restart: always
+
   oracle:
     image: quay.io/maksymbilenko/oracle-12c:latest
     ports:
       - "1521:1521"
+      - "8080:8080"
     restart: always
