@@ -2,8 +2,6 @@
 
 [![NuGet](https://img.shields.io/nuget/v/MicroOrm.Dapper.Repositories.svg)](https://www.nuget.org/packages/MicroOrm.Dapper.Repositories)
 [![NuGet](https://img.shields.io/nuget/dt/MicroOrm.Dapper.Repositories.svg)](https://www.nuget.org/packages/MicroOrm.Dapper.Repositories)
-[![Build status](https://ci.appveyor.com/api/projects/status/v4105ivo9emm3qus/branch/master?svg=true)](https://ci.appveyor.com/project/phnx47/dapper-repositories/branch/master)
-[![AppVeyor tests](https://img.shields.io/appveyor/tests/phnx47/dapper-repositories.svg)](https://ci.appveyor.com/project/phnx47/dapper-repositories/build/tests)
 [![CodeFactor](https://www.codefactor.io/repository/github/phnx47/dapper-repositories/badge)](https://www.codefactor.io/repository/github/phnx47/dapper-repositories)
 [![License MIT](https://img.shields.io/badge/license-MIT-green.svg)](https://opensource.org/licenses/MIT)
 
