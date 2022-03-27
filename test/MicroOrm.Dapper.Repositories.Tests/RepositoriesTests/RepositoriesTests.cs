@@ -22,7 +22,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.RepositoriesTests
             _testOutputHelper = testOutputHelper;
             MicroOrmConfig.AllowKeyAsIdentity = false;
         }
-
+        
         [Fact]
         public async Task ChangeDateInsertAndFind()
         {
@@ -166,10 +166,10 @@ namespace MicroOrm.Dapper.Repositories.Tests.RepositoriesTests
         [Fact]
         public async Task FindThroughtNavigationProperty()
         {
-            var user = await _db.Users.FindAsync<Phone>(x => x.Phone.Number == "123", x => x.Phone);
+            var user = await _db.Users.FindAsync<Phone>(x => x.Phone.PNumber == "123", x => x.Phone);
             Assert.Equal("TestName0", user.Name);
 
-            var user1 = await _db.Users.FindAsync<Phone>(x => x.Phone.Number == "2223", x => x.Phone);
+            var user1 = await _db.Users.FindAsync<Phone>(x => x.Phone.PNumber == "2223", x => x.Phone);
             Assert.Null(user1);
         }
 
@@ -218,13 +218,13 @@ namespace MicroOrm.Dapper.Repositories.Tests.RepositoriesTests
             var phone1 = await _db.Phones.FindAsync(x => x.IsActive);
             Assert.NotNull(phone1);
 
-            var phone2 = await _db.Phones.FindAsync(x => x.Number == "123" && !x.IsActive);
+            var phone2 = await _db.Phones.FindAsync(x => x.PNumber == "123" && !x.IsActive);
             Assert.Null(phone2);
 
             var phone3 = await _db.Phones.FindAsync(x => x.Id == 1 && x.IsActive);
             Assert.NotNull(phone3);
 
-            var phone4 = await _db.Phones.FindAsync(x => x.Number == "333" && !x.IsActive);
+            var phone4 = await _db.Phones.FindAsync(x => x.PNumber == "333" && !x.IsActive);
             Assert.NotNull(phone4);
         }
 
@@ -253,7 +253,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.RepositoriesTests
             Assert.True(user.Cars.Count == 2);
             Assert.Equal("TestCar0", user.Cars.First().Name);
             Assert.Equal("Street0", user.Addresses.Street);
-            Assert.Equal("123", user.Phone.Number);
+            Assert.Equal("123", user.Phone.PNumber);
         }
 
         [Fact]
@@ -263,7 +263,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.RepositoriesTests
             Assert.True(user.Cars.Count == 2);
             Assert.Equal("TestCar0", user.Cars.First().Name);
             Assert.Equal("Street0", user.Addresses.Street);
-            Assert.Equal("123", user.Phone.Number);
+            Assert.Equal("123", user.Phone.PNumber);
         }
 
         [Fact]
@@ -272,8 +272,8 @@ namespace MicroOrm.Dapper.Repositories.Tests.RepositoriesTests
             var user = _db.Users.FindAll<Phone, Car, Phone>(x => x.Id == 1, q => q.OfficePhone, q => q.Cars, q => q.Phone).First();
             Assert.True(user.Cars.Count == 2);
             Assert.Equal("TestCar0", user.Cars.First().Name);
-            Assert.Equal("333", user.OfficePhone.Number);
-            Assert.Equal("123", user.Phone.Number);
+            Assert.Equal("333", user.OfficePhone.PNumber);
+            Assert.Equal("123", user.Phone.PNumber);
         }
 
         [Fact]
@@ -282,8 +282,8 @@ namespace MicroOrm.Dapper.Repositories.Tests.RepositoriesTests
             var user = (await _db.Users.FindAllAsync<Phone, Car, Phone>(x => x.Id == 1, q => q.OfficePhone, q => q.Cars, q => q.Phone)).First();
             Assert.True(user.Cars.Count == 2);
             Assert.Equal("TestCar0", user.Cars.First().Name);
-            Assert.Equal("333", user.OfficePhone.Number);
-            Assert.Equal("123", user.Phone.Number);
+            Assert.Equal("333", user.OfficePhone.PNumber);
+            Assert.Equal("123", user.Phone.PNumber);
         }
 
         [Fact]

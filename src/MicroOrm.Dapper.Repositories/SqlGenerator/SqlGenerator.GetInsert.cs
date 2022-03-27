@@ -1,7 +1,9 @@
 using System;
 using System.Linq;
 using System.Reflection;
+using Dapper;
 using MicroOrm.Dapper.Repositories.Attributes;
+using MicroOrm.Dapper.Repositories.Extensions;
 
 namespace MicroOrm.Dapper.Repositories.SqlGenerator
 {
@@ -33,8 +35,22 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
 
             var query = new SqlQuery(entity);
 
+            //sorry, dapper doesn't support guid mapping in oracle.
+            //I can not convert guid to bytearray to build a seperate params, it can not be achieved in this lib.
+            //see details below to get more informations.
+            //https://github.com/DapperLib/Dapper/issues/633
+            //https://github.com/DapperLib/Dapper/issues/637
+            //https://github.com/vauto/Dapper.Database/pull/1
+
+            if (Provider == SqlProvider.Oracle)
+            {
+                var oracleParams = new DynamicParameters(entity);
+                oracleParams.AddOracleOutputParameterForId();
+                query.SetParam(oracleParams);
+            }
+
             query.SqlBuilder.AppendFormat("INSERT INTO {0} ({1}) VALUES ({2})", TableName, string.Join(", ", properties.Select(p => p.ColumnName)),
-                string.Join(", ", properties.Select(p => "@" + p.PropertyName))); // values
+                string.Join(", ", properties.Select(p => ParameterSymbol + p.PropertyName))); // values
 
             if (IsIdentity)
                 switch (Provider)
@@ -53,6 +69,10 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
 
                     case SqlProvider.PostgreSQL:
                         query.SqlBuilder.Append(" RETURNING " + IdentitySqlProperty.ColumnName);
+                        break;
+
+                    case SqlProvider.Oracle:
+                        query.SqlBuilder.Append(" RETURNING " + IdentitySqlProperty.ColumnName + " INTO :newId");
                         break;
 
                     default:

@@ -24,6 +24,11 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         /// <summary>
         /// SQLite
         /// </summary>
-        SQLite
+        SQLite,
+
+        /// <summary>
+        /// Oracle
+        /// </summary>
+        Oracle
     }
 }

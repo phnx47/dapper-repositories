@@ -60,11 +60,12 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         private void AppendJoinQuery(JoinAttributeBase attrJoin, StringBuilder joinBuilder, string tableName)
         {
             var joinString = attrJoin.ToString();
+            var joinAs = Provider == SqlProvider.Oracle ? " " : " AS ";
             if (attrJoin is CrossJoinAttribute)
             {
                 joinBuilder.Append(attrJoin.TableAlias == string.Empty
                     ? $"{joinString} {attrJoin.TableName} "
-                    : $"{joinString} {attrJoin.TableName} AS {attrJoin.TableAlias} ");
+                    : $"{joinString} {attrJoin.TableName}{joinAs}{attrJoin.TableAlias} ");
             }
             else
             {
@@ -92,7 +93,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
 
                 joinBuilder.Append(attrJoin.TableAlias == string.Empty
                     ? $"{joinString} {attrJoin.TableName} ON {tableName}.{attrJoin.Key} = {attrJoin.TableName}.{attrJoin.ExternalKey} {customFilter}"
-                    : $"{joinString} {attrJoin.TableName} AS {attrJoin.TableAlias} ON {tableName}.{attrJoin.Key} = {attrJoin.TableAlias}.{attrJoin.ExternalKey} {customFilter}");
+                    : $"{joinString} {attrJoin.TableName}{joinAs}{attrJoin.TableAlias} ON {tableName}.{attrJoin.Key} = {attrJoin.TableAlias}.{attrJoin.ExternalKey} {customFilter}");
             }
         }
 

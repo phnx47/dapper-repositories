@@ -104,7 +104,10 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         /// <inheritdoc />
         public object LogicalDeleteValue { get; protected set; }
 
-
+        /// <summary>
+        ///     In Oracle parameter should be build with : instead of @. 
+        /// </summary>
+        public string ParameterSymbol { get; protected set; } = "@";
         private enum QueryType
         {
             Select,

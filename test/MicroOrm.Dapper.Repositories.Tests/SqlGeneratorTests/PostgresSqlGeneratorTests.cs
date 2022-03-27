@@ -100,14 +100,14 @@ namespace MicroOrm.Dapper.Repositories.Tests.SqlGeneratorTests
             ISqlGenerator<Phone> userSqlGenerator = new SqlGenerator<Phone>(_sqlConnector);
             var phones = new List<Phone>
             {
-                new Phone { Id = 10, IsActive = true, Number = "111" },
-                new Phone { Id = 10, IsActive = false, Number = "222" }
+                new Phone { Id = 10, IsActive = true, PNumber = "111" },
+                new Phone { Id = 10, IsActive = false, PNumber = "222" }
             };
 
             var sqlQuery = userSqlGenerator.GetBulkUpdate(phones);
 
-            Assert.Equal("UPDATE DAB.Phones SET Number = @Number0, IsActive = @IsActive0 WHERE Id = @Id0; " +
-                         "UPDATE DAB.Phones SET Number = @Number1, IsActive = @IsActive1 WHERE Id = @Id1", sqlQuery.GetSql());
+            Assert.Equal("UPDATE DAB.Phones SET PNumber = @PNumber0, IsActive = @IsActive0 WHERE Id = @Id0; " +
+                         "UPDATE DAB.Phones SET PNumber = @PNumber1, IsActive = @IsActive1 WHERE Id = @Id1", sqlQuery.GetSql());
         }
 
         [Fact]
@@ -116,14 +116,14 @@ namespace MicroOrm.Dapper.Repositories.Tests.SqlGeneratorTests
             ISqlGenerator<Phone> userSqlGenerator = new SqlGenerator<Phone>(_sqlConnector, true);
             var phones = new List<Phone>
             {
-                new Phone { Id = 10, IsActive = true, Number = "111" },
-                new Phone { Id = 10, IsActive = false, Number = "222" }
+                new Phone { Id = 10, IsActive = true, PNumber = "111" },
+                new Phone { Id = 10, IsActive = false, PNumber = "222" }
             };
 
             var sqlQuery = userSqlGenerator.GetBulkUpdate(phones);
 
-            Assert.Equal("UPDATE \"DAB\".\"Phones\" SET \"Number\" = @Number0, \"IsActive\" = @IsActive0 WHERE \"Id\" = @Id0; " +
-                         "UPDATE \"DAB\".\"Phones\" SET \"Number\" = @Number1, \"IsActive\" = @IsActive1 WHERE \"Id\" = @Id1", sqlQuery.GetSql());
+            Assert.Equal("UPDATE \"DAB\".\"Phones\" SET \"PNumber\" = @PNumber0, \"IsActive\" = @IsActive0 WHERE \"Id\" = @Id0; " +
+                         "UPDATE \"DAB\".\"Phones\" SET \"PNumber\" = @PNumber1, \"IsActive\" = @IsActive1 WHERE \"Id\" = @Id1", sqlQuery.GetSql());
         }
     }
 }

@@ -60,6 +60,9 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
 
                     break;
 
+                case SqlProvider.Oracle:
+                    break;
+
                 default:
                     throw new ArgumentOutOfRangeException(nameof(Provider));
             }
