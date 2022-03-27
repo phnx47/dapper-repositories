@@ -73,13 +73,13 @@ namespace MicroOrm.Dapper.Repositories
                     if (expr.Body is UnaryExpression lambdaUnary)
                     {
                         var expression = lambdaUnary.Operand as MemberExpression;
-                        order.Columns = new List<string> {GetProperty(expression, type)};
+                        order.Columns = new List<string> { GetProperty(expression, type) };
                     }
 
                     break;
                 }
                 case ExpressionType.MemberAccess:
-                    order.Columns = new List<string> {GetProperty(expr.Body, type)};
+                    order.Columns = new List<string> { GetProperty(expr.Body, type) };
                     break;
                 default:
                 {

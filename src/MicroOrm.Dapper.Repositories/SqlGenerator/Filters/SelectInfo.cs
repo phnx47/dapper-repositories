@@ -14,6 +14,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator.Filters
         {
             Columns = new List<string>();
         }
+
         /// <summary>
         /// Columns
         /// </summary>

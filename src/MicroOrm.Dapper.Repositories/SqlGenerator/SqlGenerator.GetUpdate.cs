@@ -128,7 +128,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
             var setProperties = setPropertyObj.GetType().GetProperties();
             var properties = SqlProperties
                 .Where(p => !KeySqlProperties.Any(k => k.PropertyName.Equals(p.PropertyName, StringComparison.OrdinalIgnoreCase)) && !p.IgnoreUpdate
-                 && setProperties.Any(k => k.Name.Equals(p.PropertyName, StringComparison.OrdinalIgnoreCase)))
+                    && setProperties.Any(k => k.Name.Equals(p.PropertyName, StringComparison.OrdinalIgnoreCase)))
                 .ToArray();
 
             var query = new SqlQuery();
@@ -145,9 +145,11 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
             foreach (var metadata in properties)
             {
                 var setProp = setProperties.FirstOrDefault(p => p.Name.Equals(metadata.PropertyName, StringComparison.OrdinalIgnoreCase));
-                if (setProp == null) continue;
+                if (setProp == null)
+                    continue;
                 parameters.Add($"{typeof(TEntity).Name}{metadata.PropertyName}", setProp.GetValue(setPropertyObj));
             }
+
             return query;
         }
 
@@ -160,9 +162,10 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                 string keys = string.Join(",", propNameExceptItems.Select(p => p));
                 throw new ArgumentException(string.Concat(nameof(setPropertyDict), "content error detail:", $" [{keys}] not equal entity column name"));
             }
+
             var properties = SqlProperties
                 .Where(p => !KeySqlProperties.Any(k => k.PropertyName.Equals(p.PropertyName, StringComparison.OrdinalIgnoreCase)) && !p.IgnoreUpdate
-                 && setPropertyDict.Any(k => k.Key.Equals(p.PropertyName, StringComparison.OrdinalIgnoreCase)))
+                    && setPropertyDict.Any(k => k.Key.Equals(p.PropertyName, StringComparison.OrdinalIgnoreCase)))
                 .ToArray();
 
             var query = new SqlQuery();
@@ -181,6 +184,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                 var value = setPropertyDict.FirstOrDefault(p => p.Key.Equals(metadata.PropertyName, StringComparison.OrdinalIgnoreCase)).Value;
                 parameters.Add($"{typeof(TEntity).Name}{metadata.PropertyName}", value);
             }
+
             return query;
         }
 

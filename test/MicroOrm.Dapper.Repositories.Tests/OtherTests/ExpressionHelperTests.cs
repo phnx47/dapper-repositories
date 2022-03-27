@@ -1,7 +1,5 @@
 using System;
-
 using MicroOrm.Dapper.Repositories.SqlGenerator;
-
 using Xunit;
 
 namespace MicroOrm.Dapper.Repositories.Tests.OtherTests
@@ -54,6 +52,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.OtherTests
             var result3 = ExpressionHelper.GetMethodCallSqlOperator("EndsWith");
             Assert.Equal("LIKE", result3);
         }
+
         [Fact]
         public void GetSqlLikeValue_Like()
         {

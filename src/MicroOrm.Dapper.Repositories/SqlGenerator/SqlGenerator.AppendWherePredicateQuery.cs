@@ -114,7 +114,8 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                             // i dont like this solution. if anyone has a better way plz commit.
                             if (Provider == SqlProvider.Oracle)
                             {
-                                if(conditions[0].Value.GetType() != null && conditions[0].Value.GetType().IsGenericType && conditions[0].Value.GetType().GetGenericTypeDefinition() == typeof(List<>))
+                                if (conditions[0].Value.GetType() != null && conditions[0].Value.GetType().IsGenericType &&
+                                    conditions[0].Value.GetType().GetGenericTypeDefinition() == typeof(List<>))
                                 {
                                     var value = conditions[0].Value as IList;
                                     if (value.Count == 0)
@@ -152,7 +153,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
             switch (queryNode)
             {
                 case QueryParameterExpression qpExpr:
-                    return new List<QueryExpression> {queryNode};
+                    return new List<QueryExpression> { queryNode };
 
                 case QueryBinaryExpression qbExpr:
                     return qbExpr.Nodes;

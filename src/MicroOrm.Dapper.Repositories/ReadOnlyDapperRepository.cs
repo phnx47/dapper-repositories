@@ -65,7 +65,8 @@ namespace MicroOrm.Dapper.Repositories
         {
             Connection?.Dispose();
             Connection = null;
-            if (FilterData == null) return;
+            if (FilterData == null)
+                return;
             FilterData.LimitInfo = null;
             if (FilterData.OrderInfo != null)
             {

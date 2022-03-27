@@ -5,7 +5,7 @@ using System;
 
 namespace MicroOrm.Dapper.Repositories.Tests.DatabaseFixture
 {
-    public  class Oracle12cDatabaseFixture : IDisposable
+    public class Oracle12cDatabaseFixture : IDisposable
     {
         /*
          * https://github.com/MaksymBilenko/docker-oracle-12c
@@ -14,11 +14,14 @@ namespace MicroOrm.Dapper.Repositories.Tests.DatabaseFixture
          */
         public Oracle12cDatabaseFixture()
         {
-            Db = new OracleDbContext("DATA SOURCE=(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=localhost)(PORT=1521))(CONNECT_DATA=(SERVICE_NAME=xe)));User Id=system;Password=oracle");
+            Db = new OracleDbContext(
+                "DATA SOURCE=(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=localhost)(PORT=1521))(CONNECT_DATA=(SERVICE_NAME=xe)));User Id=system;Password=oracle");
 
             InitDb();
         }
+
         public OracleDbContext Db { get; }
+
         public void Dispose()
         {
             Db.Dispose();

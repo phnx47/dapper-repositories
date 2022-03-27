@@ -5,7 +5,6 @@ using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text;
-
 using MicroOrm.Dapper.Repositories.Extensions;
 
 [assembly: InternalsVisibleTo("MicroOrm.Dapper.Repositories.Tests")]
@@ -82,8 +81,8 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
 
                 case UnaryExpression unaryExpression
                     when (unaryExpression.NodeType == ExpressionType.Convert
-                        || unaryExpression.NodeType == ExpressionType.ConvertChecked)
-                    && (unaryExpression.Type.UnwrapNullableType() == unaryExpression.Operand.Type):
+                          || unaryExpression.NodeType == ExpressionType.ConvertChecked)
+                         && (unaryExpression.Type.UnwrapNullableType() == unaryExpression.Operand.Type):
                     return GetValue(unaryExpression.Operand, out parameterName);
             }
 
@@ -193,7 +192,8 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
 
         public static Func<PropertyInfo, bool> GetPrimitivePropertiesPredicate()
         {
-            return p => p.CanWrite && (p.PropertyType.IsValueType || p.GetCustomAttributes<ColumnAttribute>().Any() || p.PropertyType == typeof(string) || p.PropertyType == typeof(byte[]));
+            return p => p.CanWrite && (p.PropertyType.IsValueType || p.GetCustomAttributes<ColumnAttribute>().Any() || p.PropertyType == typeof(string) ||
+                                       p.PropertyType == typeof(byte[]));
         }
 
         public static object GetValuesFromStringMethod(MethodCallExpression callExpr)
@@ -206,7 +206,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         public static object GetValuesFromCollection(MethodCallExpression callExpr)
         {
             var expr = (callExpr.Method.IsStatic ? callExpr.Arguments.First() : callExpr.Object)
-                            as MemberExpression;
+                as MemberExpression;
 
             try
             {

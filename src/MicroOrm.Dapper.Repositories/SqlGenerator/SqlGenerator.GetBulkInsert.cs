@@ -53,14 +53,16 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
 
                 values.Add(string.Format("({0})", string.Join(", ", properties.Select(p => ParameterSymbol + p.PropertyName + i))));
             }
-            if(Provider != SqlProvider.Oracle) { 
+
+            if (Provider != SqlProvider.Oracle)
+            {
                 query.SqlBuilder.AppendFormat("INSERT INTO {0} ({1}) VALUES {2}", TableName, string.Join(", ", properties.Select(p => p.ColumnName)),
                     string.Join(",", values)); // values
             }
             else
             {
                 query.SqlBuilder.AppendFormat("INSERT INTO {0} ({1})", TableName, string.Join(", ", properties.Select(p => p.ColumnName)));
-                var singleInsert = values.Select(v => " SELECT " + v.Substring(1, v.Length-2) + " FROM DUAL ");
+                var singleInsert = values.Select(v => " SELECT " + v.Substring(1, v.Length - 2) + " FROM DUAL ");
                 query.SqlBuilder.Append(string.Join("UNION ALL", singleInsert));
             }
 

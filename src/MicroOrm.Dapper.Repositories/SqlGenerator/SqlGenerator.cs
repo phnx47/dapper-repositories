@@ -108,6 +108,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         ///     In Oracle parameter should be build with : instead of @. 
         /// </summary>
         public string ParameterSymbol { get; protected set; } = "@";
+
         private enum QueryType
         {
             Select,

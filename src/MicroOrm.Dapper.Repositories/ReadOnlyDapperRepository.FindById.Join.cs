@@ -252,9 +252,9 @@ namespace MicroOrm.Dapper.Repositories
             Expression<Func<TEntity, object>> tChild5,
             Expression<Func<TEntity, object>> tChild6)
         {
-            return FindByIdAsync<TChild1, TChild2, TChild3, TChild4, TChild5, TChild6>(id,  tChild1, tChild2, tChild3, tChild4, tChild5, tChild6, null);
+            return FindByIdAsync<TChild1, TChild2, TChild3, TChild4, TChild5, TChild6>(id, tChild1, tChild2, tChild3, tChild4, tChild5, tChild6, null);
         }
-        
+
         /// <inheritdoc />
         public virtual async Task<TEntity> FindByIdAsync<TChild1, TChild2, TChild3, TChild4, TChild5, TChild6>(object id,
             Expression<Func<TEntity, object>> tChild1,

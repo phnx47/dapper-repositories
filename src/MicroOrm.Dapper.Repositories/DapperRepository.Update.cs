@@ -21,7 +21,7 @@ namespace MicroOrm.Dapper.Repositories
         /// <inheritdoc />
         public virtual bool Update(TEntity instance, IDbTransaction transaction, params Expression<Func<TEntity, object>>[] includes)
         {
-            var sqlQuery = SqlGenerator.GetUpdate(instance,includes);
+            var sqlQuery = SqlGenerator.GetUpdate(instance, includes);
             var updated = Connection.Execute(sqlQuery.GetSql(), sqlQuery.Param, transaction) > 0;
             return updated;
         }
@@ -35,7 +35,7 @@ namespace MicroOrm.Dapper.Repositories
         /// <inheritdoc />
         public virtual async Task<bool> UpdateAsync(TEntity instance, IDbTransaction transaction, params Expression<Func<TEntity, object>>[] includes)
         {
-            var sqlQuery = SqlGenerator.GetUpdate(instance,includes);
+            var sqlQuery = SqlGenerator.GetUpdate(instance, includes);
             var updated = await Connection.ExecuteAsync(sqlQuery.GetSql(), sqlQuery.Param, transaction) > 0;
             return updated;
         }
@@ -61,7 +61,8 @@ namespace MicroOrm.Dapper.Repositories
         }
 
         /// <inheritdoc />
-        public virtual async Task<bool> UpdateAsync(Expression<Func<TEntity, bool>> predicate, TEntity instance, IDbTransaction transaction, params Expression<Func<TEntity, object>>[] includes)
+        public virtual async Task<bool> UpdateAsync(Expression<Func<TEntity, bool>> predicate, TEntity instance, IDbTransaction transaction,
+            params Expression<Func<TEntity, object>>[] includes)
         {
             var sqlQuery = SqlGenerator.GetUpdate(predicate, instance, includes);
             var updated = await Connection.ExecuteAsync(sqlQuery.GetSql(), sqlQuery.Param, transaction) > 0;

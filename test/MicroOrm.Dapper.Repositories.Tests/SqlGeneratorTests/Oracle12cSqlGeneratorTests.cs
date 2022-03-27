@@ -241,7 +241,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.SqlGeneratorTests
 
             Assert.Equal("MERGE INTO Phones Phones " +
                          "USING (" +
-                         "SELECT :PNumber0 AS PNumber, :IsActive0 AS IsActive, :Id0 AS Id FROM DUAL " + 
+                         "SELECT :PNumber0 AS PNumber, :IsActive0 AS IsActive, :Id0 AS Id FROM DUAL " +
                          "UNION ALL " +
                          "SELECT :PNumber1 AS PNumber, :IsActive1 AS IsActive, :Id1 AS Id FROM DUAL" +
                          ") Phones_BULKUPDATE ON (Phones_BULKUPDATE.Id = Phones.Id) " +

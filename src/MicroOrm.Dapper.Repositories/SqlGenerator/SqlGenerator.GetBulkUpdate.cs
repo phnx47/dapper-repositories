@@ -57,7 +57,8 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                 }
                 else
                 {
-                    var singleSelect = $"SELECT {string.Join(", ", properties.Select(p => $"{ParameterSymbol}{p.PropertyName}{i} AS {p.ColumnName}"))}, {string.Join(" , ", KeySqlProperties.Where(p => !p.IgnoreUpdate).Select(p => $"{ParameterSymbol}{p.PropertyName}{i} AS {p.ColumnName}"))} FROM DUAL";
+                    var singleSelect =
+                        $"SELECT {string.Join(", ", properties.Select(p => $"{ParameterSymbol}{p.PropertyName}{i} AS {p.ColumnName}"))}, {string.Join(" , ", KeySqlProperties.Where(p => !p.IgnoreUpdate).Select(p => $"{ParameterSymbol}{p.PropertyName}{i} AS {p.ColumnName}"))} FROM DUAL";
                     singleSelectsForOracle.Add(singleSelect);
                 }
 

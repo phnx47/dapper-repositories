@@ -6,7 +6,7 @@ using MicroOrm.Dapper.Repositories.Attributes.Joins;
 namespace MicroOrm.Dapper.Repositories.Tests.Classes
 {
     [Table("Reports")]
-    public  class Report
+    public class Report
     {
         [Key]
         [IgnoreUpdate]

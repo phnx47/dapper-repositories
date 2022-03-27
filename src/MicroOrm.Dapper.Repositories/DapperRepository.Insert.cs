@@ -35,7 +35,6 @@ namespace MicroOrm.Dapper.Repositories
                     var newId = Connection.Query<long>(queryResult.GetSql(), queryResult.Param, transaction).FirstOrDefault();
                     return SetValue(newId, instance);
                 }
-                
             }
 
             return Connection.Execute(queryResult.GetSql(), instance, transaction) > 0;
@@ -53,7 +52,7 @@ namespace MicroOrm.Dapper.Repositories
             var queryResult = SqlGenerator.GetInsert(instance);
             if (SqlGenerator.IsIdentity)
             {
-                if(SqlGenerator.Provider == Repositories.SqlGenerator.SqlProvider.Oracle)
+                if (SqlGenerator.Provider == Repositories.SqlGenerator.SqlProvider.Oracle)
                 {
                     await Connection.ExecuteAsync(queryResult.GetSql(), queryResult.Param, transaction);
                     int newId = ((DynamicParameters)(queryResult.Param)).Get<int>(":newId");
@@ -77,6 +76,7 @@ namespace MicroOrm.Dapper.Repositories
                 var newParsedId = Convert.ChangeType(newId, SqlGenerator.IdentitySqlProperty.PropertyInfo.PropertyType);
                 SqlGenerator.IdentitySqlProperty.PropertyInfo.SetValue(instance, newParsedId);
             }
+
             return added;
         }
     }

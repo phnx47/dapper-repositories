@@ -40,7 +40,7 @@ namespace MicroOrm.Dapper.Repositories
                     if (expr.Body is UnaryExpression lambdaUnary)
                     {
                         var expression = lambdaUnary.Operand as MemberExpression;
-                        order.Columns = new List<string> {GetProperty(expression, type)};
+                        order.Columns = new List<string> { GetProperty(expression, type) };
                     }
 
                     break;
@@ -69,7 +69,7 @@ namespace MicroOrm.Dapper.Repositories
         {
             return SetGroupBy(false, expr);
         }
-        
+
         /// <inheritdoc />
         public virtual IReadOnlyDapperRepository<TEntity> SetOrderBy<T>(Expression<Func<T, object>> expr)
         {

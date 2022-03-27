@@ -40,14 +40,14 @@ namespace MicroOrm.Dapper.Repositories
             {
                 var prop = ExpressionHelper.GetPropertyName(s);
                 var childProp = type.GetProperty(prop);
-                
-                if (childProp == null) 
+
+                if (childProp == null)
                     continue;
-                
+
                 childProperties.Add(childProp);
                 var childType = childProp.PropertyType.IsGenericType ? childProp.PropertyType.GenericTypeArguments[0] : childProp.PropertyType;
                 var properties = childType.FindClassPrimitiveProperties();
-               
+
                 childKeyProperties.AddRange(properties.Where(p => p.GetCustomAttributes<KeyAttribute>().Any()));
             }
 
@@ -131,16 +131,16 @@ namespace MicroOrm.Dapper.Repositories
             {
                 var prop = ExpressionHelper.GetPropertyName(s);
                 var childProp = type.GetProperty(prop);
-                
-                if (childProp == null) 
+
+                if (childProp == null)
                     continue;
-                
+
                 childProperties.Add(childProp);
                 var childType = childProp.PropertyType.IsGenericType ? childProp.PropertyType.GenericTypeArguments[0] : childProp.PropertyType;
                 var properties = childType.FindClassPrimitiveProperties();
                 childKeyProperties.AddRange(properties.Where(p => p.GetCustomAttributes<KeyAttribute>().Any()));
             }
-            
+
             if (!childKeyProperties.Any())
                 throw new NotSupportedException("Join doesn't support without [Key] attribute");
 
@@ -218,7 +218,7 @@ namespace MicroOrm.Dapper.Repositories
 
                 if (childProperty.PropertyType.IsGenericType)
                 {
-                    var list = (IList) childProperty.GetValue(target);
+                    var list = (IList)childProperty.GetValue(target);
                     if (list == null)
                     {
                         switch (i)

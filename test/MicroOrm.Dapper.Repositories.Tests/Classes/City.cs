@@ -10,6 +10,5 @@ namespace MicroOrm.Dapper.Repositories.Tests.Classes
         public Guid Identifier { get; set; }
 
         public string Name { get; set; }
-
     }
 }

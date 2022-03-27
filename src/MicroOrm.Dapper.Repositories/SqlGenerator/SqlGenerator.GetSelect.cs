@@ -109,7 +109,8 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         /// </summary>
         private void SetOrder(SqlQuery sqlQuery, FilterData filterData)
         {
-            if (filterData?.OrderInfo == null) return;
+            if (filterData?.OrderInfo == null)
+                return;
 
             sqlQuery.SqlBuilder.Append("ORDER BY ");
             if (!string.IsNullOrEmpty(filterData.OrderInfo.CustomQuery))
@@ -165,7 +166,8 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         /// </summary>
         private void GroupBy(SqlQuery sqlQuery, FilterData filterData)
         {
-            if (filterData?.GroupInfo == null) return;
+            if (filterData?.GroupInfo == null)
+                return;
 
             sqlQuery.SqlBuilder.Append("GROUP BY ");
             if (!string.IsNullOrEmpty(filterData.GroupInfo.CustomQuery))
@@ -256,7 +258,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
 
             IDictionary<string, object> dictionary = new Dictionary<string, object>
             {
-                {keyProperty.PropertyName, id}
+                { keyProperty.PropertyName, id }
             };
 
             sqlQuery.SqlBuilder
@@ -281,7 +283,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
 
             if (includes.Length == 0 && Provider != SqlProvider.MSSQL)
             {
-                if(Provider == SqlProvider.Oracle)
+                if (Provider == SqlProvider.Oracle)
                     sqlQuery.SqlBuilder.Append("FETCH FIRST 1 ROWS ONLY");
                 else
                     sqlQuery.SqlBuilder.Append("LIMIT 1");

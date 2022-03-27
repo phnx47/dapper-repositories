@@ -115,11 +115,12 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                     }
 
                     var propertyValue = ExpressionHelper.GetValue(binaryExpression.Right);
-                    var nodeType = checkNullable ? ((bool) propertyValue == false ? ExpressionType.Equal : ExpressionType.NotEqual) : binaryExpression.NodeType;
+                    var nodeType = checkNullable ? ((bool)propertyValue == false ? ExpressionType.Equal : ExpressionType.NotEqual) : binaryExpression.NodeType;
                     if (checkNullable)
                     {
                         propertyValue = null;
                     }
+
                     var opr = ExpressionHelper.GetSqlOperator(nodeType);
                     var link = ExpressionHelper.GetSqlOperator(linkingType);
 
@@ -142,7 +143,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                                         var nodes = new QueryBinaryExpression
                                         {
                                             LinkingOperator = leftExpr.LinkingOperator,
-                                            Nodes = new List<QueryExpression> {leftExpr}
+                                            Nodes = new List<QueryExpression> { leftExpr }
                                         };
 
                                         rQBExpr.Nodes[0].LinkingOperator = rQBExpr.LinkingOperator;
@@ -207,7 +208,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                 {
                     NodeType = QueryExpressionType.Binary,
                     LinkingOperator = nLinkingOperator,
-                    Nodes = new List<QueryExpression> {leftExpr, rightExpr},
+                    Nodes = new List<QueryExpression> { leftExpr, rightExpr },
                 };
             }
 

@@ -40,7 +40,8 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         }
 
         /// <inheritdoc />
-        public virtual SqlQuery GetCount(Expression<Func<TEntity, bool>> predicate, Expression<Func<TEntity, object>> distinctField, params Expression<Func<TEntity, object>>[] includes)
+        public virtual SqlQuery GetCount(Expression<Func<TEntity, bool>> predicate, Expression<Func<TEntity, object>> distinctField,
+            params Expression<Func<TEntity, object>>[] includes)
         {
             var propertyName = ExpressionHelper.GetPropertyName(distinctField);
             var property = SqlProperties.First(x => x.PropertyName == propertyName);

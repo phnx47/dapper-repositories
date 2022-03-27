@@ -48,10 +48,9 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
             // set ParameterSymbol with : and mapping Boolean type to Int
             if (Provider == SqlProvider.Oracle)
             {
-                ParameterSymbol = ":" ;
+                ParameterSymbol = ":";
                 SqlMapper.AddTypeMap(typeof(bool), DbType.Int32);
             }
-            
         }
 
         private void InitMetaData(string startQuotationMark, string endQuotationMark)
@@ -68,7 +67,8 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
             {
                 propertyMetadata.TableName = GetTableNameWithSchemaPrefix(propertyMetadata.TableName, propertyMetadata.TableSchema, startQuotationMark, endQuotationMark);
                 propertyMetadata.ColumnName = startQuotationMark + propertyMetadata.CleanColumnName + endQuotationMark;
-                propertyMetadata.TableAlias = string.IsNullOrEmpty(propertyMetadata.TableAlias) ? string.Empty : startQuotationMark + propertyMetadata.TableAlias + endQuotationMark;
+                propertyMetadata.TableAlias =
+                    string.IsNullOrEmpty(propertyMetadata.TableAlias) ? string.Empty : startQuotationMark + propertyMetadata.TableAlias + endQuotationMark;
             }
 
             if (IdentitySqlProperty != null)

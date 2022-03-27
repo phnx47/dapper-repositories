@@ -8,8 +8,8 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator.Filters
         /// <summary>
         /// The query select settings
         /// </summary>
-        public SelectInfo SelectInfo { get; set; }   
-        
+        public SelectInfo SelectInfo { get; set; }
+
         /// <summary>
         /// The query order settings
         /// </summary>

@@ -22,7 +22,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.RepositoriesTests
             _testOutputHelper = testOutputHelper;
             MicroOrmConfig.AllowKeyAsIdentity = false;
         }
-        
+
         [Fact]
         public async Task ChangeDateInsertAndFind()
         {
