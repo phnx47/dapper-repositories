@@ -28,6 +28,11 @@ ProjectSection(SolutionItems) = preProject
 	.github\renovate.json = .github\renovate.json
 EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{54F980A1-0415-40BE-A55C-31D3844731FD}"
+	ProjectSection(SolutionItems) = preProject
+		.github\workflows\ci.yml = .github\workflows\ci.yml
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -50,6 +55,7 @@ Global
 		{EC3073B6-AD9A-491D-A117-8A3C771DD634} = {E409731D-9AB4-4389-B611-53A3AF8324A4}
 		{C1FDB39A-B2B9-4561-B38F-AB95783AEAD3} = {4EAE3A6B-35A5-4C95-AAB6-1D977F63184B}
 		{90BBE8FB-0990-41D0-9754-D08DCAC415D5} = {BC29F662-3E4D-411F-A4DA-93BE1BF81012}
+		{54F980A1-0415-40BE-A55C-31D3844731FD} = {90BBE8FB-0990-41D0-9754-D08DCAC415D5}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {4D543221-E30F-4763-AAC8-A744A0F8D88E}

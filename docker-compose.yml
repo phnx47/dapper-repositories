@@ -1,0 +1,10 @@
+version: '3.9'
+
+services:
+  database:
+    image: mysql:latest
+    ports:
+      - "3306:3306"
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: Password12!
