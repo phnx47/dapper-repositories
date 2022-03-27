@@ -24,7 +24,7 @@ jobs:
       - name: 🗜 Pack Dev artifacts
         if: github.ref == 'refs/heads/master'
         run: dotnet pack --no-build -c Release --version-suffix dev-$(date +%s) -o artifacts/
-      - name: 🗜 Pack Nuget artifacts
+      - name: 🗜 Pack NuGet artifacts
         if: startsWith(github.ref, 'refs/tags/v')
         run: dotnet pack --no-build -c Release -o artifacts/
       - name: 🗄 Publish artifacts
@@ -34,7 +34,7 @@ jobs:
           path: artifacts/*
 
   deploy-github:
-    name: 🏭 Deploy GitHub
+    name: 🚀 Deploy GitHub
     needs: [build]
     if: github.ref == 'refs/heads/master'
     runs-on: ubuntu-20.04
@@ -47,7 +47,7 @@ jobs:
       - name: 📦 Publish to GitHub
         run: dotnet nuget push "artifacts/*.nupkg" -s https://nuget.pkg.github.com/phnx47/index.json -k ${{ secrets.GH_PKG_PAT }} --skip-duplicate
   deploy-nuget:
-    name: 🏭 Deploy Nuget
+    name: 🚀 Deploy Nuget
     needs: [build]
     if: startsWith(github.ref, 'refs/tags/v')
     runs-on: ubuntu-20.04
