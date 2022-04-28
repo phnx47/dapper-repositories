@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Data;
 using System.Linq.Expressions;
+using System.Threading;
 using System.Threading.Tasks;
 using Dapper;
 
@@ -25,13 +26,20 @@ namespace MicroOrm.Dapper.Repositories
         }
 
         /// <inheritdoc />
-        public virtual async Task<bool> DeleteAsync(TEntity instance, IDbTransaction transaction = null, TimeSpan? timeout = null)
+        public virtual Task<bool> DeleteAsync(TEntity instance, IDbTransaction transaction, TimeSpan? timeout)
+        {
+            return DeleteAsync(instance, transaction, timeout, default(CancellationToken));
+        }
+
+        /// <inheritdoc />
+        public virtual async Task<bool> DeleteAsync(TEntity instance, IDbTransaction transaction = null, TimeSpan? timeout = null, CancellationToken cancellationToken = default)
         {
             var queryResult = SqlGenerator.GetDelete(instance);
             int? commandTimeout = null;
             if (timeout.HasValue)
                 commandTimeout = timeout.Value.Seconds;
-            var deleted = await Connection.ExecuteAsync(queryResult.GetSql(), queryResult.Param, transaction, commandTimeout) > 0;
+            var deleted = await Connection.ExecuteAsync(new CommandDefinition(queryResult.GetSql(), queryResult.Param, transaction, commandTimeout,
+                cancellationToken: cancellationToken)) > 0;
             return deleted;
         }
 
@@ -47,13 +55,21 @@ namespace MicroOrm.Dapper.Repositories
         }
 
         /// <inheritdoc />
-        public virtual async Task<bool> DeleteAsync(Expression<Func<TEntity, bool>> predicate, IDbTransaction transaction = null, TimeSpan? timeout = null)
+        public virtual Task<bool> DeleteAsync(Expression<Func<TEntity, bool>> predicate, IDbTransaction transaction, TimeSpan? timeout)
+        {
+            return DeleteAsync(predicate, transaction, timeout, default);
+        }
+
+        /// <inheritdoc />
+        public virtual async Task<bool> DeleteAsync(Expression<Func<TEntity, bool>> predicate, IDbTransaction transaction = null, TimeSpan? timeout = null,
+            CancellationToken cancellationToken = default)
         {
             var queryResult = SqlGenerator.GetDelete(predicate);
             int? commandTimeout = null;
             if (timeout.HasValue)
                 commandTimeout = timeout.Value.Seconds;
-            var deleted = await Connection.ExecuteAsync(queryResult.GetSql(), queryResult.Param, transaction, commandTimeout) > 0;
+            var deleted = await Connection.ExecuteAsync(new CommandDefinition(queryResult.GetSql(), queryResult.Param, transaction, commandTimeout,
+                cancellationToken: cancellationToken)) > 0;
             return deleted;
         }
     }

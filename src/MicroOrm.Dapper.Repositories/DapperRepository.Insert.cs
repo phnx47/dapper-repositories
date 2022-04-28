@@ -1,6 +1,7 @@
 using System;
 using System.Data;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Dapper;
 
@@ -12,12 +13,6 @@ namespace MicroOrm.Dapper.Repositories
     public partial class DapperRepository<TEntity>
         where TEntity : class
     {
-        /// <inheritdoc />
-        public virtual bool Insert(TEntity instance)
-        {
-            return Insert(instance, null);
-        }
-
         /// <inheritdoc />
         public virtual bool Insert(TEntity instance, IDbTransaction transaction)
         {
@@ -41,20 +36,14 @@ namespace MicroOrm.Dapper.Repositories
         }
 
         /// <inheritdoc />
-        public virtual Task<bool> InsertAsync(TEntity instance)
-        {
-            return InsertAsync(instance, null);
-        }
-
-        /// <inheritdoc />
-        public virtual async Task<bool> InsertAsync(TEntity instance, IDbTransaction transaction)
+        public virtual async Task<bool> InsertAsync(TEntity instance, IDbTransaction transaction, CancellationToken cancellationToken)
         {
             var queryResult = SqlGenerator.GetInsert(instance);
             if (SqlGenerator.IsIdentity)
             {
                 if (SqlGenerator.Provider == Repositories.SqlGenerator.SqlProvider.Oracle)
                 {
-                    await Connection.ExecuteAsync(queryResult.GetSql(), queryResult.Param, transaction);
+                    await Connection.ExecuteAsync(new CommandDefinition(queryResult.GetSql(), queryResult.Param, transaction, cancellationToken: cancellationToken));
                     int newId = ((DynamicParameters)(queryResult.Param)).Get<int>(":newId");
                     return SetValue(newId, instance);
                 }
@@ -65,7 +54,7 @@ namespace MicroOrm.Dapper.Repositories
                 }
             }
 
-            return await Connection.ExecuteAsync(queryResult.GetSql(), instance, transaction) > 0;
+            return await Connection.ExecuteAsync(new CommandDefinition(queryResult.GetSql(), instance, transaction, cancellationToken: cancellationToken)) > 0;
         }
 
         private bool SetValue(long newId, TEntity instance)
