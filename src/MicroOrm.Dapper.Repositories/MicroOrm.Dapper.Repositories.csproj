@@ -39,4 +39,28 @@
   <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
     <PackageReference Include="System.ComponentModel.Annotations" Version="5.0.0" />
   </ItemGroup>
+
+  <ItemGroup>
+    <Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />
+
+    <None Update="DapperRepository.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>DapperRepository.generated.cs</LastGenOutput>
+    </None>
+    <Compile Update="DapperRepository.generated.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>DapperRepository.tt</DependentUpon>
+    </Compile>
+
+    <None Update="ReadOnlyDapperRepository.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>ReadOnlyDapperRepository.generated.cs</LastGenOutput>
+    </None>
+    <Compile Update="ReadOnlyDapperRepository.generated.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>ReadOnlyDapperRepository.tt</DependentUpon>
+    </Compile>
+  </ItemGroup>
 </Project>

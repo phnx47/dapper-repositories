@@ -1,6 +1,7 @@
 using System;
 using System.Data;
 using System.Linq.Expressions;
+using System.Threading;
 using System.Threading.Tasks;
 using Dapper;
 
@@ -14,24 +15,6 @@ namespace MicroOrm.Dapper.Repositories
         where TEntity : class
     {
         /// <inheritdoc />
-        public virtual TEntity Find()
-        {
-            return Find(null, null);
-        }
-
-        /// <inheritdoc />
-        public virtual TEntity Find(IDbTransaction transaction)
-        {
-            return Find(null, transaction);
-        }
-
-        /// <inheritdoc />
-        public virtual TEntity Find(Expression<Func<TEntity, bool>> predicate)
-        {
-            return Find(predicate, null);
-        }
-
-        /// <inheritdoc />
         public virtual TEntity Find(Expression<Func<TEntity, bool>> predicate, IDbTransaction transaction)
         {
             var queryResult = SqlGenerator.GetSelectFirst(predicate, FilterData);
@@ -39,28 +22,10 @@ namespace MicroOrm.Dapper.Repositories
         }
 
         /// <inheritdoc />
-        public virtual Task<TEntity> FindAsync()
-        {
-            return FindAsync(null, null);
-        }
-
-        /// <inheritdoc />
-        public virtual Task<TEntity> FindAsync(IDbTransaction transaction)
-        {
-            return FindAsync(null, transaction);
-        }
-
-        /// <inheritdoc />
-        public virtual Task<TEntity> FindAsync(Expression<Func<TEntity, bool>> predicate)
-        {
-            return FindAsync(predicate, null);
-        }
-
-        /// <inheritdoc />
-        public virtual Task<TEntity> FindAsync(Expression<Func<TEntity, bool>> predicate, IDbTransaction transaction)
+        public virtual Task<TEntity> FindAsync(Expression<Func<TEntity, bool>> predicate, IDbTransaction transaction, CancellationToken cancellationToken)
         {
             var queryResult = SqlGenerator.GetSelectFirst(predicate, FilterData);
-            return Connection.QueryFirstOrDefaultAsync<TEntity>(queryResult.GetSql(), queryResult.Param, transaction);
+            return Connection.QueryFirstOrDefaultAsync<TEntity>(new CommandDefinition(queryResult.GetSql(), queryResult.Param, transaction, cancellationToken: cancellationToken));
         }
     }
 }
