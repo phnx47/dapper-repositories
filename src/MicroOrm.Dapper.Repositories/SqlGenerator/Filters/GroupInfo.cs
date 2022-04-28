@@ -10,7 +10,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator.Filters
         /// <summary>
         /// Columns to sort
         /// </summary>
-        public List<string> Columns { get; set; }
+        public List<string>? Columns { get; set; }
 
         /// <summary>
         /// If true, will be used for all queries
@@ -20,6 +20,6 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator.Filters
         /// <summary>
         /// You can specify a custom query if you need more "liberty"
         /// </summary>
-        public string CustomQuery { get; set; }
+        public string? CustomQuery { get; set; }
     }
 }

@@ -70,9 +70,8 @@ namespace MicroOrm.Dapper.Repositories
             {
                 case ExpressionType.Convert:
                 {
-                    if (expr.Body is UnaryExpression lambdaUnary)
+                    if (expr.Body is UnaryExpression { Operand: MemberExpression expression })
                     {
-                        var expression = lambdaUnary.Operand as MemberExpression;
                         order.Columns = new List<string> { GetProperty(expression, type) };
                     }
 

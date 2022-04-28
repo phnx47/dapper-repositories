@@ -23,7 +23,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
 
             TableName = MicroOrmConfig.TablePrefix + (tableAttribute != null ? tableAttribute.Name : entityTypeInfo.Name);
 
-            TableSchema = tableAttribute != null ? tableAttribute.Schema : string.Empty;
+            TableSchema = tableAttribute?.Schema ?? string.Empty;
 
             AllProperties = entityType.FindClassProperties().Where(q => q.CanWrite).ToArray();
 
@@ -69,7 +69,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
 
             foreach (var propertyInfo in singleJoinTypes)
             {
-                var joinInnerProperties = propertyInfo.PropertyType.GetProperties().Where(q => q.CanWrite)
+                IEnumerable<PropertyInfo> joinInnerProperties = propertyInfo.PropertyType.GetProperties().Where(q => q.CanWrite)
                     .Where(ExpressionHelper.GetPrimitivePropertiesPredicate());
                 joinPropertyMetadatas.AddRange(joinInnerProperties.Where(p => !p.GetCustomAttributes<NotMappedAttribute>().Any())
                     .Select(p => new SqlJoinPropertyMetadata(propertyInfo, p)).ToArray());

@@ -15,21 +15,21 @@ namespace MicroOrm.Dapper.Repositories
         where TEntity : class
     {
         /// <inheritdoc />
-        public virtual IEnumerable<TEntity> FindAll(Expression<Func<TEntity, bool>> predicate,
+        public virtual IEnumerable<TEntity> FindAll(Expression<Func<TEntity, bool>>? predicate,
             Expression<Func<TEntity, string, string>> orderBy)
         {
             return FindAll(predicate, transaction: null);
         }
         
         /// <inheritdoc />
-        public virtual IEnumerable<TEntity> FindAll(Expression<Func<TEntity, bool>> predicate, IDbTransaction transaction)
+        public virtual IEnumerable<TEntity> FindAll(Expression<Func<TEntity, bool>>? predicate, IDbTransaction? transaction)
         {
             var queryResult = SqlGenerator.GetSelectAll(predicate, FilterData);
             return Connection.Query<TEntity>(queryResult.GetSql(), queryResult.Param, transaction);
         }
 
         /// <inheritdoc />
-        public virtual async Task<IEnumerable<TEntity>> FindAllAsync(Expression<Func<TEntity, bool>> predicate, IDbTransaction transaction, CancellationToken cancellationToken)
+        public virtual async Task<IEnumerable<TEntity>> FindAllAsync(Expression<Func<TEntity, bool>>? predicate, IDbTransaction? transaction, CancellationToken cancellationToken)
         {
             var queryResult = SqlGenerator.GetSelectAll(predicate, FilterData);
             return await Connection.QueryAsync<TEntity>(new CommandDefinition(queryResult.GetSql(), queryResult.Param, transaction, cancellationToken: cancellationToken));

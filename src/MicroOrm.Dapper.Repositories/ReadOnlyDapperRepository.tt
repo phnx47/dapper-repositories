@@ -8,6 +8,8 @@ using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
 
+#nullable enable
+
 namespace MicroOrm.Dapper.Repositories
 {
 <#
@@ -19,17 +21,17 @@ var readonlyMethods = new[]
         @"/// <summary>
         ///     Get number of rows
         /// </summary>", false),
-    Tuple.Create("Count", "IDbTransaction transaction",
+    Tuple.Create("Count", "IDbTransaction? transaction",
         "null, transaction", "", "int",
         @"/// <summary>
         ///     Get number of rows
         /// </summary>", false),
-    Tuple.Create("Count", "Expression<Func<TEntity, bool>> predicate",
+    Tuple.Create("Count", "Expression<Func<TEntity, bool>>? predicate",
         "predicate, transaction: null", "", "int",
         @"/// <summary>
         ///     Get number of rows with WHERE clause
         /// </summary>", false),
-    Tuple.Create("Count", "Expression<Func<TEntity, bool>> predicate, IDbTransaction transaction",
+    Tuple.Create("Count", "Expression<Func<TEntity, bool>>? predicate, IDbTransaction? transaction",
         "predicate, transaction", "", "int",
         @"/// <summary>
         ///     Get number of rows with WHERE clause
@@ -39,147 +41,147 @@ var readonlyMethods = new[]
         @"/// <summary>
         ///     Get number of rows with DISTINCT clause
         /// </summary>", false),
-    Tuple.Create("Count", "Expression<Func<TEntity, object>> distinctField, IDbTransaction transaction",
+    Tuple.Create("Count", "Expression<Func<TEntity, object>> distinctField, IDbTransaction? transaction",
         "null, distinctField, transaction", "", "int",
         @"/// <summary>
         ///     Get number of rows with DISTINCT clause
         /// </summary>", false),
-    Tuple.Create("Count", "Expression<Func<TEntity, bool>> predicate, Expression<Func<TEntity, object>> distinctField",
+    Tuple.Create("Count", "Expression<Func<TEntity, bool>>? predicate, Expression<Func<TEntity, object>> distinctField",
         "predicate, distinctField, transaction: null", "", "int",
         @"/// <summary>
         ///     Get number of rows with DISTINCT and WHERE clause
         /// </summary>", false),
-    Tuple.Create("Count", "Expression<Func<TEntity, bool>> predicate, Expression<Func<TEntity, object>> distinctField, IDbTransaction transaction",
+    Tuple.Create("Count", "Expression<Func<TEntity, bool>>? predicate, Expression<Func<TEntity, object>> distinctField, IDbTransaction? transaction",
         "predicate, distinctField, transaction", "", "int",
         @"/// <summary>
         ///     Get number of rows with DISTINCT and WHERE clause
         /// </summary>", true),
 
     Tuple.Create("Find", "",
-        "null, null", "", "TEntity",
+        "null, null", "", "TEntity?",
         @"/// <summary>
         ///     Get first object
         /// </summary>", false),
-    Tuple.Create("Find", "IDbTransaction transaction",
-        "null, transaction", "", "TEntity",
+    Tuple.Create("Find", "IDbTransaction? transaction",
+        "null, transaction", "", "TEntity?",
         @"/// <summary>
         ///     Get first object
         /// </summary>", false),
-    Tuple.Create("Find", "Expression<Func<TEntity, bool>> predicate",
-        "predicate, null", "", "TEntity",
+    Tuple.Create("Find", "Expression<Func<TEntity, bool>>? predicate",
+        "predicate, null", "", "TEntity?",
         @"/// <summary>
         ///     Get first object
         /// </summary>", false),
-    Tuple.Create("Find", "Expression<Func<TEntity, bool>> predicate, IDbTransaction transaction",
-        "predicate, transaction", "", "TEntity",
+    Tuple.Create("Find", "Expression<Func<TEntity, bool>>? predicate, IDbTransaction? transaction",
+        "predicate, transaction", "", "TEntity?",
         @"/// <summary>
         ///     Get first object
         /// </summary>", true),
-    Tuple.Create("Find", @"Expression<Func<TEntity, bool>> predicate,
+    Tuple.Create("Find", @"Expression<Func<TEntity, bool>>? predicate,
             Expression<Func<TEntity, object>> tChild1",
-        "predicate, tChild1, null", "<TChild1>", "TEntity",
+        "predicate, tChild1, null", "<TChild1>", "TEntity?",
         @"/// <summary>
         ///     Get first object with join objects
         /// </summary>", false),
-    Tuple.Create("Find", @"Expression<Func<TEntity, bool>> predicate,
+    Tuple.Create("Find", @"Expression<Func<TEntity, bool>>? predicate,
             Expression<Func<TEntity, object>> tChild1,
-            IDbTransaction transaction",
-        "predicate, tChild1, transaction", "<TChild1>", "TEntity",
+            IDbTransaction? transaction",
+        "predicate, tChild1, transaction", "<TChild1>", "TEntity?",
         @"/// <summary>
         ///     Get first object with join objects
         /// </summary>", true),
-    Tuple.Create("Find", @"Expression<Func<TEntity, bool>> predicate,
+    Tuple.Create("Find", @"Expression<Func<TEntity, bool>>? predicate,
             Expression<Func<TEntity, object>> tChild1,
             Expression<Func<TEntity, object>> tChild2",
-        "predicate, tChild1, tChild2, null", "<TChild1, TChild2>", "TEntity",
+        "predicate, tChild1, tChild2, null", "<TChild1, TChild2>", "TEntity?",
         @"/// <summary>
         ///     Get first object with join objects
         /// </summary>", false),
-    Tuple.Create("Find", @"Expression<Func<TEntity, bool>> predicate,
+    Tuple.Create("Find", @"Expression<Func<TEntity, bool>>? predicate,
             Expression<Func<TEntity, object>> tChild1,
             Expression<Func<TEntity, object>> tChild2,
-            IDbTransaction transaction",
-        "predicate, tChild1, tChild2, transaction", "<TChild1, TChild2>", "TEntity",
+            IDbTransaction? transaction",
+        "predicate, tChild1, tChild2, transaction", "<TChild1, TChild2>", "TEntity?",
         @"/// <summary>
         ///     Get first object with join objects
         /// </summary>", true),
-    Tuple.Create("Find", @"Expression<Func<TEntity, bool>> predicate,
+    Tuple.Create("Find", @"Expression<Func<TEntity, bool>>? predicate,
             Expression<Func<TEntity, object>> tChild1,
             Expression<Func<TEntity, object>> tChild2,
             Expression<Func<TEntity, object>> tChild3",
-        "predicate, tChild1, tChild2, tChild3, null", "<TChild1, TChild2, TChild3>", "TEntity",
+        "predicate, tChild1, tChild2, tChild3, null", "<TChild1, TChild2, TChild3>", "TEntity?",
         @"/// <summary>
         ///     Get first object with join objects
         /// </summary>", false),
-    Tuple.Create("Find", @"Expression<Func<TEntity, bool>> predicate,
+    Tuple.Create("Find", @"Expression<Func<TEntity, bool>>? predicate,
             Expression<Func<TEntity, object>> tChild1,
             Expression<Func<TEntity, object>> tChild2,
             Expression<Func<TEntity, object>> tChild3,
-            IDbTransaction transaction",
-        "predicate, tChild1, tChild2, tChild3, transaction", "<TChild1, TChild2, TChild3>", "TEntity",
+            IDbTransaction? transaction",
+        "predicate, tChild1, tChild2, tChild3, transaction", "<TChild1, TChild2, TChild3>", "TEntity?",
         @"/// <summary>
         ///     Get first object with join objects
         /// </summary>", true),
-    Tuple.Create("Find", @"Expression<Func<TEntity, bool>> predicate,
+    Tuple.Create("Find", @"Expression<Func<TEntity, bool>>? predicate,
             Expression<Func<TEntity, object>> tChild1,
             Expression<Func<TEntity, object>> tChild2,
             Expression<Func<TEntity, object>> tChild3,
             Expression<Func<TEntity, object>> tChild4",
-        "predicate, tChild1, tChild2, tChild3, tChild4, null", "<TChild1, TChild2, TChild3, TChild4>", "TEntity",
+        "predicate, tChild1, tChild2, tChild3, tChild4, null", "<TChild1, TChild2, TChild3, TChild4>", "TEntity?",
         @"/// <summary>
         ///     Get first object with join objects
         /// </summary>", false),
-    Tuple.Create("Find", @"Expression<Func<TEntity, bool>> predicate,
+    Tuple.Create("Find", @"Expression<Func<TEntity, bool>>? predicate,
             Expression<Func<TEntity, object>> tChild1,
             Expression<Func<TEntity, object>> tChild2,
             Expression<Func<TEntity, object>> tChild3,
             Expression<Func<TEntity, object>> tChild4,
-            IDbTransaction transaction",
-        "predicate, tChild1, tChild2, tChild3, tChild4, transaction", "<TChild1, TChild2, TChild3, TChild4>", "TEntity",
+            IDbTransaction? transaction",
+        "predicate, tChild1, tChild2, tChild3, tChild4, transaction", "<TChild1, TChild2, TChild3, TChild4>", "TEntity?",
         @"/// <summary>
         ///     Get first object with join objects
         /// </summary>", true),
-    Tuple.Create("Find", @"Expression<Func<TEntity, bool>> predicate,
+    Tuple.Create("Find", @"Expression<Func<TEntity, bool>>? predicate,
             Expression<Func<TEntity, object>> tChild1,
             Expression<Func<TEntity, object>> tChild2,
             Expression<Func<TEntity, object>> tChild3,
             Expression<Func<TEntity, object>> tChild4,
             Expression<Func<TEntity, object>> tChild5",
-        "predicate, tChild1, tChild2, tChild3, tChild4, tChild5, null", "<TChild1, TChild2, TChild3, TChild4, TChild5>", "TEntity",
+        "predicate, tChild1, tChild2, tChild3, tChild4, tChild5, null", "<TChild1, TChild2, TChild3, TChild4, TChild5>", "TEntity?",
         @"/// <summary>
         ///     Get first object with join objects
         /// </summary>", false),
-    Tuple.Create("Find", @"Expression<Func<TEntity, bool>> predicate,
+    Tuple.Create("Find", @"Expression<Func<TEntity, bool>>? predicate,
             Expression<Func<TEntity, object>> tChild1,
             Expression<Func<TEntity, object>> tChild2,
             Expression<Func<TEntity, object>> tChild3,
             Expression<Func<TEntity, object>> tChild4,
             Expression<Func<TEntity, object>> tChild5,
-            IDbTransaction transaction",
-        "predicate, tChild1, tChild2, tChild3, tChild4, tChild5, transaction", "<TChild1, TChild2, TChild3, TChild4, TChild5>", "TEntity",
+            IDbTransaction? transaction",
+        "predicate, tChild1, tChild2, tChild3, tChild4, tChild5, transaction", "<TChild1, TChild2, TChild3, TChild4, TChild5>", "TEntity?",
         @"/// <summary>
         ///     Get first object with join objects
         /// </summary>", true),
-    Tuple.Create("Find", @"Expression<Func<TEntity, bool>> predicate,
+    Tuple.Create("Find", @"Expression<Func<TEntity, bool>>? predicate,
             Expression<Func<TEntity, object>> tChild1,
             Expression<Func<TEntity, object>> tChild2,
             Expression<Func<TEntity, object>> tChild3,
             Expression<Func<TEntity, object>> tChild4,
             Expression<Func<TEntity, object>> tChild5,
             Expression<Func<TEntity, object>> tChild6",
-        "predicate, tChild1, tChild2, tChild3, tChild4, tChild5, tChild6, null", "<TChild1, TChild2, TChild3, TChild4, TChild5, TChild6>", "TEntity",
+        "predicate, tChild1, tChild2, tChild3, tChild4, tChild5, tChild6, null", "<TChild1, TChild2, TChild3, TChild4, TChild5, TChild6>", "TEntity?",
         @"/// <summary>
         ///     Get first object with join objects
         /// </summary>", false),
-    Tuple.Create("Find", @"Expression<Func<TEntity, bool>> predicate,
+    Tuple.Create("Find", @"Expression<Func<TEntity, bool>>? predicate,
             Expression<Func<TEntity, object>> tChild1,
             Expression<Func<TEntity, object>> tChild2,
             Expression<Func<TEntity, object>> tChild3,
             Expression<Func<TEntity, object>> tChild4,
             Expression<Func<TEntity, object>> tChild5,
             Expression<Func<TEntity, object>> tChild6,
-            IDbTransaction transaction",
-        "predicate, tChild1, tChild2, tChild3, tChild4, tChild5, tChild6, transaction", "<TChild1, TChild2, TChild3, TChild4, TChild5, TChild6>", "TEntity",
+            IDbTransaction? transaction",
+        "predicate, tChild1, tChild2, tChild3, tChild4, tChild5, tChild6, transaction", "<TChild1, TChild2, TChild3, TChild4, TChild5, TChild6>", "TEntity?",
         @"/// <summary>
         ///     Get first object with join objects
         /// </summary>", true),
@@ -189,50 +191,50 @@ var readonlyMethods = new[]
         @"/// <summary>
         ///     Get all objects
         /// </summary>", false),
-    Tuple.Create("FindAll", "IDbTransaction transaction",
+    Tuple.Create("FindAll", "IDbTransaction? transaction",
         "null, transaction", "", "IEnumerable<TEntity>",
         @"/// <summary>
         ///     Get all objects
         /// </summary>", false),
-    Tuple.Create("FindAll", "Expression<Func<TEntity, bool>> predicate",
+    Tuple.Create("FindAll", "Expression<Func<TEntity, bool>>? predicate",
         "predicate, transaction: null", "", "IEnumerable<TEntity>",
         @"/// <summary>
         ///     Get all objects
         /// </summary>", false),
-    Tuple.Create("FindAll", "Expression<Func<TEntity, bool>> predicate, IDbTransaction transaction",
+    Tuple.Create("FindAll", "Expression<Func<TEntity, bool>>? predicate, IDbTransaction? transaction",
         "predicate, transaction", "", "IEnumerable<TEntity>",
         @"/// <summary>
         ///     Get all objects
         /// </summary>", true),
-    Tuple.Create("FindAll", @"Expression<Func<TEntity, bool>> predicate,
+    Tuple.Create("FindAll", @"Expression<Func<TEntity, bool>>? predicate,
             Expression<Func<TEntity, object>> tChild1",
         "predicate, tChild1, null", "<TChild1>", "IEnumerable<TEntity>",
         @"/// <summary>
         ///     Get all objects with join objects
         /// </summary>", false),
-    Tuple.Create("FindAll", @"Expression<Func<TEntity, bool>> predicate,
+    Tuple.Create("FindAll", @"Expression<Func<TEntity, bool>>? predicate,
             Expression<Func<TEntity, object>> tChild1,
-            IDbTransaction transaction",
+            IDbTransaction? transaction",
         "predicate, tChild1, transaction", "<TChild1>", "IEnumerable<TEntity>",
         @"/// <summary>
         ///     Get all objects with join objects
         /// </summary>", true),
-    Tuple.Create("FindAll", @"Expression<Func<TEntity, bool>> predicate,
+    Tuple.Create("FindAll", @"Expression<Func<TEntity, bool>>? predicate,
             Expression<Func<TEntity, object>> tChild1,
             Expression<Func<TEntity, object>> tChild2",
         "predicate, tChild1, tChild2, null", "<TChild1, TChild2>", "IEnumerable<TEntity>",
         @"/// <summary>
         ///     Get all objects with join objects
         /// </summary>", false),
-    Tuple.Create("FindAll", @"Expression<Func<TEntity, bool>> predicate,
+    Tuple.Create("FindAll", @"Expression<Func<TEntity, bool>>? predicate,
             Expression<Func<TEntity, object>> tChild1,
             Expression<Func<TEntity, object>> tChild2,
-            IDbTransaction transaction",
+            IDbTransaction? transaction",
         "predicate, tChild1, tChild2, transaction", "<TChild1, TChild2>", "IEnumerable<TEntity>",
         @"/// <summary>
         ///     Get all objects with join objects
         /// </summary>", true),
-    Tuple.Create("FindAll", @"Expression<Func<TEntity, bool>> predicate,
+    Tuple.Create("FindAll", @"Expression<Func<TEntity, bool>>? predicate,
             Expression<Func<TEntity, object>> tChild1,
             Expression<Func<TEntity, object>> tChild2,
             Expression<Func<TEntity, object>> tChild3",
@@ -240,16 +242,16 @@ var readonlyMethods = new[]
         @"/// <summary>
         ///     Get all objects with join objects
         /// </summary>", false),
-    Tuple.Create("FindAll", @"Expression<Func<TEntity, bool>> predicate,
+    Tuple.Create("FindAll", @"Expression<Func<TEntity, bool>>? predicate,
             Expression<Func<TEntity, object>> tChild1,
             Expression<Func<TEntity, object>> tChild2,
             Expression<Func<TEntity, object>> tChild3,
-            IDbTransaction transaction",
+            IDbTransaction? transaction",
         "predicate, tChild1, tChild2, tChild3, transaction", "<TChild1, TChild2, TChild3>", "IEnumerable<TEntity>",
         @"/// <summary>
         ///     Get all objects with join objects
         /// </summary>", true),
-    Tuple.Create("FindAll", @"Expression<Func<TEntity, bool>> predicate,
+    Tuple.Create("FindAll", @"Expression<Func<TEntity, bool>>? predicate,
             Expression<Func<TEntity, object>> tChild1,
             Expression<Func<TEntity, object>> tChild2,
             Expression<Func<TEntity, object>> tChild3,
@@ -258,17 +260,17 @@ var readonlyMethods = new[]
         @"/// <summary>
         ///     Get all objects with join objects
         /// </summary>", false),
-    Tuple.Create("FindAll", @"Expression<Func<TEntity, bool>> predicate,
+    Tuple.Create("FindAll", @"Expression<Func<TEntity, bool>>? predicate,
             Expression<Func<TEntity, object>> tChild1,
             Expression<Func<TEntity, object>> tChild2,
             Expression<Func<TEntity, object>> tChild3,
             Expression<Func<TEntity, object>> tChild4,
-            IDbTransaction transaction",
+            IDbTransaction? transaction",
         "predicate, tChild1, tChild2, tChild3, tChild4, transaction", "<TChild1, TChild2, TChild3, TChild4>", "IEnumerable<TEntity>",
         @"/// <summary>
         ///     Get all objects with join objects
         /// </summary>", true),
-    Tuple.Create("FindAll", @"Expression<Func<TEntity, bool>> predicate,
+    Tuple.Create("FindAll", @"Expression<Func<TEntity, bool>>? predicate,
             Expression<Func<TEntity, object>> tChild1,
             Expression<Func<TEntity, object>> tChild2,
             Expression<Func<TEntity, object>> tChild3,
@@ -278,18 +280,18 @@ var readonlyMethods = new[]
         @"/// <summary>
         ///     Get all objects with join objects
         /// </summary>", false),
-    Tuple.Create("FindAll", @"Expression<Func<TEntity, bool>> predicate,
+    Tuple.Create("FindAll", @"Expression<Func<TEntity, bool>>? predicate,
             Expression<Func<TEntity, object>> tChild1,
             Expression<Func<TEntity, object>> tChild2,
             Expression<Func<TEntity, object>> tChild3,
             Expression<Func<TEntity, object>> tChild4,
             Expression<Func<TEntity, object>> tChild5,
-            IDbTransaction transaction",
+            IDbTransaction? transaction",
         "predicate, tChild1, tChild2, tChild3, tChild4, tChild5, transaction", "<TChild1, TChild2, TChild3, TChild4, TChild5>", "IEnumerable<TEntity>",
         @"/// <summary>
         ///     Get all objects with join objects
         /// </summary>", true),
-    Tuple.Create("FindAll", @"Expression<Func<TEntity, bool>> predicate,
+    Tuple.Create("FindAll", @"Expression<Func<TEntity, bool>>? predicate,
             Expression<Func<TEntity, object>> tChild1,
             Expression<Func<TEntity, object>> tChild2,
             Expression<Func<TEntity, object>> tChild3,
@@ -300,54 +302,54 @@ var readonlyMethods = new[]
         @"/// <summary>
         ///     Get all objects with join objects
         /// </summary>", false),
-    Tuple.Create("FindAll", @"Expression<Func<TEntity, bool>> predicate,
+    Tuple.Create("FindAll", @"Expression<Func<TEntity, bool>>? predicate,
             Expression<Func<TEntity, object>> tChild1,
             Expression<Func<TEntity, object>> tChild2,
             Expression<Func<TEntity, object>> tChild3,
             Expression<Func<TEntity, object>> tChild4,
             Expression<Func<TEntity, object>> tChild5,
             Expression<Func<TEntity, object>> tChild6,
-            IDbTransaction transaction",
+            IDbTransaction? transaction",
         "predicate, tChild1, tChild2, tChild3, tChild4, tChild5, tChild6, transaction", "<TChild1, TChild2, TChild3, TChild4, TChild5, TChild6>", "IEnumerable<TEntity>",
         @"/// <summary>
         ///     Get all objects with join objects
         /// </summary>", true),
 
     Tuple.Create("FindById", "object id",
-        "id, null", "", "TEntity",
+        "id, null", "", "TEntity?",
         @"/// <summary>
         ///     Get object by Id
         /// </summary>", false),
-    Tuple.Create("FindById", "object id, IDbTransaction transaction",
-        "id, transaction", "", "TEntity",
+    Tuple.Create("FindById", "object id, IDbTransaction? transaction",
+        "id, transaction", "", "TEntity?",
         @"/// <summary>
         ///     Get object by Id
         /// </summary>", true),
     Tuple.Create("FindById", @"object id,
             Expression<Func<TEntity, object>> tChild1",
-        "id, tChild1, null", "<TChild1>", "TEntity",
+        "id, tChild1, null", "<TChild1>", "TEntity?",
         @"/// <summary>
         ///     Get object by Id with join objects
         /// </summary>", false),
     Tuple.Create("FindById", @"object id,
             Expression<Func<TEntity, object>> tChild1,
-            IDbTransaction transaction",
-        "id, tChild1, transaction", "<TChild1>", "TEntity",
+            IDbTransaction? transaction",
+        "id, tChild1, transaction", "<TChild1>", "TEntity?",
         @"/// <summary>
         ///     Get object by Id with join objects
         /// </summary>", true),
     Tuple.Create("FindById", @"object id,
             Expression<Func<TEntity, object>> tChild1,
             Expression<Func<TEntity, object>> tChild2",
-        "id, tChild1, tChild2, null", "<TChild1, TChild2>", "TEntity",
+        "id, tChild1, tChild2, null", "<TChild1, TChild2>", "TEntity?",
         @"/// <summary>
         ///     Get object by Id with join objects
         /// </summary>", false),
     Tuple.Create("FindById", @"object id,
             Expression<Func<TEntity, object>> tChild1,
             Expression<Func<TEntity, object>> tChild2,
-            IDbTransaction transaction",
-        "id, tChild1, tChild2, transaction", "<TChild1, TChild2>", "TEntity",
+            IDbTransaction? transaction",
+        "id, tChild1, tChild2, transaction", "<TChild1, TChild2>", "TEntity?",
         @"/// <summary>
         ///     Get object by Id with join objects
         /// </summary>", true),
@@ -355,7 +357,7 @@ var readonlyMethods = new[]
             Expression<Func<TEntity, object>> tChild1,
             Expression<Func<TEntity, object>> tChild2,
             Expression<Func<TEntity, object>> tChild3",
-        "id, tChild1, tChild2, tChild3, null", "<TChild1, TChild2, TChild3>", "TEntity",
+        "id, tChild1, tChild2, tChild3, null", "<TChild1, TChild2, TChild3>", "TEntity?",
         @"/// <summary>
         ///     Get object by Id with join objects
         /// </summary>", false),
@@ -363,8 +365,8 @@ var readonlyMethods = new[]
             Expression<Func<TEntity, object>> tChild1,
             Expression<Func<TEntity, object>> tChild2,
             Expression<Func<TEntity, object>> tChild3,
-            IDbTransaction transaction",
-        "id, tChild1, tChild2, tChild3, transaction", "<TChild1, TChild2, TChild3>", "TEntity",
+            IDbTransaction? transaction",
+        "id, tChild1, tChild2, tChild3, transaction", "<TChild1, TChild2, TChild3>", "TEntity?",
         @"/// <summary>
         ///     Get object by Id with join objects
         /// </summary>", true),
@@ -373,7 +375,7 @@ var readonlyMethods = new[]
             Expression<Func<TEntity, object>> tChild2,
             Expression<Func<TEntity, object>> tChild3,
             Expression<Func<TEntity, object>> tChild4",
-        "id, tChild1, tChild2, tChild3, tChild4, null", "<TChild1, TChild2, TChild3, TChild4>", "TEntity",
+        "id, tChild1, tChild2, tChild3, tChild4, null", "<TChild1, TChild2, TChild3, TChild4>", "TEntity?",
         @"/// <summary>
         ///     Get object by Id with join objects
         /// </summary>", false),
@@ -382,8 +384,8 @@ var readonlyMethods = new[]
             Expression<Func<TEntity, object>> tChild2,
             Expression<Func<TEntity, object>> tChild3,
             Expression<Func<TEntity, object>> tChild4,
-            IDbTransaction transaction",
-        "id, tChild1, tChild2, tChild3, tChild4, transaction", "<TChild1, TChild2, TChild3, TChild4>", "TEntity",
+            IDbTransaction? transaction",
+        "id, tChild1, tChild2, tChild3, tChild4, transaction", "<TChild1, TChild2, TChild3, TChild4>", "TEntity?",
         @"/// <summary>
         ///     Get object by Id with join objects
         /// </summary>", true),
@@ -393,7 +395,7 @@ var readonlyMethods = new[]
             Expression<Func<TEntity, object>> tChild3,
             Expression<Func<TEntity, object>> tChild4,
             Expression<Func<TEntity, object>> tChild5",
-        "id, tChild1, tChild2, tChild3, tChild4, tChild5, null", "<TChild1, TChild2, TChild3, TChild4, TChild5>", "TEntity",
+        "id, tChild1, tChild2, tChild3, tChild4, tChild5, null", "<TChild1, TChild2, TChild3, TChild4, TChild5>", "TEntity?",
         @"/// <summary>
         ///     Get object by Id with join objects
         /// </summary>", false),
@@ -403,8 +405,8 @@ var readonlyMethods = new[]
             Expression<Func<TEntity, object>> tChild3,
             Expression<Func<TEntity, object>> tChild4,
             Expression<Func<TEntity, object>> tChild5,
-            IDbTransaction transaction",
-        "id, tChild1, tChild2, tChild3, tChild4, tChild5, transaction", "<TChild1, TChild2, TChild3, TChild4, TChild5>", "TEntity",
+            IDbTransaction? transaction",
+        "id, tChild1, tChild2, tChild3, tChild4, tChild5, transaction", "<TChild1, TChild2, TChild3, TChild4, TChild5>", "TEntity?",
         @"/// <summary>
         ///     Get object by Id with join objects
         /// </summary>", true),
@@ -415,7 +417,7 @@ var readonlyMethods = new[]
             Expression<Func<TEntity, object>> tChild4,
             Expression<Func<TEntity, object>> tChild5,
             Expression<Func<TEntity, object>> tChild6",
-        "id, tChild1, tChild2, tChild3, tChild4, tChild5, tChild6, null", "<TChild1, TChild2, TChild3, TChild4, TChild5, TChild6>", "TEntity",
+        "id, tChild1, tChild2, tChild3, tChild4, tChild5, tChild6, null", "<TChild1, TChild2, TChild3, TChild4, TChild5, TChild6>", "TEntity?",
         @"/// <summary>
         ///     Get object by Id with join objects
         /// </summary>", false),
@@ -426,8 +428,8 @@ var readonlyMethods = new[]
             Expression<Func<TEntity, object>> tChild4,
             Expression<Func<TEntity, object>> tChild5,
             Expression<Func<TEntity, object>> tChild6,
-            IDbTransaction transaction",
-        "id, tChild1, tChild2, tChild3, tChild4, tChild5, tChild6, transaction", "<TChild1, TChild2, TChild3, TChild4, TChild5, TChild6>", "TEntity",
+            IDbTransaction? transaction",
+        "id, tChild1, tChild2, tChild3, tChild4, tChild5, tChild6, transaction", "<TChild1, TChild2, TChild3, TChild4, TChild5, TChild6>", "TEntity?",
         @"/// <summary>
         ///     Get object by Id with join objects
         /// </summary>", true),
@@ -437,7 +439,7 @@ var readonlyMethods = new[]
         @"/// <summary>
         ///     Get all objects with BETWEEN query
         /// </summary>", false),
-    Tuple.Create("FindAllBetween", "object from, object to, Expression<Func<TEntity, object>> btwField, IDbTransaction transaction",
+    Tuple.Create("FindAllBetween", "object from, object to, Expression<Func<TEntity, object>> btwField, IDbTransaction? transaction",
         "from, to, btwField, null, transaction", "", "IEnumerable<TEntity>",
         @"/// <summary>
         ///     Get all objects with BETWEEN query
@@ -446,7 +448,7 @@ var readonlyMethods = new[]
             object from,
             object to,
             Expression<Func<TEntity, object>> btwField,
-            Expression<Func<TEntity, bool>> predicate",
+            Expression<Func<TEntity, bool>>? predicate",
         "from, to, btwField, transaction: null", "", "IEnumerable<TEntity>",
         @"/// <summary>
         ///     Get all objects with BETWEEN query
@@ -454,8 +456,8 @@ var readonlyMethods = new[]
     Tuple.Create("FindAllBetween", @"object from,
             object to,
             Expression<Func<TEntity, object>> btwField,
-            Expression<Func<TEntity, bool>> predicate,
-            IDbTransaction transaction",
+            Expression<Func<TEntity, bool>>? predicate,
+            IDbTransaction? transaction",
         "from, to, btwField, null, transaction", "", "IEnumerable<TEntity>",
         @"/// <summary>
         ///     Get all objects with BETWEEN query
@@ -465,7 +467,7 @@ var readonlyMethods = new[]
         @"/// <summary>
         ///     Get all DateTimes with BETWEEN query
         /// </summary>", false),
-    Tuple.Create("FindAllBetween", "DateTime from, DateTime to, Expression<Func<TEntity, object>> btwField, IDbTransaction transaction",
+    Tuple.Create("FindAllBetween", "DateTime from, DateTime to, Expression<Func<TEntity, object>> btwField, IDbTransaction? transaction",
         "from, to, btwField, null, transaction", "", "IEnumerable<TEntity>",
         @"/// <summary>
         ///     Get all DateTimes with BETWEEN query
@@ -474,7 +476,7 @@ var readonlyMethods = new[]
             DateTime from,
             DateTime to,
             Expression<Func<TEntity, object>> btwField,
-            Expression<Func<TEntity, bool>> predicate",
+            Expression<Func<TEntity, bool>>? predicate",
         "from, to, btwField, transaction: null", "", "IEnumerable<TEntity>",
         @"/// <summary>
         ///     Get all DateTimes with BETWEEN query
@@ -482,8 +484,8 @@ var readonlyMethods = new[]
     Tuple.Create("FindAllBetween", @"DateTime from,
             DateTime to,
             Expression<Func<TEntity, object>> btwField,
-            Expression<Func<TEntity, bool>> predicate,
-            IDbTransaction transaction",
+            Expression<Func<TEntity, bool>>? predicate,
+            IDbTransaction? transaction",
         "from, to, btwField, null, transaction", "", "IEnumerable<TEntity>",
         @"/// <summary>
         ///     Get all DateTimes with BETWEEN query

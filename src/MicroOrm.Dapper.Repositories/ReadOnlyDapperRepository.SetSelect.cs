@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using MicroOrm.Dapper.Repositories.SqlGenerator.Filters;
@@ -18,15 +19,19 @@ namespace MicroOrm.Dapper.Repositories
             {
                 FilterData.SelectInfo = new SelectInfo();
             }
+            
+            if (FilterData.SelectInfo.Columns == null)
+            {
+                FilterData.SelectInfo.Columns = new List<string>();
+            }
 
             FilterData.SelectInfo.Permanent = permanent;
 
             var type = typeof(T);
             if (expr.Body.NodeType == ExpressionType.Lambda)
             {
-                if (expr.Body is UnaryExpression lambdaUnary)
+                if (expr.Body is UnaryExpression { Operand: MemberExpression expression })
                 {
-                    var expression = lambdaUnary.Operand as MemberExpression;
                     var prop = GetProperty(expression, type);
                     FilterData.SelectInfo.Columns.Add(prop);
                 }

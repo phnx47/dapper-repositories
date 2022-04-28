@@ -15,7 +15,7 @@ namespace MicroOrm.Dapper.Repositories
         where TEntity : class
     {
         /// <inheritdoc />
-        public virtual bool Delete(TEntity instance, IDbTransaction transaction = null, TimeSpan? timeout = null)
+        public virtual bool Delete(TEntity instance, IDbTransaction? transaction = null, TimeSpan? timeout = null)
         {
             var queryResult = SqlGenerator.GetDelete(instance);
             int? commandTimeout = null;
@@ -26,13 +26,13 @@ namespace MicroOrm.Dapper.Repositories
         }
 
         /// <inheritdoc />
-        public virtual Task<bool> DeleteAsync(TEntity instance, IDbTransaction transaction, TimeSpan? timeout)
+        public virtual Task<bool> DeleteAsync(TEntity instance, IDbTransaction? transaction, TimeSpan? timeout)
         {
             return DeleteAsync(instance, transaction, timeout, default(CancellationToken));
         }
 
         /// <inheritdoc />
-        public virtual async Task<bool> DeleteAsync(TEntity instance, IDbTransaction transaction = null, TimeSpan? timeout = null, CancellationToken cancellationToken = default)
+        public virtual async Task<bool> DeleteAsync(TEntity instance, IDbTransaction? transaction = null, TimeSpan? timeout = null, CancellationToken cancellationToken = default)
         {
             var queryResult = SqlGenerator.GetDelete(instance);
             int? commandTimeout = null;
@@ -44,7 +44,7 @@ namespace MicroOrm.Dapper.Repositories
         }
 
         /// <inheritdoc />
-        public virtual bool Delete(Expression<Func<TEntity, bool>> predicate, IDbTransaction transaction = null, TimeSpan? timeout = null)
+        public virtual bool Delete(Expression<Func<TEntity, bool>>? predicate, IDbTransaction? transaction = null, TimeSpan? timeout = null)
         {
             var queryResult = SqlGenerator.GetDelete(predicate);
             int? commandTimeout = null;
@@ -55,13 +55,13 @@ namespace MicroOrm.Dapper.Repositories
         }
 
         /// <inheritdoc />
-        public virtual Task<bool> DeleteAsync(Expression<Func<TEntity, bool>> predicate, IDbTransaction transaction, TimeSpan? timeout)
+        public virtual Task<bool> DeleteAsync(Expression<Func<TEntity, bool>>? predicate, IDbTransaction? transaction, TimeSpan? timeout)
         {
             return DeleteAsync(predicate, transaction, timeout, default);
         }
 
         /// <inheritdoc />
-        public virtual async Task<bool> DeleteAsync(Expression<Func<TEntity, bool>> predicate, IDbTransaction transaction = null, TimeSpan? timeout = null,
+        public virtual async Task<bool> DeleteAsync(Expression<Func<TEntity, bool>>? predicate, IDbTransaction? transaction = null, TimeSpan? timeout = null,
             CancellationToken cancellationToken = default)
         {
             var queryResult = SqlGenerator.GetDelete(predicate);

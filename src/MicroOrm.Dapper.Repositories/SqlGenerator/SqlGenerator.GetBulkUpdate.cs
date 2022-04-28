@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Text;
 using MicroOrm.Dapper.Repositories.Attributes;
 
 namespace MicroOrm.Dapper.Repositories.SqlGenerator
@@ -25,7 +24,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
 
             var query = new SqlQuery();
 
-            var parameters = new Dictionary<string, object>();
+            var parameters = new Dictionary<string, object?>();
 
             //In Oracle we use MERGE INTO to excute multipe update with argument.
             List<string> singleSelectsForOracle = new List<string>();
@@ -33,9 +32,8 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
             for (var i = 0; i < entitiesArray.Length; i++)
             {
                 var entity = entitiesArray[i];
-                if (HasUpdatedAt)
+                if (HasUpdatedAt && UpdatedAtProperty.GetCustomAttribute<UpdatedAtAttribute>() is { } attribute)
                 {
-                    var attribute = UpdatedAtProperty.GetCustomAttribute<UpdatedAtAttribute>();
                     var offset = attribute.TimeKind == DateTimeKind.Local
                         ? new DateTimeOffset(DateTime.Now)
                         : new DateTimeOffset(DateTime.UtcNow);
@@ -62,14 +60,11 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                     singleSelectsForOracle.Add(singleSelect);
                 }
 
-                // ReSharper disable PossibleNullReferenceException
                 foreach (var property in properties)
-                    parameters.Add(property.PropertyName + i, entityType.GetProperty(property.PropertyName).GetValue(entity, null));
+                    parameters.Add(property.PropertyName + i, entityType.GetProperty(property.PropertyName)?.GetValue(entity, null));
 
                 foreach (var property in KeySqlProperties.Where(p => !p.IgnoreUpdate))
-                    parameters.Add(property.PropertyName + i, entityType.GetProperty(property.PropertyName).GetValue(entity, null));
-
-                // ReSharper restore PossibleNullReferenceException
+                    parameters.Add(property.PropertyName + i, entityType.GetProperty(property.PropertyName)?.GetValue(entity, null));
             }
 
             query.SetParam(parameters);

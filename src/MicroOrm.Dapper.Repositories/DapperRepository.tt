@@ -8,6 +8,8 @@ using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
 
+#nullable enable
+
 namespace MicroOrm.Dapper.Repositories
 {
 <#
@@ -43,7 +45,7 @@ var readonlyMethods = new[]
         @"/// <summary>
         ///     Insert object to DB
         /// </summary>", false),
-    Tuple.Create("Insert", "TEntity instance, IDbTransaction transaction",
+    Tuple.Create("Insert", "TEntity instance, IDbTransaction? transaction",
         "instance, transaction", "", "bool",
         @"/// <summary>
         ///     Insert object to DB
@@ -53,7 +55,7 @@ var readonlyMethods = new[]
         @"/// <summary>
         ///     Bulk Insert objects to DB
         /// </summary>", false),
-    Tuple.Create("BulkInsert", "IEnumerable<TEntity> instances, IDbTransaction transaction",
+    Tuple.Create("BulkInsert", "IEnumerable<TEntity> instances, IDbTransaction? transaction",
         "instances, transaction", "", "int",
         @"/// <summary>
         ///     Bulk Insert objects to DB
@@ -64,17 +66,17 @@ var readonlyMethods = new[]
         @"/// <summary>
         ///     Update object in DB
         /// </summary>", false),
-    Tuple.Create("Update", "TEntity instance, IDbTransaction transaction, params Expression<Func<TEntity, object>>[] includes",
+    Tuple.Create("Update", "TEntity instance, IDbTransaction? transaction, params Expression<Func<TEntity, object>>[] includes",
         "instance, transaction, includes", "", "bool",
         @"/// <summary>
         ///     Update object in DB
         /// </summary>", true),
-    Tuple.Create("Update", "Expression<Func<TEntity, bool>> predicate, TEntity instance, params Expression<Func<TEntity, object>>[] includes",
+    Tuple.Create("Update", "Expression<Func<TEntity, bool>>? predicate, TEntity instance, params Expression<Func<TEntity, object>>[] includes",
         "predicate, instance, null, includes", "", "bool",
         @"/// <summary>
         ///     Update object in DB
         /// </summary>", false),
-    Tuple.Create("Update", "Expression<Func<TEntity, bool>> predicate, TEntity instance, IDbTransaction transaction, params Expression<Func<TEntity, object>>[] includes",
+    Tuple.Create("Update", "Expression<Func<TEntity, bool>>? predicate, TEntity instance, IDbTransaction? transaction, params Expression<Func<TEntity, object>>[] includes",
         "predicate, instance, transaction, includes", "", "bool",
         @"/// <summary>
         ///     Update object in DB
@@ -84,7 +86,7 @@ var readonlyMethods = new[]
         @"/// <summary>
         ///     Bulk Update objects to DB
         /// </summary>", false),
-    Tuple.Create("BulkUpdate", "IEnumerable<TEntity> instances, IDbTransaction transaction",
+    Tuple.Create("BulkUpdate", "IEnumerable<TEntity> instances, IDbTransaction? transaction",
         "instances, transaction", "", "bool",
         @"/// <summary>
         ///     Bulk Update objects to DB

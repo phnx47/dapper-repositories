@@ -12,17 +12,17 @@ namespace MicroOrm.Dapper.Repositories
         where TEntity : class
     {
         /// <inheritdoc />
-        public virtual TEntity FindById(object id, IDbTransaction transaction)
+        public virtual TEntity? FindById(object id, IDbTransaction? transaction)
         {
             var queryResult = SqlGenerator.GetSelectById(id, null);
             return Connection.QuerySingleOrDefault<TEntity>(queryResult.GetSql(), queryResult.Param, transaction);
         }
 
         /// <inheritdoc />
-        public virtual Task<TEntity> FindByIdAsync(object id, IDbTransaction transaction, CancellationToken cancellationToken)
+        public virtual Task<TEntity?> FindByIdAsync(object id, IDbTransaction? transaction, CancellationToken cancellationToken)
         {
             var queryResult = SqlGenerator.GetSelectById(id, null);
-            return Connection.QuerySingleOrDefaultAsync<TEntity>(new CommandDefinition(queryResult.GetSql(), queryResult.Param, transaction, cancellationToken: cancellationToken));
+            return Connection.QuerySingleOrDefaultAsync<TEntity?>(new CommandDefinition(queryResult.GetSql(), queryResult.Param, transaction, cancellationToken: cancellationToken));
         }
     }
 }

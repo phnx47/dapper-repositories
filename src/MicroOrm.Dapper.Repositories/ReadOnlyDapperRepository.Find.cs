@@ -15,17 +15,17 @@ namespace MicroOrm.Dapper.Repositories
         where TEntity : class
     {
         /// <inheritdoc />
-        public virtual TEntity Find(Expression<Func<TEntity, bool>> predicate, IDbTransaction transaction)
+        public virtual TEntity? Find(Expression<Func<TEntity, bool>>? predicate, IDbTransaction? transaction)
         {
             var queryResult = SqlGenerator.GetSelectFirst(predicate, FilterData);
             return Connection.QueryFirstOrDefault<TEntity>(queryResult.GetSql(), queryResult.Param, transaction);
         }
 
         /// <inheritdoc />
-        public virtual Task<TEntity> FindAsync(Expression<Func<TEntity, bool>> predicate, IDbTransaction transaction, CancellationToken cancellationToken)
+        public virtual Task<TEntity?> FindAsync(Expression<Func<TEntity, bool>>? predicate, IDbTransaction? transaction, CancellationToken cancellationToken)
         {
             var queryResult = SqlGenerator.GetSelectFirst(predicate, FilterData);
-            return Connection.QueryFirstOrDefaultAsync<TEntity>(new CommandDefinition(queryResult.GetSql(), queryResult.Param, transaction, cancellationToken: cancellationToken));
+            return Connection.QueryFirstOrDefaultAsync<TEntity?>(new CommandDefinition(queryResult.GetSql(), queryResult.Param, transaction, cancellationToken: cancellationToken));
         }
     }
 }

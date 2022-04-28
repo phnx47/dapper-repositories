@@ -18,25 +18,28 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         {
             var joinAtttribute = joinPropertyInfo.GetCustomAttribute<JoinAttributeBase>();
             JoinPropertyInfo = joinPropertyInfo;
-            TableSchema = joinAtttribute.TableSchema;
-            TableName = joinAtttribute.TableName;
-            TableAlias = joinAtttribute.TableAlias;
+            if (joinAtttribute != null)
+            {
+                TableSchema = joinAtttribute.TableSchema;
+                TableName = joinAtttribute.TableName;
+                TableAlias = joinAtttribute.TableAlias;
+            }
         }
 
         /// <summary>
         ///     Table name
         /// </summary>
-        public string TableName { get; set; }
+        public string? TableName { get; set; }
 
         /// <summary>
         ///     Table alias
         /// </summary>
-        public string TableAlias { get; set; }
+        public string? TableAlias { get; set; }
 
         /// <summary>
         ///     Schema name
         /// </summary>
-        public string TableSchema { get; set; }
+        public string? TableSchema { get; set; }
 
         /// <summary>
         ///     Original join property info

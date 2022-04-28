@@ -31,7 +31,7 @@ namespace MicroOrm.Dapper.Repositories
         /// <summary>
         ///     Get all objects with orderBy
         /// </summary>
-        IEnumerable<TEntity> FindAll(Expression<Func<TEntity, bool>> predicate, Expression<Func<TEntity, string, string>> orderBy);
+        IEnumerable<TEntity> FindAll(Expression<Func<TEntity, bool>>? predicate, Expression<Func<TEntity, string, string>> orderBy);
 
         /// <summary>
         /// Set columns to select in specified table (model)

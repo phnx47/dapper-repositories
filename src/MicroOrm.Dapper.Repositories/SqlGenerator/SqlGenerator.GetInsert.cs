@@ -19,9 +19,8 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                     ? SqlProperties.Where(p => !p.PropertyName.Equals(IdentitySqlProperty.PropertyName, StringComparison.OrdinalIgnoreCase))
                     : SqlProperties).ToList();
 
-            if (HasUpdatedAt)
+            if (HasUpdatedAt && UpdatedAtProperty.GetCustomAttribute<UpdatedAtAttribute>() is {} attribute)
             {
-                var attribute = UpdatedAtProperty.GetCustomAttribute<UpdatedAtAttribute>();
                 var offset = attribute.TimeKind == DateTimeKind.Local
                     ? new DateTimeOffset(DateTime.Now)
                     : new DateTimeOffset(DateTime.UtcNow);

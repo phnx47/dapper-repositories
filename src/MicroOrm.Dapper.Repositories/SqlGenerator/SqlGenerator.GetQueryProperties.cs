@@ -115,7 +115,8 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                     }
 
                     var propertyValue = ExpressionHelper.GetValue(binaryExpression.Right);
-                    var nodeType = checkNullable ? ((bool)propertyValue == false ? ExpressionType.Equal : ExpressionType.NotEqual) : binaryExpression.NodeType;
+                    // ReSharper disable once MergeIntoPattern
+                    var nodeType = checkNullable ? (propertyValue is bool val && !val ? ExpressionType.Equal : ExpressionType.NotEqual) : binaryExpression.NodeType;
                     if (checkNullable)
                     {
                         propertyValue = null;
@@ -140,10 +141,9 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                                 case QueryBinaryExpression rQBExpr:
                                     if (lQPExpr.LinkingOperator == rQBExpr.Nodes.Last().LinkingOperator) // AND a AND (c AND d)
                                     {
-                                        var nodes = new QueryBinaryExpression
+                                        var nodes = new QueryBinaryExpression(new List<QueryExpression> { leftExpr })
                                         {
                                             LinkingOperator = leftExpr.LinkingOperator,
-                                            Nodes = new List<QueryExpression> { leftExpr }
                                         };
 
                                         rQBExpr.Nodes[0].LinkingOperator = rQBExpr.LinkingOperator;
@@ -204,11 +204,10 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                     return leftExpr;
                 }
 
-                return new QueryBinaryExpression
+                return new QueryBinaryExpression(new List<QueryExpression> { leftExpr, rightExpr })
                 {
                     NodeType = QueryExpressionType.Binary,
                     LinkingOperator = nLinkingOperator,
-                    Nodes = new List<QueryExpression> { leftExpr, rightExpr },
                 };
             }
 

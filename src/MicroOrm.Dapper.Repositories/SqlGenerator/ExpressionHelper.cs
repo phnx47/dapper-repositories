@@ -37,12 +37,12 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
             return expr.Member.Name;
         }
 
-        public static object GetValue(Expression member)
+        public static object? GetValue(Expression? member)
         {
             return GetValue(member, out _);
         }
 
-        private static object GetValue(Expression member, out string parameterName)
+        private static object? GetValue(Expression? member, out string? parameterName)
         {
             parameterName = null;
             if (member == null)
@@ -132,7 +132,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
             }
         }
 
-        public static string GetSqlLikeValue(string methodName, object value)
+        public static string? GetSqlLikeValue(string methodName, object? value)
         {
             if (value == null)
                 value = string.Empty;
@@ -196,14 +196,14 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                                        p.PropertyType == typeof(byte[]));
         }
 
-        public static object GetValuesFromStringMethod(MethodCallExpression callExpr)
+        public static object? GetValuesFromStringMethod(MethodCallExpression callExpr)
         {
             var expr = callExpr.Method.IsStatic ? callExpr.Arguments[1] : callExpr.Arguments[0];
 
             return GetValue(expr);
         }
 
-        public static object GetValuesFromCollection(MethodCallExpression callExpr)
+        public static object? GetValuesFromCollection(MethodCallExpression callExpr)
         {
             var expr = (callExpr.Method.IsStatic ? callExpr.Arguments.First() : callExpr.Object)
                 as MemberExpression;
@@ -218,7 +218,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
             }
         }
 
-        public static MemberExpression GetMemberExpression(Expression expression)
+        public static MemberExpression? GetMemberExpression(Expression? expression)
         {
             switch (expression)
             {
@@ -268,8 +268,12 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         /// <returns>The property name for the property expression.</returns>
         public static string GetPropertyNamePath(Expression expr, out bool nested)
         {
-            var path = new StringBuilder();
+            nested = false;
+            
             var memberExpression = GetMemberExpression(expr);
+            if (memberExpression == null) return string.Empty;
+            
+            var path = new StringBuilder();
             var count = 0;
             do
             {

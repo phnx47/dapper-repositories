@@ -21,8 +21,8 @@ namespace MicroOrm.Dapper.Repositories
             DateTime from,
             DateTime to,
             Expression<Func<TEntity, object>> btwField,
-            Expression<Func<TEntity, bool>> predicate,
-            IDbTransaction transaction)
+            Expression<Func<TEntity, bool>>? predicate,
+            IDbTransaction? transaction)
         {
             var fromString = from.ToString(_dateTimeFormat);
             var toString = to.ToString(_dateTimeFormat);
@@ -34,8 +34,8 @@ namespace MicroOrm.Dapper.Repositories
             object from,
             object to,
             Expression<Func<TEntity, object>> btwField,
-            Expression<Func<TEntity, bool>> predicate,
-            IDbTransaction transaction)
+            Expression<Func<TEntity, bool>>? predicate,
+            IDbTransaction? transaction)
         {
             var queryResult = SqlGenerator.GetSelectBetween(from, to, FilterData, btwField, predicate);
             return Connection.Query<TEntity>(queryResult.GetSql(), queryResult.Param, transaction);
@@ -46,8 +46,8 @@ namespace MicroOrm.Dapper.Repositories
             DateTime from,
             DateTime to,
             Expression<Func<TEntity, object>> btwField,
-            Expression<Func<TEntity, bool>> predicate,
-            IDbTransaction transaction,
+            Expression<Func<TEntity, bool>>? predicate,
+            IDbTransaction? transaction,
             CancellationToken cancellationToken)
         {
             return FindAllBetweenAsync(from.ToString(_dateTimeFormat), to.ToString(_dateTimeFormat), btwField, predicate, transaction, cancellationToken);
@@ -58,8 +58,8 @@ namespace MicroOrm.Dapper.Repositories
             object from,
             object to,
             Expression<Func<TEntity, object>> btwField,
-            Expression<Func<TEntity, bool>> predicate,
-            IDbTransaction transaction,
+            Expression<Func<TEntity, bool>>? predicate,
+            IDbTransaction? transaction,
             CancellationToken cancellationToken)
         {
             var queryResult = SqlGenerator.GetSelectBetween(from, to, FilterData, btwField, predicate);

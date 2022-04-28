@@ -1,9 +1,11 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
+
+#nullable enable
 
 namespace MicroOrm.Dapper.Repositories
 {
@@ -27,17 +29,17 @@ namespace MicroOrm.Dapper.Repositories
         /// <summary>
         ///     Insert object to DB
         /// </summary>
-        bool Insert(TEntity instance, IDbTransaction transaction);
+        bool Insert(TEntity instance, IDbTransaction? transaction);
 
         /// <summary>
         ///     Insert object to DB
         /// </summary>
-        Task<bool> InsertAsync(TEntity instance, IDbTransaction transaction);
+        Task<bool> InsertAsync(TEntity instance, IDbTransaction? transaction);
 
         /// <summary>
         ///     Insert object to DB
         /// </summary>
-        Task<bool> InsertAsync(TEntity instance, IDbTransaction transaction, CancellationToken cancellationToken);
+        Task<bool> InsertAsync(TEntity instance, IDbTransaction? transaction, CancellationToken cancellationToken);
 
         /// <summary>
         ///     Bulk Insert objects to DB
@@ -57,17 +59,17 @@ namespace MicroOrm.Dapper.Repositories
         /// <summary>
         ///     Bulk Insert objects to DB
         /// </summary>
-        int BulkInsert(IEnumerable<TEntity> instances, IDbTransaction transaction);
+        int BulkInsert(IEnumerable<TEntity> instances, IDbTransaction? transaction);
 
         /// <summary>
         ///     Bulk Insert objects to DB
         /// </summary>
-        Task<int> BulkInsertAsync(IEnumerable<TEntity> instances, IDbTransaction transaction);
+        Task<int> BulkInsertAsync(IEnumerable<TEntity> instances, IDbTransaction? transaction);
 
         /// <summary>
         ///     Bulk Insert objects to DB
         /// </summary>
-        Task<int> BulkInsertAsync(IEnumerable<TEntity> instances, IDbTransaction transaction, CancellationToken cancellationToken);
+        Task<int> BulkInsertAsync(IEnumerable<TEntity> instances, IDbTransaction? transaction, CancellationToken cancellationToken);
 
         /// <summary>
         ///     Update object in DB
@@ -87,47 +89,47 @@ namespace MicroOrm.Dapper.Repositories
         /// <summary>
         ///     Update object in DB
         /// </summary>
-        bool Update(TEntity instance, IDbTransaction transaction, params Expression<Func<TEntity, object>>[] includes);
+        bool Update(TEntity instance, IDbTransaction? transaction, params Expression<Func<TEntity, object>>[] includes);
 
         /// <summary>
         ///     Update object in DB
         /// </summary>
-        Task<bool> UpdateAsync(TEntity instance, IDbTransaction transaction, params Expression<Func<TEntity, object>>[] includes);
+        Task<bool> UpdateAsync(TEntity instance, IDbTransaction? transaction, params Expression<Func<TEntity, object>>[] includes);
 
         /// <summary>
         ///     Update object in DB
         /// </summary>
-        Task<bool> UpdateAsync(TEntity instance, IDbTransaction transaction, CancellationToken cancellationToken, params Expression<Func<TEntity, object>>[] includes);
+        Task<bool> UpdateAsync(TEntity instance, IDbTransaction? transaction, CancellationToken cancellationToken, params Expression<Func<TEntity, object>>[] includes);
 
         /// <summary>
         ///     Update object in DB
         /// </summary>
-        bool Update(Expression<Func<TEntity, bool>> predicate, TEntity instance, params Expression<Func<TEntity, object>>[] includes);
+        bool Update(Expression<Func<TEntity, bool>>? predicate, TEntity instance, params Expression<Func<TEntity, object>>[] includes);
 
         /// <summary>
         ///     Update object in DB
         /// </summary>
-        Task<bool> UpdateAsync(Expression<Func<TEntity, bool>> predicate, TEntity instance, params Expression<Func<TEntity, object>>[] includes);
+        Task<bool> UpdateAsync(Expression<Func<TEntity, bool>>? predicate, TEntity instance, params Expression<Func<TEntity, object>>[] includes);
 
         /// <summary>
         ///     Update object in DB
         /// </summary>
-        Task<bool> UpdateAsync(Expression<Func<TEntity, bool>> predicate, TEntity instance, CancellationToken cancellationToken, params Expression<Func<TEntity, object>>[] includes);
+        Task<bool> UpdateAsync(Expression<Func<TEntity, bool>>? predicate, TEntity instance, CancellationToken cancellationToken, params Expression<Func<TEntity, object>>[] includes);
 
         /// <summary>
         ///     Update object in DB
         /// </summary>
-        bool Update(Expression<Func<TEntity, bool>> predicate, TEntity instance, IDbTransaction transaction, params Expression<Func<TEntity, object>>[] includes);
+        bool Update(Expression<Func<TEntity, bool>>? predicate, TEntity instance, IDbTransaction? transaction, params Expression<Func<TEntity, object>>[] includes);
 
         /// <summary>
         ///     Update object in DB
         /// </summary>
-        Task<bool> UpdateAsync(Expression<Func<TEntity, bool>> predicate, TEntity instance, IDbTransaction transaction, params Expression<Func<TEntity, object>>[] includes);
+        Task<bool> UpdateAsync(Expression<Func<TEntity, bool>>? predicate, TEntity instance, IDbTransaction? transaction, params Expression<Func<TEntity, object>>[] includes);
 
         /// <summary>
         ///     Update object in DB
         /// </summary>
-        Task<bool> UpdateAsync(Expression<Func<TEntity, bool>> predicate, TEntity instance, IDbTransaction transaction, CancellationToken cancellationToken, params Expression<Func<TEntity, object>>[] includes);
+        Task<bool> UpdateAsync(Expression<Func<TEntity, bool>>? predicate, TEntity instance, IDbTransaction? transaction, CancellationToken cancellationToken, params Expression<Func<TEntity, object>>[] includes);
 
         /// <summary>
         ///     Bulk Update objects to DB
@@ -147,17 +149,17 @@ namespace MicroOrm.Dapper.Repositories
         /// <summary>
         ///     Bulk Update objects to DB
         /// </summary>
-        bool BulkUpdate(IEnumerable<TEntity> instances, IDbTransaction transaction);
+        bool BulkUpdate(IEnumerable<TEntity> instances, IDbTransaction? transaction);
 
         /// <summary>
         ///     Bulk Update objects to DB
         /// </summary>
-        Task<bool> BulkUpdateAsync(IEnumerable<TEntity> instances, IDbTransaction transaction);
+        Task<bool> BulkUpdateAsync(IEnumerable<TEntity> instances, IDbTransaction? transaction);
 
         /// <summary>
         ///     Bulk Update objects to DB
         /// </summary>
-        Task<bool> BulkUpdateAsync(IEnumerable<TEntity> instances, IDbTransaction transaction, CancellationToken cancellationToken);
+        Task<bool> BulkUpdateAsync(IEnumerable<TEntity> instances, IDbTransaction? transaction, CancellationToken cancellationToken);
 
     }
 
@@ -182,7 +184,7 @@ namespace MicroOrm.Dapper.Repositories
         }
 
         /// <inheritdoc />
-        public virtual Task<bool> InsertAsync(TEntity instance, IDbTransaction transaction)
+        public virtual Task<bool> InsertAsync(TEntity instance, IDbTransaction? transaction)
         {
             return InsertAsync(instance, transaction, CancellationToken.None);
         }
@@ -206,7 +208,7 @@ namespace MicroOrm.Dapper.Repositories
         }
 
         /// <inheritdoc />
-        public virtual Task<int> BulkInsertAsync(IEnumerable<TEntity> instances, IDbTransaction transaction)
+        public virtual Task<int> BulkInsertAsync(IEnumerable<TEntity> instances, IDbTransaction? transaction)
         {
             return BulkInsertAsync(instances, transaction, CancellationToken.None);
         }
@@ -230,31 +232,31 @@ namespace MicroOrm.Dapper.Repositories
         }
 
         /// <inheritdoc />
-        public virtual Task<bool> UpdateAsync(TEntity instance, IDbTransaction transaction, params Expression<Func<TEntity, object>>[] includes)
+        public virtual Task<bool> UpdateAsync(TEntity instance, IDbTransaction? transaction, params Expression<Func<TEntity, object>>[] includes)
         {
             return UpdateAsync(instance, transaction, CancellationToken.None, includes);
         }
 
         /// <inheritdoc />
-        public virtual bool Update(Expression<Func<TEntity, bool>> predicate, TEntity instance, params Expression<Func<TEntity, object>>[] includes)
+        public virtual bool Update(Expression<Func<TEntity, bool>>? predicate, TEntity instance, params Expression<Func<TEntity, object>>[] includes)
         {
             return Update(predicate, instance, null, includes);
         }
 
         /// <inheritdoc />
-        public virtual Task<bool> UpdateAsync(Expression<Func<TEntity, bool>> predicate, TEntity instance, params Expression<Func<TEntity, object>>[] includes)
+        public virtual Task<bool> UpdateAsync(Expression<Func<TEntity, bool>>? predicate, TEntity instance, params Expression<Func<TEntity, object>>[] includes)
         {
             return UpdateAsync(predicate, instance, null, CancellationToken.None, includes);
         }
 
         /// <inheritdoc />
-        public virtual Task<bool> UpdateAsync(Expression<Func<TEntity, bool>> predicate, TEntity instance, CancellationToken cancellationToken, params Expression<Func<TEntity, object>>[] includes)
+        public virtual Task<bool> UpdateAsync(Expression<Func<TEntity, bool>>? predicate, TEntity instance, CancellationToken cancellationToken, params Expression<Func<TEntity, object>>[] includes)
         {
             return UpdateAsync(predicate, instance, null, cancellationToken, includes);
         }
 
         /// <inheritdoc />
-        public virtual Task<bool> UpdateAsync(Expression<Func<TEntity, bool>> predicate, TEntity instance, IDbTransaction transaction, params Expression<Func<TEntity, object>>[] includes)
+        public virtual Task<bool> UpdateAsync(Expression<Func<TEntity, bool>>? predicate, TEntity instance, IDbTransaction? transaction, params Expression<Func<TEntity, object>>[] includes)
         {
             return UpdateAsync(predicate, instance, transaction, CancellationToken.None, includes);
         }
@@ -278,7 +280,7 @@ namespace MicroOrm.Dapper.Repositories
         }
 
         /// <inheritdoc />
-        public virtual Task<bool> BulkUpdateAsync(IEnumerable<TEntity> instances, IDbTransaction transaction)
+        public virtual Task<bool> BulkUpdateAsync(IEnumerable<TEntity> instances, IDbTransaction? transaction)
         {
             return BulkUpdateAsync(instances, transaction, CancellationToken.None);
         }

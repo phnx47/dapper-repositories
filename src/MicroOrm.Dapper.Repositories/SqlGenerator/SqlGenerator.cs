@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using MicroOrm.Dapper.Repositories.Config;
 
@@ -60,49 +62,51 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         public bool? UseQuotationMarks { get; set; }
 
         /// <inheritdoc />
-        public PropertyInfo[] AllProperties { get; protected set; }
+        public PropertyInfo[] AllProperties { get; protected set; } = Array.Empty<PropertyInfo>();
 
         /// <inheritdoc />
+        [MemberNotNullWhen(true, nameof(UpdatedAtProperty), nameof(UpdatedAtPropertyMetadata))]
         public bool HasUpdatedAt => UpdatedAtProperty != null;
 
         /// <inheritdoc />
-        public PropertyInfo UpdatedAtProperty { get; protected set; }
+        public PropertyInfo? UpdatedAtProperty { get; protected set; }
 
         /// <inheritdoc />
-        public SqlPropertyMetadata UpdatedAtPropertyMetadata { get; protected set; }
+        public SqlPropertyMetadata? UpdatedAtPropertyMetadata { get; protected set; }
 
         /// <inheritdoc />
+        [MemberNotNullWhen(true, nameof(IdentitySqlProperty))]
         public bool IsIdentity => IdentitySqlProperty != null;
 
         /// <inheritdoc />
-        public string TableName { get; protected set; }
+        public string? TableName { get; protected set; }
 
         /// <inheritdoc />
-        public string TableSchema { get; protected set; }
+        public string? TableSchema { get; protected set; }
 
         /// <inheritdoc />
-        public SqlPropertyMetadata IdentitySqlProperty { get; protected set; }
+        public SqlPropertyMetadata? IdentitySqlProperty { get; protected set; }
 
         /// <inheritdoc />
-        public SqlPropertyMetadata[] KeySqlProperties { get; protected set; }
+        public SqlPropertyMetadata[] KeySqlProperties { get; protected set; } = Array.Empty<SqlPropertyMetadata>();
 
         /// <inheritdoc />
-        public SqlPropertyMetadata[] SqlProperties { get; protected set; }
+        public SqlPropertyMetadata[] SqlProperties { get; protected set; } = Array.Empty<SqlPropertyMetadata>();
 
         /// <inheritdoc />
-        public SqlJoinPropertyMetadata[] SqlJoinProperties { get; protected set; }
+        public SqlJoinPropertyMetadata[] SqlJoinProperties { get; protected set; } = Array.Empty<SqlJoinPropertyMetadata>();
 
         /// <inheritdoc />
         public bool LogicalDelete { get; protected set; }
 
         /// <inheritdoc />
-        public Dictionary<string, PropertyInfo> JoinsLogicalDelete { get; protected set; }
+        public Dictionary<string, PropertyInfo>? JoinsLogicalDelete { get; protected set; }
 
         /// <inheritdoc />
-        public string StatusPropertyName { get; protected set; }
+        public string? StatusPropertyName { get; protected set; }
 
         /// <inheritdoc />
-        public object LogicalDeleteValue { get; protected set; }
+        public object? LogicalDeleteValue { get; protected set; }
 
         /// <summary>
         ///     In Oracle parameter should be build with : instead of @. 

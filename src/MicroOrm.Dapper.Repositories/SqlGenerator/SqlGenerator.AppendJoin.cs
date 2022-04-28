@@ -15,7 +15,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
     public partial class SqlGenerator<TEntity>
         where TEntity : class
     {
-        private string AppendJoinToUpdate<TBase>(TBase entity, SqlQuery originalBuilder, params Expression<Func<TEntity, object>>[] includes)
+        private string AppendJoinToUpdate<TBase>(TBase entity, SqlQuery originalBuilder, params Expression<Func<TEntity, object>>[] includes) where TBase : notnull
         {
             var joinBuilder = new StringBuilder();
 
@@ -27,9 +27,9 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                 if (attrJoin == null)
                     continue;
 
-                var declaringType = joinProperty.ReflectedType.GetTypeInfo();
-                var tableAttribute = declaringType.GetCustomAttribute<TableAttribute>();
-                var tableName = MicroOrmConfig.TablePrefix + (tableAttribute != null ? tableAttribute.Name : declaringType.Name);
+                var declaringType = joinProperty.ReflectedType?.GetTypeInfo();
+                var tableAttribute = declaringType?.GetCustomAttribute<TableAttribute>();
+                var tableName = MicroOrmConfig.TablePrefix + (tableAttribute != null ? tableAttribute.Name : declaringType?.Name);
 
                 var joinType = joinProperty.PropertyType.IsGenericType ? joinProperty.PropertyType.GenericTypeArguments[0] : joinProperty.PropertyType;
                 var properties = joinType.FindClassMetaDataProperties().Where(p => !p.IgnoreUpdate).ToArray();
@@ -70,7 +70,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
             else
             {
                 var customFilter = string.Empty;
-                if (JoinsLogicalDelete != null && JoinsLogicalDelete.TryGetValue(attrJoin.TableName, out var deleteAttr))
+                if (JoinsLogicalDelete != null && JoinsLogicalDelete.TryGetValue(attrJoin.TableName ?? string.Empty, out var deleteAttr))
                 {
                     var colAttr = deleteAttr.GetCustomAttribute<ColumnAttribute>();
                     var colName = colAttr == null ? deleteAttr.Name : colAttr.Name;
@@ -109,9 +109,9 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                 if (attrJoin == null)
                     continue;
 
-                var declaringType = joinProperty.ReflectedType.GetTypeInfo();
-                var tableAttribute = declaringType.GetCustomAttribute<TableAttribute>();
-                var tableName = MicroOrmConfig.TablePrefix + (tableAttribute != null ? tableAttribute.Name : declaringType.Name);
+                var declaringType = joinProperty.ReflectedType?.GetTypeInfo();
+                var tableAttribute = declaringType?.GetCustomAttribute<TableAttribute>();
+                var tableName = MicroOrmConfig.TablePrefix + (tableAttribute != null ? tableAttribute.Name : declaringType?.Name);
 
                 var joinType = joinProperty.PropertyType.IsGenericType ? joinProperty.PropertyType.GenericTypeArguments[0] : joinProperty.PropertyType;
                 var properties = joinType.FindClassMetaDataProperties();

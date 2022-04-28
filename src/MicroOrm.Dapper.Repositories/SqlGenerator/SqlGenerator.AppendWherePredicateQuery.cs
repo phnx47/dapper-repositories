@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
-using Dapper;
 using MicroOrm.Dapper.Repositories.Extensions;
 using MicroOrm.Dapper.Repositories.SqlGenerator.QueryExpressions;
 
@@ -14,16 +13,16 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
     public partial class SqlGenerator<TEntity>
         where TEntity : class
     {
-        private void AppendWherePredicateQuery(SqlQuery sqlQuery, Expression<Func<TEntity, bool>> predicate, QueryType queryType)
+        private void AppendWherePredicateQuery(SqlQuery sqlQuery, Expression<Func<TEntity, bool>>? predicate, QueryType queryType)
         {
-            IDictionary<string, object> dictionaryParams;
-            if (sqlQuery.Param is Dictionary<string, object> param)
+            IDictionary<string, object?> dictionaryParams;
+            if (sqlQuery.Param is Dictionary<string, object?> param)
             {
                 dictionaryParams = param;
             }
             else
             {
-                dictionaryParams = new Dictionary<string, object>();
+                dictionaryParams = new Dictionary<string, object?>();
             }
 
             if (predicate != null)
@@ -35,7 +34,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
 
                 var qLevel = 0;
                 var sqlBuilder = new StringBuilder();
-                var conditions = new List<KeyValuePair<string, object>>();
+                var conditions = new List<KeyValuePair<string, object?>>();
                 BuildQuerySql(queryProperties, ref sqlBuilder, ref conditions, ref qLevel);
 
                 dictionaryParams.AddRange(conditions);
@@ -68,7 +67,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         /// Support `group conditions` syntax
         /// </remarks>
         private void BuildQuerySql(IList<QueryExpression> queryProperties,
-            ref StringBuilder sqlBuilder, ref List<KeyValuePair<string, object>> conditions, ref int qLevel)
+            ref StringBuilder sqlBuilder, ref List<KeyValuePair<string, object?>> conditions, ref int qLevel)
         {
             foreach (var expr in queryProperties)
             {
@@ -86,7 +85,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                 {
                     case QueryParameterExpression qpExpr:
                         var tableName = TableName;
-                        string columnName;
+                        string? columnName;
                         if (qpExpr.NestedProperty)
                         {
                             var joinProperty = SqlJoinProperties.First(x => x.PropertyName == qpExpr.PropertyName);
@@ -107,19 +106,18 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                             var vKey = string.Format("{0}_p{1}", qpExpr.PropertyName, qLevel); //Handle multiple uses of a field
 
                             sqlBuilder.AppendFormat("{0}.{1} {2} " + ParameterSymbol + "{3}", tableName, columnName, qpExpr.QueryOperator, vKey);
-                            conditions.Add(new KeyValuePair<string, object>(vKey, qpExpr.PropertyValue));
+                            conditions.Add(new KeyValuePair<string, object?>(vKey, qpExpr.PropertyValue));
 
                             // in oracle, we should pass a null value instead of an empty list in case of query something like "select * from sometable where id in :id " and :id is empty.
                             // make sure firsty the value in params is a type of generic list.
                             // i dont like this solution. if anyone has a better way plz commit.
                             if (Provider == SqlProvider.Oracle)
                             {
-                                if (conditions[0].Value.GetType() != null && conditions[0].Value.GetType().IsGenericType &&
-                                    conditions[0].Value.GetType().GetGenericTypeDefinition() == typeof(List<>))
+                                if (conditions[0].Value?.GetType() is { IsGenericType: true } type &&
+                                    type.GetGenericTypeDefinition() == typeof(List<>) &&
+                                    conditions[0].Value is IList { Count: 0 })
                                 {
-                                    var value = conditions[0].Value as IList;
-                                    if (value.Count == 0)
-                                        conditions[0] = new KeyValuePair<string, object>(vKey, null);
+                                    conditions[0] = new KeyValuePair<string, object?>(vKey, null);
                                 }
                             }
                         }
@@ -129,7 +127,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
 
                     case QueryBinaryExpression qbExpr:
                         var nSqlBuilder = new StringBuilder();
-                        var nConditions = new List<KeyValuePair<string, object>>();
+                        var nConditions = new List<KeyValuePair<string, object?>>();
                         BuildQuerySql(qbExpr.Nodes, ref nSqlBuilder, ref nConditions, ref qLevel);
 
                         if (qbExpr.Nodes.Count == 1) //Handle `grouping brackets`
@@ -152,7 +150,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
             var queryNode = GetQueryProperties(expr, ExpressionType.Default);
             switch (queryNode)
             {
-                case QueryParameterExpression qpExpr:
+                case QueryParameterExpression:
                     return new List<QueryExpression> { queryNode };
 
                 case QueryBinaryExpression qbExpr:

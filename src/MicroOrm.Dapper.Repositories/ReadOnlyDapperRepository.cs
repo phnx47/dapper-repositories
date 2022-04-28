@@ -15,13 +15,15 @@ namespace MicroOrm.Dapper.Repositories
     public partial class ReadOnlyDapperRepository<TEntity> : IReadOnlyDapperRepository<TEntity>
         where TEntity : class
     {
+        private IDbConnection? _connection;
+        private FilterData? _filterData;
+
         /// <summary>
         ///     Constructor
         /// </summary>
         public ReadOnlyDapperRepository(IDbConnection connection)
         {
-            Connection = connection;
-            FilterData = new FilterData();
+            _connection = connection;
             SqlGenerator = new SqlGenerator<TEntity>();
         }
 
@@ -30,16 +32,23 @@ namespace MicroOrm.Dapper.Repositories
         /// </summary>
         public ReadOnlyDapperRepository(IDbConnection connection, ISqlGenerator<TEntity> sqlGenerator)
         {
-            Connection = connection;
-            FilterData = new FilterData();
+            _connection = connection;
             SqlGenerator = sqlGenerator;
         }
 
         /// <inheritdoc />
-        public IDbConnection Connection { get; set; }
+        public IDbConnection Connection
+        {
+            get => _connection ?? throw new ObjectDisposedException(GetType().FullName);
+            set => _connection = value ?? throw new ArgumentNullException(nameof(value));
+        }
 
         /// <inheritdoc />
-        public FilterData FilterData { get; set; }
+        public FilterData FilterData
+        {
+            get => _filterData ??= new FilterData();
+            set => _filterData = value ?? throw new ArgumentNullException(nameof(value));
+        }
 
         /// <inheritdoc />
         public ISqlGenerator<TEntity> SqlGenerator { get; }
@@ -63,14 +72,14 @@ namespace MicroOrm.Dapper.Repositories
         /// <inheritdoc />
         public void Dispose()
         {
-            Connection?.Dispose();
-            Connection = null;
-            if (FilterData == null)
+            _connection?.Dispose();
+            _connection = null;
+            if (_filterData == null)
                 return;
             FilterData.LimitInfo = null;
             if (FilterData.OrderInfo != null)
             {
-                FilterData.OrderInfo.Columns.Clear();
+                FilterData.OrderInfo.Columns?.Clear();
                 FilterData.OrderInfo.Columns = null;
                 FilterData.OrderInfo = null;
             }
@@ -78,11 +87,10 @@ namespace MicroOrm.Dapper.Repositories
             if (FilterData.SelectInfo != null)
             {
                 FilterData.SelectInfo.Columns.Clear();
-                FilterData.SelectInfo.Columns = null;
                 FilterData.SelectInfo = null;
             }
 
-            FilterData = null;
+            _filterData = null;
         }
     }
 }
