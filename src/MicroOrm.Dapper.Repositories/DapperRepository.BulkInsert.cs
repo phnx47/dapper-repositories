@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Dapper;
 using MicroOrm.Dapper.Repositories.SqlGenerator;
@@ -19,6 +20,18 @@ namespace MicroOrm.Dapper.Repositories
         public virtual int BulkInsert(IEnumerable<TEntity> instances)
         {
             return BulkInsert(instances, null);
+        }
+
+        /// <inheritdoc />
+        public virtual Task<int> BulkInsertAsync(IEnumerable<TEntity> instances)
+        {
+            return BulkInsertAsync(instances, null, CancellationToken.None);
+        }
+
+        /// <inheritdoc />
+        public virtual Task<int> BulkInsertAsync(IEnumerable<TEntity> instances, CancellationToken cancellationToken)
+        {
+            return BulkInsertAsync(instances, null, cancellationToken);
         }
 
         /// <inheritdoc />
@@ -60,13 +73,13 @@ namespace MicroOrm.Dapper.Repositories
         }
 
         /// <inheritdoc />
-        public virtual Task<int> BulkInsertAsync(IEnumerable<TEntity> instances)
+        public virtual Task<int> BulkInsertAsync(IEnumerable<TEntity> instances, IDbTransaction transaction)
         {
-            return BulkInsertAsync(instances, null);
+            return BulkInsertAsync(instances, transaction, CancellationToken.None);
         }
 
         /// <inheritdoc />
-        public virtual async Task<int> BulkInsertAsync(IEnumerable<TEntity> instances, IDbTransaction transaction)
+        public virtual async Task<int> BulkInsertAsync(IEnumerable<TEntity> instances, IDbTransaction transaction, CancellationToken cancellationToken)
         {
             if (SqlGenerator.Provider == SqlProvider.MSSQL)
             {
@@ -92,7 +105,8 @@ namespace MicroOrm.Dapper.Repositories
 
                         var items = instances.Skip(i * maxAllowedInstancesPerBatch).Take(maxAllowedInstancesPerBatch);
                         var msSqlQueryResult = SqlGenerator.GetBulkInsert(items);
-                        count += await Connection.ExecuteAsync(msSqlQueryResult.GetSql(), msSqlQueryResult.Param, transaction);
+                        count += await Connection.ExecuteAsync(new CommandDefinition(msSqlQueryResult.GetSql(), msSqlQueryResult.Param, transaction,
+                            cancellationToken: cancellationToken));
                     }
 
                     return count;
@@ -100,7 +114,8 @@ namespace MicroOrm.Dapper.Repositories
             }
 
             var queryResult = SqlGenerator.GetBulkInsert(instances);
-            return await Connection.ExecuteAsync(queryResult.GetSql(), queryResult.Param, transaction).ConfigureAwait(false);
+            return await Connection.ExecuteAsync(new CommandDefinition(queryResult.GetSql(), queryResult.Param, transaction, cancellationToken: cancellationToken))
+                .ConfigureAwait(false);
         }
     }
 }
