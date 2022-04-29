@@ -14,6 +14,24 @@ namespace MicroOrm.Dapper.Repositories
         where TEntity : class
     {
         /// <inheritdoc />
+        public virtual bool Insert(TEntity instance)
+        {
+            return Insert(instance, null);
+        }
+
+        /// <inheritdoc />
+        public virtual Task<bool> InsertAsync(TEntity instance)
+        {
+            return InsertAsync(instance, null, CancellationToken.None);
+        }
+
+        /// <inheritdoc />
+        public virtual Task<bool> InsertAsync(TEntity instance, CancellationToken cancellationToken)
+        {
+            return InsertAsync(instance, null, cancellationToken);
+        }
+        
+        /// <inheritdoc />
         public virtual bool Insert(TEntity instance, IDbTransaction transaction)
         {
             var queryResult = SqlGenerator.GetInsert(instance);
@@ -33,6 +51,12 @@ namespace MicroOrm.Dapper.Repositories
             }
 
             return Connection.Execute(queryResult.GetSql(), instance, transaction) > 0;
+        }
+
+        /// <inheritdoc />
+        public virtual Task<bool> InsertAsync(TEntity instance, IDbTransaction transaction)
+        {
+            return InsertAsync(instance, transaction, CancellationToken.None);
         }
 
         /// <inheritdoc />

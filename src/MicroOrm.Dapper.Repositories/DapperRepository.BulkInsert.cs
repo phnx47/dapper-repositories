@@ -17,6 +17,24 @@ namespace MicroOrm.Dapper.Repositories
         where TEntity : class
     {
         /// <inheritdoc />
+        public virtual int BulkInsert(IEnumerable<TEntity> instances)
+        {
+            return BulkInsert(instances, null);
+        }
+
+        /// <inheritdoc />
+        public virtual Task<int> BulkInsertAsync(IEnumerable<TEntity> instances)
+        {
+            return BulkInsertAsync(instances, null, CancellationToken.None);
+        }
+
+        /// <inheritdoc />
+        public virtual Task<int> BulkInsertAsync(IEnumerable<TEntity> instances, CancellationToken cancellationToken)
+        {
+            return BulkInsertAsync(instances, null, cancellationToken);
+        }
+
+        /// <inheritdoc />
         public virtual int BulkInsert(IEnumerable<TEntity> instances, IDbTransaction transaction)
         {
             if (SqlGenerator.Provider == SqlProvider.MSSQL)
@@ -52,6 +70,12 @@ namespace MicroOrm.Dapper.Repositories
 
             var queryResult = SqlGenerator.GetBulkInsert(instances);
             return Connection.Execute(queryResult.GetSql(), queryResult.Param, transaction);
+        }
+
+        /// <inheritdoc />
+        public virtual Task<int> BulkInsertAsync(IEnumerable<TEntity> instances, IDbTransaction transaction)
+        {
+            return BulkInsertAsync(instances, transaction, CancellationToken.None);
         }
 
         /// <inheritdoc />
