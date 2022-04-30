@@ -151,7 +151,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.SqlGeneratorTests
             Assert.True(Convert.ToBoolean(parameters["IsActive_p0"]));
 
             Assert.Equal(
-                "SELECT Phones.Id, Phones.PNumber, Phones.IsActive, Phones.Code FROM Phones WHERE Phones.IsActive != :IsActive_p0 FETCH FIRST 1 ROW ONLY",
+                "SELECT DAB.Phones.Id, DAB.Phones.PNumber, DAB.Phones.IsActive, DAB.Phones.Code FROM DAB.Phones WHERE DAB.Phones.IsActive != :IsActive_p0 FETCH FIRST 1 ROW ONLY",
                 sqlQuery.GetSql());
         }
 
@@ -165,7 +165,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.SqlGeneratorTests
             Assert.False(Convert.ToBoolean(parameters["IsActive_p0"]));
 
             Assert.Equal(
-                "SELECT Phones.Id, Phones.PNumber, Phones.IsActive, Phones.Code FROM Phones WHERE Phones.IsActive = :IsActive_p0 FETCH FIRST 1 ROW ONLY",
+                "SELECT DAB.Phones.Id, DAB.Phones.PNumber, DAB.Phones.IsActive, DAB.Phones.Code FROM DAB.Phones WHERE DAB.Phones.IsActive = :IsActive_p0 FETCH FIRST 1 ROW ONLY",
                 sqlQuery.GetSql());
         }
 
@@ -179,7 +179,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.SqlGeneratorTests
             Assert.False(Convert.ToBoolean(parameters["IsActive_p0"]));
 
             Assert.Equal(
-                "SELECT Phones.Id, Phones.PNumber, Phones.IsActive, Phones.Code FROM Phones WHERE Phones.IsActive = :IsActive_p0 FETCH FIRST 1 ROW ONLY",
+                "SELECT DAB.Phones.Id, DAB.Phones.PNumber, DAB.Phones.IsActive, DAB.Phones.Code FROM DAB.Phones WHERE DAB.Phones.IsActive = :IsActive_p0 FETCH FIRST 1 ROW ONLY",
                 sqlQuery.GetSql());
         }
 
@@ -193,7 +193,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.SqlGeneratorTests
             Assert.True(Convert.ToBoolean(parameters["IsActive_p0"]));
 
             Assert.Equal(
-                "SELECT Phones.Id, Phones.PNumber, Phones.IsActive, Phones.Code FROM Phones WHERE Phones.IsActive = :IsActive_p0 FETCH FIRST 1 ROW ONLY",
+                "SELECT DAB.Phones.Id, DAB.Phones.PNumber, DAB.Phones.IsActive, DAB.Phones.Code FROM DAB.Phones WHERE DAB.Phones.IsActive = :IsActive_p0 FETCH FIRST 1 ROW ONLY",
                 sqlQuery.GetSql());
         }
 
@@ -239,13 +239,13 @@ namespace MicroOrm.Dapper.Repositories.Tests.SqlGeneratorTests
 
             var sqlQuery = userSqlGenerator.GetBulkUpdate(phones);
 
-            Assert.Equal("MERGE INTO Phones Phones " +
+            Assert.Equal("MERGE INTO DAB.Phones DAB.Phones " +
                          "USING (" +
                          "SELECT :PNumber0 AS PNumber, :IsActive0 AS IsActive, :Id0 AS Id FROM DUAL " +
                          "UNION ALL " +
                          "SELECT :PNumber1 AS PNumber, :IsActive1 AS IsActive, :Id1 AS Id FROM DUAL" +
-                         ") Phones_BULKUPDATE ON (Phones_BULKUPDATE.Id = Phones.Id) " +
-                         "WHEN MATCHED THEN UPDATE SET PNumber = Phones_BULKUPDATE.PNumber ,IsActive = Phones_BULKUPDATE.IsActive", sqlQuery.GetSql());
+                         ") DAB.Phones_BULKUPDATE ON (DAB.Phones_BULKUPDATE.Id = DAB.Phones.Id) " +
+                         "WHEN MATCHED THEN UPDATE SET PNumber = DAB.Phones_BULKUPDATE.PNumber ,IsActive = DAB.Phones_BULKUPDATE.IsActive", sqlQuery.GetSql());
         }
 
         [Fact]
@@ -331,7 +331,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.SqlGeneratorTests
             var phone = new Phone { Id = 10, Code = "ZZZ", IsActive = true, PNumber = "111" };
             var sqlQuery = userSqlGenerator.GetDelete(phone);
 
-            Assert.Equal("DELETE FROM Phones WHERE Phones.Id = :Id", sqlQuery.GetSql());
+            Assert.Equal("DELETE FROM DAB.Phones WHERE DAB.Phones.Id = :Id", sqlQuery.GetSql());
         }
 
         [Fact]
@@ -362,7 +362,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.SqlGeneratorTests
             ISqlGenerator<Phone> userSqlGenerator = new SqlGenerator<Phone>(_sqlConnector, false);
             var sqlQuery = userSqlGenerator.GetDelete(x => x.IsActive && x.PNumber == "111");
 
-            Assert.Equal("DELETE FROM Phones WHERE Phones.IsActive = :IsActive_p0 AND Phones.PNumber = :PNumber_p1", sqlQuery.GetSql());
+            Assert.Equal("DELETE FROM DAB.Phones WHERE DAB.Phones.IsActive = :IsActive_p0 AND DAB.Phones.PNumber = :PNumber_p1", sqlQuery.GetSql());
         }
 
         [Fact]
@@ -371,7 +371,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.SqlGeneratorTests
             ISqlGenerator<Phone> userSqlGenerator = new SqlGenerator<Phone>(_sqlConnector, false);
             var sqlQuery = userSqlGenerator.GetDelete(x => x.IsActive);
 
-            Assert.Equal("DELETE FROM Phones WHERE Phones.IsActive = :IsActive_p0", sqlQuery.GetSql());
+            Assert.Equal("DELETE FROM DAB.Phones WHERE DAB.Phones.IsActive = :IsActive_p0", sqlQuery.GetSql());
         }
 
         [Fact]
@@ -426,7 +426,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.SqlGeneratorTests
 
             Assert.Equal("SELECT Users.Id, Users.Name, Users.AddressId, Users.PhoneId, Users.OfficePhoneId, Users.Deleted, Users.UpdatedAt, " +
                          "Phones_PhoneId.Id, Phones_PhoneId.PNumber, Phones_PhoneId.IsActive, Phones_PhoneId.Code " +
-                         "FROM Users INNER JOIN Phones Phones_PhoneId ON Users.PhoneId = Phones_PhoneId.Id " +
+                         "FROM Users INNER JOIN DAB.Phones Phones_PhoneId ON Users.PhoneId = Phones_PhoneId.Id " +
                          "WHERE (Phones_PhoneId.PNumber = :PhonePNumber_p0) AND Users.Deleted != 1", sqlQuery.GetSql());
         }
         
@@ -543,7 +543,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.SqlGeneratorTests
             var phone = new Phone { Id = 10, Code = "ZZZ", IsActive = true, PNumber = "111" };
             var sqlQuery = userSqlGenerator.GetUpdate(phone);
 
-            Assert.Equal("UPDATE Phones SET Phones.PNumber = :PhonePNumber, Phones.IsActive = :PhoneIsActive WHERE Phones.Id = :PhoneId",
+            Assert.Equal("UPDATE DAB.Phones SET DAB.Phones.PNumber = :PhonePNumber, DAB.Phones.IsActive = :PhoneIsActive WHERE DAB.Phones.Id = :PhoneId",
                 sqlQuery.GetSql());
         }
 
@@ -560,51 +560,51 @@ namespace MicroOrm.Dapper.Repositories.Tests.SqlGeneratorTests
         public static void SelectGroupConditionsWithPredicate()
         {
             ISqlGenerator<Phone> phoneSqlGenerator = new SqlGenerator<Phone>(_sqlConnector, false);
-            var sPrefix = "SELECT Phones.Id, Phones.PNumber, Phones.IsActive, Phones.Code FROM Phones WHERE ";
+            var sPrefix = "SELECT DAB.Phones.Id, DAB.Phones.PNumber, DAB.Phones.IsActive, DAB.Phones.Code FROM DAB.Phones WHERE ";
 
             var sqlQuery1 = phoneSqlGenerator.GetSelectAll(x => (x.IsActive && x.Id == 123) || (x.Id == 456 && x.PNumber == "456"), null);
             Assert.Equal(
-                sPrefix + "(Phones.IsActive = :IsActive_p0 AND Phones.Id = :Id_p1) OR (Phones.Id = :Id_p2 AND Phones.PNumber = :PNumber_p3)",
+                sPrefix + "(DAB.Phones.IsActive = :IsActive_p0 AND DAB.Phones.Id = :Id_p1) OR (DAB.Phones.Id = :Id_p2 AND DAB.Phones.PNumber = :PNumber_p3)",
                 sqlQuery1.GetSql());
 
             var sqlQuery2 = phoneSqlGenerator.GetSelectAll(x => !x.IsActive || (x.Id == 456 && x.PNumber == "456"), null);
-            Assert.Equal(sPrefix + "Phones.IsActive = :IsActive_p0 OR (Phones.Id = :Id_p1 AND Phones.PNumber = :PNumber_p2)", sqlQuery2.GetSql());
+            Assert.Equal(sPrefix + "DAB.Phones.IsActive = :IsActive_p0 OR (DAB.Phones.Id = :Id_p1 AND DAB.Phones.PNumber = :PNumber_p2)", sqlQuery2.GetSql());
 
             var sqlQuery3 = phoneSqlGenerator.GetSelectAll(x => (x.Id == 456 && x.PNumber == "456") || x.Id == 123, null);
-            Assert.Equal(sPrefix + "(Phones.Id = :Id_p0 AND Phones.PNumber = :PNumber_p1) OR Phones.Id = :Id_p2", sqlQuery3.GetSql());
+            Assert.Equal(sPrefix + "(DAB.Phones.Id = :Id_p0 AND DAB.Phones.PNumber = :PNumber_p1) OR DAB.Phones.Id = :Id_p2", sqlQuery3.GetSql());
 
             var sqlQuery4 = phoneSqlGenerator.GetSelectAll(x => x.PNumber == "1" && (x.IsActive || x.PNumber == "456") && x.Id == 123, null);
             Assert.Equal(
                 sPrefix +
-                "Phones.PNumber = :PNumber_p0 AND (Phones.IsActive = :IsActive_p1 OR Phones.PNumber = :PNumber_p2) AND Phones.Id = :Id_p3",
+                "DAB.Phones.PNumber = :PNumber_p0 AND (DAB.Phones.IsActive = :IsActive_p1 OR DAB.Phones.PNumber = :PNumber_p2) AND DAB.Phones.Id = :Id_p3",
                 sqlQuery4.GetSql());
 
             var sqlQuery5 = phoneSqlGenerator.GetSelectAll(x => x.PNumber == "1" && (x.IsActive || x.PNumber == "456" || x.PNumber == "678") && x.Id == 123, null);
             Assert.Equal(
                 sPrefix +
-                "Phones.PNumber = :PNumber_p0 AND (Phones.IsActive = :IsActive_p1 OR Phones.PNumber = :PNumber_p2 OR Phones.PNumber = :PNumber_p3) AND Phones.Id = :Id_p4",
+                "DAB.Phones.PNumber = :PNumber_p0 AND (DAB.Phones.IsActive = :IsActive_p1 OR DAB.Phones.PNumber = :PNumber_p2 OR DAB.Phones.PNumber = :PNumber_p3) AND DAB.Phones.Id = :Id_p4",
                 sqlQuery5.GetSql());
 
             var ids = new List<int>();
             var sqlQuery6 = phoneSqlGenerator.GetSelectAll(x => !x.IsActive || (x.IsActive && ids.Contains(x.Id)), null);
-            Assert.Equal(sPrefix + "Phones.IsActive = :IsActive_p0 OR (Phones.IsActive = :IsActive_p1 AND Phones.Id IN :Id_p2)", sqlQuery6.GetSql());
+            Assert.Equal(sPrefix + "DAB.Phones.IsActive = :IsActive_p0 OR (DAB.Phones.IsActive = :IsActive_p1 AND DAB.Phones.Id IN :Id_p2)", sqlQuery6.GetSql());
 
             var sqlQuery7 = phoneSqlGenerator.GetSelectAll(x => (x.IsActive && x.Id == 123) && (x.Id == 456 && x.PNumber == "456"), null);
             Assert.Equal(
-                sPrefix + "Phones.IsActive = :IsActive_p0 AND Phones.Id = :Id_p1 AND Phones.Id = :Id_p2 AND Phones.PNumber = :PNumber_p3",
+                sPrefix + "DAB.Phones.IsActive = :IsActive_p0 AND DAB.Phones.Id = :Id_p1 AND DAB.Phones.Id = :Id_p2 AND DAB.Phones.PNumber = :PNumber_p3",
                 sqlQuery7.GetSql());
 
             var sqlQuery8 = phoneSqlGenerator.GetSelectAll(
                 x => x.PNumber == "1" && (x.IsActive || x.PNumber == "456" || x.PNumber == "123" || (x.Id == 1213 && x.PNumber == "678")) && x.Id == 123, null);
             Assert.Equal(
                 sPrefix +
-                "Phones.PNumber = :PNumber_p0 AND (Phones.IsActive = :IsActive_p1 OR Phones.PNumber = :PNumber_p2 OR Phones.PNumber = :PNumber_p3 OR (Phones.Id = :Id_p4 AND Phones.PNumber = :PNumber_p5)) AND Phones.Id = :Id_p6",
+                "DAB.Phones.PNumber = :PNumber_p0 AND (DAB.Phones.IsActive = :IsActive_p1 OR DAB.Phones.PNumber = :PNumber_p2 OR DAB.Phones.PNumber = :PNumber_p3 OR (DAB.Phones.Id = :Id_p4 AND DAB.Phones.PNumber = :PNumber_p5)) AND DAB.Phones.Id = :Id_p6",
                 sqlQuery8.GetSql());
 
             var sqlQuery9 = phoneSqlGenerator.GetSelectAll(x => (x.Id == 456 && x.PNumber == "456") && x.Id == 123 && (x.Id == 4567 && x.PNumber == "4567"), null);
             Assert.Equal(
                 sPrefix +
-                "Phones.Id = :Id_p0 AND Phones.PNumber = :PNumber_p1 AND Phones.Id = :Id_p2 AND Phones.Id = :Id_p3 AND Phones.PNumber = :PNumber_p4",
+                "DAB.Phones.Id = :Id_p0 AND DAB.Phones.PNumber = :PNumber_p1 AND DAB.Phones.Id = :Id_p2 AND DAB.Phones.Id = :Id_p3 AND DAB.Phones.PNumber = :PNumber_p4",
                 sqlQuery9.GetSql());
         }
 
@@ -614,7 +614,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.SqlGeneratorTests
             ISqlGenerator<User> userSqlGenerator = new SqlGenerator<User>(_sqlConnector, false);
             var sPrefix = "SELECT Users.Id, Users.Name, Users.AddressId, Users.PhoneId, Users.OfficePhoneId, Users.Deleted, Users.UpdatedAt, " +
                           "Phones_PhoneId.Id, Phones_PhoneId.PNumber, Phones_PhoneId.IsActive, Phones_PhoneId.Code " +
-                          "FROM Users INNER JOIN Phones Phones_PhoneId ON Users.PhoneId = Phones_PhoneId.Id " +
+                          "FROM Users INNER JOIN DAB.Phones Phones_PhoneId ON Users.PhoneId = Phones_PhoneId.Id " +
                           "WHERE ";
 
             var sqlQuery1 = userSqlGenerator.GetSelectFirst(x => x.Phone.PNumber == "123" || (x.Name == "abc" && x.Phone.IsActive), null, user => user.Phone);
@@ -637,11 +637,11 @@ namespace MicroOrm.Dapper.Repositories.Tests.SqlGeneratorTests
         public static void SelectLikeWithPredicate()
         {
             ISqlGenerator<Phone> phoneSqlGenerator1 = new SqlGenerator<Phone>(_sqlConnector, false);
-            var sPrefix1 = "SELECT Phones.Id, Phones.PNumber, Phones.IsActive, Phones.Code FROM Phones WHERE ";
+            var sPrefix1 = "SELECT DAB.Phones.Id, DAB.Phones.PNumber, DAB.Phones.IsActive, DAB.Phones.Code FROM DAB.Phones WHERE ";
 
             var sqlQuery11 = phoneSqlGenerator1.GetSelectAll(x => x.Code.StartsWith("123", StringComparison.OrdinalIgnoreCase) || !x.Code.EndsWith("456") || x.Code.Contains("789"),
                 null);
-            Assert.Equal(sPrefix1 + "Phones.Code LIKE :Code_p0 OR Phones.Code NOT LIKE :Code_p1 OR Phones.Code LIKE :Code_p2", sqlQuery11.GetSql());
+            Assert.Equal(sPrefix1 + "DAB.Phones.Code LIKE :Code_p0 OR DAB.Phones.Code NOT LIKE :Code_p1 OR DAB.Phones.Code LIKE :Code_p2", sqlQuery11.GetSql());
 
             var parameters11 = sqlQuery11.Param as IDictionary<string, object>;
             Assert.True("123%" == parameters11["Code_p0"].ToString());
@@ -651,7 +651,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.SqlGeneratorTests
             ISqlGenerator<User> userSqlGenerator2 = new SqlGenerator<User>(_sqlConnector, false);
             var sPrefix2 = "SELECT Users.Id, Users.Name, Users.AddressId, Users.PhoneId, Users.OfficePhoneId, Users.Deleted, Users.UpdatedAt, " +
                            "Phones_PhoneId.Id, Phones_PhoneId.PNumber, Phones_PhoneId.IsActive, Phones_PhoneId.Code " +
-                           "FROM Users INNER JOIN Phones Phones_PhoneId ON Users.PhoneId = Phones_PhoneId.Id " +
+                           "FROM Users INNER JOIN DAB.Phones Phones_PhoneId ON Users.PhoneId = Phones_PhoneId.Id " +
                            "WHERE ";
 
             var sqlQuery21 = userSqlGenerator2.GetSelectFirst(x => x.Phone.PNumber.StartsWith("123") || (!x.Name.Contains("abc") && x.Phone.IsActive), null, user => user.Phone);

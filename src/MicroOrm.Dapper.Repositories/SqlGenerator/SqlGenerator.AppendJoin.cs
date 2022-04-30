@@ -48,10 +48,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                 }
                 else
                 {
-                    if (Provider != SqlProvider.Oracle)
-                    {
-                        attrJoin.TableName = GetTableNameWithSchemaPrefix(attrJoin.TableName, attrJoin.TableSchema);
-                    }
+                    attrJoin.TableName = GetTableNameWithSchemaPrefix(attrJoin.TableName, attrJoin.TableSchema);
                 }
 
                 joinBuilder.Append(
@@ -127,10 +124,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                 }
                 else
                 {
-                    if (Provider != SqlProvider.Oracle)
-                    {
-                        attrJoin.TableName = GetTableNameWithSchemaPrefix(attrJoin.TableName, attrJoin.TableSchema);
-                    }
+                    attrJoin.TableName = GetTableNameWithSchemaPrefix(attrJoin.TableName, attrJoin.TableSchema);
                 }
 
                 if (!hasSelectFilter)

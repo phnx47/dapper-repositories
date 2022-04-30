@@ -7,8 +7,6 @@ namespace MicroOrm.Dapper.Repositories.Tests.DatabaseFixture
 {
     public class OracleDatabaseFixture : IDisposable
     {
-        private const string _dbName = "test_micro_orm";
-        
         public OracleDatabaseFixture()
         {
             Db = new OracleDbContext(

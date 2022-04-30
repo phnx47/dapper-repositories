@@ -34,12 +34,9 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
             }
             else
             {
-                if (Provider != SqlProvider.Oracle)
-                {
-                    TableName = GetTableNameWithSchemaPrefix(TableName, TableSchema);
-                    foreach (var propertyMetadata in SqlJoinProperties)
-                        propertyMetadata.TableName = GetTableNameWithSchemaPrefix(propertyMetadata.TableName, propertyMetadata.TableSchema);
-                }
+                TableName = GetTableNameWithSchemaPrefix(TableName, TableSchema);
+                foreach (var propertyMetadata in SqlJoinProperties)
+                    propertyMetadata.TableName = GetTableNameWithSchemaPrefix(propertyMetadata.TableName, propertyMetadata.TableSchema);
             }
 
             // set ParameterSymbol with : and mapping Boolean type to Int
