@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using MicroOrm.Dapper.Repositories.Tests.Classes;
 using MicroOrm.Dapper.Repositories.Tests.DatabaseFixture;
 using Xunit;
-using Xunit.Abstractions;
 
 namespace MicroOrm.Dapper.Repositories.Tests.RepositoriesTests
 {

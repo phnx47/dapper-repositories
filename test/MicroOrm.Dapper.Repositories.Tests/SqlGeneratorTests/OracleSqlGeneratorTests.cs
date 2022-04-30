@@ -9,7 +9,7 @@ using Xunit;
 
 namespace MicroOrm.Dapper.Repositories.Tests.SqlGeneratorTests
 {
-    public class Oracle12cSqlGeneratorTests
+    public class OracleSqlGeneratorTests
     {
         private const SqlProvider _sqlConnector = SqlProvider.Oracle;
 
