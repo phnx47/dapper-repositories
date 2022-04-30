@@ -11,11 +11,11 @@ using Xunit;
 
 namespace MicroOrm.Dapper.Repositories.Tests.RepositoriesTests
 {
-    public abstract class BaseRepositoriesTests
+    public abstract class RepositoriesTests
     {
         protected readonly IDbContext Db;
 
-        protected BaseRepositoriesTests(IDbContext db)
+        protected RepositoriesTests(IDbContext db)
         {
             Db = db;
             MicroOrmConfig.AllowKeyAsIdentity = false;

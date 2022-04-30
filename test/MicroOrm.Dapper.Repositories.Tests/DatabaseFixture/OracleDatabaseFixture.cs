@@ -7,10 +7,13 @@ namespace MicroOrm.Dapper.Repositories.Tests.DatabaseFixture
 {
     public class OracleDatabaseFixture : IDisposable
     {
+        private const string _dbName = "test_micro_orm";
+        
         public OracleDatabaseFixture()
         {
             Db = new OracleDbContext(
                 "DATA SOURCE=(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=localhost)(PORT=1521))(CONNECT_DATA=(SERVICE_NAME=XEPDB1)));User Id=system;Password=Password12!");
+            ClearDb();
             InitDb();
         }
 
@@ -18,12 +21,12 @@ namespace MicroOrm.Dapper.Repositories.Tests.DatabaseFixture
 
         public void Dispose()
         {
+            ClearDb();
             Db.Dispose();
         }
 
         private void InitDb()
         {
-            ClearDb();
             SetupSchema();
             Db.Connection.Execute(
                 @"CREATE TABLE USERS (

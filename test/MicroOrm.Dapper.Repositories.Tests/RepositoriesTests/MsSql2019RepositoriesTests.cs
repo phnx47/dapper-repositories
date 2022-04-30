@@ -6,7 +6,7 @@ using Xunit;
 
 namespace MicroOrm.Dapper.Repositories.Tests.RepositoriesTests
 {
-    public class MsSql2019RepositoriesTests : BaseRepositoriesTests, IClassFixture<MsSql2019DatabaseFixture>
+    public class MsSql2019RepositoriesTests : RepositoriesTests, IClassFixture<MsSql2019DatabaseFixture>
     {
         public MsSql2019RepositoriesTests(MsSql2019DatabaseFixture msSqlDatabaseFixture)
             : base(msSqlDatabaseFixture.Db)

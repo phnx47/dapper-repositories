@@ -12,6 +12,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.DatabaseFixture
         {
             Db = new MsSqlDbContext(connString);
 
+            DropDatabase();
             InitDb();
         }
 
@@ -19,7 +20,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.DatabaseFixture
 
         public void Dispose()
         {
-            Db.Connection.Execute($"USE master; DROP DATABASE {_dbName}");
+            DropDatabase();
             Db.Dispose();
         }
 
@@ -27,9 +28,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.DatabaseFixture
         {
             Db.Connection.Execute($"IF NOT EXISTS (SELECT name FROM master.dbo.sysdatabases WHERE name = '{_dbName}') CREATE DATABASE [{_dbName}];");
             Db.Connection.Execute($"USE [{_dbName}]");
-
-            ClearDb();
-
+            
             void CreateSchema(string dbSchema)
             {
                 Db.Connection.Execute($@"IF schema_id('{dbSchema}') IS NULL EXECUTE('CREATE SCHEMA {dbSchema}') ");
@@ -51,19 +50,9 @@ namespace MicroOrm.Dapper.Repositories.Tests.DatabaseFixture
             InitData.Execute(Db);
         }
 
-        private void ClearDb()
+        private void DropDatabase()
         {
-            void DropTable(string schema, string name)
-            {
-                Db.Connection.Execute($@"IF OBJECT_ID('{schema}.{name}', 'U') IS NOT NULL DROP TABLE [{schema}].[{name}]; ");
-            }
-
-            DropTable("dbo", "Users");
-            DropTable("dbo", "Cars");
-            DropTable("dbo", "Addresses");
-            DropTable("dbo", "Cities");
-            DropTable("dbo", "Reports");
-            DropTable("DAB", "Phones");
+            Db.Connection.Execute($"USE master; DROP DATABASE IF EXISTS {_dbName}");
         }
     }
 }
