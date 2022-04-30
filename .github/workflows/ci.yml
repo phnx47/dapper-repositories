@@ -20,7 +20,7 @@ jobs:
       - name: 💤 Wait for Containers
         uses: jakejarvis/wait-action@master
         with:
-          time: '45s'
+          time: '50s'
       - name: 🧪 Run tests
         run: dotnet test --no-build -c Release  /p:CollectCoverage=true /p:CoverletOutputFormat=opencover
       - name: ☢ Publish to Codecov
