@@ -28,21 +28,18 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                     case SqlProvider.PostgreSQL:
                         InitMetaData("\"", "\"");
                         break;
-                    case SqlProvider.SQLite:
-                        //SQLite doesn't use it.
-                        break;
-                    case SqlProvider.Oracle:
-                        //Oracle doesn't use it.
-                        break;
                     default:
                         throw new ArgumentOutOfRangeException(nameof(Provider));
                 }
             }
             else
             {
-                TableName = GetTableNameWithSchemaPrefix(TableName, TableSchema);
-                foreach (var propertyMetadata in SqlJoinProperties)
-                    propertyMetadata.TableName = GetTableNameWithSchemaPrefix(propertyMetadata.TableName, propertyMetadata.TableSchema);
+                if (Provider != SqlProvider.Oracle)
+                {
+                    TableName = GetTableNameWithSchemaPrefix(TableName, TableSchema);
+                    foreach (var propertyMetadata in SqlJoinProperties)
+                        propertyMetadata.TableName = GetTableNameWithSchemaPrefix(propertyMetadata.TableName, propertyMetadata.TableSchema);
+                }
             }
 
             // set ParameterSymbol with : and mapping Boolean type to Int

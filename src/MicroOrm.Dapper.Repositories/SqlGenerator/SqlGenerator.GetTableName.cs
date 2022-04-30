@@ -43,10 +43,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                     }
 
                     break;
-
-                case SqlProvider.SQLite:
-                    break;
-
+                
                 case SqlProvider.PostgreSQL:
                     tableName = "\"" + tableName + "\"";
                     attrJoin.TableName = GetTableNameWithSchemaPrefix(attrJoin.TableName, attrJoin.TableSchema, "\"", "\"");
@@ -58,9 +55,6 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                         prop.ColumnName = "\"" + prop.CleanColumnName + "\"";
                     }
 
-                    break;
-
-                case SqlProvider.Oracle:
                     break;
 
                 default:
