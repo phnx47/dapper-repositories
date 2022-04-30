@@ -19,10 +19,6 @@ on its definition and the possibility to override the SQL generator and the way 
 
 The original idea was taken from [Yoinbol](https://github.com/Yoinbol/MicroOrm.Pocos.SqlGenerator).
 
-All tests with MSSQL and MySQL has passed, PostgreSQL and SQLite tests are being developed.
-
-It support the Oracle12c except for GUID issue. Tests has passed.
-
 ## Installation
 
 ```sh
