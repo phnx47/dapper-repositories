@@ -28,12 +28,6 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                     case SqlProvider.PostgreSQL:
                         InitMetaData("\"", "\"");
                         break;
-                    case SqlProvider.SQLite:
-                        //SQLite doesn't use it.
-                        break;
-                    case SqlProvider.Oracle:
-                        //Oracle doesn't use it.
-                        break;
                     default:
                         throw new ArgumentOutOfRangeException(nameof(Provider));
                 }

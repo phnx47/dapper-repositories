@@ -47,7 +47,9 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                     tableName = GetTableNameWithQuotes(attrJoin, properties, tableName);
                 }
                 else
+                {
                     attrJoin.TableName = GetTableNameWithSchemaPrefix(attrJoin.TableName, attrJoin.TableSchema);
+                }
 
                 joinBuilder.Append(
                     $", {GetFieldsUpdate(string.IsNullOrEmpty(attrJoin.TableAlias) ? attrJoin.TableName : attrJoin.TableAlias, properties, UseQuotationMarks == true)}");
@@ -121,7 +123,9 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                     tableName = GetTableNameWithQuotes(attrJoin, properties, tableName);
                 }
                 else
+                {
                     attrJoin.TableName = GetTableNameWithSchemaPrefix(attrJoin.TableName, attrJoin.TableSchema);
+                }
 
                 if (!hasSelectFilter)
                     originalBuilder.SqlBuilder.Append(

@@ -6,17 +6,14 @@ namespace MicroOrm.Dapper.Repositories.Tests.DatabaseFixture
 {
     public class MySqlDatabaseFixture : IDisposable
     {
-        /*
-         * docker run --rm --name=mysql -d -p 3306:3306 -e MYSQL_ROOT_PASSWORD=Password12! mysql
-         */
 
         private const string _dbName = "test_micro_orm";
-
-
+        
         public MySqlDatabaseFixture()
         {
             Db = new MySqlDbContext("Server=localhost;Uid=root;Pwd=Password12!");
 
+            DropDatabase();
             InitDb();
         }
 
@@ -24,19 +21,18 @@ namespace MicroOrm.Dapper.Repositories.Tests.DatabaseFixture
 
         public void Dispose()
         {
-            Db.Connection.Execute($"DROP DATABASE {_dbName}");
-            Db.Connection.Execute($"DROP DATABASE DAB");
+            DropDatabase();
             Db.Dispose();
         }
 
         private void InitDb()
         {
+            
             Db.Connection.Execute($"CREATE DATABASE IF NOT EXISTS `{_dbName}`;");
             Db.Connection.Execute($"CREATE DATABASE IF NOT EXISTS DAB;");
 
             Db.Connection.Execute($"USE `{_dbName}`");
-
-            ClearDb();
+            
 
             Db.Connection.Execute($"USE `DAB`");
             Db.Connection.Execute("CREATE TABLE IF NOT EXISTS `Phones` " +
@@ -69,22 +65,10 @@ namespace MicroOrm.Dapper.Repositories.Tests.DatabaseFixture
             InitData.Execute(Db);
         }
 
-        private void ClearDb()
+        private void DropDatabase()
         {
-            void DropTable(string name)
-            {
-                Db.Connection.Execute($"DROP TABLE IF EXISTS {name};");
-            }
-
-            Db.Connection.Execute($"USE `{_dbName}`");
-            DropTable("Users");
-            DropTable("Addresses");
-            DropTable("Cities");
-            DropTable("Reports");
-            DropTable("Cars");
-
-            Db.Connection.Execute($"USE `DAB`");
-            DropTable("Phones");
+            Db.Connection.Execute($"DROP DATABASE IF EXISTS {_dbName}");
+            Db.Connection.Execute($"DROP DATABASE IF EXISTS DAB");
         }
     }
 }

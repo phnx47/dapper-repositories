@@ -16,7 +16,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
             Provider = MicroOrmConfig.SqlProvider;
 
             if (UseQuotationMarks == null)
-                UseQuotationMarks = Provider != SqlProvider.SQLite && MicroOrmConfig.UseQuotationMarks;
+                UseQuotationMarks = Provider != SqlProvider.SQLite &&  Provider != SqlProvider.Oracle && MicroOrmConfig.UseQuotationMarks;
 
             Initialize();
         }
@@ -35,7 +35,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         public SqlGenerator(SqlProvider provider, bool useQuotationMarks)
         {
             Provider = provider;
-            UseQuotationMarks = provider != SqlProvider.SQLite && useQuotationMarks;
+            UseQuotationMarks = provider != SqlProvider.SQLite && provider != SqlProvider.Oracle && useQuotationMarks;
             Initialize();
         }
 
