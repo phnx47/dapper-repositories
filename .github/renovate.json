@@ -1,11 +1,28 @@
 {
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    ":dependencyDashboard",
+    ":semanticPrefixFixDepsChoreOthers",
+    ":prHourlyLimit2",
+    ":prConcurrentLimit10",
+    "group:monorepos",
+    "workarounds:all"
+  ],
   "labels": [
     "dependencies"
   ],
   "assignees": [
     "@phnx47"
   ],
-  "extends": [
-    "config:base"
+  "packageRules": [
+    {
+      "automerge": true,
+      "sourceUrlPrefixes": [
+        "https://github.com/coverlet-coverage",
+        "https://github.com/xunit",
+        "https://github.com/microsoft/vstest"
+      ],
+      "groupName": "tests"
+    }
   ]
 }
