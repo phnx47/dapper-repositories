@@ -19,8 +19,9 @@ services:
     restart: always
 
   oracle:
-    image: quay.io/maksymbilenko/oracle-12c:latest
+    image: gvenzl/oracle-xe
     ports:
       - "1521:1521"
-      - "8080:8080"
     restart: always
+    environment:
+      ORACLE_PASSWORD: "Password12!"

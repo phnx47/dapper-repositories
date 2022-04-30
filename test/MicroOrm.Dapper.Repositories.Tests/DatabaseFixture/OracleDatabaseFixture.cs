@@ -5,18 +5,12 @@ using System;
 
 namespace MicroOrm.Dapper.Repositories.Tests.DatabaseFixture
 {
-    public class Oracle12cDatabaseFixture : IDisposable
+    public class OracleDatabaseFixture : IDisposable
     {
-        /*
-         * https://github.com/MaksymBilenko/docker-oracle-12c
-         * docker pull quay.io/maksymbilenko/oracle-12c
-         * docker run -d -p 8080:8080 -p 1521:1521 quay.io/maksymbilenko/oracle-12c
-         */
-        public Oracle12cDatabaseFixture()
+        public OracleDatabaseFixture()
         {
             Db = new OracleDbContext(
-                "DATA SOURCE=(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=localhost)(PORT=1521))(CONNECT_DATA=(SERVICE_NAME=xe)));User Id=system;Password=oracle");
-
+                "DATA SOURCE=(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=localhost)(PORT=1521))(CONNECT_DATA=(SERVICE_NAME=XEPDB1)));User Id=system;Password=Password12!");
             InitDb();
         }
 
