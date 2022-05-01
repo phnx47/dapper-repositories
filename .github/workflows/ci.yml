@@ -36,7 +36,7 @@ jobs:
       - name: 🗜 Pack NuGet artifacts
         if: startsWith(github.ref, 'refs/tags/v')
         run: dotnet pack --no-build -c Release -o artifacts/
-      - name: 🗄 Publish artifacts
+      - name: 📤 Upload artifacts
         uses: actions/upload-artifact@v3
         with:
           name: nupkg
@@ -48,7 +48,7 @@ jobs:
     if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v')
     runs-on: ubuntu-20.04
     steps:
-      - name: 🚚 Download artifacts
+      - name: 📥 Download artifacts
         uses: actions/download-artifact@v2
         with:
           name: nupkg
@@ -60,7 +60,7 @@ jobs:
     if: startsWith(github.ref, 'refs/tags/v')
     runs-on: ubuntu-20.04
     steps:
-      - name: 🚚 Download artifacts
+      - name: 📥 Download artifacts
         uses: actions/download-artifact@v2
         with:
           name: nupkg
