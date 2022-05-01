@@ -47,9 +47,8 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: nupkg
-          path: artifacts/*
       - name: 📦 Publish to GitHub
-        run: dotnet nuget push "artifacts/*.nupkg" -s https://nuget.pkg.github.com/phnx47/index.json -k ${{ secrets.GH_PKG_PAT }} --skip-duplicate
+        run: dotnet nuget push "*.nupkg" -s https://nuget.pkg.github.com/phnx47/index.json -k ${{ secrets.GH_PKG_PAT }} --skip-duplicate
   deploy-nuget:
     name: 🚀 Deploy Nuget
     needs: [build]
@@ -60,6 +59,5 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: nupkg
-          path: artifacts/*
       - name: 📦 Publish to NuGet
-        run: ddotnet nuget push "artifacts/*.nupkg" -k ${{ secrets.NUGET_KEY }} -s https://api.nuget.org/v3/index.json
+        run: ddotnet nuget push "*.nupkg" -k ${{ secrets.NUGET_KEY }} -s https://api.nuget.org/v3/index.json
