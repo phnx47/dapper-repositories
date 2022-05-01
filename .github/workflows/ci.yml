@@ -1,6 +1,11 @@
 name: 💿 CI
 
-on: [push]
+on:
+  push:
+    paths:
+      - src/*
+      - test/*
+      - .github/workflows/ci.yml
 
 jobs:
   build:
@@ -38,7 +43,7 @@ jobs:
           path: artifacts/*
 
   deploy-github:
-    name: 🚀 Deploy GitHub
+    name: 🚀 Deploy to GitHub
     needs: [build]
     if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v')
     runs-on: ubuntu-20.04
@@ -50,7 +55,7 @@ jobs:
       - name: 📦 Publish to GitHub
         run: dotnet nuget push "*.nupkg" -s https://nuget.pkg.github.com/phnx47/index.json -k ${{ secrets.GH_PKG_PAT }} --skip-duplicate
   deploy-nuget:
-    name: 🚀 Deploy Nuget
+    name: 🚀 Deploy to Nuget
     needs: [build]
     if: startsWith(github.ref, 'refs/tags/v')
     runs-on: ubuntu-20.04
