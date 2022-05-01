@@ -1,8 +1,8 @@
 # MicroOrm.Dapper.Repositories
 
+[![CI](https://github.com/phnx47/dapper-repositories/actions/workflows/ci.yml/badge.svg)](https://github.com/phnx47/dapper-repositories/actions/workflows/ci.yml)
 [![NuGet](https://img.shields.io/nuget/v/MicroOrm.Dapper.Repositories.svg)](https://www.nuget.org/packages/MicroOrm.Dapper.Repositories)
 [![NuGet](https://img.shields.io/nuget/dt/MicroOrm.Dapper.Repositories.svg)](https://www.nuget.org/packages/MicroOrm.Dapper.Repositories)
-[![CI](https://github.com/phnx47/dapper-repositories/actions/workflows/ci.yml/badge.svg)](https://github.com/phnx47/dapper-repositories/actions/workflows/ci.yml)
 [![CodeFactor](https://www.codefactor.io/repository/github/phnx47/dapper-repositories/badge)](https://www.codefactor.io/repository/github/phnx47/dapper-repositories)
 [![License MIT](https://img.shields.io/badge/license-MIT-green.svg)](https://opensource.org/licenses/MIT)
 
