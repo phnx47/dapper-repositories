@@ -9,7 +9,7 @@ on:
 
 jobs:
   build:
-    name: 🏭 Build
+    name: 🏭 Build & Test
     runs-on: ubuntu-20.04
     steps:
       - name: 🚚 Checkout
@@ -42,7 +42,7 @@ jobs:
           name: nupkg
           path: artifacts/*
 
-  deploy-github:
+  github:
     name: 🚀 Deploy to GitHub
     needs: [build]
     if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v')
@@ -54,7 +54,7 @@ jobs:
           name: nupkg
       - name: 📦 Publish to GitHub
         run: dotnet nuget push "*.nupkg" -s https://nuget.pkg.github.com/phnx47/index.json -k ${{ secrets.GH_PKG_PAT }} --skip-duplicate
-  deploy-nuget:
+  nuget:
     name: 🚀 Deploy to Nuget
     needs: [build]
     if: startsWith(github.ref, 'refs/tags/v')
