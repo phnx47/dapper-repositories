@@ -62,12 +62,12 @@ namespace MicroOrm.Dapper.Repositories
         /// <summary>
         ///     Get number of rows with WHERE clause
         /// </summary>
-        int Count(Expression<Func<TEntity, bool>>? predicate);
+        int Count(Expression<Func<TEntity, bool>> predicate);
 
         /// <summary>
         ///     Get number of rows with WHERE clause
         /// </summary>
-        Task<int> CountAsync(Expression<Func<TEntity, bool>>? predicate);
+        Task<int> CountAsync(Expression<Func<TEntity, bool>> predicate);
 
         /// <summary>
         ///     Get number of rows with WHERE clause
@@ -183,12 +183,12 @@ namespace MicroOrm.Dapper.Repositories
         /// <summary>
         ///     Get first object
         /// </summary>
-        TEntity? Find(Expression<Func<TEntity, bool>>? predicate);
+        TEntity? Find(Expression<Func<TEntity, bool>> predicate);
 
         /// <summary>
         ///     Get first object
         /// </summary>
-        Task<TEntity?> FindAsync(Expression<Func<TEntity, bool>>? predicate);
+        Task<TEntity?> FindAsync(Expression<Func<TEntity, bool>> predicate);
 
         /// <summary>
         ///     Get first object
@@ -567,12 +567,12 @@ namespace MicroOrm.Dapper.Repositories
         /// <summary>
         ///     Get all objects
         /// </summary>
-        IEnumerable<TEntity> FindAll(Expression<Func<TEntity, bool>>? predicate);
+        IEnumerable<TEntity> FindAll(Expression<Func<TEntity, bool>> predicate);
 
         /// <summary>
         ///     Get all objects
         /// </summary>
-        Task<IEnumerable<TEntity>> FindAllAsync(Expression<Func<TEntity, bool>>? predicate);
+        Task<IEnumerable<TEntity>> FindAllAsync(Expression<Func<TEntity, bool>> predicate);
 
         /// <summary>
         ///     Get all objects
