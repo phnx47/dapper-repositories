@@ -35,38 +35,38 @@ namespace MicroOrm.Dapper.Repositories.Attributes.Joins
         /// <summary>
         /// Join attribute string
         /// </summary>
-        private string JoinAttribute { get; }
+        private string? JoinAttribute { get; }
 
         /// <summary>
         ///     Name of external table
         /// </summary>
-        public string TableName { get; set; }
+        public string? TableName { get; set; }
 
         /// <summary>
         ///     Name of external table schema
         /// </summary>
-        public string TableSchema { get; set; }
+        public string? TableSchema { get; set; }
 
         /// <summary>
         ///     ForeignKey of this table
         /// </summary>
-        public string Key { get; set; }
+        public string? Key { get; set; }
 
         /// <summary>
         ///     Key of external table
         /// </summary>
-        public string ExternalKey { get; set; }
+        public string? ExternalKey { get; set; }
 
         /// <summary>
         ///     Table abbreviation override
         /// </summary>
-        public string TableAlias { get; set; }
+        public string? TableAlias { get; set; }
 
         /// <summary>
         ///     Convert to string
         /// </summary>
         /// <returns></returns>
-        public override string ToString()
+        public override string? ToString()
         {
             return JoinAttribute;
         }

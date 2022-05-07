@@ -34,7 +34,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         /// <summary>
         ///     Gets the param
         /// </summary>
-        public object Param { get; private set; }
+        public object? Param { get; private set; }
 
         /// <summary>
         ///     Gets the SQL.

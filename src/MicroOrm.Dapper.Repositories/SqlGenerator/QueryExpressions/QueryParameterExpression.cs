@@ -21,7 +21,7 @@
         /// <param name="queryOperator">The query operator.</param>
         /// <param name="nestedProperty">Signilize if it is nested property.</param>
         internal QueryParameterExpression(string linkingOperator,
-            string propertyName, object propertyValue,
+            string propertyName, object? propertyValue,
             string queryOperator, bool nestedProperty) : this()
         {
             LinkingOperator = linkingOperator;
@@ -31,9 +31,9 @@
             NestedProperty = nestedProperty;
         }
 
-        public string PropertyName { get; set; }
-        public object PropertyValue { get; set; }
-        public string QueryOperator { get; set; }
+        public string? PropertyName { get; set; }
+        public object? PropertyValue { get; set; }
+        public string? QueryOperator { get; set; }
         public bool NestedProperty { get; set; }
 
         public override string ToString()
