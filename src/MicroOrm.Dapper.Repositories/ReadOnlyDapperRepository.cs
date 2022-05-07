@@ -23,8 +23,8 @@ namespace MicroOrm.Dapper.Repositories
         /// </summary>
         public ReadOnlyDapperRepository(IDbConnection connection)
         {
-            Connection = connection;
-            FilterData = new FilterData();
+            _connection = connection;
+            _filterData = new FilterData();
             SqlGenerator = new SqlGenerator<TEntity>();
         }
 
@@ -33,24 +33,16 @@ namespace MicroOrm.Dapper.Repositories
         /// </summary>
         public ReadOnlyDapperRepository(IDbConnection connection, ISqlGenerator<TEntity> sqlGenerator)
         {
-            Connection = connection;
-            FilterData = new FilterData();
+            _connection = connection;
+            _filterData = new FilterData();
             SqlGenerator = sqlGenerator;
         }
 
         /// <inheritdoc />
-        public IDbConnection Connection
-        {
-            get => _connection ?? throw new ObjectDisposedException(GetType().FullName);
-            set => _connection = value;
-        }
+        public IDbConnection Connection => _connection ?? throw new ObjectDisposedException(GetType().FullName);
 
         /// <inheritdoc />
-        public FilterData FilterData
-        {
-            get => _filterData ?? throw new ObjectDisposedException(GetType().FullName);
-            set => _filterData = value;
-        }
+        public FilterData FilterData => _filterData ?? throw new ObjectDisposedException(GetType().FullName);
 
         /// <inheritdoc />
         public ISqlGenerator<TEntity> SqlGenerator { get; }

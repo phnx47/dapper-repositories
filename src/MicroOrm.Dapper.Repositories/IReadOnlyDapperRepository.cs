@@ -17,7 +17,7 @@ namespace MicroOrm.Dapper.Repositories
         /// <summary>
         ///     DB Connection
         /// </summary>
-        IDbConnection Connection { get; set; }
+        IDbConnection Connection { get; }
 
         /// <summary>
         ///     Order info (Asc,desc, cols)
