@@ -16,7 +16,7 @@ namespace MicroOrm.Dapper.Repositories
         /// <inheritdoc />
         public virtual int Count(params Expression<Func<TEntity, object>>[] includes)
         {
-            return Count(transaction: null);
+            return Count(null, transaction: null);
         }
 
         /// <inheritdoc />

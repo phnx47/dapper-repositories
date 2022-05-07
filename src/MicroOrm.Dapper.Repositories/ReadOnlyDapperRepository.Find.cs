@@ -33,13 +33,13 @@ namespace MicroOrm.Dapper.Repositories
         }
 
         /// <inheritdoc />
-        public virtual TEntity? Find(IDbTransaction? transaction)
+        public virtual TEntity? Find(IDbTransaction transaction)
         {
             return Find(null, transaction);
         }
 
         /// <inheritdoc />
-        public virtual Task<TEntity?> FindAsync(IDbTransaction? transaction)
+        public virtual Task<TEntity?> FindAsync(IDbTransaction transaction)
         {
             return FindAsync(null, transaction, cancellationToken: default);
         }
