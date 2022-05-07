@@ -1,12 +1,11 @@
-using Dapper;
-using MicroOrm.Dapper.Repositories.SqlGenerator;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-
+using Dapper;
+using MicroOrm.Dapper.Repositories.SqlGenerator;
 
 namespace MicroOrm.Dapper.Repositories
 {

@@ -7,9 +7,6 @@ indent_style = space
 max_line_length = 180
 insert_final_newline = true
 
-[*.cs]
-indent_size = 4
-
 [*.csproj]
 indent_size = 2
 
@@ -21,6 +18,9 @@ indent_size = 2
 
 [{*.sh, *.ps1}]
 indent_size = 2
+
+[*.cs]
+indent_size = 4
 
 ## Dotnet code style settings:
 

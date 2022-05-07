@@ -1,5 +1,5 @@
-using MicroOrm.Dapper.Repositories.Config;
 using System;
+using MicroOrm.Dapper.Repositories.Config;
 
 namespace MicroOrm.Dapper.Repositories.Attributes.Joins
 {

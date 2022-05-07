@@ -11,7 +11,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.DatabaseFixture
         
         public MySqlDatabaseFixture()
         {
-            Db = new MySqlDbContext("Server=localhost;Uid=root;Pwd=Password12!");
+            Db = new MySqlDbContext("Server=localhost;Uid=root;Pwd=itsme999");
 
             DropDatabase();
             InitDb();
