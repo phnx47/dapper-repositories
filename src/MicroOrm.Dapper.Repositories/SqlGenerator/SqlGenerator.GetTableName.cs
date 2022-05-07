@@ -7,7 +7,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
     public partial class SqlGenerator<TEntity>
         where TEntity : class
     {
-        private static string GetTableNameWithSchemaPrefix(string tableName, string tableSchema, string startQuotationMark = "", string endQuotationMark = "")
+        private static string GetTableNameWithSchemaPrefix(string? tableName, string? tableSchema, string startQuotationMark = "", string endQuotationMark = "")
         {
             return !string.IsNullOrEmpty(tableSchema)
                 ? startQuotationMark + tableSchema + endQuotationMark + "." + startQuotationMark + tableName + endQuotationMark

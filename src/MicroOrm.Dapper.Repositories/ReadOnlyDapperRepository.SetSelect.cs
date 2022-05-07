@@ -24,9 +24,8 @@ namespace MicroOrm.Dapper.Repositories
             var type = typeof(T);
             if (expr.Body.NodeType == ExpressionType.Lambda)
             {
-                if (expr.Body is UnaryExpression lambdaUnary)
+                if (expr.Body is UnaryExpression { Operand: MemberExpression expression })
                 {
-                    var expression = lambdaUnary.Operand as MemberExpression;
                     var prop = GetProperty(expression, type);
                     FilterData.SelectInfo.Columns.Add(prop);
                 }

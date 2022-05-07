@@ -19,7 +19,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
             foreach (var property in AllProperties)
             {
                 var joinAttr = property.GetCustomAttribute<JoinAttributeBase>();
-                if (joinAttr == null)
+                if (joinAttr?.TableName == null)
                     continue;
 
                 //var deleted = joinProperty.JoinPropertyInfo.PropertyType.GetCustomAttribute<DeletedAttribute>();

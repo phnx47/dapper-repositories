@@ -9,7 +9,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         where TEntity : class
     {
         /// <inheritdoc />
-        public virtual SqlQuery GetCount(Expression<Func<TEntity, bool>> predicate, params Expression<Func<TEntity, object>>[] includes)
+        public virtual SqlQuery GetCount(Expression<Func<TEntity, bool>>? predicate, params Expression<Func<TEntity, object>>[] includes)
         {
             var sqlQuery = new SqlQuery();
 
@@ -40,7 +40,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         }
 
         /// <inheritdoc />
-        public virtual SqlQuery GetCount(Expression<Func<TEntity, bool>> predicate, Expression<Func<TEntity, object>> distinctField,
+        public virtual SqlQuery GetCount(Expression<Func<TEntity, bool>>? predicate, Expression<Func<TEntity, object>> distinctField,
             params Expression<Func<TEntity, object>>[] includes)
         {
             var propertyName = ExpressionHelper.GetPropertyName(distinctField);

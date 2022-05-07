@@ -1,3 +1,6 @@
+using Dapper;
+using MicroOrm.Dapper.Repositories.Extensions;
+using MicroOrm.Dapper.Repositories.SqlGenerator;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -8,9 +11,6 @@ using System.Linq.Expressions;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
-using Dapper;
-using MicroOrm.Dapper.Repositories.Extensions;
-using MicroOrm.Dapper.Repositories.SqlGenerator;
 
 namespace MicroOrm.Dapper.Repositories
 {
@@ -25,7 +25,7 @@ namespace MicroOrm.Dapper.Repositories
         /// </summary>
         protected virtual IEnumerable<TEntity> ExecuteJoinQuery<TChild1, TChild2, TChild3, TChild4, TChild5, TChild6>(
             SqlQuery sqlQuery,
-            IDbTransaction transaction,
+            IDbTransaction? transaction,
             params Expression<Func<TEntity, object>>[] includes)
         {
             if (!SqlGenerator.KeySqlProperties.Any())
@@ -116,7 +116,7 @@ namespace MicroOrm.Dapper.Repositories
         /// </summary>
         protected virtual Task<IEnumerable<TEntity>> ExecuteJoinQueryAsync<TChild1, TChild2, TChild3, TChild4, TChild5, TChild6>(
             SqlQuery sqlQuery,
-            IDbTransaction transaction,
+            IDbTransaction? transaction,
             params Expression<Func<TEntity, object>>[] includes)
         {
             return ExecuteJoinQueryAsync<TChild1, TChild2, TChild3, TChild4, TChild5, TChild6>(sqlQuery, transaction, default, includes);
@@ -127,7 +127,7 @@ namespace MicroOrm.Dapper.Repositories
         /// </summary>
         protected virtual async Task<IEnumerable<TEntity>> ExecuteJoinQueryAsync<TChild1, TChild2, TChild3, TChild4, TChild5, TChild6>(
             SqlQuery sqlQuery,
-            IDbTransaction transaction,
+            IDbTransaction? transaction,
             CancellationToken cancellationToken,
             params Expression<Func<TEntity, object>>[] includes)
         {
@@ -221,9 +221,9 @@ namespace MicroOrm.Dapper.Repositories
 
 
         private static TEntity EntityJoinMapping<TChild1, TChild2, TChild3, TChild4, TChild5, TChild6>(IDictionary<object, TEntity> lookup, PropertyInfo[] keyProperties,
-            IList<PropertyInfo> childKeyProperties, IList<PropertyInfo> childProperties, TEntity entity, params object[] childs)
+            IList<PropertyInfo> childKeyProperties, IList<PropertyInfo> childProperties, TEntity entity, params object?[] childs)
         {
-            var compositeKeyProperty = string.Join("|", keyProperties.Select(q => q.GetValue(entity).ToString()));
+            var compositeKeyProperty = string.Join("|", keyProperties.Select(q => q.GetValue(entity)?.ToString()));
 
             if (!lookup.TryGetValue(compositeKeyProperty, out var target))
                 lookup.Add(compositeKeyProperty, target = entity);
@@ -236,7 +236,7 @@ namespace MicroOrm.Dapper.Repositories
 
                 if (childProperty.PropertyType.IsGenericType)
                 {
-                    var list = (IList)childProperty.GetValue(target);
+                    var list = (IList?)childProperty.GetValue(target);
                     if (list == null)
                     {
                         switch (i)

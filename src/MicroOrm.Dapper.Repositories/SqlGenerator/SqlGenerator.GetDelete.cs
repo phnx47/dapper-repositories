@@ -35,9 +35,8 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                     .Append(" = ")
                     .Append(LogicalDeleteValue);
 
-                if (HasUpdatedAt)
+                if (HasUpdatedAt && UpdatedAtProperty.GetCustomAttribute<UpdatedAtAttribute>() is { } attribute)
                 {
-                    var attribute = UpdatedAtProperty.GetCustomAttribute<UpdatedAtAttribute>();
                     var offset = attribute.TimeKind == DateTimeKind.Local
                         ? new DateTimeOffset(DateTime.Now)
                         : new DateTimeOffset(DateTime.UtcNow);
@@ -65,7 +64,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         }
 
         /// <inheritdoc />
-        public virtual SqlQuery GetDelete(Expression<Func<TEntity, bool>> predicate)
+        public virtual SqlQuery GetDelete(Expression<Func<TEntity, bool>>? predicate)
         {
             var sqlQuery = new SqlQuery();
 

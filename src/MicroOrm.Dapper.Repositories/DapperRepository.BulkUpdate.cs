@@ -1,11 +1,11 @@
+using Dapper;
+using MicroOrm.Dapper.Repositories.SqlGenerator;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Dapper;
-using MicroOrm.Dapper.Repositories.SqlGenerator;
 
 namespace MicroOrm.Dapper.Repositories
 {
@@ -22,7 +22,7 @@ namespace MicroOrm.Dapper.Repositories
         }
 
         /// <inheritdoc />
-        public virtual bool BulkUpdate(IEnumerable<TEntity> instances, IDbTransaction transaction)
+        public virtual bool BulkUpdate(IEnumerable<TEntity> instances, IDbTransaction? transaction)
         {
             if (SqlGenerator.Provider == SqlProvider.MSSQL)
             {
@@ -70,13 +70,13 @@ namespace MicroOrm.Dapper.Repositories
         }
 
         /// <inheritdoc />
-        public virtual Task<bool> BulkUpdateAsync(IEnumerable<TEntity> instances, IDbTransaction transaction)
+        public virtual Task<bool> BulkUpdateAsync(IEnumerable<TEntity> instances, IDbTransaction? transaction)
         {
             return BulkUpdateAsync(instances, transaction, CancellationToken.None);
         }
-        
+
         /// <inheritdoc />
-        public virtual async Task<bool> BulkUpdateAsync(IEnumerable<TEntity> instances, IDbTransaction transaction, CancellationToken cancellationToken)
+        public virtual async Task<bool> BulkUpdateAsync(IEnumerable<TEntity> instances, IDbTransaction? transaction, CancellationToken cancellationToken)
         {
             if (SqlGenerator.Provider == SqlProvider.MSSQL)
             {
