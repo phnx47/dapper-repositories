@@ -41,14 +41,14 @@ namespace MicroOrm.Dapper.Repositories
         /// <inheritdoc />
         public IDbConnection Connection
         {
-            get => _connection ?? throw new ArgumentNullException(nameof(_connection));
+            get => _connection ?? throw new ObjectDisposedException(GetType().FullName);
             set => _connection = value;
         }
 
         /// <inheritdoc />
         public FilterData FilterData
         {
-            get => _filterData ??= new ();
+            get => _filterData ?? throw new ObjectDisposedException(GetType().FullName);
             set => _filterData = value;
         }
 
