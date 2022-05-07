@@ -2,10 +2,8 @@ name: 💿 CI
 
 on:
   push:
-    paths:
-      - src/*
-      - test/*
-      - .github/workflows/ci.yml
+    branches:
+      - "main"
   pull_request:
     branches:
       - "main"
