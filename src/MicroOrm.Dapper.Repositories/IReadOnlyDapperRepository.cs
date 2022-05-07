@@ -1,11 +1,11 @@
-using MicroOrm.Dapper.Repositories.SqlGenerator;
-using MicroOrm.Dapper.Repositories.SqlGenerator.Filters;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
+using MicroOrm.Dapper.Repositories.SqlGenerator;
+using MicroOrm.Dapper.Repositories.SqlGenerator.Filters;
 
 namespace MicroOrm.Dapper.Repositories
 {
@@ -47,12 +47,12 @@ namespace MicroOrm.Dapper.Repositories
         /// <summary>
         ///     Get number of rows
         /// </summary>
-        int Count(IDbTransaction? transaction);
+        int Count(IDbTransaction transaction);
 
         /// <summary>
         ///     Get number of rows
         /// </summary>
-        Task<int> CountAsync(IDbTransaction? transaction);
+        Task<int> CountAsync(IDbTransaction transaction);
 
         /// <summary>
         ///     Get number of rows
@@ -62,12 +62,12 @@ namespace MicroOrm.Dapper.Repositories
         /// <summary>
         ///     Get number of rows with WHERE clause
         /// </summary>
-        int Count(Expression<Func<TEntity, bool>>? predicate);
+        int Count(Expression<Func<TEntity, bool>> predicate);
 
         /// <summary>
         ///     Get number of rows with WHERE clause
         /// </summary>
-        Task<int> CountAsync(Expression<Func<TEntity, bool>>? predicate);
+        Task<int> CountAsync(Expression<Func<TEntity, bool>> predicate);
 
         /// <summary>
         ///     Get number of rows with WHERE clause
@@ -168,12 +168,12 @@ namespace MicroOrm.Dapper.Repositories
         /// <summary>
         ///     Get first object
         /// </summary>
-        TEntity? Find(IDbTransaction? transaction);
+        TEntity? Find(IDbTransaction transaction);
 
         /// <summary>
         ///     Get first object
         /// </summary>
-        Task<TEntity?> FindAsync(IDbTransaction? transaction);
+        Task<TEntity?> FindAsync(IDbTransaction transaction);
 
         /// <summary>
         ///     Get first object
@@ -183,12 +183,12 @@ namespace MicroOrm.Dapper.Repositories
         /// <summary>
         ///     Get first object
         /// </summary>
-        TEntity? Find(Expression<Func<TEntity, bool>>? predicate);
+        TEntity? Find(Expression<Func<TEntity, bool>> predicate);
 
         /// <summary>
         ///     Get first object
         /// </summary>
-        Task<TEntity?> FindAsync(Expression<Func<TEntity, bool>>? predicate);
+        Task<TEntity?> FindAsync(Expression<Func<TEntity, bool>> predicate);
 
         /// <summary>
         ///     Get first object
@@ -552,12 +552,12 @@ namespace MicroOrm.Dapper.Repositories
         /// <summary>
         ///     Get all objects
         /// </summary>
-        IEnumerable<TEntity> FindAll(IDbTransaction? transaction);
+        IEnumerable<TEntity> FindAll(IDbTransaction transaction);
 
         /// <summary>
         ///     Get all objects
         /// </summary>
-        Task<IEnumerable<TEntity>> FindAllAsync(IDbTransaction? transaction);
+        Task<IEnumerable<TEntity>> FindAllAsync(IDbTransaction transaction);
 
         /// <summary>
         ///     Get all objects
@@ -567,12 +567,12 @@ namespace MicroOrm.Dapper.Repositories
         /// <summary>
         ///     Get all objects
         /// </summary>
-        IEnumerable<TEntity> FindAll(Expression<Func<TEntity, bool>>? predicate);
+        IEnumerable<TEntity> FindAll(Expression<Func<TEntity, bool>> predicate);
 
         /// <summary>
         ///     Get all objects
         /// </summary>
-        Task<IEnumerable<TEntity>> FindAllAsync(Expression<Func<TEntity, bool>>? predicate);
+        Task<IEnumerable<TEntity>> FindAllAsync(Expression<Func<TEntity, bool>> predicate);
 
         /// <summary>
         ///     Get all objects

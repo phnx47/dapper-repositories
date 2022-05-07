@@ -33,13 +33,13 @@ namespace MicroOrm.Dapper.Repositories
         }
 
         /// <inheritdoc />
-        public virtual IEnumerable<TEntity> FindAll(IDbTransaction? transaction)
+        public virtual IEnumerable<TEntity> FindAll(IDbTransaction transaction)
         {
             return FindAll(null, transaction);
         }
 
         /// <inheritdoc />
-        public virtual Task<IEnumerable<TEntity>> FindAllAsync(IDbTransaction? transaction)
+        public virtual Task<IEnumerable<TEntity>> FindAllAsync(IDbTransaction transaction)
         {
             return FindAllAsync(null, transaction, cancellationToken: default);
         }
@@ -51,13 +51,13 @@ namespace MicroOrm.Dapper.Repositories
         }
 
         /// <inheritdoc />
-        public virtual IEnumerable<TEntity> FindAll(Expression<Func<TEntity, bool>>? predicate)
+        public virtual IEnumerable<TEntity> FindAll(Expression<Func<TEntity, bool>> predicate)
         {
             return FindAll(predicate, transaction: null);
         }
 
         /// <inheritdoc />
-        public virtual Task<IEnumerable<TEntity>> FindAllAsync(Expression<Func<TEntity, bool>>? predicate)
+        public virtual Task<IEnumerable<TEntity>> FindAllAsync(Expression<Func<TEntity, bool>> predicate)
         {
             return FindAllAsync(predicate, transaction: null, cancellationToken: default);
         }

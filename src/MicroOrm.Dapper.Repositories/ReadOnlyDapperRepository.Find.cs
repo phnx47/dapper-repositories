@@ -33,13 +33,13 @@ namespace MicroOrm.Dapper.Repositories
         }
 
         /// <inheritdoc />
-        public virtual TEntity? Find(IDbTransaction? transaction)
+        public virtual TEntity? Find(IDbTransaction transaction)
         {
             return Find(null, transaction);
         }
 
         /// <inheritdoc />
-        public virtual Task<TEntity?> FindAsync(IDbTransaction? transaction)
+        public virtual Task<TEntity?> FindAsync(IDbTransaction transaction)
         {
             return FindAsync(null, transaction, cancellationToken: default);
         }
@@ -51,13 +51,13 @@ namespace MicroOrm.Dapper.Repositories
         }
 
         /// <inheritdoc />
-        public virtual TEntity? Find(Expression<Func<TEntity, bool>>? predicate)
+        public virtual TEntity? Find(Expression<Func<TEntity, bool>> predicate)
         {
             return Find(predicate, null);
         }
 
         /// <inheritdoc />
-        public virtual Task<TEntity?> FindAsync(Expression<Func<TEntity, bool>>? predicate)
+        public virtual Task<TEntity?> FindAsync(Expression<Func<TEntity, bool>> predicate)
         {
             return FindAsync(predicate, null, cancellationToken: default);
         }

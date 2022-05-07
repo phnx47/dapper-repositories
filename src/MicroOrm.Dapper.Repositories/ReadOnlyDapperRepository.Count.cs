@@ -17,7 +17,7 @@ namespace MicroOrm.Dapper.Repositories
         /// <inheritdoc />
         public virtual int Count()
         {
-            return Count(transaction: null);
+            return Count(null, transaction: null);
         }
 
         /// <inheritdoc />
@@ -33,13 +33,13 @@ namespace MicroOrm.Dapper.Repositories
         }
 
         /// <inheritdoc />
-        public virtual int Count(IDbTransaction? transaction)
+        public virtual int Count(IDbTransaction transaction)
         {
             return Count(null, transaction);
         }
 
         /// <inheritdoc />
-        public virtual Task<int> CountAsync(IDbTransaction? transaction)
+        public virtual Task<int> CountAsync(IDbTransaction transaction)
         {
             return CountAsync(null, transaction, cancellationToken: default);
         }
@@ -51,13 +51,13 @@ namespace MicroOrm.Dapper.Repositories
         }
 
         /// <inheritdoc />
-        public virtual int Count(Expression<Func<TEntity, bool>>? predicate)
+        public virtual int Count(Expression<Func<TEntity, bool>> predicate)
         {
             return Count(predicate, transaction: null);
         }
 
         /// <inheritdoc />
-        public virtual Task<int> CountAsync(Expression<Func<TEntity, bool>>? predicate)
+        public virtual Task<int> CountAsync(Expression<Func<TEntity, bool>> predicate)
         {
             return CountAsync(predicate, transaction: null, cancellationToken: default);
         }
