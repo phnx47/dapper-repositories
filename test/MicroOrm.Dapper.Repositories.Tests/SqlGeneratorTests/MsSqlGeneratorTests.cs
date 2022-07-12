@@ -482,7 +482,6 @@ namespace MicroOrm.Dapper.Repositories.Tests.SqlGeneratorTests
                          "FROM [Users] WHERE [Users].[Id] = @Id AND [Users].[Deleted] != 1", sqlQuery.GetSql());
         }
 
-
         [Fact]
         public static void SelectByIdJoin()
         {
@@ -532,6 +531,24 @@ namespace MicroOrm.Dapper.Repositories.Tests.SqlGeneratorTests
             var sqlQuery = userSqlGenerator.GetSelectAll(x => x.Id == 2, filterData);
             Assert.Equal(
                 "SELECT [Users].[Id], [Users].[Name], [Users].[AddressId], [Users].[PhoneId], [Users].[OfficePhoneId], [Users].[Deleted], [Users].[UpdatedAt] FROM [Users] WHERE ([Users].[Id] = @Id_p0) AND [Users].[Deleted] != 1 ORDER BY [Id] ASC",
+                sqlQuery.GetSql());
+        }
+
+        [Fact]
+        public static void SelectOrderByWithTableIdentifier()
+        {
+            ISqlGenerator<User> userSqlGenerator = new SqlGenerator<User>(_sqlConnector, true);
+
+            var filterData = new FilterData();
+
+            var data = filterData.OrderInfo ?? new OrderInfo();
+            data.Columns = new List<string> { "Users.Id" };
+            data.Direction = OrderInfo.SortDirection.ASC;
+            filterData.OrderInfo = data;
+
+            var sqlQuery = userSqlGenerator.GetSelectAll(x => x.Id == 2, filterData);
+            Assert.Equal(
+                "SELECT [Users].[Id], [Users].[Name], [Users].[AddressId], [Users].[PhoneId], [Users].[OfficePhoneId], [Users].[Deleted], [Users].[UpdatedAt] FROM [Users] WHERE ([Users].[Id] = @Id_p0) AND [Users].[Deleted] != 1 ORDER BY [Users].[Id] ASC",
                 sqlQuery.GetSql());
         }
 
