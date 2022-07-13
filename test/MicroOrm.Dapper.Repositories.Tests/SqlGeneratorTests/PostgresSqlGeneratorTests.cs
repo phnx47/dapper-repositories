@@ -64,6 +64,20 @@ namespace MicroOrm.Dapper.Repositories.Tests.SqlGeneratorTests
         }
 
         [Fact]
+        public void SelectOrderByWithTableIdentifier_QuoMarks()
+        {
+            ISqlGenerator<City> sqlGenerator = new SqlGenerator<City>(_sqlConnector, true);
+            var filterData = new FilterData();
+            var data = filterData.OrderInfo ?? new OrderInfo();
+            data.Columns = new List<string> { "Cities.Name" };
+            data.Direction = OrderInfo.SortDirection.ASC;
+            filterData.OrderInfo = data;
+
+            var sqlQuery = sqlGenerator.GetSelectAll(x => x.Identifier == Guid.Empty, filterData);
+            Assert.Equal("SELECT \"Cities\".\"Identifier\", \"Cities\".\"Name\" FROM \"Cities\" WHERE \"Cities\".\"Identifier\" = @Identifier_p0 ORDER BY \"Cities\".\"Name\" ASC", sqlQuery.GetSql());
+        }
+
+        [Fact]
         public void SelectPaged()
         {
             ISqlGenerator<City> sqlGenerator = new SqlGenerator<City>(_sqlConnector);

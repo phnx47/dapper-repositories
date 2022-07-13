@@ -104,7 +104,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         }
 
         /// <summary>
-        /// Set order by in query; DapperRepository.SetOrderBy must be called first. 
+        /// Set order by in query; DapperRepository.SetOrderBy must be called first.
         /// </summary>
         private void SetOrder(SqlQuery sqlQuery, FilterData? filterData)
         {
@@ -130,7 +130,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
             {
                 if (UseQuotationMarks == true && Provider != SqlProvider.SQLite && Provider != SqlProvider.Oracle)
                 {
-                    sqlQuery.SqlBuilder.Append(Provider == SqlProvider.MSSQL ? $"[{col}]" : $"`{col}`");
+                    sqlQuery.SqlBuilder.Append(AddProviderQuotationMarks(col));
                 }
                 else
                 {
@@ -161,7 +161,32 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         }
 
         /// <summary>
-        /// Set group by in query; DapperRepository.GroupBy must be called first. 
+        /// Adds quotation marks to column identifier based on the provider
+        /// </summary>
+        /// <param name="columnIdentifier"></param>
+        /// <returns>String with quotation marks added</returns>
+        private string AddProviderQuotationMarks(string columnIdentifier)
+        {
+            // If a table identifier is passed in with field the data string will be table.field instead of just rapping quotations around the
+            // string [table.field] or `table.field` we have to replace the seperator . with ].[ or `.` to get [table].[field] or `table`.`field`
+            switch (Provider)
+            {
+                case SqlProvider.MSSQL:
+                    return $"[{columnIdentifier.Replace(".", "].[")}]";
+
+                case SqlProvider.MySQL:
+                    return $"`{columnIdentifier.Replace(".", "`.`")}`";
+
+                case SqlProvider.PostgreSQL:
+                    return $"\"{columnIdentifier.Replace(".", "\".\"")}\"";
+
+                default:
+                    return columnIdentifier;
+            }
+        }
+
+        /// <summary>
+        /// Set group by in query; DapperRepository.GroupBy must be called first.
         /// </summary>
         private void GroupBy(SqlQuery sqlQuery, FilterData? filterData)
         {
