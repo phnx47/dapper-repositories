@@ -18,7 +18,7 @@ This tool abstracts the generation of the SQL sentence for CRUD operations based
 execution of these tasks, but that's exactly where this tool is different. The "SQL Generator" is a generic component that generates all the CRUD sentences for a POCO class based
 on its definition and the possibility to override the SQL generator and the way it builds each sentence.
 
-The original idea was taken from [Yoinbol](https://github.com/Yoinbol/MicroOrm.Pocos.SqlGenerator).
+The original idea was taken from [Diego García](https://github.com/ElNinjaGaiden/MicroOrm.Pocos.SqlGenerator).
 
 ## Installation
 
