@@ -53,7 +53,7 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
       - name: 📥 Download artifacts
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: nupkg
       - name: 📦 Publish to GitHub
@@ -65,7 +65,7 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
       - name: 📥 Download artifacts
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: nupkg
       - name: 📦 Publish to NuGet
