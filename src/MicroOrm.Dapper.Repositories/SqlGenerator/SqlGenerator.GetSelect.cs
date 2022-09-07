@@ -253,7 +253,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         }
 
         /// <inheritdoc />
-        public SqlQuery GetSelectById(object id, FilterData? filterData, params Expression<Func<TEntity, object>>[] includes)
+        public virtual SqlQuery GetSelectById(object id, FilterData? filterData, params Expression<Func<TEntity, object>>[] includes)
         {
             if (KeySqlProperties.Length != 1)
                 throw new NotSupportedException("GetSelectById support only 1 key");
