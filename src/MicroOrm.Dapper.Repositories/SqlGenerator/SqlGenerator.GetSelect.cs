@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using MicroOrm.Dapper.Repositories.SqlGenerator.Filters;
 
 namespace MicroOrm.Dapper.Repositories.SqlGenerator
 {
@@ -10,8 +9,8 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
     public partial class SqlGenerator<TEntity>
         where TEntity : class
     {
-        private SqlQuery GetSelect(Expression<Func<TEntity, bool>> predicate, bool firstOnly,
-            FilterData filterData,
+        private SqlQuery GetSelect(Expression<Func<TEntity, bool>>? predicate, bool firstOnly,
+            FilterData? filterData,
             params Expression<Func<TEntity, object>>[] includes)
         {
             var sqlQuery = InitBuilderSelect(firstOnly, filterData);
@@ -39,7 +38,6 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                 if (!filterData.SelectInfo.Permanent)
                 {
                     filterData.SelectInfo.Columns.Clear();
-                    filterData.SelectInfo.Columns = null;
                     filterData.SelectInfo = null;
                 }
             }
@@ -65,7 +63,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
             return sqlQuery;
         }
 
-        private void SetLimit(SqlQuery sqlQuery, FilterData filterData)
+        private void SetLimit(SqlQuery sqlQuery, FilterData? filterData)
         {
             if (filterData?.LimitInfo == null)
                 return;
@@ -105,11 +103,11 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         }
 
         /// <summary>
-        /// Set order by in query; DapperRepository.SetOrderBy must be called first. 
+        /// Set order by in query; DapperRepository.SetOrderBy must be called first.
         /// </summary>
-        private void SetOrder(SqlQuery sqlQuery, FilterData filterData)
+        private void SetOrder(SqlQuery sqlQuery, FilterData? filterData)
         {
-            if (filterData?.OrderInfo == null)
+            if (filterData?.OrderInfo?.Columns == null)
                 return;
 
             sqlQuery.SqlBuilder.Append("ORDER BY ");
@@ -131,7 +129,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
             {
                 if (UseQuotationMarks == true && Provider != SqlProvider.SQLite && Provider != SqlProvider.Oracle)
                 {
-                    sqlQuery.SqlBuilder.Append(Provider == SqlProvider.MSSQL ? $"[{col}]" : $"`{col}`");
+                    sqlQuery.SqlBuilder.Append(AddProviderQuotationMarks(col));
                 }
                 else
                 {
@@ -162,11 +160,36 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         }
 
         /// <summary>
-        /// Set group by in query; DapperRepository.GroupBy must be called first. 
+        /// Adds quotation marks to column identifier based on the provider
         /// </summary>
-        private void GroupBy(SqlQuery sqlQuery, FilterData filterData)
+        /// <param name="columnIdentifier"></param>
+        /// <returns>String with quotation marks added</returns>
+        private string AddProviderQuotationMarks(string columnIdentifier)
         {
-            if (filterData?.GroupInfo == null)
+            // If a table identifier is passed in with field the data string will be table.field instead of just rapping quotations around the
+            // string [table.field] or `table.field` we have to replace the seperator . with ].[ or `.` to get [table].[field] or `table`.`field`
+            switch (Provider)
+            {
+                case SqlProvider.MSSQL:
+                    return $"[{columnIdentifier.Replace(".", "].[")}]";
+
+                case SqlProvider.MySQL:
+                    return $"`{columnIdentifier.Replace(".", "`.`")}`";
+
+                case SqlProvider.PostgreSQL:
+                    return $"\"{columnIdentifier.Replace(".", "\".\"")}\"";
+
+                default:
+                    return columnIdentifier;
+            }
+        }
+
+        /// <summary>
+        /// Set group by in query; DapperRepository.GroupBy must be called first.
+        /// </summary>
+        private void GroupBy(SqlQuery sqlQuery, FilterData? filterData)
+        {
+            if (filterData?.GroupInfo?.Columns == null)
                 return;
 
             sqlQuery.SqlBuilder.Append("GROUP BY ");
@@ -217,19 +240,19 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         }
 
         /// <inheritdoc />
-        public virtual SqlQuery GetSelectFirst(Expression<Func<TEntity, bool>> predicate, FilterData filterData, params Expression<Func<TEntity, object>>[] includes)
+        public virtual SqlQuery GetSelectFirst(Expression<Func<TEntity, bool>>? predicate, FilterData? filterData, params Expression<Func<TEntity, object>>[] includes)
         {
             return GetSelect(predicate, includes.Length == 0, filterData, includes);
         }
 
         /// <inheritdoc />
-        public virtual SqlQuery GetSelectAll(Expression<Func<TEntity, bool>> predicate, FilterData filterData, params Expression<Func<TEntity, object>>[] includes)
+        public virtual SqlQuery GetSelectAll(Expression<Func<TEntity, bool>>? predicate, FilterData? filterData, params Expression<Func<TEntity, object>>[] includes)
         {
             return GetSelect(predicate, false, filterData, includes);
         }
 
         /// <inheritdoc />
-        public virtual SqlQuery GetSelectById(object id, FilterData filterData, params Expression<Func<TEntity, object>>[] includes)
+        public virtual SqlQuery GetSelectById(object id, FilterData? filterData, params Expression<Func<TEntity, object>>[] includes)
         {
             if (KeySqlProperties.Length != 1)
                 throw new NotSupportedException("GetSelectById support only 1 key");
@@ -294,14 +317,14 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         }
 
         /// <inheritdoc />
-        public virtual SqlQuery GetSelectBetween(object from, object to, FilterData filterData, Expression<Func<TEntity, object>> btwField)
+        public virtual SqlQuery GetSelectBetween(object from, object to, FilterData? filterData, Expression<Func<TEntity, object>> btwField)
         {
             return GetSelectBetween(from, to, filterData, btwField, null);
         }
 
         /// <inheritdoc />
-        public virtual SqlQuery GetSelectBetween(object from, object to, FilterData filterData, Expression<Func<TEntity, object>> btwField,
-            Expression<Func<TEntity, bool>> predicate)
+        public virtual SqlQuery GetSelectBetween(object from, object to, FilterData? filterData, Expression<Func<TEntity, object>> btwField,
+            Expression<Func<TEntity, bool>>? predicate)
         {
             var fieldName = ExpressionHelper.GetPropertyName(btwField);
             var columnName = SqlProperties.First(x => x.PropertyName == fieldName).ColumnName;
@@ -322,7 +345,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
             return query;
         }
 
-        private SqlQuery InitBuilderSelect(bool firstOnly, FilterData filterData)
+        private SqlQuery InitBuilderSelect(bool firstOnly, FilterData? filterData)
         {
             var query = new SqlQuery();
             query.SqlBuilder.Append("SELECT ");
@@ -351,7 +374,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
             return string.Join(", ", properties);
         }
 
-        private static string GetFieldsSelect(string tableName, IEnumerable<SqlPropertyMetadata> properties, bool useQuotation)
+        private static string GetFieldsSelect(string? tableName, IEnumerable<SqlPropertyMetadata> properties, bool useQuotation)
         {
             //Projection function
             string ProjectionFunction(SqlPropertyMetadata p)

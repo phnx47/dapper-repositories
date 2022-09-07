@@ -15,13 +15,16 @@ namespace MicroOrm.Dapper.Repositories
     public partial class ReadOnlyDapperRepository<TEntity> : IReadOnlyDapperRepository<TEntity>
         where TEntity : class
     {
+        private IDbConnection? _connection;
+        private FilterData? _filterData;
+
         /// <summary>
         ///     Constructor
         /// </summary>
         public ReadOnlyDapperRepository(IDbConnection connection)
         {
-            Connection = connection;
-            FilterData = new FilterData();
+            _connection = connection;
+            _filterData = new FilterData();
             SqlGenerator = new SqlGenerator<TEntity>();
         }
 
@@ -30,16 +33,16 @@ namespace MicroOrm.Dapper.Repositories
         /// </summary>
         public ReadOnlyDapperRepository(IDbConnection connection, ISqlGenerator<TEntity> sqlGenerator)
         {
-            Connection = connection;
-            FilterData = new FilterData();
+            _connection = connection;
+            _filterData = new FilterData();
             SqlGenerator = sqlGenerator;
         }
 
         /// <inheritdoc />
-        public IDbConnection Connection { get; set; }
+        public IDbConnection Connection => _connection ?? throw new ObjectDisposedException(GetType().FullName);
 
         /// <inheritdoc />
-        public FilterData FilterData { get; set; }
+        public FilterData FilterData => _filterData ?? throw new ObjectDisposedException(GetType().FullName);
 
         /// <inheritdoc />
         public ISqlGenerator<TEntity> SqlGenerator { get; }
@@ -63,26 +66,25 @@ namespace MicroOrm.Dapper.Repositories
         /// <inheritdoc />
         public void Dispose()
         {
-            Connection?.Dispose();
-            Connection = null;
-            if (FilterData == null)
+            _connection?.Dispose();
+            _connection = null;
+            if (_filterData == null)
                 return;
-            FilterData.LimitInfo = null;
-            if (FilterData.OrderInfo != null)
+            _filterData.LimitInfo = null;
+            if (_filterData.OrderInfo != null)
             {
-                FilterData.OrderInfo.Columns.Clear();
-                FilterData.OrderInfo.Columns = null;
-                FilterData.OrderInfo = null;
+                _filterData.OrderInfo.Columns?.Clear();
+                _filterData.OrderInfo.Columns = null;
+                _filterData.OrderInfo = null;
             }
 
-            if (FilterData.SelectInfo != null)
+            if (_filterData.SelectInfo != null)
             {
-                FilterData.SelectInfo.Columns.Clear();
-                FilterData.SelectInfo.Columns = null;
-                FilterData.SelectInfo = null;
+                _filterData.SelectInfo.Columns.Clear();
+                _filterData.SelectInfo = null;
             }
 
-            FilterData = null;
+            _filterData = null;
         }
     }
 }

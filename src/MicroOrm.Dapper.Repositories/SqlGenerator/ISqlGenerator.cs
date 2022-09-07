@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
 using System.Reflection;
 using MicroOrm.Dapper.Repositories.SqlGenerator.Filters;
@@ -19,12 +20,13 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         /// <summary>
         ///     Has Date of changed
         /// </summary>
+        [MemberNotNullWhen(true, nameof(UpdatedAtProperty), nameof(UpdatedAtPropertyMetadata))]
         bool HasUpdatedAt { get; }
 
         /// <summary>
         ///     Date of Changed Property
         /// </summary>
-        PropertyInfo UpdatedAtProperty { get; }
+        PropertyInfo? UpdatedAtProperty { get; }
 
         /// <summary>
         ///     Type Sql provider
@@ -39,11 +41,12 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         /// <summary>
         ///     Date of Changed Metadata Property
         /// </summary>
-        SqlPropertyMetadata UpdatedAtPropertyMetadata { get; }
+        SqlPropertyMetadata? UpdatedAtPropertyMetadata { get; }
 
         /// <summary>
         ///     Is Autoincrement table
         /// </summary>
+        [MemberNotNullWhen(true, nameof(IdentitySqlProperty))]
         bool IsIdentity { get; }
 
         /// <summary>
@@ -54,12 +57,12 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         /// <summary>
         ///     Table Schema
         /// </summary>
-        string TableSchema { get; }
+        string? TableSchema { get; }
 
         /// <summary>
         ///     Identity Metadata property
         /// </summary>
-        SqlPropertyMetadata IdentitySqlProperty { get; }
+        SqlPropertyMetadata? IdentitySqlProperty { get; }
 
         /// <summary>
         ///     Keys Metadata sql properties
@@ -79,7 +82,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         /// <summary>
         ///     Joined tables with logical delete
         /// </summary>
-        Dictionary<string, PropertyInfo> JoinsLogicalDelete { get; }
+        Dictionary<string, PropertyInfo>? JoinsLogicalDelete { get; }
 
         /// <summary>
         ///     Has Logical delete
@@ -89,22 +92,22 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         /// <summary>
         ///     PropertyName of Status
         /// </summary>
-        string StatusPropertyName { get; }
+        string? StatusPropertyName { get; }
 
         /// <summary>
         ///     Logical delete Value
         /// </summary>
-        object LogicalDeleteValue { get; }
+        object? LogicalDeleteValue { get; }
 
         /// <summary>
         ///     Get SQL for COUNT Query
         /// </summary>
-        SqlQuery GetCount(Expression<Func<TEntity, bool>> predicate, params Expression<Func<TEntity, object>>[] includes);
+        SqlQuery GetCount(Expression<Func<TEntity, bool>>? predicate, params Expression<Func<TEntity, object>>[] includes);
 
         /// <summary>
         ///     Get SQL for COUNT with DISTINCT Query
         /// </summary>
-        SqlQuery GetCount(Expression<Func<TEntity, bool>> predicate, Expression<Func<TEntity, object>> distinctField, params Expression<Func<TEntity, object>>[] includes);
+        SqlQuery GetCount(Expression<Func<TEntity, bool>>? predicate, Expression<Func<TEntity, object>> distinctField, params Expression<Func<TEntity, object>>[] includes);
 
         /// <summary>
         ///     Get SQL for INSERT Query
@@ -126,7 +129,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         /// <summary>
         ///     Get SQL for UPDATE Query
         /// </summary>
-        SqlQuery GetUpdate(Expression<Func<TEntity, bool>> predicate, TEntity entity, params Expression<Func<TEntity, object>>[] includes);
+        SqlQuery GetUpdate(Expression<Func<TEntity, bool>>? predicate, TEntity entity, params Expression<Func<TEntity, object>>[] includes);
 
         /// <summary>
         ///     Get the SQL statement to update the fields under the anonymous class
@@ -134,7 +137,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         /// </summary>
         /// <param name="predicate"></param>
         /// <param name="setPropertyObj"></param>
-        SqlQuery GetUpdate(Expression<Func<TEntity, bool>> predicate, object setPropertyObj);
+        SqlQuery GetUpdate(Expression<Func<TEntity, bool>>? predicate, object setPropertyObj);
 
         /// <summary>
         ///     Get the SQL statement to update the fields in the setPropertyDict dictionary
@@ -142,7 +145,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         /// </summary>
         /// <param name="predicate"></param>
         /// <param name="setPropertyDict"></param>
-        SqlQuery GetUpdate(Expression<Func<TEntity, bool>> predicate, Dictionary<string, object> setPropertyDict);
+        SqlQuery GetUpdate(Expression<Func<TEntity, bool>>? predicate, Dictionary<string, object> setPropertyDict);
 
         /// <summary>
         ///     Get SQL for bulk UPDATE Query
@@ -152,27 +155,27 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         /// <summary>
         ///     Get SQL for SELECT Query by Id
         /// </summary>
-        SqlQuery GetSelectById(object id, FilterData filterData, params Expression<Func<TEntity, object>>[] includes);
+        SqlQuery GetSelectById(object id, FilterData? filterData, params Expression<Func<TEntity, object>>[] includes);
 
         /// <summary>
         ///     Get SQL for SELECT Query
         /// </summary>
-        SqlQuery GetSelectFirst(Expression<Func<TEntity, bool>> predicate, FilterData filterData, params Expression<Func<TEntity, object>>[] includes);
+        SqlQuery GetSelectFirst(Expression<Func<TEntity, bool>>? predicate, FilterData? filterData, params Expression<Func<TEntity, object>>[] includes);
 
         /// <summary>
         ///     Get SQL for SELECT Query
         /// </summary>
-        SqlQuery GetSelectAll(Expression<Func<TEntity, bool>> predicate, FilterData filterData, params Expression<Func<TEntity, object>>[] includes);
+        SqlQuery GetSelectAll(Expression<Func<TEntity, bool>>? predicate, FilterData? filterData, params Expression<Func<TEntity, object>>[] includes);
 
         /// <summary>
         ///     Get SQL for SELECT Query with BETWEEN
         /// </summary>
-        SqlQuery GetSelectBetween(object from, object to, FilterData filterData, Expression<Func<TEntity, object>> btwField);
+        SqlQuery GetSelectBetween(object from, object to, FilterData? filterData, Expression<Func<TEntity, object>> btwField);
 
         /// <summary>
         ///     Get SQL for SELECT Query with BETWEEN
         /// </summary>
-        SqlQuery GetSelectBetween(object from, object to, FilterData filterData, Expression<Func<TEntity, object>> btwField, Expression<Func<TEntity, bool>> predicate);
+        SqlQuery GetSelectBetween(object from, object to, FilterData? filterData, Expression<Func<TEntity, object>> btwField, Expression<Func<TEntity, bool>>? predicate);
 
         /// <summary>
         ///     Get SQL for DELETE Query
@@ -182,6 +185,6 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         /// <summary>
         ///     Get SQL for DELETE Query
         /// </summary>
-        SqlQuery GetDelete(Expression<Func<TEntity, bool>> predicate);
+        SqlQuery GetDelete(Expression<Func<TEntity, bool>>? predicate);
     }
 }

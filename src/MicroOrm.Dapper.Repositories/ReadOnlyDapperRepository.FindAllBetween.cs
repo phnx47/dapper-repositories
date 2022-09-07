@@ -35,19 +35,19 @@ namespace MicroOrm.Dapper.Repositories
         }
 
         /// <inheritdoc />
-        public virtual IEnumerable<TEntity> FindAllBetween(object from, object to, Expression<Func<TEntity, object>> btwField, IDbTransaction transaction)
+        public virtual IEnumerable<TEntity> FindAllBetween(object from, object to, Expression<Func<TEntity, object>> btwField, IDbTransaction? transaction)
         {
             return FindAllBetween(from, to, btwField, null, transaction);
         }
 
         /// <inheritdoc />
-        public virtual Task<IEnumerable<TEntity>> FindAllBetweenAsync(object from, object to, Expression<Func<TEntity, object>> btwField, IDbTransaction transaction)
+        public virtual Task<IEnumerable<TEntity>> FindAllBetweenAsync(object from, object to, Expression<Func<TEntity, object>> btwField, IDbTransaction? transaction)
         {
             return FindAllBetweenAsync(from, to, btwField, null, transaction, cancellationToken: default);
         }
 
         /// <inheritdoc />
-        public virtual Task<IEnumerable<TEntity>> FindAllBetweenAsync(object from, object to, Expression<Func<TEntity, object>> btwField, IDbTransaction transaction, CancellationToken cancellationToken)
+        public virtual Task<IEnumerable<TEntity>> FindAllBetweenAsync(object from, object to, Expression<Func<TEntity, object>> btwField, IDbTransaction? transaction, CancellationToken cancellationToken)
         {
             return FindAllBetweenAsync(from, to, btwField, null, transaction, cancellationToken: cancellationToken);
         }
@@ -57,7 +57,7 @@ namespace MicroOrm.Dapper.Repositories
             object from,
             object to,
             Expression<Func<TEntity, object>> btwField,
-            Expression<Func<TEntity, bool>> predicate)
+            Expression<Func<TEntity, bool>>? predicate)
         {
             return FindAllBetween(from, to, btwField, transaction: null);
         }
@@ -67,7 +67,7 @@ namespace MicroOrm.Dapper.Repositories
             object from,
             object to,
             Expression<Func<TEntity, object>> btwField,
-            Expression<Func<TEntity, bool>> predicate)
+            Expression<Func<TEntity, bool>>? predicate)
         {
             return FindAllBetweenAsync(from, to, btwField, transaction: null, cancellationToken: default);
         }
@@ -77,7 +77,7 @@ namespace MicroOrm.Dapper.Repositories
             object from,
             object to,
             Expression<Func<TEntity, object>> btwField,
-            Expression<Func<TEntity, bool>> predicate, CancellationToken cancellationToken)
+            Expression<Func<TEntity, bool>>? predicate, CancellationToken cancellationToken)
         {
             return FindAllBetweenAsync(from, to, btwField, transaction: null, cancellationToken: cancellationToken);
         }
@@ -86,8 +86,8 @@ namespace MicroOrm.Dapper.Repositories
         public virtual Task<IEnumerable<TEntity>> FindAllBetweenAsync(object from,
             object to,
             Expression<Func<TEntity, object>> btwField,
-            Expression<Func<TEntity, bool>> predicate,
-            IDbTransaction transaction)
+            Expression<Func<TEntity, bool>>? predicate,
+            IDbTransaction? transaction)
         {
             return FindAllBetweenAsync(from, to, btwField, null, transaction, cancellationToken: default);
         }
@@ -111,19 +111,19 @@ namespace MicroOrm.Dapper.Repositories
         }
 
         /// <inheritdoc />
-        public virtual IEnumerable<TEntity> FindAllBetween(DateTime from, DateTime to, Expression<Func<TEntity, object>> btwField, IDbTransaction transaction)
+        public virtual IEnumerable<TEntity> FindAllBetween(DateTime from, DateTime to, Expression<Func<TEntity, object>> btwField, IDbTransaction? transaction)
         {
             return FindAllBetween(from, to, btwField, null, transaction);
         }
 
         /// <inheritdoc />
-        public virtual Task<IEnumerable<TEntity>> FindAllBetweenAsync(DateTime from, DateTime to, Expression<Func<TEntity, object>> btwField, IDbTransaction transaction)
+        public virtual Task<IEnumerable<TEntity>> FindAllBetweenAsync(DateTime from, DateTime to, Expression<Func<TEntity, object>> btwField, IDbTransaction? transaction)
         {
             return FindAllBetweenAsync(from, to, btwField, null, transaction, cancellationToken: default);
         }
 
         /// <inheritdoc />
-        public virtual Task<IEnumerable<TEntity>> FindAllBetweenAsync(DateTime from, DateTime to, Expression<Func<TEntity, object>> btwField, IDbTransaction transaction, CancellationToken cancellationToken)
+        public virtual Task<IEnumerable<TEntity>> FindAllBetweenAsync(DateTime from, DateTime to, Expression<Func<TEntity, object>> btwField, IDbTransaction? transaction, CancellationToken cancellationToken)
         {
             return FindAllBetweenAsync(from, to, btwField, null, transaction, cancellationToken: cancellationToken);
         }
@@ -133,7 +133,7 @@ namespace MicroOrm.Dapper.Repositories
             DateTime from,
             DateTime to,
             Expression<Func<TEntity, object>> btwField,
-            Expression<Func<TEntity, bool>> predicate)
+            Expression<Func<TEntity, bool>>? predicate)
         {
             return FindAllBetween(from, to, btwField, transaction: null);
         }
@@ -143,7 +143,7 @@ namespace MicroOrm.Dapper.Repositories
             DateTime from,
             DateTime to,
             Expression<Func<TEntity, object>> btwField,
-            Expression<Func<TEntity, bool>> predicate)
+            Expression<Func<TEntity, bool>>? predicate)
         {
             return FindAllBetweenAsync(from, to, btwField, transaction: null, cancellationToken: default);
         }
@@ -153,7 +153,7 @@ namespace MicroOrm.Dapper.Repositories
             DateTime from,
             DateTime to,
             Expression<Func<TEntity, object>> btwField,
-            Expression<Func<TEntity, bool>> predicate, CancellationToken cancellationToken)
+            Expression<Func<TEntity, bool>>? predicate, CancellationToken cancellationToken)
         {
             return FindAllBetweenAsync(from, to, btwField, transaction: null, cancellationToken: cancellationToken);
         }
@@ -162,19 +162,19 @@ namespace MicroOrm.Dapper.Repositories
         public virtual Task<IEnumerable<TEntity>> FindAllBetweenAsync(DateTime from,
             DateTime to,
             Expression<Func<TEntity, object>> btwField,
-            Expression<Func<TEntity, bool>> predicate,
-            IDbTransaction transaction)
+            Expression<Func<TEntity, bool>>? predicate,
+            IDbTransaction? transaction)
         {
             return FindAllBetweenAsync(from, to, btwField, null, transaction, cancellationToken: default);
         }
-        
+
         /// <inheritdoc />
         public virtual IEnumerable<TEntity> FindAllBetween(
             DateTime from,
             DateTime to,
             Expression<Func<TEntity, object>> btwField,
-            Expression<Func<TEntity, bool>> predicate,
-            IDbTransaction transaction)
+            Expression<Func<TEntity, bool>>? predicate,
+            IDbTransaction? transaction)
         {
             var fromString = from.ToString(_dateTimeFormat);
             var toString = to.ToString(_dateTimeFormat);
@@ -186,8 +186,8 @@ namespace MicroOrm.Dapper.Repositories
             object from,
             object to,
             Expression<Func<TEntity, object>> btwField,
-            Expression<Func<TEntity, bool>> predicate,
-            IDbTransaction transaction)
+            Expression<Func<TEntity, bool>>? predicate,
+            IDbTransaction? transaction)
         {
             var queryResult = SqlGenerator.GetSelectBetween(from, to, FilterData, btwField, predicate);
             return Connection.Query<TEntity>(queryResult.GetSql(), queryResult.Param, transaction);
@@ -198,8 +198,8 @@ namespace MicroOrm.Dapper.Repositories
             DateTime from,
             DateTime to,
             Expression<Func<TEntity, object>> btwField,
-            Expression<Func<TEntity, bool>> predicate,
-            IDbTransaction transaction,
+            Expression<Func<TEntity, bool>>? predicate,
+            IDbTransaction? transaction,
             CancellationToken cancellationToken)
         {
             return FindAllBetweenAsync(from.ToString(_dateTimeFormat), to.ToString(_dateTimeFormat), btwField, predicate, transaction, cancellationToken);
@@ -210,8 +210,8 @@ namespace MicroOrm.Dapper.Repositories
             object from,
             object to,
             Expression<Func<TEntity, object>> btwField,
-            Expression<Func<TEntity, bool>> predicate,
-            IDbTransaction transaction,
+            Expression<Func<TEntity, bool>>? predicate,
+            IDbTransaction? transaction,
             CancellationToken cancellationToken)
         {
             var queryResult = SqlGenerator.GetSelectBetween(from, to, FilterData, btwField, predicate);

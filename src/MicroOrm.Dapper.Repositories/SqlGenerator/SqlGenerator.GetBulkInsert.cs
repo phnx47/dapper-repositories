@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using Dapper;
 using MicroOrm.Dapper.Repositories.Attributes;
 
 namespace MicroOrm.Dapper.Repositories.SqlGenerator
@@ -28,14 +27,13 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
             var query = new SqlQuery();
 
             var values = new List<string>();
-            var parameters = new Dictionary<string, object>();
+            var parameters = new Dictionary<string, object?>();
 
             for (var i = 0; i < entitiesArray.Length; i++)
             {
                 var entity = entitiesArray[i];
-                if (HasUpdatedAt)
+                if (HasUpdatedAt && UpdatedAtProperty.GetCustomAttribute<UpdatedAtAttribute>() is { } attribute)
                 {
-                    var attribute = UpdatedAtProperty.GetCustomAttribute<UpdatedAtAttribute>();
                     var offset = attribute.TimeKind == DateTimeKind.Local
                         ? new DateTimeOffset(DateTime.Now)
                         : new DateTimeOffset(DateTime.UtcNow);
@@ -48,8 +46,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                 }
 
                 foreach (var property in properties)
-                    // ReSharper disable once PossibleNullReferenceException
-                    parameters.Add(property.PropertyName + i, entityType.GetProperty(property.PropertyName).GetValue(entity, null));
+                    parameters.Add(property.PropertyName + i, entityType.GetProperty(property.PropertyName)?.GetValue(entity, null));
 
                 values.Add(string.Format("({0})", string.Join(", ", properties.Select(p => ParameterSymbol + p.PropertyName + i))));
             }

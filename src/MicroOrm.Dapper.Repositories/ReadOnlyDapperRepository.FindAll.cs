@@ -45,7 +45,7 @@ namespace MicroOrm.Dapper.Repositories
         }
 
         /// <inheritdoc />
-        public virtual Task<IEnumerable<TEntity>> FindAllAsync(IDbTransaction transaction, CancellationToken cancellationToken)
+        public virtual Task<IEnumerable<TEntity>> FindAllAsync(IDbTransaction? transaction, CancellationToken cancellationToken)
         {
             return FindAllAsync(null, transaction, cancellationToken: cancellationToken);
         }
@@ -63,33 +63,33 @@ namespace MicroOrm.Dapper.Repositories
         }
 
         /// <inheritdoc />
-        public virtual Task<IEnumerable<TEntity>> FindAllAsync(Expression<Func<TEntity, bool>> predicate, CancellationToken cancellationToken)
+        public virtual Task<IEnumerable<TEntity>> FindAllAsync(Expression<Func<TEntity, bool>>? predicate, CancellationToken cancellationToken)
         {
             return FindAllAsync(predicate, transaction: null, cancellationToken: cancellationToken);
         }
 
         /// <inheritdoc />
-        public virtual IEnumerable<TEntity> FindAll(Expression<Func<TEntity, bool>> predicate,
+        public virtual IEnumerable<TEntity> FindAll(Expression<Func<TEntity, bool>>? predicate,
             Expression<Func<TEntity, string, string>> orderBy)
         {
             return FindAll(predicate, transaction: null);
         }
-        
+
         /// <inheritdoc />
-        public virtual IEnumerable<TEntity> FindAll(Expression<Func<TEntity, bool>> predicate, IDbTransaction transaction)
+        public virtual IEnumerable<TEntity> FindAll(Expression<Func<TEntity, bool>>? predicate, IDbTransaction? transaction)
         {
             var queryResult = SqlGenerator.GetSelectAll(predicate, FilterData);
             return Connection.Query<TEntity>(queryResult.GetSql(), queryResult.Param, transaction);
         }
 
         /// <inheritdoc />
-        public virtual Task<IEnumerable<TEntity>> FindAllAsync(Expression<Func<TEntity, bool>> predicate, IDbTransaction transaction)
+        public virtual Task<IEnumerable<TEntity>> FindAllAsync(Expression<Func<TEntity, bool>>? predicate, IDbTransaction? transaction)
         {
             return FindAllAsync(predicate, transaction, cancellationToken: default);
         }
 
         /// <inheritdoc />
-        public virtual async Task<IEnumerable<TEntity>> FindAllAsync(Expression<Func<TEntity, bool>> predicate, IDbTransaction transaction, CancellationToken cancellationToken)
+        public virtual async Task<IEnumerable<TEntity>> FindAllAsync(Expression<Func<TEntity, bool>>? predicate, IDbTransaction? transaction, CancellationToken cancellationToken)
         {
             var queryResult = SqlGenerator.GetSelectAll(predicate, FilterData);
             return await Connection.QueryAsync<TEntity>(new CommandDefinition(queryResult.GetSql(), queryResult.Param, transaction, cancellationToken: cancellationToken));

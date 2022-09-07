@@ -37,12 +37,12 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
             return expr.Member.Name;
         }
 
-        public static object GetValue(Expression member)
+        public static object? GetValue(Expression? member)
         {
             return GetValue(member, out _);
         }
 
-        private static object GetValue(Expression member, out string parameterName)
+        private static object? GetValue(Expression? member, out string? parameterName)
         {
             parameterName = null;
             if (member == null)
@@ -132,16 +132,15 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
             }
         }
 
-        public static string GetSqlLikeValue(string methodName, object value)
+        public static string GetSqlLikeValue(string methodName, object? value)
         {
-            if (value == null)
-                value = string.Empty;
+            value ??= string.Empty;
 
             switch (methodName)
             {
                 case "CompareString":
                 case "Equals":
-                    return value.ToString();
+                    return value.ToString() ?? string.Empty;
 
                 case "StartsWith":
                     return string.Format("{0}%", value);
@@ -196,14 +195,14 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                                        p.PropertyType == typeof(byte[]));
         }
 
-        public static object GetValuesFromStringMethod(MethodCallExpression callExpr)
+        public static object? GetValuesFromStringMethod(MethodCallExpression callExpr)
         {
             var expr = callExpr.Method.IsStatic ? callExpr.Arguments[1] : callExpr.Arguments[0];
 
             return GetValue(expr);
         }
 
-        public static object GetValuesFromCollection(MethodCallExpression callExpr)
+        public static object? GetValuesFromCollection(MethodCallExpression callExpr)
         {
             var expr = (callExpr.Method.IsStatic ? callExpr.Arguments.First() : callExpr.Object)
                 as MemberExpression;
@@ -218,7 +217,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
             }
         }
 
-        public static MemberExpression GetMemberExpression(Expression expression)
+        public static MemberExpression? GetMemberExpression(Expression? expression)
         {
             switch (expression)
             {
@@ -271,7 +270,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
             var path = new StringBuilder();
             var memberExpression = GetMemberExpression(expr);
             var count = 0;
-            do
+            while (memberExpression != null)
             {
                 count++;
                 if (path.Length > 0)
@@ -279,7 +278,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
 
                 path.Insert(0, memberExpression.Member.Name);
                 memberExpression = GetMemberExpression(memberExpression.Expression);
-            } while (memberExpression != null);
+            }
 
             if (count > 2)
                 throw new ArgumentException("Only one degree of nesting is supported");

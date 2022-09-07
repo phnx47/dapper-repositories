@@ -8,12 +8,13 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator.QueryExpressions
     /// </summary>
     internal class QueryBinaryExpression : QueryExpression
     {
-        public QueryBinaryExpression()
+        public QueryBinaryExpression(List<QueryExpression> nodes)
         {
+            Nodes = nodes;
             NodeType = QueryExpressionType.Binary;
         }
 
-        public List<QueryExpression> Nodes { get; set; }
+        public List<QueryExpression> Nodes { get; }
 
         public override string ToString()
         {

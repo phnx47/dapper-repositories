@@ -4,13 +4,13 @@ using MicroOrm.Dapper.Repositories.Tests.DbContexts;
 
 namespace MicroOrm.Dapper.Repositories.Tests.DatabaseFixture
 {
-    public abstract class MsSqlDatabaseFixture : IDisposable
+    public class MsSqlDatabaseFixture : IDisposable
     {
         private const string _dbName = "test_micro_orm";
 
-        protected MsSqlDatabaseFixture(string connString)
+        public MsSqlDatabaseFixture()
         {
-            Db = new MsSqlDbContext(connString);
+            Db = new MsSqlDbContext("Server=localhost;Database=master;User ID=sa;Password=Password12!;Trust Server Certificate=true");
 
             DropDatabase();
             InitDb();

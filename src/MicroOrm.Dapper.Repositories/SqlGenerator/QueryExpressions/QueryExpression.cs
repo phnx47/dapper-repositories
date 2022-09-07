@@ -13,7 +13,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator.QueryExpressions
         /// <summary>
         /// Operator OR/AND
         /// </summary>
-        public string LinkingOperator { get; set; }
+        public string? LinkingOperator { get; set; }
 
         public override string ToString()
         {
