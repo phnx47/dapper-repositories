@@ -6,19 +6,17 @@
 [![CodeFactor](https://www.codefactor.io/repository/github/phnx47/dapper-repositories/badge)](https://www.codefactor.io/repository/github/phnx47/dapper-repositories)
 [![License MIT](https://img.shields.io/badge/license-MIT-green.svg)](https://opensource.org/licenses/MIT)
 
-**I see a lot Issues, but I don't have enough time to solve them. Feel free to open Pull Request or ask to add you as Member to support project!**
-
 ## Description
 
 If you like your code to run fast, you probably know about Micro ORMs. They are simple and one of their main goals is to be the fastest execution of your SQL sentences in you data
 repository. For some Micro ORM's you need to write your own SQL sentences and this is the case of the most popular Micro
-ORM [Dapper](https://github.com/StackExchange/dapper-dot-net)
+ORM [Dapper](https://github.com/DapperLib/Dapper)
 
 This tool abstracts the generation of the SQL sentence for CRUD operations based on each C# POCO class "metadata". We know there are plugins for both Micro ORMs that implement the
 execution of these tasks, but that's exactly where this tool is different. The "SQL Generator" is a generic component that generates all the CRUD sentences for a POCO class based
 on its definition and the possibility to override the SQL generator and the way it builds each sentence.
 
-The original idea was taken from [Diego García](https://github.com/ElNinjaGaiden/MicroOrm.Pocos.SqlGenerator).
+The original idea was taken from [Diego García](https://github.com/ElNinjaGaiden/Dapper.DataRepositories).
 
 ## Installation
 
@@ -226,20 +224,6 @@ public class BaseRepository<T> : DapperRepository<T> where T : class
     }
  }
 ```
-
-## Contributors
-
-* [Serge K](https://github.com/phnx47)
-* [Borys Iermakov](https://github.com/borisermakof)
-* [Paulo Victor Lund](https://github.com/pvictorlv)
-* [Other Community Contributors](https://github.com/phnx47/MicroOrm.Dapper.Repositories/graphs/contributors)
-
-## Contribute
-
-Contributions to the package are always welcome!
-
-* Report any bugs or issues you find on the [issue tracker](https://github.com/phnx47/dapper-repositories/issues).
-* You can grab the source code at the package's [git repository](https://github.com/phnx47/dapper-repositories).
 
 ## License
 
