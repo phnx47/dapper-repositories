@@ -14,11 +14,11 @@ on:
 jobs:
   build:
     name: 🏭 Build & Test
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     steps:
       - name: 🚚 Checkout
         uses: actions/checkout@v3
-      - name: 🛠 Setup .NET Core
+      - name: 🛠 Setup .NET
         uses: actions/setup-dotnet@v2
       - name: ⚙ Restore
         run: dotnet restore
@@ -59,7 +59,7 @@ jobs:
       - name: 📦 Publish to GitHub
         run: dotnet nuget push "*.nupkg" -s https://nuget.pkg.github.com/phnx47/index.json -k ${{ secrets.GH_PKG_PAT }} --skip-duplicate
   nuget:
-    name: 🚀 Deploy to Nuget
+    name: 🚀 Deploy to NuGet
     needs: [build]
     if: startsWith(github.ref, 'refs/tags/v')
     runs-on: ubuntu-20.04
