@@ -19,7 +19,7 @@ jobs:
       - name: 🚚 Checkout
         uses: actions/checkout@v3
       - name: 🛠 Setup .NET
-        uses: actions/setup-dotnet@v2
+        uses: actions/setup-dotnet@v3
       - name: ⚙ Restore
         run: dotnet restore
       - name: 🏭 Build
