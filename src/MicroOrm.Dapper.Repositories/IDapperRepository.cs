@@ -15,32 +15,63 @@ namespace MicroOrm.Dapper.Repositories
         /// <summary>
         ///     Delete object from DB
         /// </summary>
-        bool Delete(TEntity instance, IDbTransaction? transaction = null, TimeSpan? timeout = null);
+        bool Delete(TEntity instance);
 
         /// <summary>
         ///     Delete object from DB
         /// </summary>
-        Task<bool> DeleteAsync(TEntity instance, IDbTransaction? transaction, TimeSpan? timeout);
+        bool Delete(TEntity instance, TimeSpan? timeout);
 
         /// <summary>
         ///     Delete object from DB
         /// </summary>
-        Task<bool> DeleteAsync(TEntity instance, IDbTransaction? transaction = null, TimeSpan? timeout = null, CancellationToken cancellationToken = default);
+        bool Delete(TEntity instance, IDbTransaction? transaction, TimeSpan? timeout);
 
         /// <summary>
         ///     Delete objects from DB
         /// </summary>
-        bool Delete(Expression<Func<TEntity, bool>>? predicate, IDbTransaction? transaction = null, TimeSpan? timeout = null);
+        bool Delete(Expression<Func<TEntity, bool>>? predicate);
 
         /// <summary>
         ///     Delete objects from DB
         /// </summary>
-        Task<bool> DeleteAsync(Expression<Func<TEntity, bool>>? predicate, IDbTransaction? transaction, TimeSpan? timeout);
+        bool Delete(Expression<Func<TEntity, bool>>? predicate, TimeSpan? timeout);
 
         /// <summary>
         ///     Delete objects from DB
         /// </summary>
-        Task<bool> DeleteAsync(Expression<Func<TEntity, bool>>? predicate, IDbTransaction? transaction = null, TimeSpan? timeout = null, CancellationToken cancellationToken = default);
+        bool Delete(Expression<Func<TEntity, bool>>? predicate, IDbTransaction? transaction, TimeSpan? timeout);
+
+        /// <summary>
+        ///     Delete object from DB
+        /// </summary>
+        Task<bool> DeleteAsync(TEntity instance, CancellationToken cancellationToken = default);
+
+        /// <summary>
+        ///     Delete object from DB
+        /// </summary>
+        Task<bool> DeleteAsync(TEntity instance, TimeSpan? timeout, CancellationToken cancellationToken = default);
+
+
+        /// <summary>
+        ///     Delete object from DB
+        /// </summary>
+        Task<bool> DeleteAsync(TEntity instance, IDbTransaction? transaction, TimeSpan? timeout, CancellationToken cancellationToken = default);
+
+        /// <summary>
+        ///     Delete objects from DB
+        /// </summary>
+        Task<bool> DeleteAsync(Expression<Func<TEntity, bool>>? predicate, CancellationToken cancellationToken = default);
+
+        /// <summary>
+        ///     Delete objects from DB
+        /// </summary>
+        Task<bool> DeleteAsync(Expression<Func<TEntity, bool>>? predicate, TimeSpan? timeout, CancellationToken cancellationToken = default);
+
+        /// <summary>
+        ///     Delete objects from DB
+        /// </summary>
+        Task<bool> DeleteAsync(Expression<Func<TEntity, bool>>? predicate, IDbTransaction? transaction, TimeSpan? timeout, CancellationToken cancellationToken = default);
 
         /// <summary>
         ///     Insert object to DB
@@ -145,7 +176,8 @@ namespace MicroOrm.Dapper.Repositories
         /// <summary>
         ///     Update object in DB
         /// </summary>
-        Task<bool> UpdateAsync(Expression<Func<TEntity, bool>>? predicate, TEntity instance, CancellationToken cancellationToken, params Expression<Func<TEntity, object>>[] includes);
+        Task<bool> UpdateAsync(Expression<Func<TEntity, bool>>? predicate, TEntity instance, CancellationToken cancellationToken,
+            params Expression<Func<TEntity, object>>[] includes);
 
         /// <summary>
         ///     Update object in DB
@@ -160,7 +192,8 @@ namespace MicroOrm.Dapper.Repositories
         /// <summary>
         ///     Update object in DB
         /// </summary>
-        Task<bool> UpdateAsync(Expression<Func<TEntity, bool>>? predicate, TEntity instance, IDbTransaction? transaction, CancellationToken cancellationToken, params Expression<Func<TEntity, object>>[] includes);
+        Task<bool> UpdateAsync(Expression<Func<TEntity, bool>>? predicate, TEntity instance, IDbTransaction? transaction, CancellationToken cancellationToken,
+            params Expression<Func<TEntity, object>>[] includes);
 
         /// <summary>
         ///     Bulk Update objects to DB
