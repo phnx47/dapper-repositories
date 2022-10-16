@@ -50,6 +50,33 @@ namespace MicroOrm.Dapper.Repositories
             return await Connection.ExecuteAsync(queryResult.GetSql(), instance, transaction) > 0;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="instance"></param>
+        /// <returns></returns>
+        public Task<long> InsertAsyncLong(TEntity instance)
+        {
+            return InsertAsyncLong(instance, null);
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="instance"></param>
+        /// <param name="transaction"></param>
+        /// <returns></returns>
+        public async Task<long> InsertAsyncLong(TEntity instance, IDbTransaction transaction)
+        {
+            var queryResult = SqlGenerator.GetInsert(instance);
+            if (SqlGenerator.IsIdentity)
+            {
+                var newId = (await Connection.QueryAsync<long>(queryResult.GetSql(), queryResult.Param, transaction)).FirstOrDefault();
+                return newId;
+            }
+
+            return await Connection.ExecuteAsync(queryResult.GetSql(), instance, transaction);
+        }
+
         private bool SetValue(long newId, TEntity instance)
         {
             var added = newId > 0;
