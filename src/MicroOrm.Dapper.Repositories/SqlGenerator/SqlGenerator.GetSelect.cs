@@ -341,7 +341,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
             {
                 return !string.IsNullOrEmpty(p.Alias)
                     ? $"{tableName}.{(useQuotation ? p.ColumnName : p.CleanColumnName)} AS {p.PropertyName}"
-                    : $"{tableName}.{(useQuotation ? p.ColumnName : p.CleanColumnName)}";
+                    : $"{tableName}.[{(useQuotation ? p.ColumnName : p.CleanColumnName)}]";
             }
 
             return string.Join(", ", properties.Select(ProjectionFunction));
