@@ -2,7 +2,7 @@ version: '3.9'
 
 services:
   mysql:
-    image: mysql:latest
+    image: mysql:8.0-debian
     ports:
       - "3306:3306"
     restart: always
@@ -19,7 +19,7 @@ services:
     restart: always
 
   oracle:
-    image: gvenzl/oracle-xe
+    image: gvenzl/oracle-xe:21-slim-faststart
     ports:
       - "1521:1521"
     restart: always
