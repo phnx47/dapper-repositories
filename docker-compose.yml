@@ -19,7 +19,7 @@ services:
     restart: always
 
   oracle:
-    image: gvenzl/oracle-xe
+    image: gvenzl/oracle-xe:21-slim-faststart
     ports:
       - "1521:1521"
     restart: always
