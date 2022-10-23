@@ -68,7 +68,7 @@ Automatically set DataTime.UtcNow (You can use local date or define offset) for 
 * Supports complex primary keys.
 * Supports simple Joins.
 * For this moment, with MSSQL you can only use limit with offset if you call OrderBy first, otherwise limit will be ignored.
-* It has a problem when try to use GUID with dapper in Oracle. In this case it doesn't work. Look details: [Dapper#633](https://github.com/DapperLib/Dapper/issues/633), [Dapper#637](https://github.com/DapperLib/Dapper/issues/637), [Dapper.Database#1](https://github.com/vauto/Dapper.Database/pull/1)
+* It has a problem when try to use GUID with dapper in Oracle. In this case it doesn't work. Look details: [Dapper#633](https://github.com/DapperLib/Dapper/issues/633), [Dapper#637](https://github.com/DapperLib/Dapper/issues/637)
 
 ### Maps
 
