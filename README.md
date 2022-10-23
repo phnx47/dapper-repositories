@@ -1,6 +1,6 @@
 # MicroOrm.Dapper.Repositories
 
-[![CI](https://img.shields.io/github/workflow/status/phnx47/dapper-repositories/%F0%9F%92%BF%20CI?label=CI&logo=github)](https://github.com/phnx47/dapper-repositories/actions/workflows/ci.yml)
+[![CI](https://img.shields.io/github/workflow/status/phnx47/dapper-repositories/%F0%9F%92%BF%20CI?label=ci&logo=github)](https://github.com/phnx47/dapper-repositories/actions/workflows/ci.yml)
 [![NuGet](https://img.shields.io/nuget/v/MicroOrm.Dapper.Repositories.svg)](https://www.nuget.org/packages/MicroOrm.Dapper.Repositories)
 [![NuGet](https://img.shields.io/nuget/dt/MicroOrm.Dapper.Repositories.svg)](https://www.nuget.org/packages/MicroOrm.Dapper.Repositories)
 [![CodeFactor](https://www.codefactor.io/repository/github/phnx47/dapper-repositories/badge)](https://www.codefactor.io/repository/github/phnx47/dapper-repositories)
@@ -28,37 +28,37 @@ dotnet add package MicroOrm.Dapper.Repositories
 
 ### Metadata attributes
 
-**[Key]**  
+**[Key]**
 From `System.ComponentModel.DataAnnotations` - Use for primary key.
 
-**[Identity]**  
+**[Identity]**
 Use for identity key.
 
-**[Table]**  
+**[Table]**
 From `System.ComponentModel.DataAnnotations.Schema` - By default the database table name will match the model name but it can be overridden with this.
 
-**[Column]**  
+**[Column]**
 From `System.ComponentModel.DataAnnotations.Schema` - By default the column name will match the property name but it can be overridden with this.
 
-**[NotMapped]**  
+**[NotMapped]**
 From `System.ComponentModel.DataAnnotations.Schema` - For "logical" properties that do not have a corresponding column and have to be ignored by the SQL Generator.
 
-**[Deleted], [Status]**  
+**[Deleted], [Status]**
 For tables that implement "logical deletes" instead of physical deletes. Use this to decorate the `bool` or `enum`.
 
-**[LeftJoin]**  
+**[LeftJoin]**
 Left join for property: Collection and object are supported.
 
-**[InnerJoin]**  
+**[InnerJoin]**
 Inner join for property: Collection and object are supported.
 
-**[RightJoin]**  
+**[RightJoin]**
 Right join for property: Collection and object are supported.
 
-**[CrossJoin] - SQLite only**  
+**[CrossJoin] - SQLite only**
 Cross join for property: Collection and object are supported.
 
-**[UpdatedAt]**  
+**[UpdatedAt]**
 Automatically set DataTime.UtcNow (You can use local date or define offset) for Insert and Update.
 
 ### Notes
@@ -68,10 +68,7 @@ Automatically set DataTime.UtcNow (You can use local date or define offset) for 
 * Supports complex primary keys.
 * Supports simple Joins.
 * For this moment, with MSSQL you can only use limit with offset if you call OrderBy first, otherwise limit will be ignored.
-* It has a problem when try to use GUID with dapper in Oracle. In this case it doesn't work. details see
-  https://github.com/DapperLib/Dapper/issues/633
-  https://github.com/DapperLib/Dapper/issues/637
-  https://github.com/vauto/Dapper.Database/pull/1
+* It has a problem when try to use GUID with dapper in Oracle. In this case it doesn't work. Look details: [Dapper#633](https://github.com/DapperLib/Dapper/issues/633), [Dapper#637](https://github.com/DapperLib/Dapper/issues/637), [Dapper.Database#1](https://github.com/vauto/Dapper.Database/pull/1)
 
 ### Maps
 
@@ -156,7 +153,7 @@ Find by ID:
 
 ```c#
 var user = await userRepository.FindAsync(x => x.Id == 5);
-```  
+```
 
 Query with limit:
 
@@ -217,7 +214,7 @@ public class BaseRepository<T> : DapperRepository<T> where T : class
     {
         _factory = factory;
     }
-        
+
     protected IDbConnection GetConnection()
     {
         return _factory.OpenDbConnection();
