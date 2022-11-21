@@ -473,6 +473,15 @@ namespace MicroOrm.Dapper.Repositories.Tests.SqlGeneratorTests
         }
 
         [Fact]
+        public static void SelectById_MultiKeys()
+        {
+            ISqlGenerator<Report> userSqlGenerator = new SqlGenerator<Report>(_sqlConnector, true);
+            var sqlQuery = userSqlGenerator.GetSelectById(new[] { 1, 2 }, null);
+
+            Assert.Equal("SELECT TOP 1 [Reports].[Id], [Reports].[AnotherId], [Reports].[UserId] FROM [Reports] WHERE [Reports].[Id] = @Id AND [Reports].[AnotherId] = @AnotherId", sqlQuery.GetSql());
+        }
+
+        [Fact]
         public static void SelectById()
         {
             ISqlGenerator<User> userSqlGenerator = new SqlGenerator<User>(_sqlConnector, true);

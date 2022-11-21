@@ -91,6 +91,12 @@ namespace MicroOrm.Dapper.Repositories.Tests.RepositoriesTests
         }
 
         [Fact]
+        public void FindById_MultiKeys()
+        {
+            Assert.NotNull(Db.Reports.FindById(new[] { 1, 2 }));
+        }
+
+        [Fact]
         public async void FindByIdAsync()
         {
             var user = await Db.Users.FindByIdAsync(2);
