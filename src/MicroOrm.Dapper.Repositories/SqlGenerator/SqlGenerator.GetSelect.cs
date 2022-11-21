@@ -255,10 +255,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         /// <inheritdoc />
         public virtual SqlQuery GetSelectById(object id, FilterData? filterData, params Expression<Func<TEntity, object>>[] includes)
         {
-            if (KeySqlProperties.Length != 1)
-                throw new NotSupportedException("GetSelectById support only 1 key");
-
-            var keyProperty = KeySqlProperties[0];
+            var param = GetKeysParam(id);
 
             var sqlQuery = InitBuilderSelect(includes.Length == 0, filterData);
 
@@ -280,20 +277,16 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                     .Append(" ");
             }
 
-            IDictionary<string, object> dictionary = new Dictionary<string, object>
-            {
-                { keyProperty.PropertyName, id }
-            };
-
-            sqlQuery.SqlBuilder
-                .Append("WHERE ")
-                .Append(TableName)
-                .Append(".")
-                .Append(keyProperty.ColumnName)
-                .Append(" = ")
-                .Append(ParameterSymbol)
-                .Append(keyProperty.PropertyName)
-                .Append(" ");
+            for (var index = 0; index < KeySqlProperties.Length; index++)
+                sqlQuery.SqlBuilder
+                    .Append(index == 0 ? "WHERE " : "AND ")
+                    .Append(TableName)
+                    .Append(".")
+                    .Append(KeySqlProperties[index].ColumnName)
+                    .Append(" = ")
+                    .Append(ParameterSymbol)
+                    .Append(KeySqlProperties[index].PropertyName)
+                    .Append(" ");
 
             if (LogicalDelete)
                 sqlQuery.SqlBuilder
@@ -313,8 +306,31 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                     sqlQuery.SqlBuilder.Append("LIMIT 1");
             }
 
-            sqlQuery.SetParam(dictionary);
+            sqlQuery.SetParam(param);
             return sqlQuery;
+        }
+
+        internal object GetKeysParam(object id)
+        {
+            if (KeySqlProperties.Length < 2)
+                return new Dictionary<string, object> { { KeySqlProperties[0].PropertyName, id } };
+
+            if (id is not Array array) return id;
+
+            if (array.Length != KeySqlProperties.Length)
+                throw new ArgumentException("GetSelectById id(Array) length not equals key properties count", nameof(id));
+
+            var dictionary = new Dictionary<string, object>();
+
+            for (var index = 0; index < KeySqlProperties.Length; index++)
+            {
+                if (array.GetValue(index) is not { } value)
+                    throw new ArgumentException($"Key value is null in {index}", nameof(id));
+
+                dictionary[KeySqlProperties[index].PropertyName] = value;
+            }
+
+            return dictionary;
         }
 
         /// <inheritdoc />
