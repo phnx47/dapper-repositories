@@ -155,26 +155,10 @@ namespace MicroOrm.Dapper.Repositories.Tests.RepositoriesTests
             Db.Connection.Execute(sql);
         }
 
-
         private  void DeleteUsers()
         {
             var sql = "DELETE FROM Users Where Name like 'User Number%'";
             Db.Connection.Execute(sql);
         }
-        
-
-        /*
-
-            cities.FirstOrDefault().Name = "First City";
-            cities.LastOrDefault().Name = "Last City";
-            var updated = await Db.Cities.BulkUpdateAsync(cities);
-            Assert.True(updated.Equals(cities.Count));
-
-            var currentCity = Db.Cities.Find(q => q.Name == "First City");
-            Assert.NotNull(currentCity);
-
-            currentCity = Db.Cities.Find(q => q.Name == "Last City");
-            Assert.NotNull(currentCity);         
-         */
     }
 }
