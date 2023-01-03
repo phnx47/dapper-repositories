@@ -50,6 +50,8 @@ namespace MicroOrm.Dapper.Repositories
                 if (exceededTimes > 1)
                 {
                     var maxAllowedInstancesPerBatch = totalInstances / exceededTimes;
+                    if (maxAllowedInstancesPerBatch > 1000) maxAllowedInstancesPerBatch = 1000;
+
                     var maxIterationCount = (int)Math.Ceiling((double)totalInstances / (double)maxAllowedInstancesPerBatch);
 
                     for (var i = 0; i <= maxIterationCount; i++)
@@ -95,6 +97,7 @@ namespace MicroOrm.Dapper.Repositories
                 if (exceededTimes > 1)
                 {
                     var maxAllowedInstancesPerBatch = totalInstances / exceededTimes;
+                    if (maxAllowedInstancesPerBatch > 1000) maxAllowedInstancesPerBatch = 1000;
 
                     var maxIterationCount = (int)Math.Ceiling((double)totalInstances / (double)maxAllowedInstancesPerBatch);
 
