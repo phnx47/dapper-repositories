@@ -1,12 +1,7 @@
 *.nupkg
 *.user
-*.suo
-*.exe
-.vs
+*.opencover.xml
+*.orig
 .idea
 bin
 obj
-packages
-TestResults
-Coverage
-Coverage.xml
