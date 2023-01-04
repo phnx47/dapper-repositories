@@ -17,7 +17,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.RepositoriesTests
         }
 
         // only Databse specific tests
-        
+
         [Fact]
         public void InsertAndUpdate_WithGuid_WithoutKey()
         {
@@ -57,107 +57,106 @@ namespace MicroOrm.Dapper.Repositories.Tests.RepositoriesTests
         [Fact]
         public void BulkInsert_LotsOfCities()
         {
-            DeleteCities();
             var cities = new List<City>();
             for (int i = 0; i < 17250; i++)
             {
-                cities.Add(new City() { Identifier = Guid.NewGuid(), Name = $"City Number {i}" });
+                cities.Add(new City { Identifier = Guid.NewGuid(), Name = $"Bulk City Number {i}" });
             }
 
             var inserted = Db.Cities.BulkInsert(cities);
-            Assert.True(inserted.Equals(cities.Count));
+            Assert.Equal(inserted, cities.Count);
 
             var random = new Random();
-            var cityName = $"City Number {random.Next(17250)}";
+            var cityName = $"Bulk City Number {random.Next(17250)}";
             var randomcity = Db.Cities.Find(q => q.Name == cityName);
             Assert.NotNull(randomcity);
+
+            DeleteBulkCities();
         }
 
         [Fact]
         public async Task BulkInsert_LotsOfCities_Async()
         {
-            DeleteCities();
             var cities = new List<City>();
             for (int i = 0; i < 17250; i++)
             {
-                cities.Add(new City() { Identifier = Guid.NewGuid(), Name = $"City Number {i}" });
+                cities.Add(new City { Identifier = Guid.NewGuid(), Name = $"Bulk City Number {i}" });
             }
 
             var inserted = await Db.Cities.BulkInsertAsync(cities);
-            Assert.True(inserted.Equals(cities.Count));
+            Assert.Equal(inserted, cities.Count);
 
             var random = new Random();
-            var cityName = $"City Number {random.Next(17250)}";
-            var randomCity = Db.Cities.Find(q => q.Name == cityName);
+            var cityName = $"Bulk City Number {random.Next(17250)}";
+            var randomCity = await Db.Cities.FindAsync(q => q.Name == cityName);
             Assert.NotNull(randomCity);
+
+            DeleteBulkCities();
         }
 
         [Fact]
         public async Task BulkInsertAndUpdate_LotsOfUsers_Async()
         {
-            DeleteUsers();
             var users = new List<User>();
             for (int i = 0; i < 17250; i++)
             {
-                users.Add(new User() { Name = $"User Number {i}", PhoneId = 1, OfficePhoneId = 2 });
+                users.Add(new User { Name = $"Bulk User Number {i}", PhoneId = 1, OfficePhoneId = 2 });
             }
 
             var inserted = await Db.Users.BulkInsertAsync(users);
-            Assert.True(inserted.Equals(users.Count));
-            users.Clear();
+            Assert.Equal(inserted, users.Count);
 
             var random = new Random();
-            var userName = $"User Number {random.Next(17250)}";
-            var randomUser= Db.Users.Find(q => q.Name == userName);
+            var userName = $"Bulk User Number {random.Next(17250)}";
+            var randomUser = await Db.Users.FindAsync(q => q.Name == userName);
             Assert.NotNull(randomUser);
 
-
-            var updatedUsers = await Db.Connection.QueryAsync<User>("SELECT * FROM Users WHERE Name LIKE 'User Number%'");
-            updatedUsers?.ToList().ForEach(x => x.Name += " Updated");
-            var updated = await Db.Users.BulkUpdateAsync(updatedUsers);
+            var insertedUsers = (await Db.Connection.QueryAsync<User>("SELECT * FROM Users WHERE Name LIKE 'Bulk User Number%'")).ToList();
+            insertedUsers.ForEach(x => x.Name += " Updated");
+            var updated = await Db.Users.BulkUpdateAsync(insertedUsers);
             Assert.True(updated);
 
-            updatedUsers = await Db.Connection.QueryAsync<User>("SELECT * FROM Users WHERE Name LIKE 'User Number%Updated'");
-            Assert.True(updatedUsers.Count().Equals(17250));
+            var updatedUsers = (await Db.Connection.QueryAsync<User>("SELECT * FROM Users WHERE Name LIKE 'Bulk User Number%Updated'")).ToList();
+            Assert.Equal(17250, updatedUsers.Count);
+            DeleteBulkUsers();
         }
 
         [Fact]
         public void BulkInsertAndUpdate_LotsOfUsers()
         {
-            DeleteUsers();
             var users = new List<User>();
             for (int i = 0; i < 17250; i++)
             {
-                users.Add(new User() { Name = $"User Number {i}", PhoneId = 1, OfficePhoneId = 2 });
+                users.Add(new User { Name = $"Bulk User Number {i}", PhoneId = 1, OfficePhoneId = 2 });
             }
 
             var inserted = Db.Users.BulkInsert(users);
-            Assert.True(inserted.Equals(users.Count));
-            users.Clear();
+            Assert.Equal(inserted, users.Count);
 
             var random = new Random();
-            var userName = $"User Number {random.Next(17250)}";
+            var userName = $"Bulk User Number {random.Next(17250)}";
             var randomUser = Db.Users.Find(q => q.Name == userName);
             Assert.NotNull(randomUser);
 
-
-            var updatedUsers = Db.Connection.Query<User>("SELECT * FROM Users WHERE Name LIKE 'User Number%'");
-            updatedUsers?.ToList().ForEach(x => x.Name += " Updated");
-            var updated =  Db.Users.BulkUpdate(updatedUsers);
+            var insertedUsers = Db.Connection.Query<User>("SELECT * FROM Users WHERE Name LIKE 'Bulk User Number%'").ToList();
+            insertedUsers.ForEach(x => x.Name += " Updated");
+            var updated = Db.Users.BulkUpdate(insertedUsers);
             Assert.True(updated);
 
-            updatedUsers = Db.Connection.Query<User>("SELECT * FROM Users WHERE Name LIKE 'User Number%Updated'");
-            Assert.True(updatedUsers.Count().Equals(17250));
+            var updatedUsers = Db.Connection.Query<User>("SELECT * FROM Users WHERE Name LIKE 'Bulk User Number%Updated'").ToList();
+            Assert.Equal(17250, updatedUsers.Count);
+            DeleteBulkUsers();
         }
 
-        private void DeleteCities() {
-            var sql = "DELETE FROM Cities";
+        private void DeleteBulkCities()
+        {
+            const string sql = "DELETE FROM Cities WHERE Name LIKE 'Bulk City Number%'";
             Db.Connection.Execute(sql);
         }
 
-        private  void DeleteUsers()
+        private void DeleteBulkUsers()
         {
-            var sql = "DELETE FROM Users Where Name like 'User Number%'";
+            const string sql = "DELETE FROM Users WHERE Name LIKE 'Bulk User Number%'";
             Db.Connection.Execute(sql);
         }
     }
