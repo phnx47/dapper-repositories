@@ -22,7 +22,7 @@ jobs:
         run: dotnet restore
       - name: 🏭 Build
         run: dotnet build --no-restore -c Release -p:ContinuousIntegrationBuild=true
-      - name: 🐳 Docker Compose
+      - name: 🐳 Docker Compose Up
         run: docker-compose up -d
       - name: 💤 Wait for Containers
         uses: jakejarvis/wait-action@master
@@ -55,7 +55,7 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: nupkg
-      - name: 📦 Publish to GitHub Packages
+      - name: 📦 Push to GitHub
         run: dotnet nuget push "*.nupkg" -s https://nuget.pkg.github.com/phnx47/index.json -k ${{ secrets.GH_PKG_PAT }} --skip-duplicate
   nuget:
     name: 🚀 Deploy to NuGet
@@ -67,5 +67,5 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: nupkg
-      - name: 📦 Publish to NuGet
+      - name: 📦 Push to NuGet
         run: dotnet nuget push "*.nupkg" -k ${{ secrets.NUGET_KEY }} -s https://api.nuget.org/v3/index.json
