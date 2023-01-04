@@ -12,6 +12,7 @@
     <PackageId>MicroOrm.Dapper.Repositories</PackageId>
     <PackageTags>dapper;micro-orm;repositories;crud</PackageTags>
     <PackageIcon>icon.png</PackageIcon>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/phnx47/dapper-repositories</RepositoryUrl>
@@ -22,6 +23,7 @@
   </PropertyGroup>
   <ItemGroup>
     <None Include="../../icon.png" Visible="false" Pack="true" PackagePath="" />
+    <None Include="../../README.md" Visible="false" Pack="true" PackagePath="" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Dapper" Version="2.0.123" />
