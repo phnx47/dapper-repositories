@@ -20,6 +20,7 @@
     <IncludeSymbols>true</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    <NoWarn>NETSDK1138</NoWarn>
   </PropertyGroup>
   <ItemGroup>
     <None Include="../../icon.png" Visible="false" Pack="true" PackagePath="" />
