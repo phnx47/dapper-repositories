@@ -42,8 +42,8 @@ namespace MicroOrm.Dapper.Repositories.Tests.SqlGeneratorTests
             ISqlGenerator<Phone> userSqlGenerator = new SqlGenerator<Phone>(_sqlConnector);
             var phones = new List<Phone>
             {
-                new Phone { Id = 10, IsActive = true, PNumber = "111" },
-                new Phone { Id = 10, IsActive = false, PNumber = "222" }
+                new() { Id = 10, IsActive = true, PNumber = "111" },
+                new() { Id = 10, IsActive = false, PNumber = "222" }
             };
 
             var sqlQuery = userSqlGenerator.GetBulkUpdate(phones);
@@ -58,8 +58,8 @@ namespace MicroOrm.Dapper.Repositories.Tests.SqlGeneratorTests
             ISqlGenerator<Phone> userSqlGenerator = new SqlGenerator<Phone>(_sqlConnector, true);
             var phones = new List<Phone>
             {
-                new Phone { Id = 10, IsActive = true, PNumber = "111" },
-                new Phone { Id = 10, IsActive = false, PNumber = "222" }
+                new() { Id = 10, IsActive = true, PNumber = "111" },
+                new() { Id = 10, IsActive = false, PNumber = "222" }
             };
 
             var sqlQuery = userSqlGenerator.GetBulkUpdate(phones);
@@ -72,8 +72,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.SqlGeneratorTests
         public void Update_Dictionary()
         {
             ISqlGenerator<Phone> userSqlGenerator = new SqlGenerator<Phone>(_sqlConnector, true);
-            Dictionary<string, object> fieldDict = new Dictionary<string, object>();
-            fieldDict.Add("PNumber", "18573175437");
+            var fieldDict = new Dictionary<string, object> { { "PNumber", "18573175437" } };
 
             var sqlQuery = userSqlGenerator.GetUpdate(p => p.Id == 1, fieldDict);
             string sql = sqlQuery.GetSql();
@@ -85,10 +84,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.SqlGeneratorTests
         {
             ISqlGenerator<Phone> userSqlGenerator = new SqlGenerator<Phone>(_sqlConnector, true);
 
-            var sqlQuery = userSqlGenerator.GetUpdate(p => p.Id == 1, new
-            {
-                PNumber = "18573175437"
-            });
+            var sqlQuery = userSqlGenerator.GetUpdate(p => p.Id == 1, new { PNumber = "18573175437" });
             string sql = sqlQuery.GetSql();
             Assert.Equal("UPDATE `DAB`.`Phones` SET `DAB`.`Phones`.`PNumber` = @PhonePNumber WHERE `DAB`.`Phones`.`Id` = @Id_p0", sql);
         }
@@ -118,7 +114,6 @@ namespace MicroOrm.Dapper.Repositories.Tests.SqlGeneratorTests
         {
             ISqlGenerator<User> userSqlGenerator = new SqlGenerator<User>(_sqlConnector, true);
             var sqlQuery = userSqlGenerator.GetSelectAll(user => user.UpdatedAt != null, null);
-            var sqlQuery2 = userSqlGenerator.GetSelectAll(user => !user.UpdatedAt.HasValue, null);
 
             Assert.Equal(
                 "SELECT `Users`.`Id`, `Users`.`Name`, `Users`.`AddressId`, `Users`.`PhoneId`, `Users`.`OfficePhoneId`, `Users`.`Deleted`, `Users`.`UpdatedAt` FROM `Users` " +
@@ -219,7 +214,8 @@ namespace MicroOrm.Dapper.Repositories.Tests.SqlGeneratorTests
             filterData.OrderInfo = data;
 
             var sqlQuery = sqlGenerator.GetSelectAll(x => x.Identifier == Guid.Empty, filterData);
-            Assert.Equal("SELECT `Cities`.`Identifier`, `Cities`.`Name` FROM `Cities` WHERE `Cities`.`Identifier` = @Identifier_p0 ORDER BY `Cities`.`Name` ASC", sqlQuery.GetSql());
+            Assert.Equal("SELECT `Cities`.`Identifier`, `Cities`.`Name` FROM `Cities` WHERE `Cities`.`Identifier` = @Identifier_p0 ORDER BY `Cities`.`Name` ASC",
+                sqlQuery.GetSql());
         }
 
         [Fact]
@@ -283,6 +279,24 @@ namespace MicroOrm.Dapper.Repositories.Tests.SqlGeneratorTests
             var sql = sqlQuery.GetSql();
             Assert.Equal(
                 "UPDATE Users LEFT JOIN Addresses ON Users.AddressId = Addresses.Id SET Users.Name = @UserName, Users.AddressId = @UserAddressId, Users.PhoneId = @UserPhoneId, Users.OfficePhoneId = @UserOfficePhoneId, Users.Deleted = @UserDeleted, Users.UpdatedAt = @UserUpdatedAt, Addresses.Street = @AddressStreet, Addresses.CityId = @AddressCityId WHERE Users.Id = @UserId",
+                sql);
+        }
+
+        [Fact]
+        public static void SetOrderByAndSetLimitWithWhere()
+        {
+            ISqlGenerator<City> sqlGenerator = new SqlGenerator<City>(_sqlConnector);
+
+            var filterData = new FilterData
+            {
+                OrderInfo = new OrderInfo { CustomQuery = "Identifier ASC, Name DESC " },
+                LimitInfo = new LimitInfo { Limit = 10, Offset = 2 }
+            };
+
+            var sqlQuery = sqlGenerator.GetSelectAll(q => q.Name != "City", filterData);
+            var sql = sqlQuery.GetSql();
+            Assert.Equal(
+                "SELECT Cities.Identifier, Cities.Name FROM Cities WHERE Cities.Name != @Name_p0 ORDER BY Identifier ASC, Name DESC LIMIT 10 OFFSET 2",
                 sql);
         }
     }

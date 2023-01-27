@@ -108,7 +108,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         /// </summary>
         private void SetOrder(SqlQuery sqlQuery, FilterData? filterData)
         {
-            if (filterData?.OrderInfo?.Columns == null)
+            if (filterData?.OrderInfo == null)
                 return;
 
             sqlQuery.SqlBuilder.Append("ORDER BY ");
@@ -123,6 +123,9 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                 filterData.Ordered = true;
                 return;
             }
+
+            if (filterData.OrderInfo.Columns == null)
+                return;
 
             var i = 0;
             var count = filterData.OrderInfo.Columns.Count;
@@ -152,7 +155,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
 
             if (!filterData.OrderInfo.Permanent)
             {
-                filterData.OrderInfo.Columns.Clear();
+                filterData.OrderInfo.Columns?.Clear();
                 filterData.OrderInfo.Columns = null;
                 filterData.OrderInfo = null;
             }
@@ -315,7 +318,8 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
             if (KeySqlProperties.Length < 2)
                 return new Dictionary<string, object> { { KeySqlProperties[0].PropertyName, id } };
 
-            if (id is not Array array) return id;
+            if (id is not Array array)
+                return id;
 
             if (array.Length != KeySqlProperties.Length)
                 throw new ArgumentException("GetSelectById id(Array) length not equals key properties count", nameof(id));
