@@ -48,7 +48,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                 }
                 else
                 {
-                    attrJoin.TableName = GetTableNameWithSchemaPrefix(attrJoin.TableName, attrJoin.TableSchema);
+                    attrJoin.TableName = GetTableNameWithSchemaPrefix(attrJoin.TableName, attrJoin.TableSchema, Provider);
                 }
 
                 joinBuilder.Append(
@@ -76,7 +76,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                 {
                     var colAttr = deleteAttr.GetCustomAttribute<ColumnAttribute>();
                     var colName = colAttr == null ? deleteAttr.Name : colAttr.Name;
-                    object deleteValue = 1;
+                    object deleteValue = Provider == SqlProvider.PostgreSQL ? "true" : 1;
                     if (deleteAttr.PropertyType.IsEnum)
                     {
                         var deleteOption = deleteAttr.PropertyType.GetFields().FirstOrDefault(f => f.GetCustomAttribute<DeletedAttribute>() != null);
@@ -124,7 +124,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                 }
                 else
                 {
-                    attrJoin.TableName = GetTableNameWithSchemaPrefix(attrJoin.TableName, attrJoin.TableSchema);
+                    attrJoin.TableName = GetTableNameWithSchemaPrefix(attrJoin.TableName, attrJoin.TableSchema, Provider);
                 }
 
                 if (!hasSelectFilter)

@@ -1,6 +1,10 @@
 ﻿using MicroOrm.Dapper.Repositories.DbContext;
 using MicroOrm.Dapper.Repositories.Tests.Classes;
+#if Second
+using System.Data.SqlClient;
+#else
 using Microsoft.Data.SqlClient;
+#endif
 
 namespace MicroOrm.Dapper.Repositories.Tests.DbContexts
 {

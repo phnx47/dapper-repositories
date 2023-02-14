@@ -32,6 +32,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{
 		.github\workflows\ci.yml = .github\workflows\ci.yml
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MicroOrm.Dapper.Repositories.Tests2", "test\MicroOrm.Dapper.Repositories.Tests2\MicroOrm.Dapper.Repositories.Tests2.csproj", "{18B400A1-9FD1-4BBD-A3A6-D05890A329CD}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -46,6 +48,10 @@ Global
 		{C1FDB39A-B2B9-4561-B38F-AB95783AEAD3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C1FDB39A-B2B9-4561-B38F-AB95783AEAD3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C1FDB39A-B2B9-4561-B38F-AB95783AEAD3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{18B400A1-9FD1-4BBD-A3A6-D05890A329CD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{18B400A1-9FD1-4BBD-A3A6-D05890A329CD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{18B400A1-9FD1-4BBD-A3A6-D05890A329CD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{18B400A1-9FD1-4BBD-A3A6-D05890A329CD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -55,6 +61,7 @@ Global
 		{C1FDB39A-B2B9-4561-B38F-AB95783AEAD3} = {4EAE3A6B-35A5-4C95-AAB6-1D977F63184B}
 		{90BBE8FB-0990-41D0-9754-D08DCAC415D5} = {BC29F662-3E4D-411F-A4DA-93BE1BF81012}
 		{54F980A1-0415-40BE-A55C-31D3844731FD} = {90BBE8FB-0990-41D0-9754-D08DCAC415D5}
+		{18B400A1-9FD1-4BBD-A3A6-D05890A329CD} = {4EAE3A6B-35A5-4C95-AAB6-1D977F63184B}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {4D543221-E30F-4763-AAC8-A744A0F8D88E}

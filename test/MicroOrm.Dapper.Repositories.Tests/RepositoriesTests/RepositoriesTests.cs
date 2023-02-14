@@ -37,9 +37,8 @@ namespace MicroOrm.Dapper.Repositories.Tests.RepositoriesTests
         public void Count()
         {
             var count = Db.Users.Count();
-            var countHandQuery =
-                Db.Connection
-                    .ExecuteScalar<int>("SELECT COUNT(*) FROM Users WHERE Users.Deleted != 1");
+            var countHandQuery = Db.Connection
+                    .ExecuteScalar<int>("SELECT COUNT(*) FROM Users WHERE Users.Deleted != " + Db.Users.SqlGenerator.LogicalDeleteValue);
             Assert.Equal(countHandQuery, count);
         }
 
@@ -777,7 +776,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.RepositoriesTests
 
             cts.Cancel();
 
-            await Assert.ThrowsAsync<TaskCanceledException>(() => Db.Address.FindAllAsync(cts.Token));
+            await Assert.ThrowsAnyAsync<OperationCanceledException>(() => Db.Address.FindAllAsync(cts.Token));
         }
     }
 }

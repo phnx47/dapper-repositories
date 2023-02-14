@@ -188,7 +188,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
 
         private string GetFieldsUpdate(string? tableName, IEnumerable<SqlPropertyMetadata> properties, bool useMarks)
         {
-            if (Provider == SqlProvider.SQLite)
+            if (Provider == SqlProvider.SQLite || Provider == SqlProvider.PostgreSQL)
             {
                 //***
                 //*** Building update query for sqlite

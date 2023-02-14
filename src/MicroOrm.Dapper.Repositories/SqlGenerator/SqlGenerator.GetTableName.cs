@@ -7,11 +7,14 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
     public partial class SqlGenerator<TEntity>
         where TEntity : class
     {
-        private static string GetTableNameWithSchemaPrefix(string? tableName, string? tableSchema, string startQuotationMark = "", string endQuotationMark = "")
+        private static string GetTableNameWithSchemaPrefix(string? tableName, string? tableSchema, SqlProvider sqlProvider, string startQuotationMark = "", string endQuotationMark = "")
         {
-            return !string.IsNullOrEmpty(tableSchema)
-                ? startQuotationMark + tableSchema + endQuotationMark + "." + startQuotationMark + tableName + endQuotationMark
-                : startQuotationMark + tableName + endQuotationMark;
+            if (string.IsNullOrEmpty(tableSchema))
+                return startQuotationMark + tableName + endQuotationMark;
+
+            return sqlProvider == SqlProvider.SQLite
+                ? startQuotationMark + tableSchema + "." + tableName + endQuotationMark
+                : startQuotationMark + tableSchema + endQuotationMark + "." + startQuotationMark + tableName + endQuotationMark;
         }
 
         private string GetTableNameWithQuotes(JoinAttributeBase attrJoin, SqlPropertyMetadata[] props, string tableName)
@@ -20,7 +23,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
             {
                 case SqlProvider.MSSQL:
                     tableName = "[" + tableName + "]";
-                    attrJoin.TableName = GetTableNameWithSchemaPrefix(attrJoin.TableName, attrJoin.TableSchema, "[", "]");
+                    attrJoin.TableName = GetTableNameWithSchemaPrefix(attrJoin.TableName, attrJoin.TableSchema, Provider, "[", "]");
                     attrJoin.Key = "[" + attrJoin.Key + "]";
                     attrJoin.ExternalKey = "[" + attrJoin.ExternalKey + "]";
                     attrJoin.TableAlias = string.IsNullOrEmpty(attrJoin.TableAlias) ? string.Empty : "[" + attrJoin.TableAlias + "]";
@@ -32,8 +35,9 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                     break;
 
                 case SqlProvider.MySQL:
+                case SqlProvider.SQLite:
                     tableName = "`" + tableName + "`";
-                    attrJoin.TableName = GetTableNameWithSchemaPrefix(attrJoin.TableName, attrJoin.TableSchema, "`", "`");
+                    attrJoin.TableName = GetTableNameWithSchemaPrefix(attrJoin.TableName, attrJoin.TableSchema, Provider, "`", "`");
                     attrJoin.Key = "`" + attrJoin.Key + "`";
                     attrJoin.ExternalKey = "`" + attrJoin.ExternalKey + "`";
                     attrJoin.TableAlias = string.IsNullOrEmpty(attrJoin.TableAlias) ? string.Empty : "`" + attrJoin.TableAlias + "`";
@@ -43,10 +47,10 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                     }
 
                     break;
-                
+
                 case SqlProvider.PostgreSQL:
                     tableName = "\"" + tableName + "\"";
-                    attrJoin.TableName = GetTableNameWithSchemaPrefix(attrJoin.TableName, attrJoin.TableSchema, "\"", "\"");
+                    attrJoin.TableName = GetTableNameWithSchemaPrefix(attrJoin.TableName, attrJoin.TableSchema, Provider, "\"", "\"");
                     attrJoin.Key = "\"" + attrJoin.Key + "\"";
                     attrJoin.ExternalKey = "\"" + attrJoin.ExternalKey + "\"";
                     attrJoin.TableAlias = string.IsNullOrEmpty(attrJoin.TableAlias) ? string.Empty : "\"" + attrJoin.TableAlias + "\"";

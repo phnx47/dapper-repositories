@@ -16,7 +16,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.SqlGeneratorTests
         {
             ISqlGenerator<User> userSqlGenerator = new SqlGenerator<User>(_sqlConnector, true);
             var sqlQuery = userSqlGenerator.GetCount(null);
-            Assert.Equal("SELECT COUNT(*) FROM Users WHERE Users.Deleted != 1", sqlQuery.GetSql());
+            Assert.Equal("SELECT COUNT(*) FROM `Users` WHERE `Users`.`Deleted` != 1", sqlQuery.GetSql());
         }
 
         [Fact]

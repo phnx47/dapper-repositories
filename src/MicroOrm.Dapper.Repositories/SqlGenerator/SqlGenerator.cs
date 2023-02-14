@@ -17,7 +17,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         {
             Provider = MicroOrmConfig.SqlProvider;
 
-            UseQuotationMarks ??= Provider != SqlProvider.SQLite && Provider != SqlProvider.Oracle && MicroOrmConfig.UseQuotationMarks;
+            UseQuotationMarks ??= Provider != SqlProvider.Oracle && MicroOrmConfig.UseQuotationMarks;
 
             Initialize();
         }
@@ -36,7 +36,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         public SqlGenerator(SqlProvider provider, bool useQuotationMarks)
         {
             Provider = provider;
-            UseQuotationMarks = provider != SqlProvider.SQLite && provider != SqlProvider.Oracle && useQuotationMarks;
+            UseQuotationMarks = provider != SqlProvider.Oracle && useQuotationMarks;
             Initialize();
         }
 
@@ -51,12 +51,12 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         public SqlProvider Provider { get; }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         public bool? UseQuotationMarks { get; set; }
 
@@ -108,7 +108,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
         public object? LogicalDeleteValue { get; protected set; }
 
         /// <summary>
-        ///     In Oracle parameter should be build with : instead of @. 
+        ///     In Oracle parameter should be build with : instead of @.
         /// </summary>
         public string ParameterSymbol { get; protected set; } = "@";
 

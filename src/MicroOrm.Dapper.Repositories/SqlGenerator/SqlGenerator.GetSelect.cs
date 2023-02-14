@@ -178,6 +178,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                     return $"[{columnIdentifier.Replace(".", "].[")}]";
 
                 case SqlProvider.MySQL:
+                case SqlProvider.SQLite:
                     return $"`{columnIdentifier.Replace(".", "`.`")}`";
 
                 case SqlProvider.PostgreSQL:
