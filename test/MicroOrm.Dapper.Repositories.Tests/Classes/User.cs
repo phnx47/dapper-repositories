@@ -39,5 +39,8 @@ namespace MicroOrm.Dapper.Repositories.Tests.Classes
 
         [UpdatedAt]
         public DateTime? UpdatedAt { get; set; }
+
+        [Column("AliasName")]
+        public int From { get; set; }
     }
 }

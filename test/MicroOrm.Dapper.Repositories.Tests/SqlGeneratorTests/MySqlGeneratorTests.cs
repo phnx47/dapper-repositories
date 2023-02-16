@@ -116,7 +116,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.SqlGeneratorTests
             var sqlQuery = userSqlGenerator.GetSelectAll(user => user.UpdatedAt != null, null);
 
             Assert.Equal(
-                "SELECT `Users`.`Id`, `Users`.`Name`, `Users`.`AddressId`, `Users`.`PhoneId`, `Users`.`OfficePhoneId`, `Users`.`Deleted`, `Users`.`UpdatedAt` FROM `Users` " +
+                "SELECT `Users`.`Id`, `Users`.`AliasName` AS \"From\", `Users`.`Name`, `Users`.`AddressId`, `Users`.`PhoneId`, `Users`.`OfficePhoneId`, `Users`.`Deleted`, `Users`.`UpdatedAt` FROM `Users` " +
                 "WHERE (`Users`.`UpdatedAt` IS NOT NULL) AND `Users`.`Deleted` != 1", sqlQuery.GetSql());
             Assert.DoesNotContain("!= NULL", sqlQuery.GetSql());
         }
@@ -128,13 +128,13 @@ namespace MicroOrm.Dapper.Repositories.Tests.SqlGeneratorTests
             var sqlQuery = userSqlGenerator.GetSelectAll(user => user.Name == "Frank" && user.UpdatedAt != null, null);
 
             Assert.Equal(
-                "SELECT `Users`.`Id`, `Users`.`Name`, `Users`.`AddressId`, `Users`.`PhoneId`, `Users`.`OfficePhoneId`, `Users`.`Deleted`, `Users`.`UpdatedAt` FROM `Users` " +
+                "SELECT `Users`.`Id`, `Users`.`AliasName` AS \"From\", `Users`.`Name`, `Users`.`AddressId`, `Users`.`PhoneId`, `Users`.`OfficePhoneId`, `Users`.`Deleted`, `Users`.`UpdatedAt` FROM `Users` " +
                 "WHERE (`Users`.`Name` = @Name_p0 AND `Users`.`UpdatedAt` IS NOT NULL) AND `Users`.`Deleted` != 1", sqlQuery.GetSql());
             Assert.DoesNotContain("!= NULL", sqlQuery.GetSql());
 
             sqlQuery = userSqlGenerator.GetSelectAll(user => user.UpdatedAt != null && user.Name == "Frank", null);
             Assert.Equal(
-                "SELECT `Users`.`Id`, `Users`.`Name`, `Users`.`AddressId`, `Users`.`PhoneId`, `Users`.`OfficePhoneId`, `Users`.`Deleted`, `Users`.`UpdatedAt` FROM `Users` " +
+                "SELECT `Users`.`Id`, `Users`.`AliasName` AS \"From\", `Users`.`Name`, `Users`.`AddressId`, `Users`.`PhoneId`, `Users`.`OfficePhoneId`, `Users`.`Deleted`, `Users`.`UpdatedAt` FROM `Users` " +
                 "WHERE (`Users`.`UpdatedAt` IS NOT NULL AND `Users`.`Name` = @Name_p1) AND `Users`.`Deleted` != 1", sqlQuery.GetSql());
             Assert.DoesNotContain("!= NULL", sqlQuery.GetSql());
         }
@@ -146,7 +146,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.SqlGeneratorTests
             var sqlQuery = userSqlGenerator.GetSelectBetween(1, 10, null, x => x.Id);
 
             Assert.Equal(
-                "SELECT `Users`.`Id`, `Users`.`Name`, `Users`.`AddressId`, `Users`.`PhoneId`, `Users`.`OfficePhoneId`, `Users`.`Deleted`, `Users`.`UpdatedAt` FROM `Users` " +
+                "SELECT `Users`.`Id`, `Users`.`AliasName` AS \"From\", `Users`.`Name`, `Users`.`AddressId`, `Users`.`PhoneId`, `Users`.`OfficePhoneId`, `Users`.`Deleted`, `Users`.`UpdatedAt` FROM `Users` " +
                 "WHERE `Users`.`Deleted` != 1 AND `Users`.`Id` BETWEEN '1' AND '10'", sqlQuery.GetSql());
         }
 
@@ -163,7 +163,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.SqlGeneratorTests
         {
             var generator = new SqlGenerator<Address>(_sqlConnector, true);
             var sqlQuery = generator.GetSelectById(1, null, q => q.Users);
-            Assert.Equal("SELECT `Addresses`.`Id`, `Addresses`.`Street`, `Addresses`.`CityId`, `Users`.`Id`, `Users`.`Name`, `Users`.`AddressId`, `Users`.`PhoneId`, " +
+            Assert.Equal("SELECT `Addresses`.`Id`, `Addresses`.`Street`, `Addresses`.`CityId`, `Users`.`Id`, `Users`.`AliasName` AS \"From\", `Users`.`Name`, `Users`.`AddressId`, `Users`.`PhoneId`, " +
                          "`Users`.`OfficePhoneId`, `Users`.`Deleted`, `Users`.`UpdatedAt` FROM `Addresses` " +
                          "LEFT JOIN `Users` ON `Addresses`.`Id` = `Users`.`AddressId` WHERE `Addresses`.`Id` = @Id", sqlQuery.GetSql());
         }
@@ -254,7 +254,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.SqlGeneratorTests
             ISqlGenerator<User> userSqlGenerator = new SqlGenerator<User>(_sqlConnector, true);
             var sqlQuery = userSqlGenerator.GetSelectFirst(x => x.Id == 6, null);
             Assert.Equal(
-                "SELECT `Users`.`Id`, `Users`.`Name`, `Users`.`AddressId`, `Users`.`PhoneId`, `Users`.`OfficePhoneId`, `Users`.`Deleted`, `Users`.`UpdatedAt` FROM `Users` WHERE (`Users`.`Id` = @Id_p0) AND `Users`.`Deleted` != 1 LIMIT 1",
+                "SELECT `Users`.`Id`, `Users`.`AliasName` AS \"From\", `Users`.`Name`, `Users`.`AddressId`, `Users`.`PhoneId`, `Users`.`OfficePhoneId`, `Users`.`Deleted`, `Users`.`UpdatedAt` FROM `Users` WHERE (`Users`.`Id` = @Id_p0) AND `Users`.`Deleted` != 1 LIMIT 1",
                 sqlQuery.GetSql());
         }
 
@@ -266,7 +266,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.SqlGeneratorTests
             var sqlQuery = sqlGenerator.GetUpdate(q => q.AddressId == 1, model, x => x.Addresses);
             var sql = sqlQuery.GetSql();
             Assert.Equal(
-                "UPDATE Users LEFT JOIN Addresses ON Users.AddressId = Addresses.Id SET Users.Name = @UserName, Users.AddressId = @UserAddressId, Users.PhoneId = @UserPhoneId, Users.OfficePhoneId = @UserOfficePhoneId, Users.Deleted = @UserDeleted, Users.UpdatedAt = @UserUpdatedAt, Addresses.Street = @AddressStreet, Addresses.CityId = @AddressCityId WHERE Users.AddressId = @AddressId_p0",
+                "UPDATE Users LEFT JOIN Addresses ON Users.AddressId = Addresses.Id SET Users.AliasName = @UserFrom, Users.Name = @UserName, Users.AddressId = @UserAddressId, Users.PhoneId = @UserPhoneId, Users.OfficePhoneId = @UserOfficePhoneId, Users.Deleted = @UserDeleted, Users.UpdatedAt = @UserUpdatedAt, Addresses.Street = @AddressStreet, Addresses.CityId = @AddressCityId WHERE Users.AddressId = @AddressId_p0",
                 sql);
         }
 
@@ -278,7 +278,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.SqlGeneratorTests
             var sqlQuery = sqlGenerator.GetUpdate(model, x => x.Addresses);
             var sql = sqlQuery.GetSql();
             Assert.Equal(
-                "UPDATE Users LEFT JOIN Addresses ON Users.AddressId = Addresses.Id SET Users.Name = @UserName, Users.AddressId = @UserAddressId, Users.PhoneId = @UserPhoneId, Users.OfficePhoneId = @UserOfficePhoneId, Users.Deleted = @UserDeleted, Users.UpdatedAt = @UserUpdatedAt, Addresses.Street = @AddressStreet, Addresses.CityId = @AddressCityId WHERE Users.Id = @UserId",
+                "UPDATE Users LEFT JOIN Addresses ON Users.AddressId = Addresses.Id SET Users.AliasName = @UserFrom, Users.Name = @UserName, Users.AddressId = @UserAddressId, Users.PhoneId = @UserPhoneId, Users.OfficePhoneId = @UserOfficePhoneId, Users.Deleted = @UserDeleted, Users.UpdatedAt = @UserUpdatedAt, Addresses.Street = @AddressStreet, Addresses.CityId = @AddressCityId WHERE Users.Id = @UserId",
                 sql);
         }
 

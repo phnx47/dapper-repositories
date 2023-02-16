@@ -29,48 +29,49 @@ namespace MicroOrm.Dapper.Repositories.Tests.DatabaseFixture
             Db.Connection.Execute(
                 @"CREATE TABLE USERS (
                   ID NUMBER GENERATED ALWAYS AS IDENTITY(START WITH 1 INCREMENT BY 1),
-                  NAME VARCHAR(256) NOT NULL, 
-                  ADDRESSID NUMBER NOT NULL, 
-                  PHONEID NUMBER NOT NULL, 
-                  OFFICEPHONEID NUMBER NOT NULL, 
-                  DELETED NUMBER NOT NULL, 
-                  UPDATEDAT DATE, 
+                  NAME VARCHAR(256) NOT NULL,
+                  ADDRESSID NUMBER NOT NULL,
+                  PHONEID NUMBER NOT NULL,
+                  OFFICEPHONEID NUMBER NOT NULL,
+                  DELETED NUMBER NOT NULL,
+                  UPDATEDAT DATE,
+                  ALIASNAME NUMBER,
                   PRIMARY KEY (ID))");
 
             Db.Connection.Execute(
                 @"CREATE TABLE CARS (
                   ID NUMBER GENERATED ALWAYS AS IDENTITY(START WITH 1 INCREMENT BY 1),
-                  NAME VARCHAR(256) NOT NULL, 
-                  USERID NUMBER NOT NULL, 
-                  STATUS NUMBER NOT NULL, 
-                  DATA RAW(16) NULL, 
+                  NAME VARCHAR(256) NOT NULL,
+                  USERID NUMBER NOT NULL,
+                  STATUS NUMBER NOT NULL,
+                  DATA RAW(16) NULL,
                   PRIMARY KEY (ID))");
 
             Db.Connection.Execute(
                 @"CREATE TABLE ADDRESSES (
                   ID NUMBER GENERATED ALWAYS AS IDENTITY(START WITH 1 INCREMENT BY 1),
-                  STREET VARCHAR(256) NOT NULL, 
-                  CITYID VARCHAR(256) NOT NULL,  
+                  STREET VARCHAR(256) NOT NULL,
+                  CITYID VARCHAR(256) NOT NULL,
                   PRIMARY KEY (ID))");
 
             Db.Connection.Execute(
                 @"CREATE TABLE CITIES (
-                  IDENTIFIER RAW(16) NOT NULL, 
+                  IDENTIFIER RAW(16) NOT NULL,
                   NAME VARCHAR(256) NOT NULL)");
 
             Db.Connection.Execute(
                 @"CREATE TABLE DAB.PHONES (
                   ID NUMBER GENERATED ALWAYS AS IDENTITY(START WITH 1 INCREMENT BY 1),
-                  PNUMBER VARCHAR(256) NOT NULL, 
-                  ISACTIVE NUMBER(1) NOT NULL, 
-                  CODE VARCHAR(256) NOT NULL, 
+                  PNUMBER VARCHAR(256) NOT NULL,
+                  ISACTIVE NUMBER(1) NOT NULL,
+                  CODE VARCHAR(256) NOT NULL,
                   PRIMARY KEY  (ID))");
 
             Db.Connection.Execute(
                 @"CREATE TABLE REPORTS (
-                  ID NUMBER NOT NULL, 
-                  ANOTHERID NUMBER NOT NULL, 
-                  USERID NUMBER NOT NULL,  
+                  ID NUMBER NOT NULL,
+                  ANOTHERID NUMBER NOT NULL,
+                  USERID NUMBER NOT NULL,
                   PRIMARY KEY (ID, ANOTHERID))");
 
             InitData.Execute(Db);

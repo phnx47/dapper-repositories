@@ -401,7 +401,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
             string ProjectionFunction(SqlPropertyMetadata p)
             {
                 return !string.IsNullOrEmpty(p.Alias)
-                    ? $"{tableName}.{(useQuotation ? p.ColumnName : p.CleanColumnName)} AS {p.PropertyName}"
+                    ? $"{tableName}.{(useQuotation ? p.ColumnName : p.CleanColumnName)} AS \"{p.PropertyName}\""
                     : $"{tableName}.{(useQuotation ? p.ColumnName : p.CleanColumnName)}";
             }
 

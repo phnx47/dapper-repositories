@@ -28,7 +28,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.DatabaseFixture
         {
             Db.Connection.Execute($"IF NOT EXISTS (SELECT name FROM master.dbo.sysdatabases WHERE name = '{_dbName}') CREATE DATABASE [{_dbName}];");
             Db.Connection.Execute($"USE [{_dbName}]");
-            
+
             void CreateSchema(string dbSchema)
             {
                 Db.Connection.Execute($@"IF schema_id('{dbSchema}') IS NULL EXECUTE('CREATE SCHEMA {dbSchema}') ");
@@ -37,7 +37,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.DatabaseFixture
             CreateSchema("DAB");
 
             Db.Connection.Execute(
-                @"CREATE TABLE Users (Id int IDENTITY(1,1) not null, Name varchar(256) not null, AddressId int not null, PhoneId int not null, OfficePhoneId int not null, Deleted bit not null, UpdatedAt datetime2, PRIMARY KEY (Id))");
+                @"CREATE TABLE Users (Id int IDENTITY(1,1) not null, Name varchar(256) not null, AddressId int not null, PhoneId int not null, OfficePhoneId int not null, Deleted bit not null, UpdatedAt datetime2, AliasName int, PRIMARY KEY (Id))");
             Db.Connection.Execute(
                 @"CREATE TABLE Cars (Id int IDENTITY(1,1) not null, Name varchar(256) not null, UserId int not null, Status int not null, Data binary(16) null, PRIMARY KEY (Id))");
 
