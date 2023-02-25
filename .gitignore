@@ -1,4 +1,5 @@
 *.nupkg
+*.snupkg
 *.user
 *.opencover.xml
 *.orig
