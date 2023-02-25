@@ -10,8 +10,11 @@ namespace MicroOrm.Dapper.Repositories.Tests.DatabaseFixture
 
         public MsSqlDatabaseFixture()
         {
+#if Second
+            Db = new MsSqlDbContext("Server=localhost;Database=master;User ID=sa;Password=Password12!");
+#else
             Db = new MsSqlDbContext("Server=localhost;Database=master;User ID=sa;Password=Password12!;Trust Server Certificate=true");
-
+#endif
             DropDatabase();
             InitDb();
         }
@@ -28,7 +31,7 @@ namespace MicroOrm.Dapper.Repositories.Tests.DatabaseFixture
         {
             Db.Connection.Execute($"IF NOT EXISTS (SELECT name FROM master.dbo.sysdatabases WHERE name = '{_dbName}') CREATE DATABASE [{_dbName}];");
             Db.Connection.Execute($"USE [{_dbName}]");
-            
+
             void CreateSchema(string dbSchema)
             {
                 Db.Connection.Execute($@"IF schema_id('{dbSchema}') IS NULL EXECUTE('CREATE SCHEMA {dbSchema}') ");

@@ -41,7 +41,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
             if (statusProperty.PropertyInfo.PropertyType == typeof(bool))
             {
                 LogicalDelete = true;
-                LogicalDeleteValue = 1; // true
+                LogicalDeleteValue = Provider == SqlProvider.PostgreSQL ? "true" : 1; // true
             }
             else if (statusProperty.PropertyInfo.PropertyType.IsEnum)
             {

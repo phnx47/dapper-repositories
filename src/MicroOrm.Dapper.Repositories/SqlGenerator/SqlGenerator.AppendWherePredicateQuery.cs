@@ -103,9 +103,17 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                         }
                         else
                         {
-                            var vKey = string.Format("{0}_p{1}", qpExpr.PropertyName, qLevel); //Handle multiple uses of a field
+                            var vKey = string.Format("{0}_p{1}", qpExpr.PropertyName, qLevel);//Handle multiple uses of a field
 
-                            sqlBuilder.AppendFormat("{0}.{1} {2} " + ParameterSymbol + "{3}", tableName, columnName, qpExpr.QueryOperator, vKey);
+                            if (Provider == SqlProvider.PostgreSQL && qpExpr.QueryOperator is "NOT IN" or "IN")
+                            {
+                                if (qpExpr.QueryOperator is "IN")
+                                    sqlBuilder.AppendFormat("{0}.{1} = ANY(" + ParameterSymbol + "{2})", tableName, columnName, vKey);
+                                else
+                                    sqlBuilder.AppendFormat("{0}.{1} <> ALL(" + ParameterSymbol + "{2})", tableName, columnName, vKey);
+                            }
+                            else
+                                sqlBuilder.AppendFormat("{0}.{1} {2} " + ParameterSymbol + "{3}", tableName, columnName, qpExpr.QueryOperator, vKey);
                             conditions.Add(new KeyValuePair<string, object?>(vKey, qpExpr.PropertyValue));
 
                             // in oracle, we should pass a null value instead of an empty list in case of query something like "select * from sometable where id in :id " and :id is empty.
@@ -128,7 +136,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                         var nConditions = new List<KeyValuePair<string, object?>>();
                         BuildQuerySql(qbExpr.Nodes, ref nSqlBuilder, ref nConditions, ref qLevel);
 
-                        if (qbExpr.Nodes.Count == 1) //Handle `grouping brackets`
+                        if (qbExpr.Nodes.Count == 1)//Handle `grouping brackets`
                             sqlBuilder.Append(nSqlBuilder);
                         else
                             sqlBuilder.AppendFormat("({0})", nSqlBuilder);

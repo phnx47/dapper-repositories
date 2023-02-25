@@ -1,7 +1,11 @@
 ﻿using MicroOrm.Dapper.Repositories.DbContext;
 using MicroOrm.Dapper.Repositories.SqlGenerator;
 using MicroOrm.Dapper.Repositories.Tests.Classes;
+#if Second
+using MySqlConnector;
+#else
 using MySql.Data.MySqlClient;
+#endif
 
 namespace MicroOrm.Dapper.Repositories.Tests.DbContexts
 {

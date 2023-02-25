@@ -22,6 +22,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
                         break;
 
                     case SqlProvider.MySQL:
+                    case SqlProvider.SQLite:
                         InitMetaData("`", "`");
                         break;
 
@@ -34,9 +35,9 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
             }
             else
             {
-                TableName = GetTableNameWithSchemaPrefix(TableName, TableSchema);
+                TableName = GetTableNameWithSchemaPrefix(TableName, TableSchema, Provider);
                 foreach (var propertyMetadata in SqlJoinProperties)
-                    propertyMetadata.TableName = GetTableNameWithSchemaPrefix(propertyMetadata.TableName, propertyMetadata.TableSchema);
+                    propertyMetadata.TableName = GetTableNameWithSchemaPrefix(propertyMetadata.TableName, propertyMetadata.TableSchema, Provider);
             }
 
             // set ParameterSymbol with : and mapping Boolean type to Int
@@ -49,7 +50,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
 
         private void InitMetaData(string startQuotationMark, string endQuotationMark)
         {
-            TableName = GetTableNameWithSchemaPrefix(TableName, TableSchema, startQuotationMark, endQuotationMark);
+            TableName = GetTableNameWithSchemaPrefix(TableName, TableSchema, Provider, startQuotationMark, endQuotationMark);
 
             foreach (var propertyMetadata in SqlProperties)
                 propertyMetadata.ColumnName = startQuotationMark + propertyMetadata.CleanColumnName + endQuotationMark;
@@ -59,7 +60,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator
 
             foreach (var propertyMetadata in SqlJoinProperties)
             {
-                propertyMetadata.TableName = GetTableNameWithSchemaPrefix(propertyMetadata.TableName, propertyMetadata.TableSchema, startQuotationMark, endQuotationMark);
+                propertyMetadata.TableName = GetTableNameWithSchemaPrefix(propertyMetadata.TableName, propertyMetadata.TableSchema, Provider, startQuotationMark, endQuotationMark);
                 propertyMetadata.ColumnName = startQuotationMark + propertyMetadata.CleanColumnName + endQuotationMark;
                 propertyMetadata.TableAlias =
                     string.IsNullOrEmpty(propertyMetadata.TableAlias) ? string.Empty : startQuotationMark + propertyMetadata.TableAlias + endQuotationMark;
