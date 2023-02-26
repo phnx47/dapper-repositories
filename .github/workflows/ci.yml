@@ -66,6 +66,6 @@ jobs:
       - name: 📥 Download artifacts
         uses: actions/download-artifact@v3
         with:
-          name: nupkg
+          name: nupkgs
       - name: 📦 Push to NuGet
-        run: dotnet nuget push "*.nupkg" -k ${{ secrets.NUGET_KEY }} -s https://api.nuget.org/v3/index.json
+        run: dotnet nuget push "**/*.nupkg" -k ${{ secrets.NUGET_KEY }} -s https://api.nuget.org/v3/index.json
