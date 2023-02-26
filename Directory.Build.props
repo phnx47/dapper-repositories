@@ -1,0 +1,7 @@
+<Project>
+  <PropertyGroup>
+    <LangVersion>11.0</LangVersion>
+    <IsPackable>false</IsPackable>
+    <NoWarn>CS1591;NETSDK1138</NoWarn>
+  </PropertyGroup>
+</Project>
