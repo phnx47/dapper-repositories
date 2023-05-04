@@ -270,6 +270,17 @@ public class MsSqlGeneratorTests
     }
 
     [Fact]
+    public static void ContainsPredicateWithFillIds()
+    {
+        ISqlGenerator<User> userSqlGenerator = new SqlGenerator<User>(_sqlConnector, true);
+        var ids = new List<int> { 1, 2, 3, 4, 5, 6, 7, 8 };
+        var sqlQuery = userSqlGenerator.GetSelectAll(x => ids.Contains(x.Id), null);
+
+        Assert.Equal("SELECT [Users].[Id], [Users].[Name], [Users].[AddressId], [Users].[PhoneId], [Users].[OfficePhoneId], [Users].[Deleted], [Users].[UpdatedAt] " +
+                     "FROM [Users] WHERE ([Users].[Id] IN @Id_p0) AND [Users].[Deleted] != 1", sqlQuery.GetSql());
+    }
+
+    [Fact]
     public static void ContainsArrayPredicate()
     {
         ISqlGenerator<User> userSqlGenerator = new SqlGenerator<User>(_sqlConnector, true);
@@ -478,7 +489,8 @@ public class MsSqlGeneratorTests
         ISqlGenerator<Report> userSqlGenerator = new SqlGenerator<Report>(_sqlConnector, true);
         var sqlQuery = userSqlGenerator.GetSelectById(new[] { 1, 2 }, null);
 
-        Assert.Equal("SELECT TOP 1 [Reports].[Id], [Reports].[AnotherId], [Reports].[UserId] FROM [Reports] WHERE [Reports].[Id] = @Id AND [Reports].[AnotherId] = @AnotherId", sqlQuery.GetSql());
+        Assert.Equal("SELECT TOP 1 [Reports].[Id], [Reports].[AnotherId], [Reports].[UserId] FROM [Reports] " +
+                     "WHERE [Reports].[Id] = @Id AND [Reports].[AnotherId] = @AnotherId", sqlQuery.GetSql());
     }
 
     [Fact]
