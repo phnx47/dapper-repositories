@@ -27,7 +27,7 @@ services:
       ORACLE_PASSWORD: "Password12!"
 
   postgres:
-    image: postgres:15.2-bullseye
+    image: postgres:15.3-bullseye
     ports:
       - "5432:5432"
     restart: always
