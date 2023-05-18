@@ -514,6 +514,14 @@ public class MsSqlGeneratorTests
     }
 
     [Fact]
+    public static void SelectByIdJoinNested()
+    {
+        var generator = new SqlGenerator<ProviderOrder>(_sqlConnector, true);
+        var sqlQuery = generator.GetSelectById(1, null, q => q.ProviderOrderLines, q => q.ProviderOrderLines.First().ProviderOrderStatus);
+        Assert.Equal("SELECT [S_Cfo].[CommandeFournisseur_CoFo].[CoFo_ID], [CFLI].[CfLi_ID], [CFLI].[CoFo_ID], [CFLS].[CfLs_ID], [CFLS].[CfLi_ID] FROM [S_Cfo].[CommandeFournisseur_CoFo] INNER JOIN [S_Cfo.CommandeFournisseurLignes_CfLi] AS [CFLI] ON [CommandeFournisseur_CoFo].[CoFo_ID] = [CFLI].[CoFo_ID] INNER JOIN [S_Cfo.CommandeFournisseurLignesStatut_CfLs] AS [CFLS] ON [CommandeFournisseurLignes_CfLi].[CfLi_ID] = [CFLS].[CfLi_ID] WHERE [S_Cfo].[CommandeFournisseur_CoFo].[CoFo_ID] = @CoFo_ID", sqlQuery.GetSql());
+    }
+
+    [Fact]
     public static void SelectFirst()
     {
         ISqlGenerator<User> userSqlGenerator = new SqlGenerator<User>(_sqlConnector, true);

@@ -1,5 +1,7 @@
 using System;
+using System.Collections;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
@@ -15,22 +17,33 @@ internal static class TypeExtensions
     private static readonly ConcurrentDictionary<Type, PropertyInfo[]> _reflectionPrimitivePropertyCache = new ConcurrentDictionary<Type, PropertyInfo[]>();
     private static readonly ConcurrentDictionary<Type, SqlPropertyMetadata[]> _metaDataPropertyCache = new ConcurrentDictionary<Type, SqlPropertyMetadata[]>();
 
-    public static PropertyInfo[] FindClassProperties(this Type objectType)
+    public static List<PropertyInfo> FindClassProperties<TEntity>(this Type objectType, List<PropertyInfo> allProperties)
     {
         if (_reflectionPropertyCache.TryGetValue(objectType, out var cachedEntry))
-            return cachedEntry;
+        {
+            allProperties.AddRange(cachedEntry.Where(c => !allProperties.Any(a => a.Name == c.Name)));
+            return allProperties;
+        }
 
-        var propertyInfos = objectType.GetProperties()
+        allProperties.AddRange(objectType.GetProperties()
             .OrderByDescending(x => x.GetCustomAttribute<IdentityAttribute>() != null)
             .ThenByDescending(x => x.GetCustomAttribute<KeyAttribute>() != null)
             .ThenBy(p => p.GetCustomAttributes<ColumnAttribute>()
                 .Select(a => a.Order)
                 .DefaultIfEmpty(int.MaxValue)
-                .FirstOrDefault()).ToArray();
+                .FirstOrDefault()).Where(o => !allProperties.Any(a => a.Name == o.Name)));
 
-        _reflectionPropertyCache.TryAdd(objectType, propertyInfos);
-
-        return propertyInfos;
+        _reflectionPropertyCache.TryAdd(objectType, allProperties.ToArray());
+        foreach (var pi in allProperties)
+        {
+            var type = pi.PropertyType;
+            if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(List<>))
+            {
+                type = type.GetGenericArguments()[0];
+                return type.FindClassProperties<TEntity>(allProperties);
+            }
+        }
+        return allProperties;
     }
 
     public static PropertyInfo[] FindClassPrimitiveProperties(this Type objectType)

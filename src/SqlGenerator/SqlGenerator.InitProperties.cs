@@ -24,8 +24,9 @@ public partial class SqlGenerator<TEntity>
         TableName = MicroOrmConfig.TablePrefix + (tableAttribute != null ? tableAttribute.Name : entityTypeInfo.Name);
 
         TableSchema = tableAttribute != null ? tableAttribute.Schema : string.Empty;
-
-        AllProperties = entityType.FindClassProperties().Where(q => q.CanWrite).ToArray();
+        List<PropertyInfo> allProperties = new List<PropertyInfo>();
+        AllProperties = entityType.FindClassProperties<TEntity>(allProperties).ToArray();
+        AllProperties = allProperties.Where(q => q.CanWrite).ToArray();
 
         var props = entityType.FindClassPrimitiveProperties();
 
