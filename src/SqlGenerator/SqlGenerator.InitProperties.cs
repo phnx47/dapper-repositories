@@ -25,7 +25,7 @@ public partial class SqlGenerator<TEntity>
 
         TableSchema = tableAttribute != null ? tableAttribute.Schema : string.Empty;
         List<PropertyInfo> allProperties = new List<PropertyInfo>();
-        AllProperties = entityType.FindClassProperties<TEntity>(allProperties).ToArray();
+        AllProperties = entityType.FindClassProperties(allProperties).ToArray();
         AllProperties = allProperties.Where(q => q.CanWrite).ToArray();
 
         var props = entityType.FindClassPrimitiveProperties();

@@ -17,7 +17,7 @@ internal static class TypeExtensions
     private static readonly ConcurrentDictionary<Type, PropertyInfo[]> _reflectionPrimitivePropertyCache = new ConcurrentDictionary<Type, PropertyInfo[]>();
     private static readonly ConcurrentDictionary<Type, SqlPropertyMetadata[]> _metaDataPropertyCache = new ConcurrentDictionary<Type, SqlPropertyMetadata[]>();
 
-    public static List<PropertyInfo> FindClassProperties<TEntity>(this Type objectType, List<PropertyInfo> allProperties)
+    public static List<PropertyInfo> FindClassProperties(this Type objectType, List<PropertyInfo> allProperties)
     {
         if (_reflectionPropertyCache.TryGetValue(objectType, out var cachedEntry))
         {
@@ -40,7 +40,7 @@ internal static class TypeExtensions
             if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(List<>))
             {
                 type = type.GetGenericArguments()[0];
-                return type.FindClassProperties<TEntity>(allProperties);
+                return type.FindClassProperties(allProperties);
             }
         }
         return allProperties;
