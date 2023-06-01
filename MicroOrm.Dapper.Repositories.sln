@@ -3,29 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27130.2036
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "root", "root", "{BC29F662-3E4D-411F-A4DA-93BE1BF81012}"
-	ProjectSection(SolutionItems) = preProject
-		.gitattributes = .gitattributes
-		.gitignore = .gitignore
-		LICENSE = LICENSE
-		README.md = README.md
-		.editorconfig = .editorconfig
-		docker-compose.yml = docker-compose.yml
-		Directory.Build.props = Directory.Build.props
-	EndProjectSection
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{E409731D-9AB4-4389-B611-53A3AF8324A4}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".github", ".github", "{90BBE8FB-0990-41D0-9754-D08DCAC415D5}"
-ProjectSection(SolutionItems) = preProject
-	.github\FUNDING.yml = .github\FUNDING.yml
-	.github\renovate.json = .github\renovate.json
-EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{54F980A1-0415-40BE-A55C-31D3844731FD}"
-	ProjectSection(SolutionItems) = preProject
-		.github\workflows\ci.yml = .github\workflows\ci.yml
-	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{94F86B38-C3FB-4FBB-802E-7786C457050D}"
 EndProject
@@ -94,8 +72,6 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{90BBE8FB-0990-41D0-9754-D08DCAC415D5} = {BC29F662-3E4D-411F-A4DA-93BE1BF81012}
-		{54F980A1-0415-40BE-A55C-31D3844731FD} = {90BBE8FB-0990-41D0-9754-D08DCAC415D5}
 		{A8258060-EDF7-4713-9428-088ADD6FE503} = {E409731D-9AB4-4389-B611-53A3AF8324A4}
 		{2691E152-7033-4C25-A8D5-4941004BD611} = {94F86B38-C3FB-4FBB-802E-7786C457050D}
 		{0D5ADDAF-B82B-479E-9000-295162C4679B} = {94F86B38-C3FB-4FBB-802E-7786C457050D}
