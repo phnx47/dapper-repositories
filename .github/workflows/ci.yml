@@ -23,6 +23,7 @@ jobs:
       - name: 🏭 Build
         run: dotnet build --no-restore -c Release -p:ContinuousIntegrationBuild=true
       - name: 🐳 Docker Compose Up
+        working-directory: tests
         run: docker-compose up -d
       - name: 💤 Wait for Containers
         uses: jakejarvis/wait-action@master
