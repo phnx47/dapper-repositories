@@ -74,7 +74,8 @@ public class PostgresSqlGeneratorTests
         filterData.OrderInfo = data;
 
         var sqlQuery = sqlGenerator.GetSelectAll(x => x.Identifier == Guid.Empty, filterData);
-        Assert.Equal("SELECT \"Cities\".\"Identifier\", \"Cities\".\"Name\" FROM \"Cities\" WHERE \"Cities\".\"Identifier\" = @Identifier_p0 ORDER BY \"Cities\".\"Name\" ASC", sqlQuery.GetSql());
+        Assert.Equal("SELECT \"Cities\".\"Identifier\", \"Cities\".\"Name\" FROM \"Cities\" WHERE \"Cities\".\"Identifier\" = @Identifier_p0 ORDER BY \"Cities\".\"Name\" ASC",
+            sqlQuery.GetSql());
     }
 
     [Fact]
@@ -105,6 +106,38 @@ public class PostgresSqlGeneratorTests
         ISqlGenerator<City> sqlGenerator = new SqlGenerator<City>(_sqlConnector, true);
         var sqlQuery = sqlGenerator.GetSelectFirst(x => x.Identifier == Guid.Empty, null);
         Assert.Equal("SELECT \"Cities\".\"Identifier\", \"Cities\".\"Name\" FROM \"Cities\" WHERE \"Cities\".\"Identifier\" = @Identifier_p0 LIMIT 1", sqlQuery.GetSql());
+    }
+
+    [Fact]
+    public static void Update()
+    {
+        ISqlGenerator<User> userSqlGenerator = new SqlGenerator<User>(_sqlConnector);
+        var sqlQuery = userSqlGenerator.GetUpdate(new User());
+
+        Assert.Equal("UPDATE Users " +
+                     "SET Name = @UserName, " +
+                     "AddressId = @UserAddressId, " +
+                     "PhoneId = @UserPhoneId, " +
+                     "OfficePhoneId = @UserOfficePhoneId, " +
+                     "Deleted = @UserDeleted, " +
+                     "UpdatedAt = @UserUpdatedAt " +
+                     "WHERE Users.Id = @UserId", sqlQuery.GetSql());
+    }
+
+    [Fact]
+    public static void Update_QuoMarks()
+    {
+        ISqlGenerator<User> userSqlGenerator = new SqlGenerator<User>(_sqlConnector, true);
+        var sqlQuery = userSqlGenerator.GetUpdate(new User());
+
+        Assert.Equal("UPDATE \"Users\" " +
+                     "SET \"Name\" = @UserName, " +
+                     "\"AddressId\" = @UserAddressId, " +
+                     "\"PhoneId\" = @UserPhoneId, " +
+                     "\"OfficePhoneId\" = @UserOfficePhoneId, " +
+                     "\"Deleted\" = @UserDeleted, " +
+                     "\"UpdatedAt\" = @UserUpdatedAt " +
+                     "WHERE \"Users\".\"Id\" = @UserId", sqlQuery.GetSql());
     }
 
     [Fact]
