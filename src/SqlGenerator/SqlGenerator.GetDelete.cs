@@ -6,11 +6,11 @@ using MicroOrm.Dapper.Repositories.Attributes;
 
 namespace MicroOrm.Dapper.Repositories.SqlGenerator;
 
-/// <inheritdoc />
+
 public partial class SqlGenerator<TEntity>
     where TEntity : class
 {
-    /// <inheritdoc />
+
     public virtual SqlQuery GetDelete(TEntity entity)
     {
         var sqlQuery = new SqlQuery();
@@ -63,7 +63,7 @@ public partial class SqlGenerator<TEntity>
         return sqlQuery;
     }
 
-    /// <inheritdoc />
+
     public virtual SqlQuery GetDelete(Expression<Func<TEntity, bool>>? predicate)
     {
         var sqlQuery = new SqlQuery();

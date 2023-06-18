@@ -16,43 +16,43 @@ public partial class ReadOnlyDapperRepository<TEntity>
 {
     private const string _dateTimeFormat = "yyyy-MM-dd HH:mm:ss";
 
-    /// <inheritdoc />
+
     public virtual IEnumerable<TEntity> FindAllBetween(object from, object to, Expression<Func<TEntity, object>> btwField)
     {
         return FindAllBetween(from, to, btwField, transaction: null);
     }
 
-    /// <inheritdoc />
+
     public virtual Task<IEnumerable<TEntity>> FindAllBetweenAsync(object from, object to, Expression<Func<TEntity, object>> btwField)
     {
         return FindAllBetweenAsync(from, to, btwField, transaction: null, cancellationToken: default);
     }
 
-    /// <inheritdoc />
+
     public virtual Task<IEnumerable<TEntity>> FindAllBetweenAsync(object from, object to, Expression<Func<TEntity, object>> btwField, CancellationToken cancellationToken)
     {
         return FindAllBetweenAsync(from, to, btwField, transaction: null, cancellationToken: cancellationToken);
     }
 
-    /// <inheritdoc />
+
     public virtual IEnumerable<TEntity> FindAllBetween(object from, object to, Expression<Func<TEntity, object>> btwField, IDbTransaction? transaction)
     {
         return FindAllBetween(from, to, btwField, null, transaction);
     }
 
-    /// <inheritdoc />
+
     public virtual Task<IEnumerable<TEntity>> FindAllBetweenAsync(object from, object to, Expression<Func<TEntity, object>> btwField, IDbTransaction? transaction)
     {
         return FindAllBetweenAsync(from, to, btwField, null, transaction, cancellationToken: default);
     }
 
-    /// <inheritdoc />
+
     public virtual Task<IEnumerable<TEntity>> FindAllBetweenAsync(object from, object to, Expression<Func<TEntity, object>> btwField, IDbTransaction? transaction, CancellationToken cancellationToken)
     {
         return FindAllBetweenAsync(from, to, btwField, null, transaction, cancellationToken: cancellationToken);
     }
 
-    /// <inheritdoc />
+
     public virtual IEnumerable<TEntity> FindAllBetween(
         object from,
         object to,
@@ -62,7 +62,7 @@ public partial class ReadOnlyDapperRepository<TEntity>
         return FindAllBetween(from, to, btwField, transaction: null);
     }
 
-    /// <inheritdoc />
+
     public virtual Task<IEnumerable<TEntity>> FindAllBetweenAsync(
         object from,
         object to,
@@ -72,7 +72,7 @@ public partial class ReadOnlyDapperRepository<TEntity>
         return FindAllBetweenAsync(from, to, btwField, transaction: null, cancellationToken: default);
     }
 
-    /// <inheritdoc />
+
     public virtual Task<IEnumerable<TEntity>> FindAllBetweenAsync(
         object from,
         object to,
@@ -82,7 +82,7 @@ public partial class ReadOnlyDapperRepository<TEntity>
         return FindAllBetweenAsync(from, to, btwField, transaction: null, cancellationToken: cancellationToken);
     }
 
-    /// <inheritdoc />
+
     public virtual Task<IEnumerable<TEntity>> FindAllBetweenAsync(object from,
         object to,
         Expression<Func<TEntity, object>> btwField,
@@ -92,43 +92,43 @@ public partial class ReadOnlyDapperRepository<TEntity>
         return FindAllBetweenAsync(from, to, btwField, null, transaction, cancellationToken: default);
     }
 
-    /// <inheritdoc />
+
     public virtual IEnumerable<TEntity> FindAllBetween(DateTime from, DateTime to, Expression<Func<TEntity, object>> btwField)
     {
         return FindAllBetween(from, to, btwField, transaction: null);
     }
 
-    /// <inheritdoc />
+
     public virtual Task<IEnumerable<TEntity>> FindAllBetweenAsync(DateTime from, DateTime to, Expression<Func<TEntity, object>> btwField)
     {
         return FindAllBetweenAsync(from, to, btwField, transaction: null, cancellationToken: default);
     }
 
-    /// <inheritdoc />
+
     public virtual Task<IEnumerable<TEntity>> FindAllBetweenAsync(DateTime from, DateTime to, Expression<Func<TEntity, object>> btwField, CancellationToken cancellationToken)
     {
         return FindAllBetweenAsync(from, to, btwField, transaction: null, cancellationToken: cancellationToken);
     }
 
-    /// <inheritdoc />
+
     public virtual IEnumerable<TEntity> FindAllBetween(DateTime from, DateTime to, Expression<Func<TEntity, object>> btwField, IDbTransaction? transaction)
     {
         return FindAllBetween(from, to, btwField, null, transaction);
     }
 
-    /// <inheritdoc />
+
     public virtual Task<IEnumerable<TEntity>> FindAllBetweenAsync(DateTime from, DateTime to, Expression<Func<TEntity, object>> btwField, IDbTransaction? transaction)
     {
         return FindAllBetweenAsync(from, to, btwField, null, transaction, cancellationToken: default);
     }
 
-    /// <inheritdoc />
+
     public virtual Task<IEnumerable<TEntity>> FindAllBetweenAsync(DateTime from, DateTime to, Expression<Func<TEntity, object>> btwField, IDbTransaction? transaction, CancellationToken cancellationToken)
     {
         return FindAllBetweenAsync(from, to, btwField, null, transaction, cancellationToken: cancellationToken);
     }
 
-    /// <inheritdoc />
+
     public virtual IEnumerable<TEntity> FindAllBetween(
         DateTime from,
         DateTime to,
@@ -138,7 +138,7 @@ public partial class ReadOnlyDapperRepository<TEntity>
         return FindAllBetween(from, to, btwField, transaction: null);
     }
 
-    /// <inheritdoc />
+
     public virtual Task<IEnumerable<TEntity>> FindAllBetweenAsync(
         DateTime from,
         DateTime to,
@@ -148,7 +148,7 @@ public partial class ReadOnlyDapperRepository<TEntity>
         return FindAllBetweenAsync(from, to, btwField, transaction: null, cancellationToken: default);
     }
 
-    /// <inheritdoc />
+
     public virtual Task<IEnumerable<TEntity>> FindAllBetweenAsync(
         DateTime from,
         DateTime to,
@@ -158,7 +158,7 @@ public partial class ReadOnlyDapperRepository<TEntity>
         return FindAllBetweenAsync(from, to, btwField, transaction: null, cancellationToken: cancellationToken);
     }
 
-    /// <inheritdoc />
+
     public virtual Task<IEnumerable<TEntity>> FindAllBetweenAsync(DateTime from,
         DateTime to,
         Expression<Func<TEntity, object>> btwField,
@@ -168,7 +168,7 @@ public partial class ReadOnlyDapperRepository<TEntity>
         return FindAllBetweenAsync(from, to, btwField, null, transaction, cancellationToken: default);
     }
 
-    /// <inheritdoc />
+
     public virtual IEnumerable<TEntity> FindAllBetween(
         DateTime from,
         DateTime to,
@@ -181,7 +181,7 @@ public partial class ReadOnlyDapperRepository<TEntity>
         return FindAllBetween(fromString, toString, btwField, predicate, transaction);
     }
 
-    /// <inheritdoc />
+
     public virtual IEnumerable<TEntity> FindAllBetween(
         object from,
         object to,
@@ -193,7 +193,7 @@ public partial class ReadOnlyDapperRepository<TEntity>
         return Connection.Query<TEntity>(queryResult.GetSql(), queryResult.Param, transaction);
     }
 
-    /// <inheritdoc />
+
     public virtual Task<IEnumerable<TEntity>> FindAllBetweenAsync(
         DateTime from,
         DateTime to,
@@ -205,7 +205,7 @@ public partial class ReadOnlyDapperRepository<TEntity>
         return FindAllBetweenAsync(from.ToString(_dateTimeFormat), to.ToString(_dateTimeFormat), btwField, predicate, transaction, cancellationToken);
     }
 
-    /// <inheritdoc />
+
     public virtual Task<IEnumerable<TEntity>> FindAllBetweenAsync(
         object from,
         object to,

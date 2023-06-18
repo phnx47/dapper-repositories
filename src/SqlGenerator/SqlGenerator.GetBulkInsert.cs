@@ -6,11 +6,11 @@ using MicroOrm.Dapper.Repositories.Attributes;
 
 namespace MicroOrm.Dapper.Repositories.SqlGenerator;
 
-/// <inheritdoc />
+
 public partial class SqlGenerator<TEntity>
     where TEntity : class
 {
-    /// <inheritdoc />
+
     public virtual SqlQuery GetBulkInsert(IEnumerable<TEntity> entities)
     {
         var entitiesArray = entities as TEntity[] ?? entities.ToArray();

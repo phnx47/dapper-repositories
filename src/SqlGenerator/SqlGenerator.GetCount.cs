@@ -4,11 +4,11 @@ using System.Linq.Expressions;
 
 namespace MicroOrm.Dapper.Repositories.SqlGenerator;
 
-/// <inheritdoc />
+
 public partial class SqlGenerator<TEntity>
     where TEntity : class
 {
-    /// <inheritdoc />
+
     public virtual SqlQuery GetCount(Expression<Func<TEntity, bool>>? predicate, params Expression<Func<TEntity, object>>[] includes)
     {
         var sqlQuery = new SqlQuery();
@@ -39,7 +39,7 @@ public partial class SqlGenerator<TEntity>
         return sqlQuery;
     }
 
-    /// <inheritdoc />
+
     public virtual SqlQuery GetCount(Expression<Func<TEntity, bool>>? predicate, Expression<Func<TEntity, object>> distinctField,
         params Expression<Func<TEntity, object>>[] includes)
     {

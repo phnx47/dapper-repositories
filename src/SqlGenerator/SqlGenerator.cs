@@ -6,7 +6,7 @@ using MicroOrm.Dapper.Repositories.Config;
 
 namespace MicroOrm.Dapper.Repositories.SqlGenerator;
 
-/// <inheritdoc />
+
 public partial class SqlGenerator<TEntity> : ISqlGenerator<TEntity>
     where TEntity : class
 {
@@ -60,51 +60,51 @@ public partial class SqlGenerator<TEntity> : ISqlGenerator<TEntity>
     /// </summary>
     public bool? UseQuotationMarks { get; set; }
 
-    /// <inheritdoc />
+
     public PropertyInfo[] AllProperties { get; protected set; } = Array.Empty<PropertyInfo>();
 
-    /// <inheritdoc />
+
     [MemberNotNullWhen(true, nameof(UpdatedAtProperty), nameof(UpdatedAtPropertyMetadata))]
     public bool HasUpdatedAt => UpdatedAtProperty != null;
 
-    /// <inheritdoc />
+
     public PropertyInfo? UpdatedAtProperty { get; protected set; }
 
-    /// <inheritdoc />
+
     public SqlPropertyMetadata? UpdatedAtPropertyMetadata { get; protected set; }
 
-    /// <inheritdoc />
+
     [MemberNotNullWhen(true, nameof(IdentitySqlProperty))]
     public bool IsIdentity => IdentitySqlProperty != null;
 
-    /// <inheritdoc />
+
     public string TableName { get; protected set; } = string.Empty;
 
-    /// <inheritdoc />
+
     public string? TableSchema { get; protected set; }
 
-    /// <inheritdoc />
+
     public SqlPropertyMetadata? IdentitySqlProperty { get; protected set; }
 
-    /// <inheritdoc />
+
     public SqlPropertyMetadata[] KeySqlProperties { get; protected set; } = Array.Empty<SqlPropertyMetadata>();
 
-    /// <inheritdoc />
+
     public SqlPropertyMetadata[] SqlProperties { get; protected set; } = Array.Empty<SqlPropertyMetadata>();
 
-    /// <inheritdoc />
+
     public SqlJoinPropertyMetadata[] SqlJoinProperties { get; protected set; }= Array.Empty<SqlJoinPropertyMetadata>();
 
-    /// <inheritdoc />
+
     public bool LogicalDelete { get; protected set; }
 
-    /// <inheritdoc />
+
     public Dictionary<string, PropertyInfo>? JoinsLogicalDelete { get; protected set; }
 
-    /// <inheritdoc />
+
     public string? StatusPropertyName { get; protected set; }
 
-    /// <inheritdoc />
+
     public object? LogicalDeleteValue { get; protected set; }
 
     /// <summary>

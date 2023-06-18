@@ -2,7 +2,7 @@
 
 namespace MicroOrm.Dapper.Repositories.Attributes;
 
-/// <inheritdoc />
+
 /// <summary>
 ///     Ignore property attribute
 /// </summary>

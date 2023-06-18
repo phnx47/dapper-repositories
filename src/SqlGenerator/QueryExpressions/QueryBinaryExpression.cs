@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 namespace MicroOrm.Dapper.Repositories.SqlGenerator.QueryExpressions;
 
-/// <inheritdoc />
+
 /// <summary>
 /// `Binary` Query Expression
 /// </summary>

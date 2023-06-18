@@ -7,7 +7,7 @@ using MicroOrm.Dapper.Repositories.Attributes.LogicalDelete;
 
 namespace MicroOrm.Dapper.Repositories.SqlGenerator;
 
-/// <inheritdoc />
+
 public partial class SqlGenerator<TEntity>
     where TEntity : class
 {

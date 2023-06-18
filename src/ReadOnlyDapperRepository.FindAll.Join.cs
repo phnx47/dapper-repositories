@@ -13,14 +13,14 @@ namespace MicroOrm.Dapper.Repositories;
 public partial class ReadOnlyDapperRepository<TEntity>
     where TEntity : class
 {
-    /// <inheritdoc />
+
     public virtual IEnumerable<TEntity> FindAll<TChild1>(Expression<Func<TEntity, bool>>? predicate,
         Expression<Func<TEntity, object>> tChild1)
     {
         return FindAll<TChild1>(predicate, tChild1, null);
     }
 
-    /// <inheritdoc />
+
     public virtual IEnumerable<TEntity> FindAll<TChild1>(Expression<Func<TEntity, bool>>? predicate,
         Expression<Func<TEntity, object>> tChild1,
         IDbTransaction? transaction)
@@ -29,7 +29,7 @@ public partial class ReadOnlyDapperRepository<TEntity>
         return ExecuteJoinQuery<TChild1, DontMap, DontMap, DontMap, DontMap, DontMap>(queryResult, transaction, tChild1);
     }
 
-    /// <inheritdoc />
+
     public virtual IEnumerable<TEntity> FindAll<TChild1, TChild2>(Expression<Func<TEntity, bool>>? predicate,
         Expression<Func<TEntity, object>> tChild1,
         Expression<Func<TEntity, object>> tChild2)
@@ -37,7 +37,7 @@ public partial class ReadOnlyDapperRepository<TEntity>
         return FindAll<TChild1, TChild2>(predicate, tChild1, tChild2, null);
     }
 
-    /// <inheritdoc />
+
     public virtual IEnumerable<TEntity> FindAll<TChild1, TChild2>(
         Expression<Func<TEntity, bool>>? predicate,
         Expression<Func<TEntity, object>> tChild1,
@@ -48,7 +48,7 @@ public partial class ReadOnlyDapperRepository<TEntity>
         return ExecuteJoinQuery<TChild1, TChild2, DontMap, DontMap, DontMap, DontMap>(sqlQuery, transaction, tChild1, tChild2);
     }
 
-    /// <inheritdoc />
+
     public virtual IEnumerable<TEntity> FindAll<TChild1, TChild2, TChild3>(Expression<Func<TEntity, bool>>? predicate,
         Expression<Func<TEntity, object>> tChild1,
         Expression<Func<TEntity, object>> tChild2,
@@ -57,7 +57,7 @@ public partial class ReadOnlyDapperRepository<TEntity>
         return FindAll<TChild1, TChild2, TChild3>(predicate, tChild1, tChild2, tChild3, null);
     }
 
-    /// <inheritdoc />
+
     public virtual IEnumerable<TEntity> FindAll<TChild1, TChild2, TChild3>(
         Expression<Func<TEntity, bool>>? predicate,
         Expression<Func<TEntity, object>> tChild1,
@@ -69,7 +69,7 @@ public partial class ReadOnlyDapperRepository<TEntity>
         return ExecuteJoinQuery<TChild1, TChild2, TChild3, DontMap, DontMap, DontMap>(sqlQuery, transaction, tChild1, tChild2, tChild3);
     }
 
-    /// <inheritdoc />
+
     public virtual IEnumerable<TEntity> FindAll<TChild1, TChild2, TChild3, TChild4>(Expression<Func<TEntity, bool>>? predicate,
         Expression<Func<TEntity, object>> tChild1,
         Expression<Func<TEntity, object>> tChild2,
@@ -79,7 +79,7 @@ public partial class ReadOnlyDapperRepository<TEntity>
         return FindAll<TChild1, TChild2, TChild3, TChild4>(predicate, tChild1, tChild2, tChild3, tChild4, null);
     }
 
-    /// <inheritdoc />
+
     public virtual IEnumerable<TEntity> FindAll<TChild1, TChild2, TChild3, TChild4>(
         Expression<Func<TEntity, bool>>? predicate,
         Expression<Func<TEntity, object>> tChild1,
@@ -92,7 +92,7 @@ public partial class ReadOnlyDapperRepository<TEntity>
         return ExecuteJoinQuery<TChild1, TChild2, TChild3, TChild4, DontMap, DontMap>(sqlQuery, transaction, tChild1, tChild2, tChild3, tChild4);
     }
 
-    /// <inheritdoc />
+
     public virtual IEnumerable<TEntity> FindAll<TChild1, TChild2, TChild3, TChild4, TChild5>(Expression<Func<TEntity, bool>>? predicate,
         Expression<Func<TEntity, object>> tChild1,
         Expression<Func<TEntity, object>> tChild2,
@@ -103,7 +103,7 @@ public partial class ReadOnlyDapperRepository<TEntity>
         return FindAll<TChild1, TChild2, TChild3, TChild4, TChild5>(predicate, tChild1, tChild2, tChild3, tChild4, tChild5, null);
     }
 
-    /// <inheritdoc />
+
     public virtual IEnumerable<TEntity> FindAll<TChild1, TChild2, TChild3, TChild4, TChild5>(
         Expression<Func<TEntity, bool>>? predicate,
         Expression<Func<TEntity, object>> tChild1,
@@ -117,7 +117,7 @@ public partial class ReadOnlyDapperRepository<TEntity>
         return ExecuteJoinQuery<TChild1, TChild2, TChild3, TChild4, TChild5, DontMap>(sqlQuery, transaction, tChild1, tChild2, tChild3, tChild4, tChild5);
     }
 
-    /// <inheritdoc />
+
     public virtual IEnumerable<TEntity> FindAll<TChild1, TChild2, TChild3, TChild4, TChild5, TChild6>(Expression<Func<TEntity, bool>>? predicate,
         Expression<Func<TEntity, object>> tChild1,
         Expression<Func<TEntity, object>> tChild2,
@@ -129,7 +129,7 @@ public partial class ReadOnlyDapperRepository<TEntity>
         return FindAll<TChild1, TChild2, TChild3, TChild4, TChild5, TChild6>(predicate, tChild1, tChild2, tChild3, tChild4, tChild5, tChild6, null);
     }
 
-    /// <inheritdoc />
+
     public virtual IEnumerable<TEntity> FindAll<TChild1, TChild2, TChild3, TChild4, TChild5, TChild6>(
         Expression<Func<TEntity, bool>>? predicate,
         Expression<Func<TEntity, object>> tChild1,
@@ -144,14 +144,14 @@ public partial class ReadOnlyDapperRepository<TEntity>
         return ExecuteJoinQuery<TChild1, TChild2, TChild3, TChild4, TChild5, TChild6>(sqlQuery, transaction, tChild1, tChild2, tChild3, tChild4, tChild5, tChild6);
     }
 
-    /// <inheritdoc />
+
     public virtual Task<IEnumerable<TEntity>> FindAllAsync<TChild1>(Expression<Func<TEntity, bool>>? predicate,
         Expression<Func<TEntity, object>> tChild1)
     {
         return FindAllAsync<TChild1>(predicate, tChild1, null, cancellationToken: default);
     }
 
-    /// <inheritdoc />
+
     public virtual Task<IEnumerable<TEntity>> FindAllAsync<TChild1>(Expression<Func<TEntity, bool>>? predicate,
         Expression<Func<TEntity, object>> tChild1,
         CancellationToken cancellationToken)
@@ -159,7 +159,7 @@ public partial class ReadOnlyDapperRepository<TEntity>
         return FindAllAsync<TChild1>(predicate, tChild1, null, cancellationToken: cancellationToken);
     }
 
-    /// <inheritdoc />
+
     public virtual Task<IEnumerable<TEntity>> FindAllAsync<TChild1>(Expression<Func<TEntity, bool>>? predicate,
         Expression<Func<TEntity, object>> tChild1,
         IDbTransaction? transaction)
@@ -167,7 +167,7 @@ public partial class ReadOnlyDapperRepository<TEntity>
         return FindAllAsync<TChild1>(predicate, tChild1, transaction, cancellationToken: default);
     }
 
-    /// <inheritdoc />
+
     public virtual Task<IEnumerable<TEntity>> FindAllAsync<TChild1>(Expression<Func<TEntity, bool>>? predicate,
         Expression<Func<TEntity, object>> tChild1,
         IDbTransaction? transaction,
@@ -177,7 +177,7 @@ public partial class ReadOnlyDapperRepository<TEntity>
         return ExecuteJoinQueryAsync<TChild1, DontMap, DontMap, DontMap, DontMap, DontMap>(queryResult, transaction, cancellationToken, tChild1);
     }
 
-    /// <inheritdoc />
+
     public virtual Task<IEnumerable<TEntity>> FindAllAsync<TChild1, TChild2>(Expression<Func<TEntity, bool>>? predicate,
         Expression<Func<TEntity, object>> tChild1,
         Expression<Func<TEntity, object>> tChild2)
@@ -185,7 +185,7 @@ public partial class ReadOnlyDapperRepository<TEntity>
         return FindAllAsync<TChild1, TChild2>(predicate, tChild1, tChild2, null, cancellationToken: default);
     }
 
-    /// <inheritdoc />
+
     public virtual Task<IEnumerable<TEntity>> FindAllAsync<TChild1, TChild2>(Expression<Func<TEntity, bool>>? predicate,
         Expression<Func<TEntity, object>> tChild1,
         Expression<Func<TEntity, object>> tChild2,
@@ -194,7 +194,7 @@ public partial class ReadOnlyDapperRepository<TEntity>
         return FindAllAsync<TChild1, TChild2>(predicate, tChild1, tChild2, null, cancellationToken: cancellationToken);
     }
 
-    /// <inheritdoc />
+
     public virtual Task<IEnumerable<TEntity>> FindAllAsync<TChild1, TChild2>(Expression<Func<TEntity, bool>>? predicate,
         Expression<Func<TEntity, object>> tChild1,
         Expression<Func<TEntity, object>> tChild2,
@@ -203,7 +203,7 @@ public partial class ReadOnlyDapperRepository<TEntity>
         return FindAllAsync<TChild1, TChild2>(predicate, tChild1, tChild2, transaction, cancellationToken: default);
     }
 
-    /// <inheritdoc />
+
     public virtual Task<IEnumerable<TEntity>> FindAllAsync<TChild1, TChild2>(
         Expression<Func<TEntity, bool>>? predicate,
         Expression<Func<TEntity, object>> tChild1,
@@ -215,7 +215,7 @@ public partial class ReadOnlyDapperRepository<TEntity>
         return ExecuteJoinQueryAsync<TChild1, TChild2, DontMap, DontMap, DontMap, DontMap>(sqlQuery, transaction, cancellationToken, tChild1, tChild2);
     }
 
-    /// <inheritdoc />
+
     public virtual Task<IEnumerable<TEntity>> FindAllAsync<TChild1, TChild2, TChild3>(Expression<Func<TEntity, bool>>? predicate,
         Expression<Func<TEntity, object>> tChild1,
         Expression<Func<TEntity, object>> tChild2,
@@ -224,7 +224,7 @@ public partial class ReadOnlyDapperRepository<TEntity>
         return FindAllAsync<TChild1, TChild2, TChild3>(predicate, tChild1, tChild2, tChild3, null, cancellationToken: default);
     }
 
-    /// <inheritdoc />
+
     public virtual Task<IEnumerable<TEntity>> FindAllAsync<TChild1, TChild2, TChild3>(Expression<Func<TEntity, bool>>? predicate,
         Expression<Func<TEntity, object>> tChild1,
         Expression<Func<TEntity, object>> tChild2,
@@ -234,7 +234,7 @@ public partial class ReadOnlyDapperRepository<TEntity>
         return FindAllAsync<TChild1, TChild2, TChild3>(predicate, tChild1, tChild2, tChild3, null, cancellationToken: cancellationToken);
     }
 
-    /// <inheritdoc />
+
     public virtual Task<IEnumerable<TEntity>> FindAllAsync<TChild1, TChild2, TChild3>(Expression<Func<TEntity, bool>>? predicate,
         Expression<Func<TEntity, object>> tChild1,
         Expression<Func<TEntity, object>> tChild2,
@@ -244,7 +244,7 @@ public partial class ReadOnlyDapperRepository<TEntity>
         return FindAllAsync<TChild1, TChild2, TChild3>(predicate, tChild1, tChild2, tChild3, transaction, cancellationToken: default);
     }
 
-    /// <inheritdoc />
+
     public virtual Task<IEnumerable<TEntity>> FindAllAsync<TChild1, TChild2, TChild3>(
         Expression<Func<TEntity, bool>>? predicate,
         Expression<Func<TEntity, object>> tChild1,
@@ -257,7 +257,7 @@ public partial class ReadOnlyDapperRepository<TEntity>
         return ExecuteJoinQueryAsync<TChild1, TChild2, TChild3, DontMap, DontMap, DontMap>(sqlQuery, transaction, cancellationToken, tChild1, tChild2, tChild3);
     }
 
-    /// <inheritdoc />
+
     public virtual Task<IEnumerable<TEntity>> FindAllAsync<TChild1, TChild2, TChild3, TChild4>(Expression<Func<TEntity, bool>>? predicate,
         Expression<Func<TEntity, object>> tChild1,
         Expression<Func<TEntity, object>> tChild2,
@@ -267,7 +267,7 @@ public partial class ReadOnlyDapperRepository<TEntity>
         return FindAllAsync<TChild1, TChild2, TChild3, TChild4>(predicate, tChild1, tChild2, tChild3, tChild4, null, cancellationToken: default);
     }
 
-    /// <inheritdoc />
+
     public virtual Task<IEnumerable<TEntity>> FindAllAsync<TChild1, TChild2, TChild3, TChild4>(Expression<Func<TEntity, bool>>? predicate,
         Expression<Func<TEntity, object>> tChild1,
         Expression<Func<TEntity, object>> tChild2,
@@ -278,7 +278,7 @@ public partial class ReadOnlyDapperRepository<TEntity>
         return FindAllAsync<TChild1, TChild2, TChild3, TChild4>(predicate, tChild1, tChild2, tChild3, tChild4, null, cancellationToken: cancellationToken);
     }
 
-    /// <inheritdoc />
+
     public virtual Task<IEnumerable<TEntity>> FindAllAsync<TChild1, TChild2, TChild3, TChild4>(Expression<Func<TEntity, bool>>? predicate,
         Expression<Func<TEntity, object>> tChild1,
         Expression<Func<TEntity, object>> tChild2,
@@ -289,7 +289,7 @@ public partial class ReadOnlyDapperRepository<TEntity>
         return FindAllAsync<TChild1, TChild2, TChild3, TChild4>(predicate, tChild1, tChild2, tChild3, tChild4, transaction, cancellationToken: default);
     }
 
-    /// <inheritdoc />
+
     public virtual Task<IEnumerable<TEntity>> FindAllAsync<TChild1, TChild2, TChild3, TChild4>(
         Expression<Func<TEntity, bool>>? predicate,
         Expression<Func<TEntity, object>> tChild1,
@@ -303,7 +303,7 @@ public partial class ReadOnlyDapperRepository<TEntity>
         return ExecuteJoinQueryAsync<TChild1, TChild2, TChild3, TChild4, DontMap, DontMap>(sqlQuery, transaction, cancellationToken, tChild1, tChild2, tChild3, tChild4);
     }
 
-    /// <inheritdoc />
+
     public virtual Task<IEnumerable<TEntity>> FindAllAsync<TChild1, TChild2, TChild3, TChild4, TChild5>(Expression<Func<TEntity, bool>>? predicate,
         Expression<Func<TEntity, object>> tChild1,
         Expression<Func<TEntity, object>> tChild2,
@@ -314,7 +314,7 @@ public partial class ReadOnlyDapperRepository<TEntity>
         return FindAllAsync<TChild1, TChild2, TChild3, TChild4, TChild5>(predicate, tChild1, tChild2, tChild3, tChild4, tChild5, null, cancellationToken: default);
     }
 
-    /// <inheritdoc />
+
     public virtual Task<IEnumerable<TEntity>> FindAllAsync<TChild1, TChild2, TChild3, TChild4, TChild5>(Expression<Func<TEntity, bool>>? predicate,
         Expression<Func<TEntity, object>> tChild1,
         Expression<Func<TEntity, object>> tChild2,
@@ -326,7 +326,7 @@ public partial class ReadOnlyDapperRepository<TEntity>
         return FindAllAsync<TChild1, TChild2, TChild3, TChild4, TChild5>(predicate, tChild1, tChild2, tChild3, tChild4, tChild5, null, cancellationToken: cancellationToken);
     }
 
-    /// <inheritdoc />
+
     public virtual Task<IEnumerable<TEntity>> FindAllAsync<TChild1, TChild2, TChild3, TChild4, TChild5>(Expression<Func<TEntity, bool>>? predicate,
         Expression<Func<TEntity, object>> tChild1,
         Expression<Func<TEntity, object>> tChild2,
@@ -338,7 +338,7 @@ public partial class ReadOnlyDapperRepository<TEntity>
         return FindAllAsync<TChild1, TChild2, TChild3, TChild4, TChild5>(predicate, tChild1, tChild2, tChild3, tChild4, tChild5, transaction, cancellationToken: default);
     }
 
-    /// <inheritdoc />
+
     public virtual Task<IEnumerable<TEntity>> FindAllAsync<TChild1, TChild2, TChild3, TChild4, TChild5>(
         Expression<Func<TEntity, bool>>? predicate,
         Expression<Func<TEntity, object>> tChild1,
@@ -353,7 +353,7 @@ public partial class ReadOnlyDapperRepository<TEntity>
         return ExecuteJoinQueryAsync<TChild1, TChild2, TChild3, TChild4, TChild5, DontMap>(sqlQuery, transaction, cancellationToken, tChild1, tChild2, tChild3, tChild4, tChild5);
     }
 
-    /// <inheritdoc />
+
     public virtual Task<IEnumerable<TEntity>> FindAllAsync<TChild1, TChild2, TChild3, TChild4, TChild5, TChild6>(Expression<Func<TEntity, bool>>? predicate,
         Expression<Func<TEntity, object>> tChild1,
         Expression<Func<TEntity, object>> tChild2,
@@ -365,7 +365,7 @@ public partial class ReadOnlyDapperRepository<TEntity>
         return FindAllAsync<TChild1, TChild2, TChild3, TChild4, TChild5, TChild6>(predicate, tChild1, tChild2, tChild3, tChild4, tChild5, tChild6, null, cancellationToken: default);
     }
 
-    /// <inheritdoc />
+
     public virtual Task<IEnumerable<TEntity>> FindAllAsync<TChild1, TChild2, TChild3, TChild4, TChild5, TChild6>(Expression<Func<TEntity, bool>>? predicate,
         Expression<Func<TEntity, object>> tChild1,
         Expression<Func<TEntity, object>> tChild2,
@@ -378,7 +378,7 @@ public partial class ReadOnlyDapperRepository<TEntity>
         return FindAllAsync<TChild1, TChild2, TChild3, TChild4, TChild5, TChild6>(predicate, tChild1, tChild2, tChild3, tChild4, tChild5, tChild6, null, cancellationToken: cancellationToken);
     }
 
-    /// <inheritdoc />
+
     public virtual Task<IEnumerable<TEntity>> FindAllAsync<TChild1, TChild2, TChild3, TChild4, TChild5, TChild6>(Expression<Func<TEntity, bool>>? predicate,
         Expression<Func<TEntity, object>> tChild1,
         Expression<Func<TEntity, object>> tChild2,
@@ -391,7 +391,7 @@ public partial class ReadOnlyDapperRepository<TEntity>
         return FindAllAsync<TChild1, TChild2, TChild3, TChild4, TChild5, TChild6>(predicate, tChild1, tChild2, tChild3, tChild4, tChild5, tChild6, transaction, cancellationToken: default);
     }
 
-    /// <inheritdoc />
+
     public virtual Task<IEnumerable<TEntity>> FindAllAsync<TChild1, TChild2, TChild3, TChild4, TChild5, TChild6>(
         Expression<Func<TEntity, bool>>? predicate,
         Expression<Func<TEntity, object>> tChild1,

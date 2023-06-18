@@ -15,7 +15,7 @@ public class SqlQuery
         SqlBuilder = new StringBuilder();
     }
 
-    /// <inheritdoc />
+
     /// <summary>
     ///     Initializes a new instance of the class.
     /// </summary>

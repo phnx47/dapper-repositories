@@ -8,14 +8,14 @@ namespace MicroOrm.Dapper.Repositories;
 public partial class ReadOnlyDapperRepository<TEntity>
     where TEntity : class
 {
-    /// <inheritdoc />
+
     public virtual IReadOnlyDapperRepository<TEntity> SetLimit()
     {
         FilterData.LimitInfo = null;
         return this;
     }
 
-    /// <inheritdoc />
+
     public virtual IReadOnlyDapperRepository<TEntity> SetLimit(uint limit, uint? offset, bool permanent)
     {
         if (limit <= 0)
@@ -30,13 +30,13 @@ public partial class ReadOnlyDapperRepository<TEntity>
         return this;
     }
 
-    /// <inheritdoc />
+
     public virtual IReadOnlyDapperRepository<TEntity> SetLimit(uint limit)
     {
         return SetLimit(limit, null, false);
     }
 
-    /// <inheritdoc />
+
     public virtual IReadOnlyDapperRepository<TEntity> SetLimit(uint limit, uint offset)
     {
         return SetLimit(limit, offset, false);

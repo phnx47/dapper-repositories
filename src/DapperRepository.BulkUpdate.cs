@@ -15,13 +15,13 @@ namespace MicroOrm.Dapper.Repositories;
 public partial class DapperRepository<TEntity>
     where TEntity : class
 {
-    /// <inheritdoc />
+
     public virtual bool BulkUpdate(IEnumerable<TEntity> instances)
     {
         return BulkUpdate(instances, null);
     }
 
-    /// <inheritdoc />
+
     public virtual bool BulkUpdate(IEnumerable<TEntity> instances, IDbTransaction? transaction)
     {
         if (SqlGenerator.Provider == SqlProvider.MSSQL)
@@ -58,25 +58,25 @@ public partial class DapperRepository<TEntity>
         return result;
     }
 
-    /// <inheritdoc />
+
     public virtual Task<bool> BulkUpdateAsync(IEnumerable<TEntity> instances)
     {
         return BulkUpdateAsync(instances, null, CancellationToken.None);
     }
 
-    /// <inheritdoc />
+
     public virtual Task<bool> BulkUpdateAsync(IEnumerable<TEntity> instances, CancellationToken cancellationToken)
     {
         return BulkUpdateAsync(instances, null, cancellationToken);
     }
 
-    /// <inheritdoc />
+
     public virtual Task<bool> BulkUpdateAsync(IEnumerable<TEntity> instances, IDbTransaction? transaction)
     {
         return BulkUpdateAsync(instances, transaction, CancellationToken.None);
     }
 
-    /// <inheritdoc />
+
     public virtual async Task<bool> BulkUpdateAsync(IEnumerable<TEntity> instances, IDbTransaction? transaction, CancellationToken cancellationToken)
     {
         if (SqlGenerator.Provider == SqlProvider.MSSQL)

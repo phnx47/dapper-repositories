@@ -7,7 +7,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator;
 /// </summary>
 public class SqlJoinPropertyMetadata : SqlPropertyMetadata
 {
-    /// <inheritdoc />
+
     /// <summary>
     ///     Metadata for join property info
     /// </summary>

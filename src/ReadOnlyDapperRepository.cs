@@ -38,13 +38,13 @@ public partial class ReadOnlyDapperRepository<TEntity> : IReadOnlyDapperReposito
         SqlGenerator = sqlGenerator;
     }
 
-    /// <inheritdoc />
+
     public IDbConnection Connection => _connection ?? throw new ObjectDisposedException(GetType().FullName);
 
-    /// <inheritdoc />
+
     public FilterData FilterData => _filterData ?? throw new ObjectDisposedException(GetType().FullName);
 
-    /// <inheritdoc />
+
     public ISqlGenerator<TEntity> SqlGenerator { get; }
 
     private static string GetProperty(Expression expression, Type type)
@@ -63,7 +63,7 @@ public partial class ReadOnlyDapperRepository<TEntity> : IReadOnlyDapperReposito
         return $"{tableName}.{name}";
     }
 
-    /// <inheritdoc />
+
     public void Dispose()
     {
         _connection?.Dispose();

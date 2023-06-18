@@ -6,7 +6,7 @@ using MicroOrm.Dapper.Repositories.SqlGenerator.Filters;
 
 namespace MicroOrm.Dapper.Repositories.SqlGenerator;
 
-/// <inheritdoc />
+
 public partial class SqlGenerator<TEntity>
     where TEntity : class
 {
@@ -244,19 +244,19 @@ public partial class SqlGenerator<TEntity>
         filterData.Ordered = true;
     }
 
-    /// <inheritdoc />
+
     public virtual SqlQuery GetSelectFirst(Expression<Func<TEntity, bool>>? predicate, FilterData? filterData, params Expression<Func<TEntity, object>>[] includes)
     {
         return GetSelect(predicate, includes.Length == 0, filterData, includes);
     }
 
-    /// <inheritdoc />
+
     public virtual SqlQuery GetSelectAll(Expression<Func<TEntity, bool>>? predicate, FilterData? filterData, params Expression<Func<TEntity, object>>[] includes)
     {
         return GetSelect(predicate, false, filterData, includes);
     }
 
-    /// <inheritdoc />
+
     public virtual SqlQuery GetSelectById(object id, FilterData? filterData, params Expression<Func<TEntity, object>>[] includes)
     {
         var param = GetKeysParam(id);
@@ -314,13 +314,13 @@ public partial class SqlGenerator<TEntity>
         return sqlQuery;
     }
 
-    /// <inheritdoc />
+
     public virtual SqlQuery GetSelectBetween(object from, object to, FilterData? filterData, Expression<Func<TEntity, object>> btwField)
     {
         return GetSelectBetween(from, to, filterData, btwField, null);
     }
 
-    /// <inheritdoc />
+
     public virtual SqlQuery GetSelectBetween(object from, object to, FilterData? filterData, Expression<Func<TEntity, object>> btwField,
         Expression<Func<TEntity, bool>>? predicate)
     {

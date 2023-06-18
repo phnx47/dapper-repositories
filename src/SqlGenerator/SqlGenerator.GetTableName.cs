@@ -3,7 +3,7 @@ using MicroOrm.Dapper.Repositories.Attributes.Joins;
 
 namespace MicroOrm.Dapper.Repositories.SqlGenerator;
 
-/// <inheritdoc />
+
 public partial class SqlGenerator<TEntity>
     where TEntity : class
 {

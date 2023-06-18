@@ -7,11 +7,11 @@ using MicroOrm.Dapper.Repositories.Extensions;
 
 namespace MicroOrm.Dapper.Repositories.SqlGenerator;
 
-/// <inheritdoc />
+
 public partial class SqlGenerator<TEntity>
     where TEntity : class
 {
-    /// <inheritdoc />
+
     public virtual SqlQuery GetInsert(TEntity entity)
     {
         var properties =

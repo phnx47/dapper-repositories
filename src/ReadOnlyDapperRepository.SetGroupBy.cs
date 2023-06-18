@@ -12,21 +12,21 @@ namespace MicroOrm.Dapper.Repositories;
 public partial class ReadOnlyDapperRepository<TEntity>
     where TEntity : class
 {
-    /// <inheritdoc />
+
     public virtual IReadOnlyDapperRepository<TEntity> SetGroupBy()
     {
         FilterData.OrderInfo = null;
         return this;
     }
 
-    /// <inheritdoc />
+
     public virtual IReadOnlyDapperRepository<TEntity> SetGroupBy(bool permanent,
         Expression<Func<TEntity, object>> expr)
     {
         return SetGroupBy<TEntity>(permanent, expr);
     }
 
-    /// <inheritdoc />
+
     public virtual IReadOnlyDapperRepository<TEntity> SetGroupBy<T>(bool permanent,
         Expression<Func<T, object>> expr)
     {
@@ -63,13 +63,13 @@ public partial class ReadOnlyDapperRepository<TEntity>
         return this;
     }
 
-    /// <inheritdoc />
+
     public virtual IReadOnlyDapperRepository<TEntity> SetGroupBy(Expression<Func<TEntity, object>> expr)
     {
         return SetGroupBy(false, expr);
     }
 
-    /// <inheritdoc />
+
     public virtual IReadOnlyDapperRepository<TEntity> SetOrderBy<T>(Expression<Func<T, object>> expr)
     {
         return SetGroupBy(false, expr);

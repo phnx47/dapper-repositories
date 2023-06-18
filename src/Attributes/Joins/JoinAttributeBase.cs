@@ -3,13 +3,13 @@ using MicroOrm.Dapper.Repositories.Config;
 
 namespace MicroOrm.Dapper.Repositories.Attributes.Joins;
 
-/// <inheritdoc />
+
 /// <summary>
 ///     Base JOIN for LEFT/INNER/RIGHT
 /// </summary>
 public abstract class JoinAttributeBase : Attribute
 {
-    /// <inheritdoc />
+
     /// <summary>
     ///     Constructor
     /// </summary>
@@ -17,7 +17,7 @@ public abstract class JoinAttributeBase : Attribute
     {
     }
 
-    /// <inheritdoc />
+
     /// <summary>
     ///     Constructor
     /// </summary>

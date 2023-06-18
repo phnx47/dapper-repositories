@@ -12,14 +12,14 @@ namespace MicroOrm.Dapper.Repositories;
 public partial class ReadOnlyDapperRepository<TEntity>
     where TEntity : class
 {
-    /// <inheritdoc />
+
     public virtual IReadOnlyDapperRepository<TEntity> SetOrderBy()
     {
         FilterData.OrderInfo = null;
         return this;
     }
 
-    /// <inheritdoc />
+
     public virtual IReadOnlyDapperRepository<TEntity> SetOrderBy(OrderInfo.SortDirection direction, params string[] cols)
     {
         var order = FilterData.OrderInfo ?? new OrderInfo();
@@ -32,13 +32,13 @@ public partial class ReadOnlyDapperRepository<TEntity>
         return this;
     }
 
-    /// <inheritdoc />
+
     public virtual IReadOnlyDapperRepository<TEntity> SetOrderBy(string query)
     {
         return SetOrderBy(query, false);
     }
 
-    /// <inheritdoc />
+
     public virtual IReadOnlyDapperRepository<TEntity> SetOrderBy(string query, bool permanent)
     {
         var order = FilterData.OrderInfo ?? new OrderInfo();
@@ -51,14 +51,14 @@ public partial class ReadOnlyDapperRepository<TEntity>
         return this;
     }
 
-    /// <inheritdoc />
+
     public virtual IReadOnlyDapperRepository<TEntity> SetOrderBy(OrderInfo.SortDirection direction, bool permanent,
         Expression<Func<TEntity, object>> expr)
     {
         return SetOrderBy<TEntity>(direction, permanent, expr);
     }
 
-    /// <inheritdoc />
+
     public virtual IReadOnlyDapperRepository<TEntity> SetOrderBy<T>(OrderInfo.SortDirection direction, bool permanent,
         Expression<Func<T, object>> expr)
     {
@@ -100,13 +100,13 @@ public partial class ReadOnlyDapperRepository<TEntity>
         return this;
     }
 
-    /// <inheritdoc />
+
     public virtual IReadOnlyDapperRepository<TEntity> SetOrderBy(OrderInfo.SortDirection direction, Expression<Func<TEntity, object>> expr)
     {
         return SetOrderBy(direction, false, expr);
     }
 
-    /// <inheritdoc />
+
     public virtual IReadOnlyDapperRepository<TEntity> SetOrderBy<T>(OrderInfo.SortDirection direction, Expression<Func<T, object>> expr)
     {
         return SetOrderBy(direction, false, expr);

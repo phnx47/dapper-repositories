@@ -7,11 +7,11 @@ using MicroOrm.Dapper.Repositories.Attributes;
 
 namespace MicroOrm.Dapper.Repositories.SqlGenerator;
 
-/// <inheritdoc />
+
 public partial class SqlGenerator<TEntity>
     where TEntity : class
 {
-    /// <inheritdoc />
+
     public virtual SqlQuery GetUpdate(TEntity entity, params Expression<Func<TEntity, object>>[] includes)
     {
         var properties = SqlProperties.Where(p =>
@@ -69,7 +69,7 @@ public partial class SqlGenerator<TEntity>
         return query;
     }
 
-    /// <inheritdoc />
+
     public virtual SqlQuery GetUpdate(Expression<Func<TEntity, bool>>? predicate, TEntity entity, params Expression<Func<TEntity, object>>[] includes)
     {
         var properties = SqlProperties.Where(p =>
@@ -120,7 +120,7 @@ public partial class SqlGenerator<TEntity>
         return query;
     }
 
-    /// <inheritdoc />
+
     public virtual SqlQuery GetUpdate(Expression<Func<TEntity, bool>>? predicate, object setPropertyObj)
     {
         var setProperties = setPropertyObj.GetType().GetProperties();
@@ -151,7 +151,7 @@ public partial class SqlGenerator<TEntity>
         return query;
     }
 
-    /// <inheritdoc />
+
     public virtual SqlQuery GetUpdate(Expression<Func<TEntity, bool>>? predicate, Dictionary<string, object> setPropertyDict)
     {
         var propNameExceptItems = setPropertyDict.Keys.Except(SqlProperties.Select(p => p.PropertyName)).ToArray();

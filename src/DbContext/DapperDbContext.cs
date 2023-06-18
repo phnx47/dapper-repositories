@@ -2,7 +2,7 @@
 
 namespace MicroOrm.Dapper.Repositories.DbContext;
 
-/// <inheritdoc />
+
 public class DapperDbContext : IDapperDbContext
 {
     /// <summary>
@@ -18,7 +18,7 @@ public class DapperDbContext : IDapperDbContext
         InnerConnection = connection;
     }
 
-    /// <inheritdoc />
+
     public virtual IDbConnection Connection
     {
         get
@@ -28,20 +28,20 @@ public class DapperDbContext : IDapperDbContext
         }
     }
 
-    /// <inheritdoc />
+
     public void OpenConnection()
     {
         if (InnerConnection.State != ConnectionState.Open && InnerConnection.State != ConnectionState.Connecting)
             InnerConnection.Open();
     }
 
-    /// <inheritdoc />
+
     public virtual IDbTransaction BeginTransaction()
     {
         return Connection.BeginTransaction();
     }
 
-    /// <inheritdoc />
+
     /// <summary>
     ///     Close DB connection
     /// </summary>

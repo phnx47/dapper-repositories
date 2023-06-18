@@ -11,7 +11,7 @@ namespace MicroOrm.Dapper.Repositories;
 public partial class ReadOnlyDapperRepository<TEntity>
     where TEntity : class
 {
-    /// <inheritdoc />
+
     public virtual IReadOnlyDapperRepository<TEntity> SetSelect<T>(Expression<Func<T, object>> expr, bool permanent)
     {
         if (FilterData.SelectInfo == null)
@@ -49,7 +49,7 @@ public partial class ReadOnlyDapperRepository<TEntity>
         return this;
     }
 
-    /// <inheritdoc />
+
     public virtual IReadOnlyDapperRepository<TEntity> SetSelect(params string[] customSelect)
     {
         if (FilterData.SelectInfo == null)
@@ -62,13 +62,13 @@ public partial class ReadOnlyDapperRepository<TEntity>
         return this;
     }
 
-    /// <inheritdoc />
+
     public virtual IReadOnlyDapperRepository<TEntity> SetSelect(Expression<Func<TEntity, object>> expr)
     {
         return SetSelect(expr, false);
     }
 
-    /// <inheritdoc />
+
     public virtual IReadOnlyDapperRepository<TEntity> SetSelect<T>(Expression<Func<T, object>> expr)
     {
         return SetSelect(expr, false);

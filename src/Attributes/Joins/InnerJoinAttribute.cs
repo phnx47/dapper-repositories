@@ -1,12 +1,12 @@
 namespace MicroOrm.Dapper.Repositories.Attributes.Joins;
 
-/// <inheritdoc />
+
 /// <summary>
 ///     Generate INNER JOIN
 /// </summary>
 public sealed class InnerJoinAttribute : JoinAttributeBase
 {
-    /// <inheritdoc />
+
     /// <summary>
     ///     Constructor
     /// </summary>
@@ -14,7 +14,7 @@ public sealed class InnerJoinAttribute : JoinAttributeBase
     {
     }
 
-    /// <inheritdoc />
+
     /// <summary>
     ///     Constructor
     /// </summary>
@@ -26,7 +26,7 @@ public sealed class InnerJoinAttribute : JoinAttributeBase
     {
     }
 
-    /// <inheritdoc />
+
     /// <summary>
     ///     Constructor
     /// </summary>
@@ -39,7 +39,7 @@ public sealed class InnerJoinAttribute : JoinAttributeBase
     {
     }
 
-    /// <inheritdoc />
+
     /// <summary>
     ///     Constructor
     /// </summary>
