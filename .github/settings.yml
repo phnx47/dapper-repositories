@@ -14,45 +14,49 @@ repository:
 
 labels:
   - name: dependencies
-    color: '#0052cc'
-    description: Issues related to dependencies & Renovate
+    color: 0052CC
+    description:
 
   - name: bug
-    color: '#d73a4a'
-    description: Something isn't working
+    color: D73A4A
+    description:
 
   - name: documentation
-    color: '#0075ca'
-    description: Improvements or additions to documentation
+    color: 0075CA
+    description:
 
   - name: duplicate
-    color: '#cfd3d7'
-    description: This issue or pull request already exists
+    color: CFD3D7
+    description:
 
   - name: enhancement
-    color: '#a2eeef'
-    description: New feature or request
+    color: A2EEEF
+    description:
 
   - name: good first issue
-    color: '#7057ff'
-    description: Good for newcomers
+    color: 7057FF
+    description:
 
   - name: help wanted
-    color: '#008672'
-    description: Extra attention is needed
+    color: 008672
+    description:
 
   - name: invalid
-    color: '#e4e669'
-    description: This doesn't seem right
+    color: E4E669
+    description:
 
   - name: question
-    color: '#d876e3'
-    description: Further information is requested
+    color: D876E3
+    description:
 
   - name: wontfix
-    color: '#ffffff'
-    description: This will not be worked on
+    color: FFFFFF
+    description:
 
   - name: vulnerability
-    color: '#d1260f'
-    description: Security vulnerability
+    color: D1260F
+    description:
+
+  - name: sync
+    color: 6E81A3
+    description:
