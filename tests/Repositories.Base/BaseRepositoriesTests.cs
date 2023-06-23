@@ -420,6 +420,7 @@ public abstract class BaseRepositoriesTests
         Assert.Equal(guid, guid2);
     }
 
+
     [Fact]
     public async Task LogicalDeletedBoolAsync()
     {
