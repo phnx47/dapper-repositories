@@ -8,6 +8,8 @@ using MicroOrm.Dapper.Repositories.Config;
 using TestClasses;
 using Xunit;
 
+// ReSharper disable PossibleNullReferenceException
+
 namespace Repositories.Base;
 
 public abstract class BaseRepositoriesTests
@@ -29,7 +31,7 @@ public abstract class BaseRepositoriesTests
         await Db.Users.InsertAsync(user);
         var userFromDb = await Db.Users.FindAsync(q => q.Id == user.Id);
 
-        Assert.Equal(1, userFromDb.UpdatedAt.Value.CompareTo(dateTime));
+        Assert.Equal(1, userFromDb.UpdatedAt.GetValueOrDefault().CompareTo(dateTime));
     }
 
     [Fact]
@@ -178,7 +180,7 @@ public abstract class BaseRepositoriesTests
     [Fact]
     public async Task FindAllByContainsMultipleList()
     {
-        List<int> keyList = new List<int> { 2, 3, 4 };
+        var keyList = new List<int> { 2, 3, 4 };
         var users = (await Db.Users.FindAllAsync(x => keyList.Contains(x.Id))).ToArray();
         var usersArray = users.ToArray();
         Assert.Equal(3, usersArray.Length);
@@ -190,7 +192,7 @@ public abstract class BaseRepositoriesTests
     [Fact]
     public async Task FindAllByContainsEmptyList()
     {
-        List<int> keyList = new List<int>();
+        var keyList = new List<int>();
         var users = (await Db.Users.FindAllAsync(x => keyList.Contains(x.Id))).ToArray();
         Assert.Empty(users);
     }
@@ -420,18 +422,19 @@ public abstract class BaseRepositoriesTests
         Assert.Equal(guid, guid2);
     }
 
+
     [Fact]
     public async Task LogicalDeletedBoolAsync()
     {
         const int id = 10;
 
-        var user = Db.Users.Find(x => x.Id == id);
+        var user = await Db.Users.FindAsync(x => x.Id == id);
         Assert.False(user.Deleted);
 
         var deleted = await Db.Users.DeleteAsync(user);
         Assert.True(deleted);
 
-        var deletedUser = Db.Users.Find(x => x.Id == id);
+        var deletedUser = await Db.Users.FindAsync(x => x.Id == id);
         Assert.Null(deletedUser);
     }
 
@@ -447,13 +450,13 @@ public abstract class BaseRepositoriesTests
 
         var insert = await Db.Cars.InsertAsync(newCar);
 
-        var car = Db.Cars.Find(x => x.Id == newCar.Id);
+        var car = await Db.Cars.FindAsync(x => x.Id == newCar.Id);
         Assert.False(car.Status == StatusCar.Deleted);
 
         var deleted = await Db.Cars.DeleteAsync(car);
         Assert.True(deleted);
 
-        var deletedCar = Db.Cars.Find(x => x.Id == newCar.Id);
+        var deletedCar = await Db.Cars.FindAsync(x => x.Id == newCar.Id);
         Assert.Null(deletedCar);
     }
 
@@ -528,7 +531,7 @@ public abstract class BaseRepositoriesTests
     [Fact]
     public async Task BulkInsertAsync()
     {
-        List<Address> adresses = new List<Address>
+        var adresses = new List<Address>
         {
             new Address { Street = "aaa0", CityId = "10" },
             new Address { Street = "aaa1", CityId = "11" }
@@ -547,7 +550,7 @@ public abstract class BaseRepositoriesTests
     [Fact]
     public void BulkInsert()
     {
-        List<Address> adresses = new List<Address>
+        var adresses = new List<Address>
         {
             new Address { Street = "aaa0", CityId = "10" },
             new Address { Street = "aaa1", CityId = "11" }
@@ -566,7 +569,7 @@ public abstract class BaseRepositoriesTests
     [Fact]
     public void Delete()
     {
-        List<Address> adresses = new List<Address>
+        var adresses = new List<Address>
         {
             new Address { Street = "aaa10", CityId = "110" },
             new Address { Street = "aaa10", CityId = "111" },
@@ -595,7 +598,7 @@ public abstract class BaseRepositoriesTests
     [Fact]
     public void Delete_Timeout()
     {
-        List<Address> adresses = new List<Address>
+        var adresses = new List<Address>
         {
             new Address { Street = "xaaa10", CityId = "x110" },
             new Address { Street = "xaaa10", CityId = "x111" },

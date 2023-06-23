@@ -52,4 +52,52 @@ public abstract class RepositoriesTests<TFixture> : BaseRepositoriesTests, IClas
         Assert.NotNull(city);
         Assert.Equal("Moscow1", city.Name);
     }
+
+    [Fact]
+    public void UpdateBinaryDataToNull()
+    {
+        var guid = Guid.NewGuid();
+
+        var car = new Car
+        {
+            Data = guid.ToByteArray(),
+            Name = "Car",
+            Status = StatusCar.Active
+        };
+
+        var insert = Db.Cars.Insert(car);
+        Assert.True(insert);
+        var carFromDb = Db.Cars.Find(x => x.Id == car.Id);
+        Assert.NotNull(carFromDb!.Data);
+
+        car.Data = null;
+        var update = Db.Cars.Update(car);
+        Assert.True(update);
+        carFromDb = Db.Cars.Find(x => x.Id == car.Id);
+        Assert.Null(carFromDb!.Data);
+    }
+
+    [Fact]
+    public async Task UpdateBinaryDataToNullAsync()
+    {
+        var guid = Guid.NewGuid();
+
+        var car = new Car
+        {
+            Data = guid.ToByteArray(),
+            Name = "Car",
+            Status = StatusCar.Active
+        };
+
+        var insert = await Db.Cars.InsertAsync(car);
+        Assert.True(insert);
+        var carFromDb = await Db.Cars.FindAsync(x => x.Id == car.Id);
+        Assert.NotNull(carFromDb!.Data);
+
+        car.Data = null;
+        var update = await Db.Cars.UpdateAsync(car);
+        Assert.True(update);
+        carFromDb = await Db.Cars.FindAsync(x => x.Id == car.Id);
+        Assert.Null(carFromDb!.Data);
+    }
 }

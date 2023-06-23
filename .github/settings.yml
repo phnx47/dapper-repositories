@@ -1,0 +1,58 @@
+repository:
+  has_issues: true
+  has_projects: false
+  has_wiki: false
+  has_downloads: true
+  default_branch: main
+  allow_squash_merge: true
+  allow_merge_commit: true
+  allow_rebase_merge: true
+  allow_auto_merge: true
+  delete_branch_on_merge: true
+  enable_automated_security_fixes: false
+  enable_vulnerability_alerts: true
+
+labels:
+  - name: dependencies
+    color: '#0052cc'
+    description: Issues related to dependencies & Renovate
+
+  - name: bug
+    color: '#d73a4a'
+    description: Something isn't working
+
+  - name: documentation
+    color: '#0075ca'
+    description: Improvements or additions to documentation
+
+  - name: duplicate
+    color: '#cfd3d7'
+    description: This issue or pull request already exists
+
+  - name: enhancement
+    color: '#a2eeef'
+    description: New feature or request
+
+  - name: good first issue
+    color: '#7057ff'
+    description: Good for newcomers
+
+  - name: help wanted
+    color: '#008672'
+    description: Extra attention is needed
+
+  - name: invalid
+    color: '#e4e669'
+    description: This doesn't seem right
+
+  - name: question
+    color: '#d876e3'
+    description: Further information is requested
+
+  - name: wontfix
+    color: '#ffffff'
+    description: This will not be worked on
+
+  - name: vulnerability
+    color: '#d1260f'
+    description: Security vulnerability
