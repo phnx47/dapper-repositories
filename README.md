@@ -43,8 +43,7 @@ From `System.ComponentModel.DataAnnotations.Schema` - By default the column name
 From `System.ComponentModel.DataAnnotations.Schema` - For "logical" properties that do not have a corresponding column and have to be ignored by the SQL Generator.
 
 **[Deleted], [Status]**
-For tables that implement "logical deletes" instead of physical deletes. Use this to decorate the `bool` or `enum`.
-
+For tables that implement "logical deletes" instead of physical deletes. Use this to decorate the `bool` or `enum`.solo estoy contrbuyendo para practicar forking a un proyecto public aleatorio.
 **[LeftJoin]**
 Left join for property: Collection and object are supported.
 
