@@ -68,9 +68,17 @@ public partial class ReadOnlyDapperRepository<TEntity> : IReadOnlyDapperReposito
     {
         _connection?.Dispose();
         _connection = null;
+
         if (_filterData == null)
             return;
-        _filterData.LimitInfo = null;
+
+        _filterData.Ordered = false;
+
+        if (_filterData.LimitInfo != null)
+        {
+            _filterData.LimitInfo = null;
+        }
+
         if (_filterData.OrderInfo != null)
         {
             _filterData.OrderInfo.Columns?.Clear();

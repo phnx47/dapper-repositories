@@ -1,5 +1,7 @@
 using System.Collections.Generic;
 
+// ReSharper disable InconsistentNaming
+
 namespace MicroOrm.Dapper.Repositories.SqlGenerator.Filters;
 
 /// <summary>
