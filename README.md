@@ -187,40 +187,6 @@ Find all users for AccountId equals to 3 and not logical deleted:
 var allUsers = await userRepository.FindAllAsync(x => x.AccountId == 3 && x.Deleted != false);
 ```
 
-### Example with Asp.Net Core and D.I
-
-#### Configure Services
-
-```c#
-//Your DB Provider
-MicroOrmConfig.SqlProvider = SqlProvider.MySQL;
-//Not required
-MicroOrmConfig.TablePrefix = "db1_";
-//Add generic SqlGenerator as singleton
-services.AddSingleton(typeof(ISqlGenerator<>), typeof(SqlGenerator<>));
-//Your db factory
-services.AddSingleton<IDbConnectionFactory, DbFactory>(x => new DbFactory(appSettings.DbConnectionString));
-```
-
-#### Example implements BaseRepository with `IDbConnectionFactory`
-
-```c#
-public class BaseRepository<T> : DapperRepository<T> where T : class
-{
-    private readonly IDbConnectionFactory _factory;
-    public BaseRepository(IDbConnectionFactory factory, ISqlGenerator<T> generator)
-        : base(factory.OpenDbConnection(), generator)
-    {
-        _factory = factory;
-    }
-
-    protected IDbConnection GetConnection()
-    {
-        return _factory.OpenDbConnection();
-    }
- }
-```
-
 ## License
 
 All contents of this package are licensed under the [MIT license](https://opensource.org/licenses/MIT).
