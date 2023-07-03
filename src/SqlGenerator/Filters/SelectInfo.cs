@@ -3,7 +3,7 @@ using System.Collections.Generic;
 namespace MicroOrm.Dapper.Repositories.SqlGenerator.Filters;
 
 /// <summary>
-///
+///  Select Info
 /// </summary>
 public class SelectInfo
 {
