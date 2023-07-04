@@ -18,29 +18,44 @@ jobs:
     steps:
       - name: 🚚 Checkout
         uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
       - name: ⚙ Restore
         run: dotnet restore
+
       - name: 🏭 Build
         run: dotnet build --no-restore -c Release -p:ContinuousIntegrationBuild=true
+
       - name: 🐳 Docker Compose Up
         working-directory: tests
         run: docker-compose up -d
+
       - name: 💤 Wait for Containers
         uses: jakejarvis/wait-action@master
         with:
           time: "40s"
+
       - name: 🧪 Run tests
         run: dotnet test --no-build -c Release
+
       - name: ☢ Publish to Codecov
         uses: codecov/codecov-action@v3
-      - name: 🗜 Pack Dev NuGet artifacts
-        if: github.ref == 'refs/heads/main'
-        run: dotnet pack --no-build -c Release --version-suffix dev-$(date +%s)-${GITHUB_SHA::7}
-      - name: 🗜 Pack NuGet artifacts
+
+      - name: Set Dev version
+        if: startsWith(github.ref, 'refs/tags/v') != true
+        run: echo "VERSION=$(git describe --long --tags | sed 's/^v//;s/\([^-]*-g\)/r\1/')" >> $GITHUB_ENV
+
+      - name: Set Release version
         if: startsWith(github.ref, 'refs/tags/v')
-        run: dotnet pack --no-build -c Release
+        run: echo "VERSION=${GITHUB_REF_NAME#v}" >> $GITHUB_ENV
+
+      - name: 🗜 Pack NuGet artifacts
+        if: github.event_name != 'pull_request'
+        run: dotnet pack --no-build -c Release -p:PackageVersion="${{ env.VERSION }}"
+
       - name: 📤 Upload artifacts
-        if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v')
+        if: github.event_name != 'pull_request'
         uses: actions/upload-artifact@v3
         with:
           name: nupkgs
