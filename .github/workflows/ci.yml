@@ -1,4 +1,4 @@
-name: 💿 CI
+name: CI
 
 on:
   push:
@@ -13,33 +13,33 @@ on:
 
 jobs:
   build:
-    name: 🏭 Build & Test
+    name: Build & Test
     runs-on: ubuntu-22.04
     steps:
-      - name: 🚚 Checkout
+      - name: Checkout
         uses: actions/checkout@v3
         with:
           fetch-depth: 0
 
-      - name: ⚙ Restore
+      - name: Restore
         run: dotnet restore
 
-      - name: 🏭 Build
+      - name: Build
         run: dotnet build --no-restore -c Release -p:ContinuousIntegrationBuild=true
 
-      - name: 🐳 Docker Compose Up
+      - name: Docker Compose Up
         working-directory: tests
         run: docker-compose up -d
 
-      - name: 💤 Wait for Containers
+      - name: Wait for Containers
         uses: jakejarvis/wait-action@master
         with:
           time: "40s"
 
-      - name: 🧪 Run tests
+      - name: Run tests
         run: dotnet test --no-build -c Release
 
-      - name: ☢ Publish to Codecov
+      - name: Publish to Codecov
         uses: codecov/codecov-action@v3
 
       - name: Set Dev version
@@ -50,11 +50,11 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/v')
         run: echo "VERSION=${GITHUB_REF_NAME#v}" >> $GITHUB_ENV
 
-      - name: 🗜 Pack NuGet artifacts
+      - name: Pack NuGet artifacts
         if: github.event_name != 'pull_request'
         run: dotnet pack --no-build -c Release -p:PackageVersion="${{ env.VERSION }}"
 
-      - name: 📤 Upload artifacts
+      - name: Upload artifacts
         if: github.event_name != 'pull_request'
         uses: actions/upload-artifact@v3
         with:
@@ -62,26 +62,26 @@ jobs:
           path: src/**/*nupkg
 
   github:
-    name: 🚀 Deploy to GitHub
+    name: Deploy to GitHub
     needs: [build]
     if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v')
     runs-on: ubuntu-22.04
     steps:
-      - name: 📥 Download artifacts
+      - name: Download artifacts
         uses: actions/download-artifact@v3
         with:
           name: nupkgs
-      - name: 📦 Push to GitHub
+      - name: Push to GitHub
         run: dotnet nuget push "**/*.nupkg"  -s https://nuget.pkg.github.com/phnx47/index.json -k ${{ secrets.GH_PKG_PAT }} --skip-duplicate
   nuget:
-    name: 🚀 Deploy to NuGet
+    name: Deploy to NuGet
     needs: [build]
     if: startsWith(github.ref, 'refs/tags/v')
     runs-on: ubuntu-22.04
     steps:
-      - name: 📥 Download artifacts
+      - name: Download artifacts
         uses: actions/download-artifact@v3
         with:
           name: nupkgs
-      - name: 📦 Push to NuGet
+      - name: Push to NuGet
         run: dotnet nuget push "**/*.nupkg" -k ${{ secrets.NUGET_KEY }} -s https://api.nuget.org/v3/index.json
