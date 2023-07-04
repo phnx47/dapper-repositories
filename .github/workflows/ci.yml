@@ -32,9 +32,7 @@ jobs:
         run: docker-compose up -d
 
       - name: Wait for containers
-        uses: jakejarvis/wait-action@master
-        with:
-          time: "40s"
+        run: sleep 40s
 
       - name: Run tests
         run: dotnet test --no-build -c Release
