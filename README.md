@@ -31,7 +31,7 @@ dotnet add package MicroOrm.Dapper.Repositories
 From `System.ComponentModel.DataAnnotations` - Use for primary key.
 
 **[Identity]**
-Use for identity key.
+Property with an automatically incrementing identification number.
 
 **[Table]**
 From `System.ComponentModel.DataAnnotations.Schema` - By default the database table name will match the model name but it can be overridden with this.
