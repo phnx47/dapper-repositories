@@ -3,8 +3,6 @@
   "extends": [
     ":dependencyDashboard",
     ":semanticPrefixFixDepsChoreOthers",
-    ":prHourlyLimit2",
-    ":prConcurrentLimit10",
     "group:monorepos",
     "workarounds:all"
   ],
@@ -17,7 +15,7 @@
   "packageRules": [
     {
       "automerge": true,
-      "sourceUrlPrefixes": [
+      "matchSourceUrlPrefixes": [
         "https://github.com/coverlet-coverage",
         "https://github.com/xunit",
         "https://github.com/microsoft/vstest"
