@@ -42,7 +42,7 @@ jobs:
 
       - name: Set Dev version
         if: github.ref == 'refs/heads/main'
-        run: echo "VERSION=$(git describe --long --tags | sed 's/^v//;s/\([^-]*-g\)/r\1/')" >> $GITHUB_ENV
+        run: echo "VERSION=$(git describe --long --tags | sed 's/^v//;0,/-/s//./')" >> $GITHUB_ENV
 
       - name: Set Release version
         if: startsWith(github.ref, 'refs/tags/v')
