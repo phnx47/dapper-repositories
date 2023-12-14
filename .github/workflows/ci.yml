@@ -54,7 +54,7 @@ jobs:
 
       - name: Upload artifacts
         if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v')
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: nupkgs
           path: src/**/*nupkg
