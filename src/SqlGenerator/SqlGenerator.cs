@@ -107,6 +107,8 @@ public partial class SqlGenerator<TEntity> : ISqlGenerator<TEntity>
 
     public object? LogicalDeleteValue { get; protected set; }
 
+    public bool LogicalDeleteValueNullable { get; protected set; }
+
     /// <summary>
     ///     In Oracle parameter should be build with : instead of @.
     /// </summary>

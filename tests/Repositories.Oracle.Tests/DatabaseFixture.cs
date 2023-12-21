@@ -36,7 +36,7 @@ public class DatabaseFixture : IDisposable
                   ADDRESSID NUMBER NOT NULL,
                   PHONEID NUMBER NOT NULL,
                   OFFICEPHONEID NUMBER NOT NULL,
-                  DELETED NUMBER NOT NULL,
+                  DELETED NUMBER,
                   UPDATEDAT DATE,
                   PRIMARY KEY (ID))");
 

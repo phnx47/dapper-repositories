@@ -6,7 +6,6 @@ using MicroOrm.Dapper.Repositories.SqlGenerator.Filters;
 
 namespace MicroOrm.Dapper.Repositories.SqlGenerator;
 
-
 public partial class SqlGenerator<TEntity>
     where TEntity : class
 {
@@ -57,8 +56,7 @@ public partial class SqlGenerator<TEntity>
             if (Provider == SqlProvider.Oracle)
                 sqlQuery.SqlBuilder.Append("FETCH FIRST 1 ROW ONLY");
             else if (Provider != SqlProvider.MSSQL)
-                sqlQuery.SqlBuilder
-                    .Append("LIMIT 1");
+                sqlQuery.SqlBuilder.Append("LIMIT 1");
         }
 
         return sqlQuery;
@@ -293,21 +291,30 @@ public partial class SqlGenerator<TEntity>
                 .Append(" ");
 
         if (LogicalDelete)
+        {
             sqlQuery.SqlBuilder
                 .Append("AND ")
                 .Append(TableName)
                 .Append(".")
-                .Append(StatusPropertyName)
-                .Append(" != ")
-                .Append(LogicalDeleteValue)
-                .Append(" ");
+                .Append(StatusPropertyName);
+
+            if (LogicalDeleteValueNullable)
+            {
+                sqlQuery.SqlBuilder
+                    .Append(" IS NULL ");
+            }
+            else
+            {
+                sqlQuery.SqlBuilder
+                    .Append(" != ")
+                    .Append(LogicalDeleteValue)
+                    .Append(" ");
+            }
+        }
 
         if (includes.Length == 0 && Provider != SqlProvider.MSSQL)
         {
-            if (Provider == SqlProvider.Oracle)
-                sqlQuery.SqlBuilder.Append("FETCH FIRST 1 ROWS ONLY");
-            else
-                sqlQuery.SqlBuilder.Append("LIMIT 1");
+            sqlQuery.SqlBuilder.Append(Provider == SqlProvider.Oracle ? "FETCH FIRST 1 ROWS ONLY" : "LIMIT 1");
         }
 
         sqlQuery.SetParam(param);

@@ -27,9 +27,7 @@ public partial class SqlGenerator<TEntity>
             if (deleteAttr == null)
                 continue;
 
-            if (JoinsLogicalDelete == null)
-                JoinsLogicalDelete = new Dictionary<string, PropertyInfo>();
-
+            JoinsLogicalDelete ??= new Dictionary<string, PropertyInfo>();
             JoinsLogicalDelete.Add(joinAttr.TableName, deleteAttr);
         }
 
@@ -41,7 +39,13 @@ public partial class SqlGenerator<TEntity>
         if (statusProperty.PropertyInfo.PropertyType == typeof(bool))
         {
             LogicalDelete = true;
-            LogicalDeleteValue = Provider == SqlProvider.PostgreSQL ? "true" : 1; // true
+            LogicalDeleteValue = Provider == SqlProvider.PostgreSQL ? "true" : 1;
+        }
+        else if (statusProperty.PropertyInfo.PropertyType == typeof(bool?))
+        {
+            LogicalDelete = true;
+            LogicalDeleteValue = Provider == SqlProvider.PostgreSQL ? "true" : 1;
+            LogicalDeleteValueNullable = true;
         }
         else if (statusProperty.PropertyInfo.PropertyType.IsEnum)
         {

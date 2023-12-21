@@ -40,14 +40,27 @@ public partial class SqlGenerator<TEntity>
             dictionaryParams.AddRange(conditions);
 
             if (LogicalDelete && queryType == QueryType.Select)
-                sqlQuery.SqlBuilder.AppendFormat("({3}) AND {0}.{1} != {2} ", TableName, StatusPropertyName, LogicalDeleteValue, sqlBuilder);
+            {
+                if (LogicalDeleteValueNullable)
+                    sqlQuery.SqlBuilder.AppendFormat("({2}) AND {0}.{1} IS NULL ", TableName, StatusPropertyName, sqlBuilder);
+                else
+                    sqlQuery.SqlBuilder.AppendFormat("({3}) AND {0}.{1} != {2} ", TableName, StatusPropertyName, LogicalDeleteValue, sqlBuilder);
+            }
             else
+            {
                 sqlQuery.SqlBuilder.AppendFormat("{0} ", sqlBuilder);
+            }
         }
         else
         {
             if (LogicalDelete && queryType == QueryType.Select)
-                sqlQuery.SqlBuilder.AppendFormat("WHERE {0}.{1} != {2} ", TableName, StatusPropertyName, LogicalDeleteValue);
+            {
+                if (LogicalDeleteValueNullable)
+                    sqlQuery.SqlBuilder.AppendFormat("WHERE {0}.{1} IS NULL ", TableName, StatusPropertyName);
+                else
+                    sqlQuery.SqlBuilder.AppendFormat("WHERE {0}.{1} != {2} ", TableName, StatusPropertyName, LogicalDeleteValue);
+            }
+
         }
 
         if (LogicalDelete && HasUpdatedAt && queryType == QueryType.Delete)

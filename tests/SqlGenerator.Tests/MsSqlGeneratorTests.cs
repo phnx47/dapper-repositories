@@ -18,7 +18,7 @@ public class MsSqlGeneratorTests
     {
         ISqlGenerator<User> userSqlGenerator = new SqlGenerator<User>(_sqlConnector, true);
         var sqlQuery = userSqlGenerator.GetCount(null);
-        Assert.Equal("SELECT COUNT(*) FROM [Users] WHERE [Users].[Deleted] != 1", sqlQuery.GetSql());
+        Assert.Equal("SELECT COUNT(*) FROM [Users] WHERE [Users].[Deleted] IS NULL", sqlQuery.GetSql());
     }
 
     [Fact]
@@ -26,7 +26,7 @@ public class MsSqlGeneratorTests
     {
         ISqlGenerator<User> userSqlGenerator = new SqlGenerator<User>(_sqlConnector, true);
         var sqlQuery = userSqlGenerator.GetCount(null, user => user.AddressId);
-        Assert.Equal("SELECT COUNT(DISTINCT [Users].[AddressId]) FROM [Users] WHERE [Users].[Deleted] != 1", sqlQuery.GetSql());
+        Assert.Equal("SELECT COUNT(DISTINCT [Users].[AddressId]) FROM [Users] WHERE [Users].[Deleted] IS NULL", sqlQuery.GetSql());
     }
 
     [Fact]
@@ -34,7 +34,7 @@ public class MsSqlGeneratorTests
     {
         ISqlGenerator<User> userSqlGenerator = new SqlGenerator<User>(_sqlConnector, true);
         var sqlQuery = userSqlGenerator.GetCount(x => x.PhoneId == 1, user => user.AddressId);
-        Assert.Equal("SELECT COUNT(DISTINCT [Users].[AddressId]) FROM [Users] WHERE ([Users].[PhoneId] = @PhoneId_p0) AND [Users].[Deleted] != 1", sqlQuery.GetSql());
+        Assert.Equal("SELECT COUNT(DISTINCT [Users].[AddressId]) FROM [Users] WHERE ([Users].[PhoneId] = @PhoneId_p0) AND [Users].[Deleted] IS NULL", sqlQuery.GetSql());
     }
 
     [Fact]
@@ -266,7 +266,7 @@ public class MsSqlGeneratorTests
         var sqlQuery = userSqlGenerator.GetSelectAll(x => ids.Contains(x.Id), null);
 
         Assert.Equal("SELECT [Users].[Id], [Users].[Name], [Users].[AddressId], [Users].[PhoneId], [Users].[OfficePhoneId], [Users].[Deleted], [Users].[UpdatedAt] " +
-                     "FROM [Users] WHERE ([Users].[Id] IN @Id_p0) AND [Users].[Deleted] != 1", sqlQuery.GetSql());
+                     "FROM [Users] WHERE ([Users].[Id] IN @Id_p0) AND [Users].[Deleted] IS NULL", sqlQuery.GetSql());
     }
 
     [Fact]
@@ -277,7 +277,7 @@ public class MsSqlGeneratorTests
         var sqlQuery = userSqlGenerator.GetSelectAll(x => ids.Contains(x.Id), null);
 
         Assert.Equal("SELECT [Users].[Id], [Users].[Name], [Users].[AddressId], [Users].[PhoneId], [Users].[OfficePhoneId], [Users].[Deleted], [Users].[UpdatedAt] " +
-                     "FROM [Users] WHERE ([Users].[Id] IN @Id_p0) AND [Users].[Deleted] != 1", sqlQuery.GetSql());
+                     "FROM [Users] WHERE ([Users].[Id] IN @Id_p0) AND [Users].[Deleted] IS NULL", sqlQuery.GetSql());
     }
 
     [Fact]
@@ -288,7 +288,7 @@ public class MsSqlGeneratorTests
         var sqlQuery = userSqlGenerator.GetSelectAll(x => ids.Contains(x.Id), null);
 
         Assert.Equal("SELECT [Users].[Id], [Users].[Name], [Users].[AddressId], [Users].[PhoneId], [Users].[OfficePhoneId], [Users].[Deleted], [Users].[UpdatedAt] " +
-                     "FROM [Users] WHERE ([Users].[Id] IN @Id_p0) AND [Users].[Deleted] != 1", sqlQuery.GetSql());
+                     "FROM [Users] WHERE ([Users].[Id] IN @Id_p0) AND [Users].[Deleted] IS NULL", sqlQuery.GetSql());
     }
 
     [Fact]
@@ -299,25 +299,14 @@ public class MsSqlGeneratorTests
         var sqlQuery = userSqlGenerator.GetSelectAll(x => !ids.Contains(x.Id), null);
 
         Assert.Equal("SELECT [Users].[Id], [Users].[Name], [Users].[AddressId], [Users].[PhoneId], [Users].[OfficePhoneId], [Users].[Deleted], [Users].[UpdatedAt] " +
-                     "FROM [Users] WHERE ([Users].[Id] NOT IN @Id_p0) AND [Users].[Deleted] != 1", sqlQuery.GetSql());
+                     "FROM [Users] WHERE ([Users].[Id] NOT IN @Id_p0) AND [Users].[Deleted] IS NULL", sqlQuery.GetSql());
     }
 
     [Fact]
     public static void LogicalDeleteWithUpdatedAt()
     {
         ISqlGenerator<User> userSqlGenerator = new SqlGenerator<User>(_sqlConnector);
-        var user = new User() { Id = 10 };
-        var sqlQuery = userSqlGenerator.GetDelete(user);
-        var sql = sqlQuery.GetSql();
-
-        Assert.Equal("UPDATE Users SET Deleted = 1, UpdatedAt = @UpdatedAt WHERE Users.Id = @Id", sql);
-    }
-
-    [Fact]
-    public static void LogicalleleteWithUpdatedAtWithPredicate()
-    {
-        ISqlGenerator<User> userSqlGenerator = new SqlGenerator<User>(_sqlConnector);
-        var user = new User() { Id = 10 };
+        var user = new User { Id = 10 };
         var sqlQuery = userSqlGenerator.GetDelete(user);
         var sql = sqlQuery.GetSql();
 
@@ -338,7 +327,7 @@ public class MsSqlGeneratorTests
     public static void LogicalDeleteEntity()
     {
         ISqlGenerator<Car> sqlGenerator = new SqlGenerator<Car>(_sqlConnector);
-        var car = new Car() { Id = 10, Name = "LogicalDelete", UserId = 5 };
+        var car = new Car { Id = 10, Name = "LogicalDelete", UserId = 5 };
 
         var sqlQuery = sqlGenerator.GetDelete(car);
         var realSql = sqlQuery.GetSql();
@@ -402,7 +391,7 @@ public class MsSqlGeneratorTests
 
         Assert.Equal(
             "SELECT [Users].[Id], [Users].[Name], [Users].[AddressId], [Users].[PhoneId], [Users].[OfficePhoneId], [Users].[Deleted], [Users].[UpdatedAt] FROM [Users] " +
-            "WHERE ([Users].[UpdatedAt] IS NULL) AND [Users].[Deleted] != 1", sqlQuery.GetSql());
+            "WHERE ([Users].[UpdatedAt] IS NULL) AND [Users].[Deleted] IS NULL", sqlQuery.GetSql());
         Assert.DoesNotContain("== NULL", sqlQuery.GetSql());
     }
 
@@ -415,7 +404,7 @@ public class MsSqlGeneratorTests
         Assert.Equal("SELECT [Users].[Id], [Users].[Name], [Users].[AddressId], [Users].[PhoneId], [Users].[OfficePhoneId], [Users].[Deleted], [Users].[UpdatedAt], " +
                      "[Cars_Id].[Id], [Cars_Id].[Name], [Cars_Id].[Data], [Cars_Id].[UserId], [Cars_Id].[Status] " +
                      "FROM [Users] LEFT JOIN [Cars] AS [Cars_Id] ON [Users].[Id] = [Cars_Id].[UserId] " +
-                     "WHERE [Users].[Deleted] != 1", sqlQuery.GetSql());
+                     "WHERE [Users].[Deleted] IS NULL", sqlQuery.GetSql());
     }
 
     [Fact]
@@ -427,7 +416,7 @@ public class MsSqlGeneratorTests
         Assert.Equal("SELECT [Users].[Id], [Users].[Name], [Users].[AddressId], [Users].[PhoneId], [Users].[OfficePhoneId], [Users].[Deleted], [Users].[UpdatedAt], " +
                      "[Phones_PhoneId].[Id], [Phones_PhoneId].[PNumber], [Phones_PhoneId].[IsActive], [Phones_PhoneId].[Code] " +
                      "FROM [Users] INNER JOIN [DAB].[Phones] AS [Phones_PhoneId] ON [Users].[PhoneId] = [Phones_PhoneId].[Id] " +
-                     "WHERE ([Phones_PhoneId].[PNumber] = @PhonePNumber_p0) AND [Users].[Deleted] != 1", sqlQuery.GetSql());
+                     "WHERE ([Phones_PhoneId].[PNumber] = @PhonePNumber_p0) AND [Users].[Deleted] IS NULL", sqlQuery.GetSql());
     }
 
     [Fact]
@@ -439,7 +428,7 @@ public class MsSqlGeneratorTests
         Assert.Equal("SELECT Users.Id, Users.Name, Users.AddressId, Users.PhoneId, Users.OfficePhoneId, Users.Deleted, Users.UpdatedAt, " +
                      "Phones_PhoneId.Id, Phones_PhoneId.PNumber, Phones_PhoneId.IsActive, Phones_PhoneId.Code " +
                      "FROM Users INNER JOIN DAB.Phones AS Phones_PhoneId ON Users.PhoneId = Phones_PhoneId.Id " +
-                     "WHERE (Phones_PhoneId.PNumber = @PhonePNumber_p0) AND Users.Deleted != 1", sqlQuery.GetSql());
+                     "WHERE (Phones_PhoneId.PNumber = @PhonePNumber_p0) AND Users.Deleted IS NULL", sqlQuery.GetSql());
     }
 
     [Fact]
@@ -449,7 +438,7 @@ public class MsSqlGeneratorTests
         var sqlQuery = userSqlGenerator.GetSelectBetween(1, 10, null, x => x.Id);
 
         Assert.Equal("SELECT Users.Id, Users.Name, Users.AddressId, Users.PhoneId, Users.OfficePhoneId, Users.Deleted, Users.UpdatedAt FROM Users " +
-                     "WHERE Users.Deleted != 1 AND Users.Id BETWEEN '1' AND '10'", sqlQuery.GetSql());
+                     "WHERE Users.Deleted IS NULL AND Users.Id BETWEEN '1' AND '10'", sqlQuery.GetSql());
     }
 
     [Fact]
@@ -460,7 +449,7 @@ public class MsSqlGeneratorTests
 
         Assert.Equal(
             "SELECT [Users].[Id], [Users].[Name], [Users].[AddressId], [Users].[PhoneId], [Users].[OfficePhoneId], [Users].[Deleted], [Users].[UpdatedAt] FROM [Users] " +
-            "WHERE [Users].[Deleted] != 1 AND [Users].[Id] BETWEEN '1' AND '10'", sqlQuery.GetSql());
+            "WHERE [Users].[Deleted] IS NULL AND [Users].[Id] BETWEEN '1' AND '10'", sqlQuery.GetSql());
     }
 
     [Fact]
@@ -500,7 +489,7 @@ public class MsSqlGeneratorTests
         var sqlQuery = userSqlGenerator.GetSelectById(1, null);
 
         Assert.Equal("SELECT TOP 1 [Users].[Id], [Users].[Name], [Users].[AddressId], [Users].[PhoneId], [Users].[OfficePhoneId], [Users].[Deleted], [Users].[UpdatedAt] " +
-                     "FROM [Users] WHERE [Users].[Id] = @Id AND [Users].[Deleted] != 1", sqlQuery.GetSql());
+                     "FROM [Users] WHERE [Users].[Id] = @Id AND [Users].[Deleted] IS NULL", sqlQuery.GetSql());
     }
 
     [Fact]
@@ -519,7 +508,7 @@ public class MsSqlGeneratorTests
         ISqlGenerator<User> userSqlGenerator = new SqlGenerator<User>(_sqlConnector, true);
         var sqlQuery = userSqlGenerator.GetSelectFirst(x => x.Id == 2, null);
         Assert.Equal(
-            "SELECT TOP 1 [Users].[Id], [Users].[Name], [Users].[AddressId], [Users].[PhoneId], [Users].[OfficePhoneId], [Users].[Deleted], [Users].[UpdatedAt] FROM [Users] WHERE ([Users].[Id] = @Id_p0) AND [Users].[Deleted] != 1",
+            "SELECT TOP 1 [Users].[Id], [Users].[Name], [Users].[AddressId], [Users].[PhoneId], [Users].[OfficePhoneId], [Users].[Deleted], [Users].[UpdatedAt] FROM [Users] WHERE ([Users].[Id] = @Id_p0) AND [Users].[Deleted] IS NULL",
             sqlQuery.GetSql());
     }
 
@@ -534,7 +523,7 @@ public class MsSqlGeneratorTests
 
         var sqlQuery = userSqlGenerator.GetSelectAll(x => x.Id == 2, filterData);
         Assert.Equal(
-            "SELECT TOP (10) [Users].[Id], [Users].[Name], [Users].[AddressId], [Users].[PhoneId], [Users].[OfficePhoneId], [Users].[Deleted], [Users].[UpdatedAt] FROM [Users] WHERE ([Users].[Id] = @Id_p0) AND [Users].[Deleted] != 1",
+            "SELECT TOP (10) [Users].[Id], [Users].[Name], [Users].[AddressId], [Users].[PhoneId], [Users].[OfficePhoneId], [Users].[Deleted], [Users].[UpdatedAt] FROM [Users] WHERE ([Users].[Id] = @Id_p0) AND [Users].[Deleted] IS NULL",
             sqlQuery.GetSql());
     }
 
@@ -551,7 +540,7 @@ public class MsSqlGeneratorTests
 
         var sqlQuery = userSqlGenerator.GetSelectAll(x => x.Id == 2, filterData);
         Assert.Equal(
-            "SELECT [Users].[Id], [Users].[Name], [Users].[AddressId], [Users].[PhoneId], [Users].[OfficePhoneId], [Users].[Deleted], [Users].[UpdatedAt] FROM [Users] WHERE ([Users].[Id] = @Id_p0) AND [Users].[Deleted] != 1 ORDER BY [Id] ASC",
+            "SELECT [Users].[Id], [Users].[Name], [Users].[AddressId], [Users].[PhoneId], [Users].[OfficePhoneId], [Users].[Deleted], [Users].[UpdatedAt] FROM [Users] WHERE ([Users].[Id] = @Id_p0) AND [Users].[Deleted] IS NULL ORDER BY [Id] ASC",
             sqlQuery.GetSql());
     }
 
@@ -569,7 +558,7 @@ public class MsSqlGeneratorTests
 
         var sqlQuery = userSqlGenerator.GetSelectAll(x => x.Id == 2, filterData);
         Assert.Equal(
-            "SELECT [Users].[Id], [Users].[Name], [Users].[AddressId], [Users].[PhoneId], [Users].[OfficePhoneId], [Users].[Deleted], [Users].[UpdatedAt] FROM [Users] WHERE ([Users].[Id] = @Id_p0) AND [Users].[Deleted] != 1 ORDER BY [Users].[Id] ASC",
+            "SELECT [Users].[Id], [Users].[Name], [Users].[AddressId], [Users].[PhoneId], [Users].[OfficePhoneId], [Users].[Deleted], [Users].[UpdatedAt] FROM [Users] WHERE ([Users].[Id] = @Id_p0) AND [Users].[Deleted] IS NULL ORDER BY [Users].[Id] ASC",
             sqlQuery.GetSql());
     }
 
@@ -591,7 +580,7 @@ public class MsSqlGeneratorTests
 
         var sqlQuery = userSqlGenerator.GetSelectAll(x => x.Id == 2, filterData);
         Assert.Equal(
-            "SELECT [Users].[Id], [Users].[Name], [Users].[AddressId], [Users].[PhoneId], [Users].[OfficePhoneId], [Users].[Deleted], [Users].[UpdatedAt] FROM [Users] WHERE ([Users].[Id] = @Id_p0) AND [Users].[Deleted] != 1 ORDER BY [Id] ASC OFFSET 5 ROWS FETCH NEXT 10 ROWS ONLY",
+            "SELECT [Users].[Id], [Users].[Name], [Users].[AddressId], [Users].[PhoneId], [Users].[OfficePhoneId], [Users].[Deleted], [Users].[UpdatedAt] FROM [Users] WHERE ([Users].[Id] = @Id_p0) AND [Users].[Deleted] IS NULL ORDER BY [Id] ASC OFFSET 5 ROWS FETCH NEXT 10 ROWS ONLY",
             sqlQuery.GetSql());
     }
 
@@ -680,7 +669,7 @@ public class MsSqlGeneratorTests
         var sqlQuery1 = userSqlGenerator.GetSelectFirst(x => x.Phone.PNumber == "123" || (x.Name == "abc" && x.Phone.IsActive), null, user => user.Phone);
         Assert.Equal(
             sPrefix +
-            "([Phones_PhoneId].[PNumber] = @PhonePNumber_p0 OR ([Users].[Name] = @Name_p1 AND [Phones_PhoneId].[IsActive] = @PhoneIsActive_p2)) AND [Users].[Deleted] != 1",
+            "([Phones_PhoneId].[PNumber] = @PhonePNumber_p0 OR ([Users].[Name] = @Name_p1 AND [Phones_PhoneId].[IsActive] = @PhoneIsActive_p2)) AND [Users].[Deleted] IS NULL",
             sqlQuery1.GetSql());
 
         var ids = new List<int>();
@@ -689,7 +678,7 @@ public class MsSqlGeneratorTests
                  (x.Name == "abc" || x.Phone.IsActive), null, user => user.Phone);
         Assert.Equal(
             sPrefix +
-            "([Phones_PhoneId].[PNumber] != @PhonePNumber_p0 AND ([Users].[Name] != @Name_p1 OR [Phones_PhoneId].[IsActive] = @PhoneIsActive_p2 OR [Users].[PhoneId] NOT IN @PhoneId_p3 OR [Phones_PhoneId].[Id] NOT IN @PhoneId_p4) AND ([Users].[Name] = @Name_p5 OR [Phones_PhoneId].[IsActive] = @PhoneIsActive_p6)) AND [Users].[Deleted] != 1",
+            "([Phones_PhoneId].[PNumber] != @PhonePNumber_p0 AND ([Users].[Name] != @Name_p1 OR [Phones_PhoneId].[IsActive] = @PhoneIsActive_p2 OR [Users].[PhoneId] NOT IN @PhoneId_p3 OR [Phones_PhoneId].[Id] NOT IN @PhoneId_p4) AND ([Users].[Name] = @Name_p5 OR [Phones_PhoneId].[IsActive] = @PhoneIsActive_p6)) AND [Users].[Deleted] IS NULL",
             sqlQuery2.GetSql());
     }
 
@@ -717,7 +706,7 @@ public class MsSqlGeneratorTests
         var sqlQuery21 = userSqlGenerator2.GetSelectFirst(x => x.Phone.PNumber.StartsWith("123") || (!x.Name.Contains("abc") && x.Phone.IsActive), null, user => user.Phone);
         Assert.Equal(
             sPrefix2 +
-            "([Phones_PhoneId].[PNumber] LIKE @PhonePNumber_p0 OR ([Users].[Name] NOT LIKE @Name_p1 AND [Phones_PhoneId].[IsActive] = @PhoneIsActive_p2)) AND [Users].[Deleted] != 1",
+            "([Phones_PhoneId].[PNumber] LIKE @PhonePNumber_p0 OR ([Users].[Name] NOT LIKE @Name_p1 AND [Phones_PhoneId].[IsActive] = @PhoneIsActive_p2)) AND [Users].[Deleted] IS NULL",
             sqlQuery21.GetSql());
         var parameters21 = sqlQuery21.Param as IDictionary<string, object>;
         Assert.True("123%" == parameters21["PhonePNumber_p0"].ToString());

@@ -17,7 +17,7 @@ public class MySqlGeneratorTests
     {
         ISqlGenerator<User> userSqlGenerator = new SqlGenerator<User>(_sqlConnector, true);
         var sqlQuery = userSqlGenerator.GetCount(null);
-        Assert.Equal("SELECT COUNT(*) FROM `Users` WHERE `Users`.`Deleted` != 1", sqlQuery.GetSql());
+        Assert.Equal("SELECT COUNT(*) FROM `Users` WHERE `Users`.`Deleted` IS NULL", sqlQuery.GetSql());
     }
 
     [Fact]
@@ -25,7 +25,7 @@ public class MySqlGeneratorTests
     {
         ISqlGenerator<User> userSqlGenerator = new SqlGenerator<User>(_sqlConnector, true);
         var sqlQuery = userSqlGenerator.GetCount(null, user => user.AddressId);
-        Assert.Equal("SELECT COUNT(DISTINCT `Users`.`AddressId`) FROM `Users` WHERE `Users`.`Deleted` != 1", sqlQuery.GetSql());
+        Assert.Equal("SELECT COUNT(DISTINCT `Users`.`AddressId`) FROM `Users` WHERE `Users`.`Deleted` IS NULL", sqlQuery.GetSql());
     }
 
     [Fact]
@@ -33,7 +33,7 @@ public class MySqlGeneratorTests
     {
         ISqlGenerator<User> userSqlGenerator = new SqlGenerator<User>(_sqlConnector, true);
         var sqlQuery = userSqlGenerator.GetCount(x => x.PhoneId == 1, user => user.AddressId);
-        Assert.Equal("SELECT COUNT(DISTINCT `Users`.`AddressId`) FROM `Users` WHERE (`Users`.`PhoneId` = @PhoneId_p0) AND `Users`.`Deleted` != 1", sqlQuery.GetSql());
+        Assert.Equal("SELECT COUNT(DISTINCT `Users`.`AddressId`) FROM `Users` WHERE (`Users`.`PhoneId` = @PhoneId_p0) AND `Users`.`Deleted` IS NULL", sqlQuery.GetSql());
     }
 
     [Fact]
@@ -117,7 +117,7 @@ public class MySqlGeneratorTests
 
         Assert.Equal(
             "SELECT `Users`.`Id`, `Users`.`Name`, `Users`.`AddressId`, `Users`.`PhoneId`, `Users`.`OfficePhoneId`, `Users`.`Deleted`, `Users`.`UpdatedAt` FROM `Users` " +
-            "WHERE (`Users`.`UpdatedAt` IS NOT NULL) AND `Users`.`Deleted` != 1", sqlQuery.GetSql());
+            "WHERE (`Users`.`UpdatedAt` IS NOT NULL) AND `Users`.`Deleted` IS NULL", sqlQuery.GetSql());
         Assert.DoesNotContain("!= NULL", sqlQuery.GetSql());
     }
 
@@ -129,13 +129,13 @@ public class MySqlGeneratorTests
 
         Assert.Equal(
             "SELECT `Users`.`Id`, `Users`.`Name`, `Users`.`AddressId`, `Users`.`PhoneId`, `Users`.`OfficePhoneId`, `Users`.`Deleted`, `Users`.`UpdatedAt` FROM `Users` " +
-            "WHERE (`Users`.`Name` = @Name_p0 AND `Users`.`UpdatedAt` IS NOT NULL) AND `Users`.`Deleted` != 1", sqlQuery.GetSql());
+            "WHERE (`Users`.`Name` = @Name_p0 AND `Users`.`UpdatedAt` IS NOT NULL) AND `Users`.`Deleted` IS NULL", sqlQuery.GetSql());
         Assert.DoesNotContain("!= NULL", sqlQuery.GetSql());
 
         sqlQuery = userSqlGenerator.GetSelectAll(user => user.UpdatedAt != null && user.Name == "Frank", null);
         Assert.Equal(
             "SELECT `Users`.`Id`, `Users`.`Name`, `Users`.`AddressId`, `Users`.`PhoneId`, `Users`.`OfficePhoneId`, `Users`.`Deleted`, `Users`.`UpdatedAt` FROM `Users` " +
-            "WHERE (`Users`.`UpdatedAt` IS NOT NULL AND `Users`.`Name` = @Name_p1) AND `Users`.`Deleted` != 1", sqlQuery.GetSql());
+            "WHERE (`Users`.`UpdatedAt` IS NOT NULL AND `Users`.`Name` = @Name_p1) AND `Users`.`Deleted` IS NULL", sqlQuery.GetSql());
         Assert.DoesNotContain("!= NULL", sqlQuery.GetSql());
     }
 
@@ -147,7 +147,7 @@ public class MySqlGeneratorTests
 
         Assert.Equal(
             "SELECT `Users`.`Id`, `Users`.`Name`, `Users`.`AddressId`, `Users`.`PhoneId`, `Users`.`OfficePhoneId`, `Users`.`Deleted`, `Users`.`UpdatedAt` FROM `Users` " +
-            "WHERE `Users`.`Deleted` != 1 AND `Users`.`Id` BETWEEN '1' AND '10'", sqlQuery.GetSql());
+            "WHERE `Users`.`Deleted` IS NULL AND `Users`.`Id` BETWEEN '1' AND '10'", sqlQuery.GetSql());
     }
 
     [Fact]
@@ -254,7 +254,7 @@ public class MySqlGeneratorTests
         ISqlGenerator<User> userSqlGenerator = new SqlGenerator<User>(_sqlConnector, true);
         var sqlQuery = userSqlGenerator.GetSelectFirst(x => x.Id == 6, null);
         Assert.Equal(
-            "SELECT `Users`.`Id`, `Users`.`Name`, `Users`.`AddressId`, `Users`.`PhoneId`, `Users`.`OfficePhoneId`, `Users`.`Deleted`, `Users`.`UpdatedAt` FROM `Users` WHERE (`Users`.`Id` = @Id_p0) AND `Users`.`Deleted` != 1 LIMIT 1",
+            "SELECT `Users`.`Id`, `Users`.`Name`, `Users`.`AddressId`, `Users`.`PhoneId`, `Users`.`OfficePhoneId`, `Users`.`Deleted`, `Users`.`UpdatedAt` FROM `Users` WHERE (`Users`.`Id` = @Id_p0) AND `Users`.`Deleted` IS NULL LIMIT 1",
             sqlQuery.GetSql());
     }
 
