@@ -39,7 +39,7 @@ public class DatabaseFixture : IDisposable
         CreateSchema("DAB");
 
         Db.Connection.Execute(
-            @"CREATE TABLE Users (Id SERIAL not null, Name varchar(256) not null, AddressId int not null, PhoneId int not null, OfficePhoneId int not null, Deleted bool not null, UpdatedAt timestamp, PRIMARY KEY (Id))");
+            @"CREATE TABLE Users (Id SERIAL not null, Name varchar(256) not null, AddressId int not null, PhoneId int not null, OfficePhoneId int not null, Deleted bool null, UpdatedAt timestamp, PRIMARY KEY (Id))");
         Db.Connection.Execute(
             @"CREATE TABLE Cars (Id SERIAL not null, Name varchar(256) not null, UserId int not null, Status int not null, Data bytea null, PRIMARY KEY (Id))");
 
