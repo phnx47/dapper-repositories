@@ -27,7 +27,7 @@ public abstract class DatabaseFixture : IDisposable
 
         Db.Connection.Execute("CREATE TABLE `Users` " +
                               "(`Id` integer not null primary key autoincrement, `Name` varchar(256) not null, `AddressId` integer not null, `PhoneId` integer not null, " +
-                              "`OfficePhoneId` integer not null, `Deleted` boolean not null, `UpdatedAt` datetime);");
+                              "`OfficePhoneId` integer not null, `Deleted` boolean, `UpdatedAt` datetime);");
 
         Db.Connection.Execute("CREATE TABLE `Cars` " +
                               "(`Id` integer not null primary key autoincrement, `Name` varchar(256) not null, " +

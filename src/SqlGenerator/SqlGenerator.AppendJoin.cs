@@ -77,20 +77,29 @@ public partial class SqlGenerator<TEntity>
                 var colAttr = deleteAttr.GetCustomAttribute<ColumnAttribute>();
                 var colName = colAttr == null ? deleteAttr.Name : colAttr.Name;
                 object deleteValue = Provider == SqlProvider.PostgreSQL ? "true" : 1;
-                if (deleteAttr.PropertyType.IsEnum)
+                if(deleteAttr.PropertyType == typeof(bool?))
                 {
-                    var deleteOption = deleteAttr.PropertyType.GetFields().FirstOrDefault(f => f.GetCustomAttribute<DeletedAttribute>() != null);
-
-                    if (deleteOption != null)
-                    {
-                        var enumValue = Enum.Parse(deleteAttr.PropertyType, deleteOption.Name);
-                        deleteValue = Convert.ChangeType(enumValue, Enum.GetUnderlyingType(deleteAttr.PropertyType));
-                    }
+                    customFilter = attrJoin.TableAlias == string.Empty
+                        ? $"AND {attrJoin.TableName}.{colName} IS NULL "
+                        : $"AND {attrJoin.TableAlias}.{colName} IS NULL ";
                 }
+                else
+                {
+                    if (deleteAttr.PropertyType.IsEnum)
+                    {
+                        var deleteOption = deleteAttr.PropertyType.GetFields().FirstOrDefault(f => f.GetCustomAttribute<DeletedAttribute>() != null);
 
-                customFilter = attrJoin.TableAlias == string.Empty
-                    ? $"AND {attrJoin.TableName}.{colName} != {deleteValue} "
-                    : $"AND {attrJoin.TableAlias}.{colName} != {deleteValue} ";
+                        if (deleteOption != null)
+                        {
+                            var enumValue = Enum.Parse(deleteAttr.PropertyType, deleteOption.Name);
+                            deleteValue = Convert.ChangeType(enumValue, Enum.GetUnderlyingType(deleteAttr.PropertyType));
+                        }
+                    }
+
+                    customFilter = attrJoin.TableAlias == string.Empty
+                        ? $"AND {attrJoin.TableName}.{colName} != {deleteValue} "
+                        : $"AND {attrJoin.TableAlias}.{colName} != {deleteValue} ";
+                }
             }
 
             joinBuilder.Append(attrJoin.TableAlias == string.Empty

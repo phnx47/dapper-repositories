@@ -39,7 +39,7 @@ public abstract class BaseRepositoriesTests
     {
         var count = Db.Users.Count();
         var countHandQuery = Db.Connection
-            .ExecuteScalar<int>("SELECT COUNT(*) FROM Users WHERE Users.Deleted != " + Db.Users.SqlGenerator.LogicalDeleteValue);
+            .ExecuteScalar<int>("SELECT COUNT(*) FROM Users WHERE Users.Deleted IS NULL");
         Assert.Equal(countHandQuery, count);
     }
 
@@ -78,7 +78,7 @@ public abstract class BaseRepositoriesTests
     public void Find()
     {
         var user = Db.Users.Find(x => x.Id == 2);
-        Assert.False(user.Deleted);
+        Assert.Null(user.Deleted);
         Assert.Equal("TestName1", user.Name);
     }
 
@@ -86,7 +86,7 @@ public abstract class BaseRepositoriesTests
     public void FindById()
     {
         var user = Db.Users.FindById(2);
-        Assert.False(user.Deleted);
+        Assert.Null(user.Deleted);
         Assert.Equal("TestName1", user.Name);
     }
 
@@ -100,7 +100,7 @@ public abstract class BaseRepositoriesTests
     public async void FindByIdAsync()
     {
         var user = await Db.Users.FindByIdAsync(2);
-        Assert.False(user.Deleted);
+        Assert.Null(user.Deleted);
         Assert.Equal("TestName1", user.Name);
     }
 
@@ -108,7 +108,7 @@ public abstract class BaseRepositoriesTests
     public async void FindByIdAsync_WithJoins_NotNull()
     {
         var user = await Db.Users.FindByIdAsync<Car, Phone, Address>(1, x => x.Cars, x => x.Phone, x => x.Addresses);
-        Assert.False(user.Deleted);
+        Assert.Null(user.Deleted);
         Assert.Equal("TestName0", user.Name);
 
         Assert.NotNull(user.Phone);
@@ -150,7 +150,7 @@ public abstract class BaseRepositoriesTests
     protected void FindJoin_CollectionnRecord()
     {
         var user = Db.Users.Find<Car>(q => q.Id == 1, q => q.Cars);
-        Assert.False(user.Deleted);
+        Assert.Null(user.Deleted);
         Assert.Equal("TestName0", user.Name);
 
         Assert.True(user.Cars.Count == 2);
@@ -160,7 +160,7 @@ public abstract class BaseRepositoriesTests
     public async void FindJoinAsync_CollectionnRecord()
     {
         var user = await Db.Users.FindAsync<Car>(q => q.Id == 1, q => q.Cars);
-        Assert.False(user.Deleted);
+        Assert.Null(user.Deleted);
         Assert.Equal("TestName0", user.Name);
 
         Assert.True(user.Cars.Count == 2);
@@ -297,7 +297,7 @@ public abstract class BaseRepositoriesTests
         const string name = "TestName3";
         {
             var user = await Db.Users.FindAsync(x => x.Id == id);
-            Assert.False(user.Deleted);
+            Assert.Null(user.Deleted);
             Assert.Equal(name, user.Name);
         }
         {
@@ -429,7 +429,7 @@ public abstract class BaseRepositoriesTests
         const int id = 10;
 
         var user = await Db.Users.FindAsync(x => x.Id == id);
-        Assert.False(user.Deleted);
+        Assert.Null(user.Deleted);
 
         var deleted = await Db.Users.DeleteAsync(user);
         Assert.True(deleted);

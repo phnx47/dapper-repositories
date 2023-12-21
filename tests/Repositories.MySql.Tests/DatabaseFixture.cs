@@ -40,7 +40,7 @@ public class DatabaseFixture : IDisposable
 
         Db.Connection.Execute("CREATE TABLE IF NOT EXISTS `Users` " +
                               "(`Id` int not null auto_increment, `Name` varchar(256) not null, `AddressId` int not null, `PhoneId` int not null, " +
-                              "`OfficePhoneId` int not null, `Deleted` boolean not null, `UpdatedAt` datetime, PRIMARY KEY  (`Id`));");
+                              "`OfficePhoneId` int not null, `Deleted` boolean, `UpdatedAt` datetime, PRIMARY KEY  (`Id`));");
 
         Db.Connection.Execute("CREATE TABLE IF NOT EXISTS `Cars` " +
                               "(`Id` int not null auto_increment, `Name` varchar(256) not null, " +
@@ -65,6 +65,6 @@ public class DatabaseFixture : IDisposable
     private void DropDatabase()
     {
         Db.Connection.Execute($"DROP DATABASE IF EXISTS {_dbName}");
-        Db.Connection.Execute($"DROP DATABASE IF EXISTS DAB");
+        Db.Connection.Execute("DROP DATABASE IF EXISTS DAB");
     }
 }
