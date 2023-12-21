@@ -35,7 +35,7 @@ public class User : BaseEntity<int>
 
     [Status]
     [Deleted]
-    public bool Deleted { get; set; }
+    public bool? Deleted { get; set; }
 
     [UpdatedAt]
     public DateTime? UpdatedAt { get; set; }

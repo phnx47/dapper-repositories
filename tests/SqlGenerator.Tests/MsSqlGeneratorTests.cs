@@ -306,18 +306,7 @@ public class MsSqlGeneratorTests
     public static void LogicalDeleteWithUpdatedAt()
     {
         ISqlGenerator<User> userSqlGenerator = new SqlGenerator<User>(_sqlConnector);
-        var user = new User() { Id = 10 };
-        var sqlQuery = userSqlGenerator.GetDelete(user);
-        var sql = sqlQuery.GetSql();
-
-        Assert.Equal("UPDATE Users SET Deleted = 1, UpdatedAt = @UpdatedAt WHERE Users.Id = @Id", sql);
-    }
-
-    [Fact]
-    public static void LogicalleleteWithUpdatedAtWithPredicate()
-    {
-        ISqlGenerator<User> userSqlGenerator = new SqlGenerator<User>(_sqlConnector);
-        var user = new User() { Id = 10 };
+        var user = new User { Id = 10 };
         var sqlQuery = userSqlGenerator.GetDelete(user);
         var sql = sqlQuery.GetSql();
 
@@ -338,7 +327,7 @@ public class MsSqlGeneratorTests
     public static void LogicalDeleteEntity()
     {
         ISqlGenerator<Car> sqlGenerator = new SqlGenerator<Car>(_sqlConnector);
-        var car = new Car() { Id = 10, Name = "LogicalDelete", UserId = 5 };
+        var car = new Car { Id = 10, Name = "LogicalDelete", UserId = 5 };
 
         var sqlQuery = sqlGenerator.GetDelete(car);
         var realSql = sqlQuery.GetSql();
