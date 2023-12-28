@@ -181,12 +181,6 @@ Query with SetSelect:
 var users = await userRepository.SetSelect(x => new {x.Id, x.Name}).FindAllAsync();
 ```
 
-Find all users for AccountId equals to 3 and not logical deleted:
-
-```c#
-var allUsers = await userRepository.FindAllAsync(x => x.AccountId == 3 && x.Deleted != false);
-```
-
 ## License
 
 All contents of this package are licensed under the [MIT license](https://opensource.org/licenses/MIT).
