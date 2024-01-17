@@ -770,14 +770,4 @@ public abstract class BaseRepositoriesTests
         var users5 = (await Db.Users.FindAllAsync(x => x.Name.StartsWith("est"))).ToArray();
         Assert.True(users5.Length <= 0);
     }
-
-    [Fact]
-    public async Task CancellationTokenSource_Cancel()
-    {
-        using var cts = new CancellationTokenSource();
-
-        cts.Cancel();
-
-        await Assert.ThrowsAnyAsync<OperationCanceledException>(() => Db.Address.FindAllAsync(cts.Token));
-    }
 }

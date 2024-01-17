@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Repositories.Base;
 using TestClasses;
@@ -12,6 +13,16 @@ public abstract class RepositoriesTests<TFixture> : BaseRepositoriesTests, IClas
     protected RepositoriesTests(TFixture fixture)
         : base(fixture.Db)
     {
+    }
+
+    [Fact]
+    public async Task CancellationTokenSource_Cancel()
+    {
+        using var cts = new CancellationTokenSource();
+
+        cts.Cancel();
+
+        await Assert.ThrowsAnyAsync<OperationCanceledException>(() => Db.Address.FindAllAsync(cts.Token));
     }
 
     [Fact]

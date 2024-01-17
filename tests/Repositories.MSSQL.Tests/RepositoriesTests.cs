@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Dapper;
 using Repositories.Base;
@@ -17,7 +18,15 @@ public abstract class RepositoriesTests<TFixture> : BaseRepositoriesTests, IClas
     {
     }
 
-    // only Databse specific tests
+    [Fact]
+    public async Task CancellationTokenSource_Cancel()
+    {
+        using var cts = new CancellationTokenSource();
+
+        cts.Cancel();
+
+        await Assert.ThrowsAnyAsync<OperationCanceledException>(() => Db.Address.FindAllAsync(cts.Token));
+    }
 
     [Fact]
     public void InsertAndUpdate_WithGuid_WithoutKey()
