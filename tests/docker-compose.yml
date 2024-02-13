@@ -27,7 +27,7 @@ services:
       ORACLE_PASSWORD: "Password12!"
 
   postgres:
-    image: postgres:16.1-alpine
+    image: postgres:16.2-alpine
     ports:
       - "5432:5432"
     restart: always
