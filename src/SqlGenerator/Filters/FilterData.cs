@@ -25,8 +25,8 @@ public class FilterData
     /// </summary>
     public LimitInfo? LimitInfo { get; set; }
 
-    /// <sumary>
+    /// <summary>
     /// Specify if the query is ordered
-    /// </sumary>
+    /// </summary>
     public bool Ordered { get; set; }
 }
