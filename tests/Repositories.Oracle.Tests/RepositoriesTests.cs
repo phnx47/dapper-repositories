@@ -1,6 +1,7 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Oracle.ManagedDataAccess.Client;
 using Repositories.Base;
 using TestClasses;
 using Xunit;
@@ -21,7 +22,7 @@ public class RepositoriesTests : BaseRepositoriesTests, IClassFixture<DatabaseFi
 
         cts.Cancel();
 
-        await Assert.ThrowsAnyAsync<OperationCanceledException>(() => Db.Address.FindAllAsync(cts.Token));
+        await Assert.ThrowsAnyAsync<OracleException>(() => Db.Address.FindAllAsync(cts.Token));
     }
 
     [Fact]
