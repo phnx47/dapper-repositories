@@ -5,7 +5,7 @@
     <CoverletOutputFormat>opencover</CoverletOutputFormat>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Npgsql" Version="8.0.5" />
+    <PackageReference Include="Npgsql" Version="9.0.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.11.1" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.8.2">
       <PrivateAssets>all</PrivateAssets>
