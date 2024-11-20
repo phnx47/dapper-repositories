@@ -22,4 +22,4 @@ jobs:
       - name: Run command
         run: gh pr merge -s --auto ${{ github.event.pull_request.number }}
         env:
-          GH_TOKEN: ${{ secrets.GH_FULL_PAT }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
