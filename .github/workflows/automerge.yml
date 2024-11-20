@@ -1,0 +1,25 @@
+name: Auto-merge
+
+on:
+  pull_request:
+    types: [labeled]
+    branches:
+      - "main"
+
+permissions:
+  pull-requests: write
+  contents: write
+
+jobs:
+  automerge:
+    name: Enable auto-merge
+    runs-on: ubuntu-24.04
+    if: github.actor == 'phnx47-bot' && contains(github.event.pull_request.labels.*.name, 'sync')
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Run command
+        run: gh pr merge -s --auto ${{ github.event.pull_request.number }}
+        env:
+          GH_TOKEN: ${{ secrets.GH_FULL_PAT }}
