@@ -1,4 +1,4 @@
-name: Auto-merge
+name: Labeled
 
 on:
   pull_request:
