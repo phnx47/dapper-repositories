@@ -11,10 +11,40 @@ on:
       - "main"
   workflow_dispatch:
 
+env:
+  TEST_DB_PASS: "Password12!"
+
 jobs:
   build:
-    name: Build & Test
+    name: Build, Test & Pack
     runs-on: ubuntu-24.04
+    services:
+      mysql:
+        image: mysql:8.0-debian
+        env:
+          MYSQL_ROOT_PASSWORD: ${{ env.TEST_DB_PASS }}
+        ports:
+          - "3306:3306"
+      mssql:
+        image: mcr.microsoft.com/mssql/server:2022-latest
+        env:
+          ACCEPT_EULA: "Y"
+          SA_PASSWORD: ${{ env.TEST_DB_PASS }}
+        ports:
+          - "1433:1433"
+      oracle:
+        image: gvenzl/oracle-xe:21-slim-faststart
+        env:
+          ORACLE_PASSWORD: ${{ env.TEST_DB_PASS }}
+        ports:
+          - "1521:1521"
+      postgres:
+        image: postgres:17.2-alpine
+        ports:
+          - "5432:5432"
+        env:
+          POSTGRES_PASSWORD: ${{ env.TEST_DB_PASS }}
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -26,13 +56,6 @@ jobs:
 
       - name: Build
         run: dotnet build --no-restore -c Release -p:ContinuousIntegrationBuild=true
-
-      - name: Run containers
-        working-directory: tests
-        run: docker compose up -d
-
-      - name: Wait for containers
-        run: sleep 40s
 
       - name: Run tests
         run: dotnet test --no-build -c Release

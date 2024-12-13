@@ -12,7 +12,7 @@ public class DatabaseFixture : IDisposable
     {
         Db = new TestDbContext(
             new OracleConnection(
-                "DATA SOURCE=(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=localhost)(PORT=1521))(CONNECT_DATA=(SERVICE_NAME=XEPDB1)));User Id=system;Password=Password12!"),
+                $"DATA SOURCE=(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=localhost)(PORT=1521))(CONNECT_DATA=(SERVICE_NAME=XEPDB1)));User Id=system;Password={DotEnv.GetTestDbPass()}"),
             SqlProvider.Oracle);
         ClearDb();
         InitDb();

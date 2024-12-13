@@ -1,33 +1,26 @@
 services:
   mysql:
     image: mysql:8.0-debian
+    environment:
+      MYSQL_ROOT_PASSWORD: ${TEST_DB_PASS}
     ports:
       - "3306:3306"
-    restart: always
-    environment:
-      MYSQL_ROOT_PASSWORD: "Password12!"
-
   mssql:
     image: mcr.microsoft.com/mssql/server:2022-latest
     environment:
       ACCEPT_EULA: "Y"
-      SA_PASSWORD: "Password12!"
+      SA_PASSWORD: ${TEST_DB_PASS}
     ports:
       - "1433:1433"
-    restart: always
-
   oracle:
     image: gvenzl/oracle-xe:21-slim-faststart
+    environment:
+      ORACLE_PASSWORD: ${TEST_DB_PASS}
     ports:
       - "1521:1521"
-    restart: always
-    environment:
-      ORACLE_PASSWORD: "Password12!"
-
   postgres:
     image: postgres:17.2-alpine
     ports:
       - "5432:5432"
-    restart: always
     environment:
-      POSTGRES_PASSWORD: "Password12!"
+      POSTGRES_PASSWORD: ${TEST_DB_PASS}
