@@ -9,7 +9,7 @@ namespace Repositories.PostgreSQL.Tests;
 public class DatabaseFixture : IDisposable
 {
     private readonly string _dbName = "test_" + RandomGenerator.String();
-    private const string _masterConnString = "Host=localhost;Username=postgres;Password=Password12!";
+    private readonly string _masterConnString = $"Host=localhost;Username=postgres;Password={DotEnv.GetTestDbPass()}";
 
     public DatabaseFixture()
     {

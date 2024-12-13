@@ -6,6 +6,9 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{E409731D-9AB4-4389-B611-53A3AF8324A4}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{94F86B38-C3FB-4FBB-802E-7786C457050D}"
+	ProjectSection(SolutionItems) = preProject
+		tests\.env = tests\.env
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MicroOrm.Dapper.Repositories", "src\MicroOrm.Dapper.Repositories.csproj", "{A8258060-EDF7-4713-9428-088ADD6FE503}"
 EndProject
