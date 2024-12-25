@@ -20,9 +20,9 @@ public class RepositoriesTests : BaseRepositoriesTests, IClassFixture<DatabaseFi
     {
         using var cts = new CancellationTokenSource();
 
-        cts.Cancel();
+        await cts.CancelAsync();
 
-        await Assert.ThrowsAnyAsync<OracleException>(() => Db.Address.FindAllAsync(cts.Token));
+        await Assert.ThrowsAnyAsync<TaskCanceledException>(() => Db.Address.FindAllAsync(cts.Token));
     }
 
     [Fact]
