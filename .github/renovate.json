@@ -15,12 +15,17 @@
   "packageRules": [
     {
       "automerge": true,
-      "matchSourceUrlPrefixes": [
-        "https://github.com/coverlet-coverage",
-        "https://github.com/xunit",
-        "https://github.com/microsoft/vstest"
-      ],
-      "groupName": "tests"
+      "groupName": "coverlet packages",
+      "matchSourceUrls": [
+        "https://github.com/coverlet-coverage{/,}**"
+      ]
+    },
+    {
+      "automerge": true,
+      "extends": [
+        "monorepo:vstest",
+        "monorepo:xunit-dotnet"
+      ]
     }
   ]
 }
