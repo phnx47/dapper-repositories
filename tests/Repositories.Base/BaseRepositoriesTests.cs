@@ -97,7 +97,7 @@ public abstract class BaseRepositoriesTests
     }
 
     [Fact]
-    public async void FindByIdAsync()
+    public async Task FindByIdAsync()
     {
         var user = await Db.Users.FindByIdAsync(2);
         Assert.Null(user.Deleted);
@@ -105,7 +105,7 @@ public abstract class BaseRepositoriesTests
     }
 
     [Fact]
-    public async void FindByIdAsync_WithJoins_NotNull()
+    public async Task FindByIdAsync_WithJoins_NotNull()
     {
         var user = await Db.Users.FindByIdAsync<Car, Phone, Address>(1, x => x.Cars, x => x.Phone, x => x.Addresses);
         Assert.Null(user.Deleted);
@@ -117,7 +117,7 @@ public abstract class BaseRepositoriesTests
     }
 
     [Fact]
-    public async void FindByIdAsync_WithJoins_CheckCount()
+    public async Task FindByIdAsync_WithJoins_CheckCount()
     {
         var address = await Db.Address.FindByIdAsync<User>(1, x => x.Users);
         Assert.Equal("Street0", address.Street);
@@ -126,7 +126,7 @@ public abstract class BaseRepositoriesTests
     }
 
     [Fact]
-    public async void FindAllAsync_WithPredicate_CheckCount()
+    public async Task FindAllAsync_WithPredicate_CheckCount()
     {
         var addresses = (await Db.Address.FindAllAsync<User>(q => q.Id == 1, x => x.Users)).ToArray();
         Assert.Single(addresses);
@@ -137,7 +137,7 @@ public abstract class BaseRepositoriesTests
     }
 
     [Fact]
-    public async void FindAllAsync_NullPredicate_CheckCount()
+    public async Task FindAllAsync_NullPredicate_CheckCount()
     {
         var addresses = (await Db.Address.FindAllAsync<User>(null, x => x.Users)).ToArray();
         var address = addresses.First();
@@ -157,7 +157,7 @@ public abstract class BaseRepositoriesTests
     }
 
     [Fact]
-    public async void FindJoinAsync_CollectionnRecord()
+    public async Task FindJoinAsync_CollectionnRecord()
     {
         var user = await Db.Users.FindAsync<Car>(q => q.Id == 1, q => q.Cars);
         Assert.Null(user.Deleted);
@@ -281,7 +281,7 @@ public abstract class BaseRepositoriesTests
     }
 
     [Fact]
-    public async void FindAllJoinSameTableTwiceAsync()
+    public async Task FindAllJoinSameTableTwiceAsync()
     {
         var user = (await Db.Users.FindAllAsync<Phone, Car, Phone>(x => x.Id == 1, q => q.OfficePhone, q => q.Cars, q => q.Phone)).First();
         Assert.True(user.Cars.Count == 2);
