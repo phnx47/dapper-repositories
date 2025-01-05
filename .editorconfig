@@ -5,12 +5,13 @@ charset = utf-8
 end_of_line = lf
 indent_size = 2
 indent_style = space
-max_line_length = 160
+max_line_length = 100
 insert_final_newline = true
 trim_trailing_whitespace = true
 
 [*.cs]
 indent_size = 4
+max_line_length = 160
 
 ## Dotnet code style settings:
 
