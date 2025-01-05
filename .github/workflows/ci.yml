@@ -55,7 +55,7 @@ jobs:
         run: dotnet restore
 
       - name: Build
-        run: dotnet build --no-restore -c Release -p:ContinuousIntegrationBuild=true
+        run: dotnet build --no-restore -c Release
 
       - name: Run tests
         run: dotnet test --no-build -c Release
@@ -96,7 +96,12 @@ jobs:
         with:
           name: nupkgs
       - name: Push to GitHub
-        run: dotnet nuget push "**/*.nupkg"  -s https://nuget.pkg.github.com/phnx47/index.json -k ${{ secrets.GH_PKG_PAT }} --skip-duplicate
+        run: |
+          dotnet nuget push "**/*.nupkg" \
+            --skip-duplicate \
+            -k ${{ secrets.GITHUB_TOKEN }} \
+            -s https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json
+
   nuget:
     name: Deploy to NuGet
     needs: [build]
@@ -108,4 +113,7 @@ jobs:
         with:
           name: nupkgs
       - name: Push to NuGet
-        run: dotnet nuget push "**/*.nupkg" -k ${{ secrets.NUGET_KEY }} -s https://api.nuget.org/v3/index.json
+        run: |
+          dotnet nuget push "**/*.nupkg" \
+            -k ${{ secrets.NUGET_KEY }} \
+            -s https://api.nuget.org/v3/index.json
