@@ -1,31 +1,17 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": [
-    ":dependencyDashboard",
-    ":semanticPrefixFixDepsChoreOthers",
-    "group:monorepos",
-    "workarounds:all"
-  ],
-  "labels": [
-    "dependencies"
-  ],
-  "assignees": [
-    "@phnx47"
-  ],
+  "extends": [":dependencyDashboard", "group:monorepos"],
+  "labels": ["dependencies"],
+  "assignees": ["@phnx47"],
   "packageRules": [
     {
       "automerge": true,
       "groupName": "coverlet packages",
-      "matchSourceUrls": [
-        "https://github.com/coverlet-coverage{/,}**"
-      ]
+      "matchSourceUrls": ["https://github.com/coverlet-coverage/coverlet"]
     },
     {
       "automerge": true,
-      "extends": [
-        "monorepo:vstest",
-        "monorepo:xunit-dotnet"
-      ]
+      "extends": ["monorepo:vstest", "monorepo:xunit-dotnet"]
     }
   ]
 }
