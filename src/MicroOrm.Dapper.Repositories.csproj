@@ -3,7 +3,7 @@
     <Description>CRUD for Dapper</Description>
     <Copyright>2015 © Serge K</Copyright>
     <Authors>Serge K and Contributors</Authors>
-    <TargetFrameworks>net461;netstandard2.0;net5.0;net7.0</TargetFrameworks>
+    <TargetFrameworks>net461;netstandard2.0;net8.0</TargetFrameworks>
     <Nullable>enable</Nullable>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
