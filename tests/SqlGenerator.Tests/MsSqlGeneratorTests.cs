@@ -396,6 +396,18 @@ public class MsSqlGeneratorTests
     }
 
     [Fact]
+    public static void NullableIsNotNull()
+    {
+        var userSqlGenerator = new SqlGenerator<User>(_sqlConnector, true);
+        var tomorrow = DateTime.Now.Date.AddDays(1);
+        var sqlQuery = userSqlGenerator.GetSelectAll(u => u.UpdatedAt != null && u.UpdatedAt < tomorrow, null);
+
+        Assert.Equal(
+            "SELECT [Users].[Id], [Users].[Name], [Users].[AddressId], [Users].[PhoneId], [Users].[OfficePhoneId], [Users].[Deleted], [Users].[UpdatedAt] FROM [Users] " +
+            "WHERE ([Users].[UpdatedAt] IS NOT NULL AND [Users].[UpdatedAt] < @UpdatedAt_p1) AND [Users].[Deleted] IS NULL", sqlQuery.GetSql());
+    }
+
+    [Fact]
     public static void JoinBracelets()
     {
         ISqlGenerator<User> userSqlGenerator = new SqlGenerator<User>(_sqlConnector, true);
