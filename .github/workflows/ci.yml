@@ -51,11 +51,8 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Restore
-        run: dotnet restore
-
       - name: Build
-        run: dotnet build --no-restore -c Release
+        run: dotnet build -c Release
 
       - name: Run tests
         run: dotnet test --no-build -c Release
@@ -76,14 +73,14 @@ jobs:
 
       - name: Pack NuGet artifacts
         if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v')
-        run: dotnet pack --no-build -c Release -p:PackageVersion="${{ env.VERSION }}"
+        run: dotnet pack --no-build -c Release -p:PackageVersion="${{ env.VERSION }}" -o packages
 
       - name: Upload artifacts
         if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v')
         uses: actions/upload-artifact@v4
         with:
-          name: nupkgs
-          path: src/**/*nupkg
+          name: packages
+          path: packages/*nupkg
 
   github:
     name: Deploy to GitHub
@@ -94,10 +91,10 @@ jobs:
       - name: Download artifacts
         uses: actions/download-artifact@v4
         with:
-          name: nupkgs
+          name: packages
       - name: Push to GitHub
         run: |
-          dotnet nuget push "**/*.nupkg" \
+          dotnet nuget push "*.nupkg" \
             --skip-duplicate \
             -k ${{ secrets.GITHUB_TOKEN }} \
             -s https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json
@@ -111,9 +108,9 @@ jobs:
       - name: Download artifacts
         uses: actions/download-artifact@v4
         with:
-          name: nupkgs
+          name: packages
       - name: Push to NuGet
         run: |
-          dotnet nuget push "**/*.nupkg" \
+          dotnet nuget push "*.nupkg" \
             -k ${{ secrets.NUGET_KEY }} \
             -s https://api.nuget.org/v3/index.json
