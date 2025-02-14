@@ -19,7 +19,7 @@ services:
     ports:
       - "1521:1521"
   postgres:
-    image: postgres:17.2-alpine
+    image: postgres:17.3-alpine
     ports:
       - "5432:5432"
     environment:
