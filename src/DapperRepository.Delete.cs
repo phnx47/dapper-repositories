@@ -80,7 +80,7 @@ public partial class DapperRepository<TEntity>
         if (timeout.HasValue)
             commandTimeout = timeout.Value.Seconds;
         var deleted = await Connection.ExecuteAsync(new CommandDefinition(queryResult.GetSql(), queryResult.Param, transaction, commandTimeout,
-            cancellationToken: cancellationToken)) > 0;
+            cancellationToken: cancellationToken)).ConfigureAwait(false) > 0;
         return deleted;
     }
 
@@ -106,7 +106,7 @@ public partial class DapperRepository<TEntity>
         if (timeout.HasValue)
             commandTimeout = timeout.Value.Seconds;
         var deleted = await Connection.ExecuteAsync(new CommandDefinition(queryResult.GetSql(), queryResult.Param, transaction, commandTimeout,
-            cancellationToken: cancellationToken)) > 0;
+            cancellationToken: cancellationToken)).ConfigureAwait(false) > 0;
         return deleted;
     }
 }

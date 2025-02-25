@@ -67,18 +67,18 @@ public partial class DapperRepository<TEntity>
         {
             if (SqlGenerator.Provider == Repositories.SqlGenerator.SqlProvider.Oracle)
             {
-                await Connection.ExecuteAsync(new CommandDefinition(queryResult.GetSql(), queryResult.Param, transaction, cancellationToken: cancellationToken));
+                await Connection.ExecuteAsync(new CommandDefinition(queryResult.GetSql(), queryResult.Param, transaction, cancellationToken: cancellationToken)).ConfigureAwait(false);
                 int newId = ((DynamicParameters)(queryResult.Param!)).Get<int>(":newId");
                 return SetValue(newId, instance);
             }
             else
             {
-                var newId = (await Connection.QueryAsync<long>(queryResult.GetSql(), queryResult.Param, transaction)).FirstOrDefault();
+                var newId = (await Connection.QueryAsync<long>(queryResult.GetSql(), queryResult.Param, transaction).ConfigureAwait(false)).FirstOrDefault();
                 return SetValue(newId, instance);
             }
         }
 
-        return await Connection.ExecuteAsync(new CommandDefinition(queryResult.GetSql(), instance, transaction, cancellationToken: cancellationToken)) > 0;
+        return await Connection.ExecuteAsync(new CommandDefinition(queryResult.GetSql(), instance, transaction, cancellationToken: cancellationToken)).ConfigureAwait(false) > 0;
     }
 
     private bool SetValue(long newId, TEntity instance)

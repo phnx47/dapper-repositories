@@ -168,7 +168,7 @@ public partial class ReadOnlyDapperRepository<TEntity>
         CancellationToken cancellationToken)
     {
         var queryResult = SqlGenerator.GetSelectFirst(predicate, FilterData, tChild1);
-        return (await ExecuteJoinQueryAsync<TChild1, DontMap, DontMap, DontMap, DontMap, DontMap>(queryResult, transaction, cancellationToken, tChild1)).FirstOrDefault();
+        return (await ExecuteJoinQueryAsync<TChild1, DontMap, DontMap, DontMap, DontMap, DontMap>(queryResult, transaction, cancellationToken, tChild1).ConfigureAwait(false)).FirstOrDefault();
     }
 
 
@@ -205,7 +205,7 @@ public partial class ReadOnlyDapperRepository<TEntity>
         CancellationToken cancellationToken)
     {
         var queryResult = SqlGenerator.GetSelectFirst(predicate, FilterData, tChild1, tChild2);
-        return (await ExecuteJoinQueryAsync<TChild1, TChild2, DontMap, DontMap, DontMap, DontMap>(queryResult, transaction, cancellationToken, tChild1, tChild2)).FirstOrDefault();
+        return (await ExecuteJoinQueryAsync<TChild1, TChild2, DontMap, DontMap, DontMap, DontMap>(queryResult, transaction, cancellationToken, tChild1, tChild2).ConfigureAwait(false)).FirstOrDefault();
     }
 
 
@@ -246,7 +246,7 @@ public partial class ReadOnlyDapperRepository<TEntity>
         CancellationToken cancellationToken)
     {
         var queryResult = SqlGenerator.GetSelectFirst(predicate, FilterData, tChild1, tChild2, tChild3);
-        return (await ExecuteJoinQueryAsync<TChild1, TChild2, TChild3, DontMap, DontMap, DontMap>(queryResult, transaction, cancellationToken, tChild1, tChild2, tChild3)).FirstOrDefault();
+        return (await ExecuteJoinQueryAsync<TChild1, TChild2, TChild3, DontMap, DontMap, DontMap>(queryResult, transaction, cancellationToken, tChild1, tChild2, tChild3).ConfigureAwait(false)).FirstOrDefault();
     }
 
 
@@ -291,7 +291,7 @@ public partial class ReadOnlyDapperRepository<TEntity>
         CancellationToken cancellationToken)
     {
         var queryResult = SqlGenerator.GetSelectFirst(predicate, FilterData, tChild1, tChild2, tChild3, tChild4);
-        return (await ExecuteJoinQueryAsync<TChild1, TChild2, TChild3, TChild4, DontMap, DontMap>(queryResult, transaction, cancellationToken, tChild1, tChild2, tChild3, tChild4))
+        return (await ExecuteJoinQueryAsync<TChild1, TChild2, TChild3, TChild4, DontMap, DontMap>(queryResult, transaction, cancellationToken, tChild1, tChild2, tChild3, tChild4).ConfigureAwait(false))
             .FirstOrDefault();
     }
 
@@ -341,7 +341,7 @@ public partial class ReadOnlyDapperRepository<TEntity>
         CancellationToken cancellationToken)
     {
         var queryResult = SqlGenerator.GetSelectFirst(predicate, FilterData, tChild1, tChild2, tChild3, tChild4, tChild5);
-        return (await ExecuteJoinQueryAsync<TChild1, TChild2, TChild3, TChild4, TChild5, DontMap>(queryResult, transaction, cancellationToken, tChild1, tChild2, tChild3, tChild4, tChild5))
+        return (await ExecuteJoinQueryAsync<TChild1, TChild2, TChild3, TChild4, TChild5, DontMap>(queryResult, transaction, cancellationToken, tChild1, tChild2, tChild3, tChild4, tChild5).ConfigureAwait(false))
             .FirstOrDefault();
     }
 
@@ -396,6 +396,6 @@ public partial class ReadOnlyDapperRepository<TEntity>
     {
         var queryResult = SqlGenerator.GetSelectFirst(predicate, FilterData, tChild1, tChild2, tChild3, tChild4, tChild5, tChild6);
         return (await ExecuteJoinQueryAsync<TChild1, TChild2, TChild3, TChild4, TChild5, TChild6>(queryResult, transaction, cancellationToken, tChild1, tChild2, tChild3, tChild4, tChild5,
-            tChild6)).FirstOrDefault();
+            tChild6).ConfigureAwait(false)).FirstOrDefault();
     }
 }
