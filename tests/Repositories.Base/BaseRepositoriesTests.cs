@@ -28,8 +28,8 @@ public abstract class BaseRepositoriesTests
         const int diff = 12;
         var dateTime = DateTime.Now.AddDays(-diff);
         var user = new User { Name = "Sergey Phoenix", UpdatedAt = dateTime };
-        await Db.Users.InsertAsync(user);
-        var userFromDb = await Db.Users.FindAsync(q => q.Id == user.Id);
+        await Db.Users.InsertAsync(user, TestContext.Current.CancellationToken);
+        var userFromDb = await Db.Users.FindAsync(q => q.Id == user.Id, TestContext.Current.CancellationToken);
 
         Assert.Equal(1, userFromDb.UpdatedAt.GetValueOrDefault().CompareTo(dateTime));
     }
@@ -61,7 +61,7 @@ public abstract class BaseRepositoriesTests
     [Fact]
     public async Task CountWithDistinctAsync()
     {
-        var count = await Db.Phones.CountAsync(phone => phone.Code);
+        var count = await Db.Phones.CountAsync(phone => phone.Code, TestContext.Current.CancellationToken);
 
         Assert.Equal(1, count);
     }
@@ -99,7 +99,7 @@ public abstract class BaseRepositoriesTests
     [Fact]
     public async Task FindByIdAsync()
     {
-        var user = await Db.Users.FindByIdAsync(2);
+        var user = await Db.Users.FindByIdAsync(2, TestContext.Current.CancellationToken);
         Assert.Null(user.Deleted);
         Assert.Equal("TestName1", user.Name);
     }
@@ -107,7 +107,7 @@ public abstract class BaseRepositoriesTests
     [Fact]
     public async Task FindByIdAsync_WithJoins_NotNull()
     {
-        var user = await Db.Users.FindByIdAsync<Car, Phone, Address>(1, x => x.Cars, x => x.Phone, x => x.Addresses);
+        var user = await Db.Users.FindByIdAsync<Car, Phone, Address>(1, x => x.Cars, x => x.Phone, x => x.Addresses, TestContext.Current.CancellationToken);
         Assert.Null(user.Deleted);
         Assert.Equal("TestName0", user.Name);
 
@@ -119,7 +119,7 @@ public abstract class BaseRepositoriesTests
     [Fact]
     public async Task FindByIdAsync_WithJoins_CheckCount()
     {
-        var address = await Db.Address.FindByIdAsync<User>(1, x => x.Users);
+        var address = await Db.Address.FindByIdAsync<User>(1, x => x.Users, TestContext.Current.CancellationToken);
         Assert.Equal("Street0", address.Street);
         Assert.NotNull(address.Users);
         Assert.True(address.Users.Count == 10);
@@ -128,7 +128,7 @@ public abstract class BaseRepositoriesTests
     [Fact]
     public async Task FindAllAsync_WithPredicate_CheckCount()
     {
-        var addresses = (await Db.Address.FindAllAsync<User>(q => q.Id == 1, x => x.Users)).ToArray();
+        var addresses = (await Db.Address.FindAllAsync<User>(q => q.Id == 1, x => x.Users, TestContext.Current.CancellationToken)).ToArray();
         Assert.Single(addresses);
         var address = addresses.Single();
         Assert.Equal("Street0", address.Street);
@@ -139,7 +139,7 @@ public abstract class BaseRepositoriesTests
     [Fact]
     public async Task FindAllAsync_NullPredicate_CheckCount()
     {
-        var addresses = (await Db.Address.FindAllAsync<User>(null, x => x.Users)).ToArray();
+        var addresses = (await Db.Address.FindAllAsync<User>(null, x => x.Users, TestContext.Current.CancellationToken)).ToArray();
         var address = addresses.First();
         Assert.Equal("Street0", address.Street);
         Assert.NotNull(address.Users);
@@ -159,7 +159,7 @@ public abstract class BaseRepositoriesTests
     [Fact]
     public async Task FindJoinAsync_CollectionnRecord()
     {
-        var user = await Db.Users.FindAsync<Car>(q => q.Id == 1, q => q.Cars);
+        var user = await Db.Users.FindAsync<Car>(q => q.Id == 1, q => q.Cars, TestContext.Current.CancellationToken);
         Assert.Null(user.Deleted);
         Assert.Equal("TestName0", user.Name);
 
@@ -170,10 +170,10 @@ public abstract class BaseRepositoriesTests
     [Fact]
     public async Task FindThroughtNavigationProperty()
     {
-        var user = await Db.Users.FindAsync<Phone>(x => x.Phone.PNumber == "123", x => x.Phone);
+        var user = await Db.Users.FindAsync<Phone>(x => x.Phone.PNumber == "123", x => x.Phone, TestContext.Current.CancellationToken);
         Assert.Equal("TestName0", user.Name);
 
-        var user1 = await Db.Users.FindAsync<Phone>(x => x.Phone.PNumber == "2223", x => x.Phone);
+        var user1 = await Db.Users.FindAsync<Phone>(x => x.Phone.PNumber == "2223", x => x.Phone, TestContext.Current.CancellationToken);
         Assert.Null(user1);
     }
 
@@ -181,7 +181,7 @@ public abstract class BaseRepositoriesTests
     public async Task FindAllByContainsMultipleList()
     {
         var keyList = new List<int> { 2, 3, 4 };
-        var users = (await Db.Users.FindAllAsync(x => keyList.Contains(x.Id))).ToArray();
+        var users = (await Db.Users.FindAllAsync(x => keyList.Contains(x.Id), TestContext.Current.CancellationToken)).ToArray();
         var usersArray = users.ToArray();
         Assert.Equal(3, usersArray.Length);
         Assert.Equal("TestName1", usersArray[0].Name);
@@ -193,14 +193,14 @@ public abstract class BaseRepositoriesTests
     public async Task FindAllByContainsEmptyList()
     {
         var keyList = new List<int>();
-        var users = (await Db.Users.FindAllAsync(x => keyList.Contains(x.Id))).ToArray();
+        var users = (await Db.Users.FindAllAsync(x => keyList.Contains(x.Id), TestContext.Current.CancellationToken)).ToArray();
         Assert.Empty(users);
     }
 
     [Fact]
     public async Task FindAllAsync()
     {
-        var users = (await Db.Users.FindAllAsync(x => x.Name == "TestName0")).ToArray();
+        var users = (await Db.Users.FindAllAsync(x => x.Name == "TestName0", TestContext.Current.CancellationToken)).ToArray();
         Assert.Equal(2, users.Length);
 
         var user1 = users.FirstOrDefault(x => x.Id == 1);
@@ -216,19 +216,19 @@ public abstract class BaseRepositoriesTests
     [Fact]
     public async Task FindPhoneAsyncDifferentBoolQuery()
     {
-        var phone = await Db.Phones.FindAsync(x => x.Id == 1);
+        var phone = await Db.Phones.FindAsync(x => x.Id == 1, TestContext.Current.CancellationToken);
         Assert.NotNull(phone);
 
-        var phone1 = await Db.Phones.FindAsync(x => x.IsActive);
+        var phone1 = await Db.Phones.FindAsync(x => x.IsActive, TestContext.Current.CancellationToken);
         Assert.NotNull(phone1);
 
-        var phone2 = await Db.Phones.FindAsync(x => x.PNumber == "123" && !x.IsActive);
+        var phone2 = await Db.Phones.FindAsync(x => x.PNumber == "123" && !x.IsActive, TestContext.Current.CancellationToken);
         Assert.Null(phone2);
 
-        var phone3 = await Db.Phones.FindAsync(x => x.Id == 1 && x.IsActive);
+        var phone3 = await Db.Phones.FindAsync(x => x.Id == 1 && x.IsActive, TestContext.Current.CancellationToken);
         Assert.NotNull(phone3);
 
-        var phone4 = await Db.Phones.FindAsync(x => x.PNumber == "333" && !x.IsActive);
+        var phone4 = await Db.Phones.FindAsync(x => x.PNumber == "333" && !x.IsActive, TestContext.Current.CancellationToken);
         Assert.NotNull(phone4);
     }
 
@@ -244,7 +244,7 @@ public abstract class BaseRepositoriesTests
     [Fact]
     public async Task FindAllJoin2TableAsync()
     {
-        var user = (await Db.Users.FindAllAsync<Car, Address>(x => x.Id == 1, q => q.Cars, q => q.Addresses)).First();
+        var user = (await Db.Users.FindAllAsync<Car, Address>(x => x.Id == 1, q => q.Cars, q => q.Addresses, TestContext.Current.CancellationToken)).First();
         Assert.True(user.Cars.Count == 2);
         Assert.Equal("TestCar0", user.Cars.First().Name);
         Assert.Equal("Street0", user.Addresses.Street);
@@ -263,7 +263,7 @@ public abstract class BaseRepositoriesTests
     [Fact]
     public async Task FindAllJoin3TableAsync()
     {
-        var user = (await Db.Users.FindAllAsync<Car, Address, Phone>(x => x.Id == 1, q => q.Cars, q => q.Addresses, q => q.Phone)).First();
+        var user = (await Db.Users.FindAllAsync<Car, Address, Phone>(x => x.Id == 1, q => q.Cars, q => q.Addresses, q => q.Phone, TestContext.Current.CancellationToken)).First();
         Assert.True(user.Cars.Count == 2);
         Assert.Equal("TestCar0", user.Cars.First().Name);
         Assert.Equal("Street0", user.Addresses.Street);
@@ -283,7 +283,7 @@ public abstract class BaseRepositoriesTests
     [Fact]
     public async Task FindAllJoinSameTableTwiceAsync()
     {
-        var user = (await Db.Users.FindAllAsync<Phone, Car, Phone>(x => x.Id == 1, q => q.OfficePhone, q => q.Cars, q => q.Phone)).First();
+        var user = (await Db.Users.FindAllAsync<Phone, Car, Phone>(x => x.Id == 1, q => q.OfficePhone, q => q.Cars, q => q.Phone, TestContext.Current.CancellationToken)).First();
         Assert.True(user.Cars.Count == 2);
         Assert.Equal("TestCar0", user.Cars.First().Name);
         Assert.Equal("333", user.OfficePhone.PNumber);
@@ -296,12 +296,12 @@ public abstract class BaseRepositoriesTests
         const int id = 4;
         const string name = "TestName3";
         {
-            var user = await Db.Users.FindAsync(x => x.Id == id);
+            var user = await Db.Users.FindAsync(x => x.Id == id, TestContext.Current.CancellationToken);
             Assert.Null(user.Deleted);
             Assert.Equal(name, user.Name);
         }
         {
-            var user = await Db.Users.FindAsync(x => x.Name == name);
+            var user = await Db.Users.FindAsync(x => x.Name == name, TestContext.Current.CancellationToken);
             Assert.Equal(id, user.Id);
 
             Assert.Null(user.Cars);
@@ -328,7 +328,7 @@ public abstract class BaseRepositoriesTests
     [Fact]
     public async Task FindJoinAsync_User()
     {
-        var user = await Db.Users.FindAsync<Car>(x => x.Id == 1, q => q.Cars);
+        var user = await Db.Users.FindAsync<Car>(x => x.Id == 1, q => q.Cars, TestContext.Current.CancellationToken);
         Assert.True(user.Cars.Count == 2);
         Assert.Equal("TestCar0", user.Cars.First().Name);
     }
@@ -336,7 +336,7 @@ public abstract class BaseRepositoriesTests
     [Fact]
     public async Task FindJoinAsync_Car()
     {
-        var car = await Db.Cars.FindAsync<User>(x => x.Id == 1, q => q.User);
+        var car = await Db.Cars.FindAsync<User>(x => x.Id == 1, q => q.User, TestContext.Current.CancellationToken);
         Assert.NotNull(car);
         Assert.NotNull(car.User);
         Assert.Equal("TestName0", car.User.Name);
@@ -371,16 +371,16 @@ public abstract class BaseRepositoriesTests
             Name = "Sergey"
         };
 
-        var insert = await Db.Users.InsertAsync(user);
+        var insert = await Db.Users.InsertAsync(user, TestContext.Current.CancellationToken);
         Assert.True(insert);
 
-        var userFromDb = await Db.Users.FindAsync(q => q.Id == user.Id);
+        var userFromDb = await Db.Users.FindAsync(q => q.Id == user.Id, TestContext.Current.CancellationToken);
         Assert.Equal(user.Name, userFromDb.Name);
         user.Name = "Sergey1";
 
         var update = await Db.Users.UpdateAsync(user);
         Assert.True(update);
-        userFromDb = await Db.Users.FindAsync(q => q.Id == user.Id);
+        userFromDb = await Db.Users.FindAsync(q => q.Id == user.Id, TestContext.Current.CancellationToken);
         Assert.Equal("Sergey1", userFromDb.Name);
     }
 
@@ -415,9 +415,9 @@ public abstract class BaseRepositoriesTests
             Status = StatusCar.Active
         };
 
-        var insert = await Db.Cars.InsertAsync(car);
+        var insert = await Db.Cars.InsertAsync(car, TestContext.Current.CancellationToken);
         Assert.True(insert);
-        var carFromDb = await Db.Cars.FindAsync(x => x.Id == car.Id);
+        var carFromDb = await Db.Cars.FindAsync(x => x.Id == car.Id, TestContext.Current.CancellationToken);
         var guid2 = new Guid(carFromDb.Data);
         Assert.Equal(guid, guid2);
     }
@@ -428,13 +428,13 @@ public abstract class BaseRepositoriesTests
     {
         const int id = 10;
 
-        var user = await Db.Users.FindAsync(x => x.Id == id);
+        var user = await Db.Users.FindAsync(x => x.Id == id, TestContext.Current.CancellationToken);
         Assert.Null(user.Deleted);
 
-        var deleted = await Db.Users.DeleteAsync(user);
+        var deleted = await Db.Users.DeleteAsync(user, TestContext.Current.CancellationToken);
         Assert.True(deleted);
 
-        var deletedUser = await Db.Users.FindAsync(x => x.Id == id);
+        var deletedUser = await Db.Users.FindAsync(x => x.Id == id, TestContext.Current.CancellationToken);
         Assert.Null(deletedUser);
     }
 
@@ -448,15 +448,15 @@ public abstract class BaseRepositoriesTests
             Status = StatusCar.Active
         };
 
-        var insert = await Db.Cars.InsertAsync(newCar);
+        var insert = await Db.Cars.InsertAsync(newCar, TestContext.Current.CancellationToken);
 
-        var car = await Db.Cars.FindAsync(x => x.Id == newCar.Id);
+        var car = await Db.Cars.FindAsync(x => x.Id == newCar.Id, TestContext.Current.CancellationToken);
         Assert.False(car.Status == StatusCar.Deleted);
 
-        var deleted = await Db.Cars.DeleteAsync(car);
+        var deleted = await Db.Cars.DeleteAsync(car, TestContext.Current.CancellationToken);
         Assert.True(deleted);
 
-        var deletedCar = await Db.Cars.FindAsync(x => x.Id == newCar.Id);
+        var deletedCar = await Db.Cars.FindAsync(x => x.Id == newCar.Id, TestContext.Current.CancellationToken);
         Assert.Null(deletedCar);
     }
 
@@ -469,20 +469,20 @@ public abstract class BaseRepositoriesTests
         };
         using (var trans = Db.BeginTransaction())
         {
-            await Db.Users.InsertAsync(user, trans);
+            await Db.Users.InsertAsync(user, trans, TestContext.Current.CancellationToken);
             trans.Rollback();
         }
 
-        var userFromDb = await Db.Users.FindAsync(x => x.Name == "Sergey_Transaction");
+        var userFromDb = await Db.Users.FindAsync(x => x.Name == "Sergey_Transaction", TestContext.Current.CancellationToken);
         Assert.Null(userFromDb);
 
         using (var trans = Db.BeginTransaction())
         {
-            await Db.Users.InsertAsync(user, trans);
+            await Db.Users.InsertAsync(user, trans, TestContext.Current.CancellationToken);
             trans.Commit();
         }
 
-        userFromDb = await Db.Users.FindAsync(x => x.Name == "Sergey_Transaction");
+        userFromDb = await Db.Users.FindAsync(x => x.Name == "Sergey_Transaction", TestContext.Current.CancellationToken);
         Assert.NotNull(userFromDb);
     }
 
@@ -507,9 +507,9 @@ public abstract class BaseRepositoriesTests
             Id = 20,
             AnotherId = 20000,
             UserId = 1
-        });
+        }, TestContext.Current.CancellationToken);
 
-        var reportOne = await Db.Reports.FindAsync<User>(x => x.Id == 20, q => q.User);
+        var reportOne = await Db.Reports.FindAsync<User>(x => x.Id == 20, q => q.User, TestContext.Current.CancellationToken);
         Assert.Equal("TestName0", reportOne.User.Name);
 
         await Db.Reports.InsertAsync(new Report
@@ -517,9 +517,9 @@ public abstract class BaseRepositoriesTests
             Id = 30,
             AnotherId = 20000,
             UserId = 1
-        });
+        }, TestContext.Current.CancellationToken);
 
-        var reportAll = (await Db.Reports.FindAllAsync<User>(x => x.AnotherId == 20000, q => q.User)).ToArray();
+        var reportAll = (await Db.Reports.FindAllAsync<User>(x => x.AnotherId == 20000, q => q.User, TestContext.Current.CancellationToken)).ToArray();
         Assert.Equal(2, reportAll.Length);
 
         foreach (var report in reportAll)
@@ -537,11 +537,11 @@ public abstract class BaseRepositoriesTests
             new Address { Street = "aaa1", CityId = "11" }
         };
 
-        int inserted = await Db.Address.BulkInsertAsync(adresses);
+        int inserted = await Db.Address.BulkInsertAsync(adresses, TestContext.Current.CancellationToken);
         Assert.Equal(2, inserted);
 
-        var adresses0 = await Db.Address.FindAsync(x => x.CityId == "10");
-        var adresses1 = await Db.Address.FindAsync(x => x.CityId == "11");
+        var adresses0 = await Db.Address.FindAsync(x => x.CityId == "10", TestContext.Current.CancellationToken);
+        var adresses1 = await Db.Address.FindAsync(x => x.CityId == "11", TestContext.Current.CancellationToken);
 
         Assert.Equal("aaa0", adresses0.Street);
         Assert.Equal("aaa1", adresses1.Street);
@@ -678,23 +678,23 @@ public abstract class BaseRepositoriesTests
             OfficePhoneId = 2
         };
 
-        await Db.Users.InsertAsync(user1);
-        await Db.Users.InsertAsync(user2);
+        await Db.Users.InsertAsync(user1, TestContext.Current.CancellationToken);
+        await Db.Users.InsertAsync(user2, TestContext.Current.CancellationToken);
 
-        var insertedUser1 = await Db.Users.FindByIdAsync(user1.Id);
-        var insertedUser2 = await Db.Users.FindByIdAsync(user2.Id);
+        var insertedUser1 = await Db.Users.FindByIdAsync(user1.Id, TestContext.Current.CancellationToken);
+        var insertedUser2 = await Db.Users.FindByIdAsync(user2.Id, TestContext.Current.CancellationToken);
         Assert.Equal("Bulk1", insertedUser1.Name);
         Assert.Equal("Bulk2", insertedUser2.Name);
 
         insertedUser1.Name = "Bulk11";
         insertedUser2.Name = "Bulk22";
 
-        bool result = await Db.Users.BulkUpdateAsync(new List<User> { insertedUser1, insertedUser2 });
+        bool result = await Db.Users.BulkUpdateAsync(new List<User> { insertedUser1, insertedUser2 }, TestContext.Current.CancellationToken);
 
         Assert.True(result);
 
-        var newUser1 = await Db.Users.FindByIdAsync(user1.Id);
-        var newUser2 = await Db.Users.FindByIdAsync(user2.Id);
+        var newUser1 = await Db.Users.FindByIdAsync(user1.Id, TestContext.Current.CancellationToken);
+        var newUser2 = await Db.Users.FindByIdAsync(user2.Id, TestContext.Current.CancellationToken);
 
         Assert.Equal("Bulk11", newUser1.Name);
         Assert.Equal("Bulk22", newUser2.Name);
@@ -709,13 +709,13 @@ public abstract class BaseRepositoriesTests
             Name = name
         };
 
-        await Db.Users.InsertAsync(user);
-        user = await Db.Users.FindAsync(q => q.Name == name);
+        await Db.Users.InsertAsync(user, TestContext.Current.CancellationToken);
+        user = await Db.Users.FindAsync(q => q.Name == name, TestContext.Current.CancellationToken);
 
         //var updatedAt = user.UpdatedAt;
 
-        await Db.Users.DeleteAsync(user);
-        user = await Db.Users.FindAsync(q => q.Name == name);
+        await Db.Users.DeleteAsync(user, TestContext.Current.CancellationToken);
+        user = await Db.Users.FindAsync(q => q.Name == name, TestContext.Current.CancellationToken);
 
         Assert.Null(user);
     }
@@ -729,13 +729,13 @@ public abstract class BaseRepositoriesTests
             Name = name
         };
 
-        await Db.Users.InsertAsync(user);
-        user = await Db.Users.FindAsync(q => q.Name == name);
+        await Db.Users.InsertAsync(user, TestContext.Current.CancellationToken);
+        user = await Db.Users.FindAsync(q => q.Name == name, TestContext.Current.CancellationToken);
 
         // var updatedAt = user.UpdatedAt;
 
-        await Db.Users.DeleteAsync(q => q.Id == user.Id);
-        user = await Db.Users.FindAsync(q => q.Name == name);
+        await Db.Users.DeleteAsync(q => q.Id == user.Id, TestContext.Current.CancellationToken);
+        user = await Db.Users.FindAsync(q => q.Name == name, TestContext.Current.CancellationToken);
 
         Assert.Null(user);
     }
@@ -744,7 +744,7 @@ public abstract class BaseRepositoriesTests
     public async Task FindAllByContainsArrayMultipleList()
     {
         var keyList = new int[] { 2, 3, 4 };
-        var users = (await Db.Users.FindAllAsync(x => keyList.Contains(x.Id))).ToArray();
+        var users = (await Db.Users.FindAllAsync(x => keyList.Contains(x.Id), TestContext.Current.CancellationToken)).ToArray();
         var usersArray = users.ToArray();
         Assert.Equal(3, usersArray.Length);
         Assert.Equal("TestName1", usersArray[0].Name);
@@ -755,19 +755,19 @@ public abstract class BaseRepositoriesTests
     [Fact]
     public async Task FindAllByLikeName()
     {
-        var users1 = (await Db.Users.FindAllAsync(x => x.Name.EndsWith("Name1"))).ToArray();
+        var users1 = (await Db.Users.FindAllAsync(x => x.Name.EndsWith("Name1"), TestContext.Current.CancellationToken)).ToArray();
         Assert.Equal("TestName1", users1.First().Name);
 
-        var users2 = (await Db.Users.FindAllAsync(x => x.Name.Contains("Name"))).ToArray();
+        var users2 = (await Db.Users.FindAllAsync(x => x.Name.Contains("Name"), TestContext.Current.CancellationToken)).ToArray();
         Assert.True(users2.Length > 0);
 
-        var users3 = (await Db.Users.FindAllAsync(x => x.Name.StartsWith("Test"))).ToArray();
+        var users3 = (await Db.Users.FindAllAsync(x => x.Name.StartsWith("Test"), TestContext.Current.CancellationToken)).ToArray();
         Assert.True(users3.Length > 0);
 
-        var users4 = (await Db.Users.FindAllAsync(x => !x.Name.StartsWith("est"))).ToArray();
+        var users4 = (await Db.Users.FindAllAsync(x => !x.Name.StartsWith("est"), TestContext.Current.CancellationToken)).ToArray();
         Assert.True(users4.Length > 0);
 
-        var users5 = (await Db.Users.FindAllAsync(x => x.Name.StartsWith("est"))).ToArray();
+        var users5 = (await Db.Users.FindAllAsync(x => x.Name.StartsWith("est"), TestContext.Current.CancellationToken)).ToArray();
         Assert.True(users5.Length <= 0);
     }
 }

@@ -52,14 +52,14 @@ public abstract class RepositoriesTests<TFixture> : BaseRepositoriesTests, IClas
         var identifier = Guid.NewGuid();
         var city = new City { Identifier = identifier, Name = "Moscow" };
 
-        await Db.Cities.InsertAsync(city);
-        city = await Db.Cities.FindAsync(q => q.Identifier == identifier);
+        await Db.Cities.InsertAsync(city, TestContext.Current.CancellationToken);
+        city = await Db.Cities.FindAsync(q => q.Identifier == identifier, TestContext.Current.CancellationToken);
 
         Assert.NotNull(city);
         city.Name = "Moscow1";
         await Db.Cities.UpdateAsync(q => q.Identifier == identifier, city);
 
-        city = await Db.Cities.FindAsync(q => q.Identifier == identifier);
+        city = await Db.Cities.FindAsync(q => q.Identifier == identifier, TestContext.Current.CancellationToken);
         Assert.NotNull(city);
         Assert.Equal("Moscow1", city.Name);
     }
@@ -93,12 +93,12 @@ public abstract class RepositoriesTests<TFixture> : BaseRepositoriesTests, IClas
             cities.Add(new City { Identifier = Guid.NewGuid(), Name = $"Bulk City Number {i}" });
         }
 
-        var inserted = await Db.Cities.BulkInsertAsync(cities);
+        var inserted = await Db.Cities.BulkInsertAsync(cities, TestContext.Current.CancellationToken);
         Assert.Equal(inserted, cities.Count);
 
         var random = new Random();
         var cityName = $"Bulk City Number {random.Next(17250)}";
-        var randomCity = await Db.Cities.FindAsync(q => q.Name == cityName);
+        var randomCity = await Db.Cities.FindAsync(q => q.Name == cityName, TestContext.Current.CancellationToken);
         Assert.NotNull(randomCity);
 
         DeleteBulkCities();
@@ -113,17 +113,17 @@ public abstract class RepositoriesTests<TFixture> : BaseRepositoriesTests, IClas
             users.Add(new User { Name = $"Bulk User Number {i}", PhoneId = 1, OfficePhoneId = 2 });
         }
 
-        var inserted = await Db.Users.BulkInsertAsync(users);
+        var inserted = await Db.Users.BulkInsertAsync(users, TestContext.Current.CancellationToken);
         Assert.Equal(inserted, users.Count);
 
         var random = new Random();
         var userName = $"Bulk User Number {random.Next(17250)}";
-        var randomUser = await Db.Users.FindAsync(q => q.Name == userName);
+        var randomUser = await Db.Users.FindAsync(q => q.Name == userName, TestContext.Current.CancellationToken);
         Assert.NotNull(randomUser);
 
         var insertedUsers = (await Db.Connection.QueryAsync<User>("SELECT * FROM Users WHERE Name LIKE 'Bulk User Number%'")).ToList();
         insertedUsers.ForEach(x => x.Name += " Updated");
-        var updated = await Db.Users.BulkUpdateAsync(insertedUsers);
+        var updated = await Db.Users.BulkUpdateAsync(insertedUsers, TestContext.Current.CancellationToken);
         Assert.True(updated);
 
         var updatedUsers = (await Db.Connection.QueryAsync<User>("SELECT * FROM Users WHERE Name LIKE 'Bulk User Number%Updated'")).ToList();

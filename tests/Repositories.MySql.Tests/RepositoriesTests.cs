@@ -41,14 +41,14 @@ public abstract class RepositoriesTests<TFixture> : BaseRepositoriesTests, IClas
         var identifier = Guid.NewGuid();
         var city = new City { Identifier = identifier, Name = "Moscow" };
 
-        await Db.Cities.InsertAsync(city);
-        city = await Db.Cities.FindAsync(q => q.Identifier == identifier);
+        await Db.Cities.InsertAsync(city, TestContext.Current.CancellationToken);
+        city = await Db.Cities.FindAsync(q => q.Identifier == identifier, TestContext.Current.CancellationToken);
 
         Assert.NotNull(city);
         city.Name = "Moscow1";
         await Db.Cities.UpdateAsync(q => q.Identifier == identifier, city);
 
-        city = await Db.Cities.FindAsync(q => q.Identifier == identifier);
+        city = await Db.Cities.FindAsync(q => q.Identifier == identifier, TestContext.Current.CancellationToken);
         Assert.NotNull(city);
         Assert.Equal("Moscow1", city.Name);
     }
@@ -89,15 +89,15 @@ public abstract class RepositoriesTests<TFixture> : BaseRepositoriesTests, IClas
             Status = StatusCar.Active
         };
 
-        var insert = await Db.Cars.InsertAsync(car);
+        var insert = Db.Cars != null && await Db.Cars.InsertAsync(car, TestContext.Current.CancellationToken);
         Assert.True(insert);
-        var carFromDb = await Db.Cars.FindAsync(x => x.Id == car.Id);
+        var carFromDb = await Db.Cars.FindAsync(x => x.Id == car.Id, TestContext.Current.CancellationToken);
         Assert.NotNull(carFromDb!.Data);
 
         car.Data = null;
         var update = await Db.Cars.UpdateAsync(car);
         Assert.True(update);
-        carFromDb = await Db.Cars.FindAsync(x => x.Id == car.Id);
+        carFromDb = await Db.Cars.FindAsync(x => x.Id == car.Id, TestContext.Current.CancellationToken);
         Assert.Null(carFromDb!.Data);
     }
 }

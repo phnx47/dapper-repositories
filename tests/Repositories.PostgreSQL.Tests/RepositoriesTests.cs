@@ -60,15 +60,15 @@ public class RepositoriesTests : BaseRepositoriesTests, IClassFixture<DatabaseFi
             Status = StatusCar.Active
         };
 
-        var insert = await Db.Cars.InsertAsync(car);
+        var insert = await Db.Cars.InsertAsync(car, TestContext.Current.CancellationToken);
         Assert.True(insert);
-        var carFromDb = await Db.Cars.FindAsync(x => x.Id == car.Id);
+        var carFromDb = await Db.Cars.FindAsync(x => x.Id == car.Id, TestContext.Current.CancellationToken);
         Assert.NotNull(carFromDb!.Data);
 
         car.Data = null;
         var update = await Db.Cars.UpdateAsync(car);
         Assert.True(update);
-        carFromDb = await Db.Cars.FindAsync(x => x.Id == car.Id);
+        carFromDb = await Db.Cars.FindAsync(x => x.Id == car.Id, TestContext.Current.CancellationToken);
         Assert.Null(carFromDb!.Data);
     }
 }
