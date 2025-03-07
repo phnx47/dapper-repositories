@@ -20,6 +20,7 @@
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
     <PackageOutputPath>nupkgs</PackageOutputPath>
     <IsPackable>true</IsPackable>
+    <EnableNETAnalyzers>true</EnableNETAnalyzers>
   </PropertyGroup>
   <ItemGroup>
     <InternalsVisibleTo Include="SqlGenerator.Tests" />

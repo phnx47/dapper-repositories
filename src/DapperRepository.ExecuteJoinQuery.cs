@@ -167,7 +167,7 @@ public partial class ReadOnlyDapperRepository<TEntity>
                 await Connection.QueryAsync<TEntity, TChild1, TEntity>(new CommandDefinition(sqlQuery.GetSql(),
                         sqlQuery.Param, transaction, flags: buffered, cancellationToken: cancellationToken), (entity, child1) =>
                         EntityJoinMapping<TChild1, TChild2, TChild3, TChild4, TChild5, TChild6>(lookup, keyProperties, childKeyProperties, childProperties, entity, child1),
-                    spiltOn);
+                    spiltOn).ConfigureAwait(false);
                 break;
 
             case 2:
@@ -175,7 +175,7 @@ public partial class ReadOnlyDapperRepository<TEntity>
                         sqlQuery.Param, transaction, flags: buffered, cancellationToken: cancellationToken), (entity, child1, child2) =>
                         EntityJoinMapping<TChild1, TChild2, TChild3, TChild4, TChild5, TChild6>(lookup, keyProperties, childKeyProperties, childProperties, entity, child1,
                             child2),
-                    spiltOn);
+                    spiltOn).ConfigureAwait(false);
                 break;
 
             case 3:
@@ -183,7 +183,7 @@ public partial class ReadOnlyDapperRepository<TEntity>
                         sqlQuery.Param, transaction, flags: buffered, cancellationToken: cancellationToken), (entity, child1, child2, child3) =>
                         EntityJoinMapping<TChild1, TChild2, TChild3, TChild4, TChild5, TChild6>(lookup, keyProperties, childKeyProperties, childProperties, entity, child1,
                             child2, child3),
-                    spiltOn);
+                    spiltOn).ConfigureAwait(false);
                 break;
 
             case 4:
@@ -191,7 +191,7 @@ public partial class ReadOnlyDapperRepository<TEntity>
                         sqlQuery.Param, transaction, flags: buffered, cancellationToken: cancellationToken), (entity, child1, child2, child3, child4) =>
                         EntityJoinMapping<TChild1, TChild2, TChild3, TChild4, TChild5, TChild6>(lookup, keyProperties, childKeyProperties, childProperties, entity, child1,
                             child2, child3, child4),
-                    spiltOn);
+                    spiltOn).ConfigureAwait(false);
                 break;
 
             case 5:
@@ -200,7 +200,7 @@ public partial class ReadOnlyDapperRepository<TEntity>
                     (entity, child1, child2, child3, child4, child5) =>
                         EntityJoinMapping<TChild1, TChild2, TChild3, TChild4, TChild5, TChild6>(lookup, keyProperties, childKeyProperties, childProperties, entity, child1,
                             child2, child3, child4, child5),
-                    spiltOn);
+                    spiltOn).ConfigureAwait(false);
                 break;
 
             case 6:
@@ -209,7 +209,7 @@ public partial class ReadOnlyDapperRepository<TEntity>
                     (entity, child1, child2, child3, child4, child5, child6) =>
                         EntityJoinMapping<TChild1, TChild2, TChild3, TChild4, TChild5, TChild6>(lookup, keyProperties, childKeyProperties, childProperties, entity, child1,
                             child2, child3, child4, child5, child6),
-                    spiltOn);
+                    spiltOn).ConfigureAwait(false);
                 break;
 
             default:

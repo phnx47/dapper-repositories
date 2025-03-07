@@ -92,6 +92,6 @@ public partial class ReadOnlyDapperRepository<TEntity>
     public virtual async Task<IEnumerable<TEntity>> FindAllAsync(Expression<Func<TEntity, bool>>? predicate, IDbTransaction? transaction, CancellationToken cancellationToken)
     {
         var queryResult = SqlGenerator.GetSelectAll(predicate, FilterData);
-        return await Connection.QueryAsync<TEntity>(new CommandDefinition(queryResult.GetSql(), queryResult.Param, transaction, cancellationToken: cancellationToken));
+        return await Connection.QueryAsync<TEntity>(new CommandDefinition(queryResult.GetSql(), queryResult.Param, transaction, cancellationToken: cancellationToken)).ConfigureAwait(false);
     }
 }

@@ -50,7 +50,7 @@ public partial class DapperRepository<TEntity>
         params Expression<Func<TEntity, object>>[] includes)
     {
         var sqlQuery = SqlGenerator.GetUpdate(instance, includes);
-        var updated = await Connection.ExecuteAsync(new CommandDefinition(sqlQuery.GetSql(), sqlQuery.Param, transaction, cancellationToken: cancellationToken)) > 0;
+        var updated = await Connection.ExecuteAsync(new CommandDefinition(sqlQuery.GetSql(), sqlQuery.Param, transaction, cancellationToken: cancellationToken)).ConfigureAwait(false) > 0;
         return updated;
     }
 
@@ -92,7 +92,7 @@ public partial class DapperRepository<TEntity>
         params Expression<Func<TEntity, object>>[] includes)
     {
         var sqlQuery = SqlGenerator.GetUpdate(predicate, instance, includes);
-        var updated = await Connection.ExecuteAsync(new CommandDefinition(sqlQuery.GetSql(), sqlQuery.Param, transaction, cancellationToken: cancellationToken)) > 0;
+        var updated = await Connection.ExecuteAsync(new CommandDefinition(sqlQuery.GetSql(), sqlQuery.Param, transaction, cancellationToken: cancellationToken)).ConfigureAwait(false) > 0;
         return updated;
     }
 }

@@ -104,7 +104,7 @@ public partial class DapperRepository<TEntity>
                     var items = instances.Skip(skips).Take(maxAllowedInstancesPerBatch);
                     var msSqlQueryResult = SqlGenerator.GetBulkUpdate(items);
                     count += await Connection.ExecuteAsync(new CommandDefinition(msSqlQueryResult.GetSql(), msSqlQueryResult.Param, transaction,
-                        cancellationToken: cancellationToken));
+                        cancellationToken: cancellationToken)).ConfigureAwait(false);
                 }
 
                 return count > 0;
@@ -112,7 +112,7 @@ public partial class DapperRepository<TEntity>
         }
 
         var queryResult = SqlGenerator.GetBulkUpdate(instances);
-        var result = await Connection.ExecuteAsync(new CommandDefinition(queryResult.GetSql(), queryResult.Param, transaction, cancellationToken: cancellationToken)) > 0;
+        var result = await Connection.ExecuteAsync(new CommandDefinition(queryResult.GetSql(), queryResult.Param, transaction, cancellationToken: cancellationToken)).ConfigureAwait(false) > 0;
         return result;
     }
 }

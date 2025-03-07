@@ -76,3 +76,7 @@ dotnet_naming_rule.private_fields_with_underscore.severity = suggestion
 
 dotnet_naming_symbols.private_fields.applicable_kinds = field
 dotnet_naming_symbols.private_fields.applicable_accessibilities = private
+
+## Code Quality Analysis
+dotnet_diagnostic.CA2007.severity = error # Use ConfigureAwait
+configure_await_analysis_mode = library

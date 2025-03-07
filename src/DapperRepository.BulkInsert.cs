@@ -111,7 +111,7 @@ public partial class DapperRepository<TEntity>
                     var items = instances.Skip(i * maxAllowedInstancesPerBatch).Take(maxAllowedInstancesPerBatch);
                     var msSqlQueryResult = SqlGenerator.GetBulkInsert(items);
                     count += await Connection.ExecuteAsync(new CommandDefinition(msSqlQueryResult.GetSql(), msSqlQueryResult.Param, transaction,
-                        cancellationToken: cancellationToken));
+                        cancellationToken: cancellationToken)).ConfigureAwait(false);
                 }
 
                 return count;
