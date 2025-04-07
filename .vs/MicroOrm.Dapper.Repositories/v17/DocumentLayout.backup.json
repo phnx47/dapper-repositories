@@ -1,0 +1,58 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Users\\mis8202\\My Learnings\\dapper-repo\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{A8258060-EDF7-4713-9428-088ADD6FE503}|src\\MicroOrm.Dapper.Repositories.csproj|c:\\users\\mis8202\\my learnings\\dapper-repo\\src\\dbcontext\\dapperdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A8258060-EDF7-4713-9428-088ADD6FE503}|src\\MicroOrm.Dapper.Repositories.csproj|solutionrelative:src\\dbcontext\\dapperdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A8258060-EDF7-4713-9428-088ADD6FE503}|src\\MicroOrm.Dapper.Repositories.csproj|c:\\users\\mis8202\\my learnings\\dapper-repo\\src\\dbcontext\\idapperdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A8258060-EDF7-4713-9428-088ADD6FE503}|src\\MicroOrm.Dapper.Repositories.csproj|solutionrelative:src\\dbcontext\\idapperdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 214,
+          "SelectedChildIndex": 0,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "DapperDbContext.cs",
+              "DocumentMoniker": "C:\\Users\\mis8202\\My Learnings\\dapper-repo\\src\\DbContext\\DapperDbContext.cs",
+              "RelativeDocumentMoniker": "src\\DbContext\\DapperDbContext.cs",
+              "ToolTip": "C:\\Users\\mis8202\\My Learnings\\dapper-repo\\src\\DbContext\\DapperDbContext.cs",
+              "RelativeToolTip": "src\\DbContext\\DapperDbContext.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA8AAAA3AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-04-05T03:36:50.358Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "IDapperDbContext.cs",
+              "DocumentMoniker": "C:\\Users\\mis8202\\My Learnings\\dapper-repo\\src\\DbContext\\IDapperDbContext.cs",
+              "RelativeDocumentMoniker": "src\\DbContext\\IDapperDbContext.cs",
+              "ToolTip": "C:\\Users\\mis8202\\My Learnings\\dapper-repo\\src\\DbContext\\IDapperDbContext.cs",
+              "RelativeToolTip": "src\\DbContext\\IDapperDbContext.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAB8AAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-04-05T03:36:37.189Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{1c4feeaa-4718-4aa9-859d-94ce25d182ba}"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
