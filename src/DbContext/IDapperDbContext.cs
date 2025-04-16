@@ -1,5 +1,6 @@
-﻿using System;
+using System;
 using System.Data;
+using System.Threading.Tasks;
 
 namespace MicroOrm.Dapper.Repositories.DbContext;
 
@@ -22,4 +23,9 @@ public interface IDapperDbContext : IDisposable
     ///     Open DB connection and Begin transaction
     /// </summary>
     IDbTransaction BeginTransaction();
+
+    Task OpenConnectionAsync();
+
+    Task<IDbTransaction> BeginTransactionAsync();
+
 }
