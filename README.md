@@ -63,12 +63,12 @@ Automatically set DataTime.UtcNow (You can use local date or define offset) for 
 
 ### Notes
 
-* By default the SQL Generator is going to map the POCO name with the table name, and each public property to a column.
-* If the [Deleted] is used on a certain POCO, the sentence will be an update instead of a delete.
-* Supports complex primary keys.
-* Supports simple Joins.
-* For this moment, with MSSQL you can only use limit with offset if you call OrderBy first, otherwise limit will be ignored.
-* It has a problem when try to use GUID with dapper in Oracle. In this case it doesn't work. Look details: [Dapper#633](https://github.com/DapperLib/Dapper/issues/633), [Dapper#637](https://github.com/DapperLib/Dapper/issues/637)
+- By default the SQL Generator is going to map the POCO name with the table name, and each public property to a column.
+- If the [Deleted] is used on a certain POCO, the sentence will be an update instead of a delete.
+- Supports complex primary keys.
+- Supports simple Joins.
+- For this moment, with MSSQL you can only use limit with offset if you call OrderBy first, otherwise limit will be ignored.
+- It has a problem when try to use GUID with dapper in Oracle. In this case it doesn't work. Look details: [Dapper#633](https://github.com/DapperLib/Dapper/issues/633), [Dapper#637](https://github.com/DapperLib/Dapper/issues/637)
 
 ### Maps
 
@@ -181,6 +181,7 @@ Query with SetSelect:
 ```c#
 var users = await userRepository.SetSelect(x => new {x.Id, x.Name}).FindAllAsync();
 ```
+
 ## Sponsors
 
 [Dapper Plus](https://dapper-plus.net/) and [Entity Framework Extensions](https://entityframework-extensions.net/) are major sponsors and are proud to contribute to the development of MicroOrm.Dapper.Repositories
