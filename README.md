@@ -181,6 +181,13 @@ Query with SetSelect:
 ```c#
 var users = await userRepository.SetSelect(x => new {x.Id, x.Name}).FindAllAsync();
 ```
+## Sponsors
+
+[Dapper Plus](https://dapper-plus.net/) and [Entity Framework Extensions](https://entityframework-extensions.net/) are major sponsors and are proud to contribute to the development of MicroOrm.Dapper.Repositories
+
+[![Dapper Plus](https://raw.githubusercontent.com/phnx47/dapper-repositories/main/dapper-plus-sponsor.png)](https://dapper-plus.net/bulk-insert)
+
+[![Entity Framework Extensions](https://raw.githubusercontent.com/phnx47/dapper-repositories/main/entity-framework-extensions-sponsor.png)](https://entityframework-extensions.net/bulk-insert)
 
 ## License
 
