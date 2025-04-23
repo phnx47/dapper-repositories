@@ -5,12 +5,12 @@ namespace MicroOrm.Dapper.Repositories.DbContext;
 public class DapperDbContext : IDapperDbContext
 {
     /// <summary>
-    ///     DB Connection for internal use
+    ///     Internal DB connection instance
     /// </summary>
     protected readonly IDbConnection InnerConnection;
 
     /// <summary>
-    ///     Constructor
+    ///     Create new DB context with connection
     /// </summary>
     protected DapperDbContext(IDbConnection connection)
     {
