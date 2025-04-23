@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Data;
+using System.Threading.Tasks;
 
 namespace MicroOrm.Dapper.Repositories.DbContext;
 
@@ -19,7 +20,17 @@ public interface IDapperDbContext : IDisposable
     void OpenConnection();
 
     /// <summary>
+    ///     Open DB connection asynchronously if not already open
+    /// </summary>
+    Task OpenConnectionAsync();
+
+    /// <summary>
     ///     Begin transaction, open connection if necessary
     /// </summary>
     IDbTransaction BeginTransaction();
+
+    /// <summary>
+    ///     Begin transaction asynchronously, open connection if necessary
+    /// </summary>
+    Task<IDbTransaction> BeginTransactionAsync();
 }
