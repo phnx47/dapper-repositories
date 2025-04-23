@@ -5,7 +5,7 @@ using Xunit;
 
 namespace Repositories.Base;
 
-public abstract class BaseDapperDbContextTests
+public abstract class BaseDbContextTests
 {
     protected abstract IDapperDbContext CreateContext();
 

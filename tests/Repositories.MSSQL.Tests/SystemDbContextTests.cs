@@ -4,7 +4,7 @@ using Xunit;
 
 namespace Repositories.MSSQL.Tests;
 
-public class SystemDbContextTests(SystemDatabaseFixture fixture) : BaseDapperDbContextTests, IClassFixture<SystemDatabaseFixture>
+public class SystemDbContextTests(SystemDatabaseFixture fixture) : BaseDbContextTests, IClassFixture<SystemDatabaseFixture>
 {
     private readonly IDapperDbContext _context = fixture.Db;
 

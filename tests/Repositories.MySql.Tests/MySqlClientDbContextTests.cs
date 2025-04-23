@@ -4,7 +4,7 @@ using Xunit;
 
 namespace Repositories.MySql.Tests;
 
-public class MySqlDbContextTests(MySqlClientDatabaseFixture fixture) : BaseDapperDbContextTests, IClassFixture<MySqlClientDatabaseFixture>
+public class MySqlDbContextTests(MySqlClientDatabaseFixture fixture) : BaseDbContextTests, IClassFixture<MySqlClientDatabaseFixture>
 {
     private readonly IDapperDbContext _context = fixture.Db;
 
