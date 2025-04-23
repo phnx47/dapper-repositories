@@ -10,20 +10,15 @@ using Xunit;
 
 namespace Repositories.MSSQL.Tests;
 
-public abstract class RepositoriesTests<TFixture> : BaseRepositoriesTests, IClassFixture<TFixture>
+public abstract class RepositoriesTests<TFixture>(TFixture fixture) : BaseRepositoriesTests(fixture.Db), IClassFixture<TFixture>
     where TFixture : DatabaseFixture
 {
-    protected RepositoriesTests(TFixture fixture)
-        : base(fixture.Db)
-    {
-    }
-
     [Fact]
     public async Task CancellationTokenSource_Cancel()
     {
         using var cts = new CancellationTokenSource();
 
-        cts.Cancel();
+        await cts.CancelAsync();
 
         await Assert.ThrowsAnyAsync<OperationCanceledException>(() => Db.Address.FindAllAsync(cts.Token));
     }

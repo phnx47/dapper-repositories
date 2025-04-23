@@ -4,11 +4,5 @@ using Repositories.Base;
 
 namespace Repositories.MSSQL.Tests;
 
-public class MicrosoftDatabaseFixture : DatabaseFixture
-{
-    public MicrosoftDatabaseFixture()
-        : base(new TestDbContext(
-            new SqlConnection($"Server=localhost;Database=master;User ID=sa;Password={DotEnv.GetTestDbPass()};Trust Server Certificate=true"), SqlProvider.MSSQL))
-    {
-    }
-}
+public class MicrosoftDatabaseFixture() : DatabaseFixture(new TestDbContext(
+    new SqlConnection($"Server=localhost;Database=master;User ID=sa;Password={DotEnv.GetTestDbPass()};Trust Server Certificate=true"), SqlProvider.MSSQL));
