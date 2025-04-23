@@ -4,10 +4,5 @@ using Repositories.Base;
 
 namespace Repositories.SQLite.Tests;
 
-public class MicrosoftDatabaseFixture : DatabaseFixture
-{
-    public MicrosoftDatabaseFixture()
-        : base(new TestDbContext(new SqliteConnection($"Data Source={RandomGenerator.String()};Mode=Memory;Cache=Shared"), SqlProvider.SQLite, true))
-    {
-    }
-}
+public class MicrosoftDatabaseFixture()
+    : DatabaseFixture(new TestDbContext(new SqliteConnection($"Data Source={RandomGenerator.String()};Mode=Memory;Cache=Shared"), SqlProvider.SQLite, true));

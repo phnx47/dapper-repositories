@@ -7,19 +7,14 @@ using Xunit;
 
 namespace Repositories.PostgreSQL.Tests;
 
-public class RepositoriesTests : BaseRepositoriesTests, IClassFixture<DatabaseFixture>
+public class RepositoriesTests(DatabaseFixture fixture) : BaseRepositoriesTests(fixture.Db), IClassFixture<DatabaseFixture>
 {
-    public RepositoriesTests(DatabaseFixture fixture)
-        : base(fixture.Db)
-    {
-    }
-
     [Fact]
     public async Task CancellationTokenSource_Cancel()
     {
         using var cts = new CancellationTokenSource();
 
-        cts.Cancel();
+        await cts.CancelAsync();
 
         await Assert.ThrowsAnyAsync<OperationCanceledException>(() => Db.Address.FindAllAsync(cts.Token));
     }

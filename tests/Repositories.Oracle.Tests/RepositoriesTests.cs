@@ -1,20 +1,16 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Oracle.ManagedDataAccess.Client;
 using Repositories.Base;
 using TestClasses;
 using Xunit;
 
+[assembly: CollectionBehavior(DisableTestParallelization = true)]
+
 namespace Repositories.Oracle.Tests;
 
-public class RepositoriesTests : BaseRepositoriesTests, IClassFixture<DatabaseFixture>
+public class RepositoriesTests(DatabaseFixture fixture) : BaseRepositoriesTests(fixture.Db), IClassFixture<DatabaseFixture>
 {
-    public RepositoriesTests(DatabaseFixture fixture)
-        : base(fixture.Db)
-    {
-    }
-
     [Fact]
     public async Task CancellationTokenSource_Cancel()
     {

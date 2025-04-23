@@ -6,10 +6,5 @@ using Repositories.Base;
 
 namespace Repositories.MSSQL.Tests;
 
-public class SystemDatabaseFixture : DatabaseFixture
-{
-    public SystemDatabaseFixture()
-        : base(new TestDbContext(new SqlConnection($"Server=localhost;Database=master;User ID=sa;Password={DotEnv.GetTestDbPass()}"), SqlProvider.MSSQL))
-    {
-    }
-}
+public class SystemDatabaseFixture()
+    : DatabaseFixture(new TestDbContext(new SqlConnection($"Server=localhost;Database=master;User ID=sa;Password={DotEnv.GetTestDbPass()}"), SqlProvider.MSSQL));
