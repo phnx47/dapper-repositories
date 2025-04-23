@@ -4,10 +4,5 @@ using Repositories.Base;
 
 namespace Repositories.MySql.Tests;
 
-public class MySqlClientDatabaseFixture : DatabaseFixture
-{
-    public MySqlClientDatabaseFixture()
-        : base( new TestDbContext(new MySqlConnection($"Server=localhost;Uid=root;Pwd={DotEnv.GetTestDbPass()}"), SqlProvider.MySQL))
-    {
-    }
-}
+public class MySqlClientDatabaseFixture()
+    : DatabaseFixture(new TestDbContext(new MySqlConnection($"Server=localhost;Uid=root;Pwd={DotEnv.GetTestDbPass()}"), SqlProvider.MySQL));

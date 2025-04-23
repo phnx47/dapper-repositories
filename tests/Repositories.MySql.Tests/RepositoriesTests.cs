@@ -8,15 +8,9 @@ using Xunit;
 
 namespace Repositories.MySql.Tests;
 
-public abstract class RepositoriesTests<TFixture> : BaseRepositoriesTests, IClassFixture<TFixture>
+public abstract class RepositoriesTests<TFixture>(DatabaseFixture fixture) : BaseRepositoriesTests(fixture.Db), IClassFixture<TFixture>
     where TFixture : DatabaseFixture
 {
-    protected RepositoriesTests(DatabaseFixture fixture)
-        : base(fixture.Db)
-    {
-    }
-
-
     [Fact]
     public void InsertAndUpdate_WithGuid_WithoutKey()
     {
