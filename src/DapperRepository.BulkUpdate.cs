@@ -24,11 +24,13 @@ public partial class DapperRepository<TEntity>
 
     public virtual bool BulkUpdate(IEnumerable<TEntity> instances, IDbTransaction? transaction)
     {
+        int totalInstances = instances.Count();
+        if(totalInstances == 0)
+            return true;
+
         if (SqlGenerator.Provider == SqlProvider.MSSQL)
         {
             int count = 0;
-            int totalInstances = instances.Count();
-
             var properties = SqlGenerator.SqlProperties.ToList();
 
             int exceededTimes = (int)Math.Ceiling(totalInstances * properties.Count / 2099d);
