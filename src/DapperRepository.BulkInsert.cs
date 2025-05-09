@@ -38,7 +38,7 @@ public partial class DapperRepository<TEntity>
     {
         int totalInstances = instances.Count();
         if(totalInstances == 0)
-            return true;
+            return 0;
 
         if (SqlGenerator.Provider == SqlProvider.MSSQL)
         {
