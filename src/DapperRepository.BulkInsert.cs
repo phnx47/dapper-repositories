@@ -36,11 +36,13 @@ public partial class DapperRepository<TEntity>
 
     public virtual int BulkInsert(IEnumerable<TEntity> instances, IDbTransaction? transaction)
     {
+        int totalInstances = instances.Count();
+        if(totalInstances == 0)
+            return true;
+
         if (SqlGenerator.Provider == SqlProvider.MSSQL)
         {
             var count = 0;
-            var totalInstances = instances.Count();
-
             var properties =
                 (SqlGenerator.IsIdentity
                     ? SqlGenerator.SqlProperties.Where(p => !p.PropertyName.Equals(SqlGenerator.IdentitySqlProperty.PropertyName, StringComparison.OrdinalIgnoreCase))
