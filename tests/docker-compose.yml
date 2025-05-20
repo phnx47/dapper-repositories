@@ -6,7 +6,7 @@ services:
     ports:
       - "3306:3306"
   mssql:
-    image: mcr.microsoft.com/mssql/server:2022-latest
+    image: mcr.microsoft.com/mssql/server:2025-latest
     environment:
       ACCEPT_EULA: "Y"
       SA_PASSWORD: ${TEST_DB_PASS}
