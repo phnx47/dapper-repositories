@@ -2,7 +2,7 @@
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [":dependencyDashboard", "group:monorepos"],
   "labels": ["dependencies"],
-  "assignees": ["@phnx47"],
+  "assignees": ["phnx47"],
   "packageRules": [
     {
       "automerge": true,
