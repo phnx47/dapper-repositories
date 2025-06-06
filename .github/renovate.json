@@ -3,6 +3,8 @@
   "extends": [":dependencyDashboard", "group:monorepos"],
   "labels": ["dependencies"],
   "assignees": ["phnx47"],
+  "semanticCommits": "disabled",
+  "commitMessageTopic": "{{depName}}",
   "packageRules": [
     {
       "automerge": true,
