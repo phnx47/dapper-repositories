@@ -4,7 +4,7 @@
   "labels": ["dependencies"],
   "assignees": ["phnx47"],
   "semanticCommits": "disabled",
-  "commitMessageAction": "bump",
+  "commitMessageAction": "Bump",
   "commitMessageTopic": "{{depName}}",
   "packageRules": [
     {
