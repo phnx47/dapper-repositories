@@ -1,16 +1,15 @@
 namespace MicroOrm.Dapper.Repositories.Attributes.Joins;
 
-
 /// <summary>
 ///     Generate CROSS JOIN
 /// </summary>
 public sealed class CrossJoinAttribute : JoinAttributeBase
 {
-
     /// <summary>
     ///     Constructor
     /// </summary>
     public CrossJoinAttribute()
+        : base("CROSS JOIN")
     {
     }
 

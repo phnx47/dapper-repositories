@@ -3,44 +3,54 @@ using MicroOrm.Dapper.Repositories.Config;
 
 namespace MicroOrm.Dapper.Repositories.Attributes.Joins;
 
-
 /// <summary>
 ///     Base JOIN for LEFT/INNER/RIGHT
 /// </summary>
 public abstract class JoinAttributeBase : Attribute
 {
-
     /// <summary>
     ///     Constructor
     /// </summary>
-    protected JoinAttributeBase()
+    protected JoinAttributeBase(string joinType)
     {
+        JoinType = joinType;
     }
 
-
     /// <summary>
     ///     Constructor
     /// </summary>
-    protected JoinAttributeBase(string tableName, string key, string externalKey, string tableSchema, string tableAlias,
-        string attrString = "JOIN")
+    protected JoinAttributeBase(string tableName, string key, string externalKey, string tableSchema, string tableAlias, string joinType)
+        : this(joinType)
     {
-        TableName = MicroOrmConfig.TablePrefix + tableName;
+        TableName = tableName;
         Key = key;
         ExternalKey = externalKey;
         TableSchema = tableSchema;
         TableAlias = tableAlias;
-        JoinAttribute = attrString;
     }
 
     /// <summary>
     /// Join attribute string
     /// </summary>
-    private string? JoinAttribute { get; }
+    private string? JoinType { get; }
+
+
+    private string? _tableName;
 
     /// <summary>
     ///     Name of external table
     /// </summary>
-    public string? TableName { get; set; }
+    public string? TableName
+    {
+        get
+        {
+            return _tableName;
+        }
+        set
+        {
+            _tableName = MicroOrmConfig.TablePrefix + value;
+        }
+    }
 
     /// <summary>
     ///     Name of external table schema
@@ -58,7 +68,7 @@ public abstract class JoinAttributeBase : Attribute
     public string? ExternalKey { get; set; }
 
     /// <summary>
-    ///     Table abbreviation override
+    ///     Table alias
     /// </summary>
     public string? TableAlias { get; set; }
 
@@ -68,6 +78,6 @@ public abstract class JoinAttributeBase : Attribute
     /// <returns></returns>
     public override string? ToString()
     {
-        return JoinAttribute;
+        return JoinType;
     }
 }

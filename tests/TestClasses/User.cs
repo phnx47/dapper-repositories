@@ -24,7 +24,7 @@ public class User : BaseEntity<int>
     [LeftJoin("Cars", "Id", "UserId", TableAlias = "Cars_Id")]
     public List<Car> Cars { get; set; }
 
-    [LeftJoin("Addresses", "AddressId", "Id")]
+    [LeftJoin(TableName = "Addresses", Key = "AddressId", ExternalKey = "Id")]
     public Address Addresses { get; set; }
 
     [InnerJoin("Phones", "PhoneId", "Id", "DAB", TableAlias = "Phones_PhoneId")]

@@ -6,14 +6,13 @@ namespace MicroOrm.Dapper.Repositories.Attributes.Joins;
 /// </summary>
 public sealed class InnerJoinAttribute : JoinAttributeBase
 {
-
     /// <summary>
     ///     Constructor
     /// </summary>
     public InnerJoinAttribute()
+        : base("INNER JOIN")
     {
     }
-
 
     /// <summary>
     ///     Constructor
@@ -25,7 +24,6 @@ public sealed class InnerJoinAttribute : JoinAttributeBase
         : base(tableName, key, externalKey, string.Empty, string.Empty, "INNER JOIN")
     {
     }
-
 
     /// <summary>
     ///     Constructor
@@ -39,7 +37,6 @@ public sealed class InnerJoinAttribute : JoinAttributeBase
     {
     }
 
-
     /// <summary>
     ///     Constructor
     /// </summary>
@@ -47,9 +44,9 @@ public sealed class InnerJoinAttribute : JoinAttributeBase
     /// <param name="key">ForeignKey of this table</param>
     /// <param name="externalKey">Key of external table</param>
     /// <param name="tableSchema">Name of external table schema</param>
-    /// <param name="tableAbbreviation">External table alias</param>
-    public InnerJoinAttribute(string tableName, string key, string externalKey, string tableSchema, string tableAbbreviation)
-        : base(tableName, key, externalKey, tableSchema, tableAbbreviation, "INNER JOIN")
+    /// <param name="tableAlias">External table alias</param>
+    public InnerJoinAttribute(string tableName, string key, string externalKey, string tableSchema, string tableAlias)
+        : base(tableName, key, externalKey, tableSchema, tableAlias, "INNER JOIN")
     {
     }
 }
