@@ -4,12 +4,12 @@ using MicroOrm.Dapper.Repositories.Config;
 namespace MicroOrm.Dapper.Repositories.Attributes.Joins;
 
 /// <summary>
-///     Base JOIN for LEFT/INNER/RIGHT
+/// Base class for JOIN attributes
 /// </summary>
 public abstract class JoinAttributeBase : Attribute
 {
     /// <summary>
-    ///     Constructor
+    /// Initialize a new instance with the specified join type
     /// </summary>
     protected JoinAttributeBase(string joinType)
     {
@@ -17,7 +17,7 @@ public abstract class JoinAttributeBase : Attribute
     }
 
     /// <summary>
-    ///     Constructor
+    /// Initialize a new instance with full join specification
     /// </summary>
     protected JoinAttributeBase(string tableName, string key, string externalKey, string tableSchema, string tableAlias, string joinType)
         : this(joinType)
@@ -30,40 +30,33 @@ public abstract class JoinAttributeBase : Attribute
     }
 
     /// <summary>
-    /// Join attribute string
+    /// The SQL JOIN type keyword
     /// </summary>
     private string? JoinType { get; }
-
 
     private string? _tableName;
 
     /// <summary>
-    ///     Name of external table
+    /// Name of external table
     /// </summary>
     public string? TableName
     {
-        get
-        {
-            return _tableName;
-        }
-        set
-        {
-            _tableName = MicroOrmConfig.TablePrefix + value;
-        }
+        get => _tableName;
+        set => _tableName = MicroOrmConfig.TablePrefix + value;
     }
 
     /// <summary>
-    ///     Name of external table schema
+    /// Name of external table schema
     /// </summary>
     public string? TableSchema { get; set; }
 
     /// <summary>
-    ///     ForeignKey of this table
+    /// ForeignKey of this table
     /// </summary>
     public string? Key { get; set; }
 
     /// <summary>
-    ///     Key of external table
+    /// Key of external table
     /// </summary>
     public string? ExternalKey { get; set; }
 
@@ -73,11 +66,7 @@ public abstract class JoinAttributeBase : Attribute
     public string? TableAlias { get; set; }
 
     /// <summary>
-    ///     Convert to string
+    /// Returns the join type string
     /// </summary>
-    /// <returns></returns>
-    public override string? ToString()
-    {
-        return JoinType;
-    }
+    public override string? ToString() => JoinType;
 }

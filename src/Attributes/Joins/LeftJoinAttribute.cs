@@ -1,12 +1,12 @@
 namespace MicroOrm.Dapper.Repositories.Attributes.Joins;
 
 /// <summary>
-///     Generate LEFT JOIN
+/// Generate LEFT JOIN
 /// </summary>
 public sealed class LeftJoinAttribute : JoinAttributeBase
 {
     /// <summary>
-    ///     Constructor
+    /// Initialize a new instance with default LEFT JOIN type
     /// </summary>
     public LeftJoinAttribute()
         : base("LEFT JOIN")
@@ -14,7 +14,7 @@ public sealed class LeftJoinAttribute : JoinAttributeBase
     }
 
     /// <summary>
-    ///     Constructor
+    /// Initialize a new instance with the specified table
     /// </summary>
     /// <param name="tableName">Name of external table</param>
     /// <param name="key">ForeignKey of this table</param>
@@ -25,7 +25,7 @@ public sealed class LeftJoinAttribute : JoinAttributeBase
     }
 
     /// <summary>
-    ///     Constructor
+    /// Initialize a new instance with the specified table and schema
     /// </summary>
     /// <param name="tableName">Name of external table</param>
     /// <param name="key">ForeignKey of this table</param>
@@ -37,7 +37,7 @@ public sealed class LeftJoinAttribute : JoinAttributeBase
     }
 
     /// <summary>
-    ///     Constructor
+    /// Initialize a new instance with the specified table, schema and alias
     /// </summary>
     /// <param name="tableName">Name of external table</param>
     /// <param name="key">ForeignKey of this table</param>

@@ -1,23 +1,20 @@
 namespace MicroOrm.Dapper.Repositories.Attributes.Joins;
 
-
 /// <summary>
-///     Generate RIGHT JOIN
+/// Generate RIGHT JOIN
 /// </summary>
 public sealed class RightJoinAttribute : JoinAttributeBase
 {
-
     /// <summary>
-    ///     Constructor
+    /// Initialize a new instance with default RIGHT JOIN type
     /// </summary>
     public RightJoinAttribute()
         : base("RIGHT JOIN")
     {
     }
 
-
     /// <summary>
-    ///     Constructor
+    /// Initialize a new instance with the specified table
     /// </summary>
     /// <param name="tableName">Name of external table</param>
     /// <param name="key">ForeignKey of this table</param>
@@ -27,9 +24,8 @@ public sealed class RightJoinAttribute : JoinAttributeBase
     {
     }
 
-
     /// <summary>
-    ///     Constructor
+    /// Initialize a new instance with the specified table and schema
     /// </summary>
     /// <param name="tableName">Name of external table</param>
     /// <param name="key">ForeignKey of this table</param>
@@ -40,9 +36,8 @@ public sealed class RightJoinAttribute : JoinAttributeBase
     {
     }
 
-
     /// <summary>
-    ///     Constructor
+    /// Initialize a new instance with the specified table, schema and alias
     /// </summary>
     /// <param name="tableName">Name of external table</param>
     /// <param name="key">ForeignKey of this table</param>
