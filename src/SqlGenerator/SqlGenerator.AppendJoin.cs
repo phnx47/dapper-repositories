@@ -65,7 +65,7 @@ public partial class SqlGenerator<TEntity>
         var joinAs = Provider == SqlProvider.Oracle ? " " : " AS ";
         if (attrJoin is CrossJoinAttribute)
         {
-            joinBuilder.Append(attrJoin.TableAlias == string.Empty
+            joinBuilder.Append(string.IsNullOrEmpty(attrJoin.TableAlias)
                 ? $"{joinString} {attrJoin.TableName} "
                 : $"{joinString} {attrJoin.TableName}{joinAs}{attrJoin.TableAlias} ");
         }
@@ -79,7 +79,7 @@ public partial class SqlGenerator<TEntity>
                 object deleteValue = Provider == SqlProvider.PostgreSQL ? "true" : 1;
                 if(deleteAttr.PropertyType == typeof(bool?))
                 {
-                    customFilter = attrJoin.TableAlias == string.Empty
+                    customFilter = string.IsNullOrEmpty(attrJoin.TableAlias)
                         ? $"AND {attrJoin.TableName}.{colName} IS NULL "
                         : $"AND {attrJoin.TableAlias}.{colName} IS NULL ";
                 }
@@ -96,13 +96,13 @@ public partial class SqlGenerator<TEntity>
                         }
                     }
 
-                    customFilter = attrJoin.TableAlias == string.Empty
+                    customFilter = string.IsNullOrEmpty(attrJoin.TableAlias)
                         ? $"AND {attrJoin.TableName}.{colName} != {deleteValue} "
                         : $"AND {attrJoin.TableAlias}.{colName} != {deleteValue} ";
                 }
             }
 
-            joinBuilder.Append(attrJoin.TableAlias == string.Empty
+            joinBuilder.Append(string.IsNullOrEmpty(attrJoin.TableAlias)
                 ? $"{joinString} {attrJoin.TableName} ON {tableName}.{attrJoin.Key} = {attrJoin.TableName}.{attrJoin.ExternalKey} {customFilter}"
                 : $"{joinString} {attrJoin.TableName}{joinAs}{attrJoin.TableAlias} ON {tableName}.{attrJoin.Key} = {attrJoin.TableAlias}.{attrJoin.ExternalKey} {customFilter}");
         }

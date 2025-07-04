@@ -1,22 +1,20 @@
 namespace MicroOrm.Dapper.Repositories.Attributes.Joins;
 
-
 /// <summary>
-///     Generate INNER JOIN
+/// Generate INNER JOIN
 /// </summary>
 public sealed class InnerJoinAttribute : JoinAttributeBase
 {
-
     /// <summary>
-    ///     Constructor
+    /// Initialize a new instance with default INNER JOIN type
     /// </summary>
     public InnerJoinAttribute()
+        : base("INNER JOIN")
     {
     }
 
-
     /// <summary>
-    ///     Constructor
+    /// Initialize a new instance with the specified table
     /// </summary>
     /// <param name="tableName">Name of external table</param>
     /// <param name="key">ForeignKey of this table</param>
@@ -26,9 +24,8 @@ public sealed class InnerJoinAttribute : JoinAttributeBase
     {
     }
 
-
     /// <summary>
-    ///     Constructor
+    /// Initialize a new instance with the specified table and schema
     /// </summary>
     /// <param name="tableName">Name of external table</param>
     /// <param name="key">ForeignKey of this table</param>
@@ -39,17 +36,16 @@ public sealed class InnerJoinAttribute : JoinAttributeBase
     {
     }
 
-
     /// <summary>
-    ///     Constructor
+    /// Initialize a new instance with the specified table, schema and alias
     /// </summary>
     /// <param name="tableName">Name of external table</param>
     /// <param name="key">ForeignKey of this table</param>
     /// <param name="externalKey">Key of external table</param>
     /// <param name="tableSchema">Name of external table schema</param>
-    /// <param name="tableAbbreviation">External table alias</param>
-    public InnerJoinAttribute(string tableName, string key, string externalKey, string tableSchema, string tableAbbreviation)
-        : base(tableName, key, externalKey, tableSchema, tableAbbreviation, "INNER JOIN")
+    /// <param name="tableAlias">External table alias</param>
+    public InnerJoinAttribute(string tableName, string key, string externalKey, string tableSchema, string tableAlias)
+        : base(tableName, key, externalKey, tableSchema, tableAlias, "INNER JOIN")
     {
     }
 }

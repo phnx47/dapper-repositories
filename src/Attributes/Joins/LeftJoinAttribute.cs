@@ -1,22 +1,20 @@
 namespace MicroOrm.Dapper.Repositories.Attributes.Joins;
 
-
 /// <summary>
-///     Generate LEFT JOIN
+/// Generate LEFT JOIN
 /// </summary>
 public sealed class LeftJoinAttribute : JoinAttributeBase
 {
-
     /// <summary>
-    ///     Constructor
+    /// Initialize a new instance with default LEFT JOIN type
     /// </summary>
     public LeftJoinAttribute()
+        : base("LEFT JOIN")
     {
     }
 
-
     /// <summary>
-    ///     Constructor
+    /// Initialize a new instance with the specified table
     /// </summary>
     /// <param name="tableName">Name of external table</param>
     /// <param name="key">ForeignKey of this table</param>
@@ -26,9 +24,8 @@ public sealed class LeftJoinAttribute : JoinAttributeBase
     {
     }
 
-
     /// <summary>
-    ///     Constructor
+    /// Initialize a new instance with the specified table and schema
     /// </summary>
     /// <param name="tableName">Name of external table</param>
     /// <param name="key">ForeignKey of this table</param>
@@ -39,17 +36,16 @@ public sealed class LeftJoinAttribute : JoinAttributeBase
     {
     }
 
-
     /// <summary>
-    ///     Constructor
+    /// Initialize a new instance with the specified table, schema and alias
     /// </summary>
     /// <param name="tableName">Name of external table</param>
     /// <param name="key">ForeignKey of this table</param>
     /// <param name="externalKey">Key of external table</param>
     /// <param name="tableSchema">Name of external table schema</param>
-    /// <param name="tableAbbreviation">External table alias</param>
-    public LeftJoinAttribute(string tableName, string key, string externalKey, string tableSchema, string tableAbbreviation)
-        : base(tableName, key, externalKey, tableSchema, tableAbbreviation, "LEFT JOIN")
+    /// <param name="tableAlias">External table alias</param>
+    public LeftJoinAttribute(string tableName, string key, string externalKey, string tableSchema, string tableAlias)
+        : base(tableName, key, externalKey, tableSchema, tableAlias, "LEFT JOIN")
     {
     }
 }
