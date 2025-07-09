@@ -146,8 +146,8 @@ public class PostgresSqlGeneratorTests
         ISqlGenerator<Phone> userSqlGenerator = new SqlGenerator<Phone>(_sqlConnector);
         var phones = new List<Phone>
         {
-            new Phone { Id = 10, IsActive = true, PNumber = "111" },
-            new Phone { Id = 10, IsActive = false, PNumber = "222" }
+            new() { Id = 10, IsActive = true, PNumber = "111" },
+            new() { Id = 10, IsActive = false, PNumber = "222" }
         };
 
         var sqlQuery = userSqlGenerator.GetBulkUpdate(phones);
@@ -162,8 +162,8 @@ public class PostgresSqlGeneratorTests
         ISqlGenerator<Phone> userSqlGenerator = new SqlGenerator<Phone>(_sqlConnector, true);
         var phones = new List<Phone>
         {
-            new Phone { Id = 10, IsActive = true, PNumber = "111" },
-            new Phone { Id = 10, IsActive = false, PNumber = "222" }
+            new() { Id = 10, IsActive = true, PNumber = "111" },
+            new() { Id = 10, IsActive = false, PNumber = "222" }
         };
 
         var sqlQuery = userSqlGenerator.GetBulkUpdate(phones);

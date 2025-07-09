@@ -201,7 +201,7 @@ public class MsSqlGeneratorTests
     public static void BulkInsertMultiple()
     {
         ISqlGenerator<Address> userSqlGenerator = new SqlGenerator<Address>(_sqlConnector, true);
-        var sqlQuery = userSqlGenerator.GetBulkInsert(new List<Address> { new Address(), new Address() });
+        var sqlQuery = userSqlGenerator.GetBulkInsert(new List<Address> { new(), new() });
 
         Assert.Equal("INSERT INTO [Addresses] ([Street], [CityId]) VALUES (@Street0, @CityId0),(@Street1, @CityId1)", sqlQuery.GetSql());
     }
@@ -210,7 +210,7 @@ public class MsSqlGeneratorTests
     public static void BulkInsertOne()
     {
         ISqlGenerator<Address> userSqlGenerator = new SqlGenerator<Address>(_sqlConnector, true);
-        var sqlQuery = userSqlGenerator.GetBulkInsert(new List<Address> { new Address() });
+        var sqlQuery = userSqlGenerator.GetBulkInsert(new List<Address> { new() });
 
         Assert.Equal("INSERT INTO [Addresses] ([Street], [CityId]) VALUES (@Street0, @CityId0)", sqlQuery.GetSql());
     }
@@ -220,7 +220,7 @@ public class MsSqlGeneratorTests
     {
         MicroOrmConfig.AllowKeyAsIdentity = true;
         ISqlGenerator<AddressKeyAsIdentity> userSqlGenerator = new SqlGenerator<AddressKeyAsIdentity>(_sqlConnector, true);
-        var sqlQuery = userSqlGenerator.GetBulkInsert(new List<AddressKeyAsIdentity> { new AddressKeyAsIdentity() });
+        var sqlQuery = userSqlGenerator.GetBulkInsert(new List<AddressKeyAsIdentity> { new() });
 
         Assert.Equal("INSERT INTO [Addresses] ([Street], [CityId]) VALUES (@Street0, @CityId0)", sqlQuery.GetSql());
         MicroOrmConfig.AllowKeyAsIdentity = false;
@@ -232,8 +232,8 @@ public class MsSqlGeneratorTests
         ISqlGenerator<Phone> userSqlGenerator = new SqlGenerator<Phone>(_sqlConnector, true);
         var phones = new List<Phone>
         {
-            new Phone { Id = 10, IsActive = true, PNumber = "111" },
-            new Phone { Id = 10, IsActive = false, PNumber = "222" }
+            new() { Id = 10, IsActive = true, PNumber = "111" },
+            new() { Id = 10, IsActive = false, PNumber = "222" }
         };
 
         var sqlQuery = userSqlGenerator.GetBulkUpdate(phones);
@@ -248,8 +248,8 @@ public class MsSqlGeneratorTests
         ISqlGenerator<Report> userSqlGenerator = new SqlGenerator<Report>(_sqlConnector, true);
         var reports = new List<Report>
         {
-            new Report { Id = 10, AnotherId = 10, UserId = 22 },
-            new Report { Id = 10, AnotherId = 10, UserId = 23 }
+            new() { Id = 10, AnotherId = 10, UserId = 22 },
+            new() { Id = 10, AnotherId = 10, UserId = 23 }
         };
 
         var sqlQuery = userSqlGenerator.GetBulkUpdate(reports);

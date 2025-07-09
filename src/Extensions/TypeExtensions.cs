@@ -11,9 +11,9 @@ namespace MicroOrm.Dapper.Repositories.Extensions;
 
 internal static class TypeExtensions
 {
-    private static readonly ConcurrentDictionary<Type, PropertyInfo[]> _reflectionPropertyCache = new ConcurrentDictionary<Type, PropertyInfo[]>();
-    private static readonly ConcurrentDictionary<Type, PropertyInfo[]> _reflectionPrimitivePropertyCache = new ConcurrentDictionary<Type, PropertyInfo[]>();
-    private static readonly ConcurrentDictionary<Type, SqlPropertyMetadata[]> _metaDataPropertyCache = new ConcurrentDictionary<Type, SqlPropertyMetadata[]>();
+    private static readonly ConcurrentDictionary<Type, PropertyInfo[]> _reflectionPropertyCache = new();
+    private static readonly ConcurrentDictionary<Type, PropertyInfo[]> _reflectionPrimitivePropertyCache = new();
+    private static readonly ConcurrentDictionary<Type, SqlPropertyMetadata[]> _metaDataPropertyCache = new();
 
     public static PropertyInfo[] FindClassProperties(this Type objectType)
     {

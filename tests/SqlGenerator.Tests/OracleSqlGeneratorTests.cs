@@ -201,7 +201,7 @@ public class OracleSqlGeneratorTests
     public static void BulkInsertMultiple()
     {
         ISqlGenerator<Address> userSqlGenerator = new SqlGenerator<Address>(_sqlConnector, false);
-        var sqlQuery = userSqlGenerator.GetBulkInsert(new List<Address> { new Address(), new Address() });
+        var sqlQuery = userSqlGenerator.GetBulkInsert(new List<Address> { new(), new() });
 
         //Assert.Equal("INSERT INTO Addresses (Street, CityId) VALUES (:Street0, :CityId0),(:Street1, :CityId1)", sqlQuery.GetSql());
         Assert.Equal("INSERT INTO Addresses (Street, CityId) SELECT :Street0, :CityId0 FROM DUAL UNION ALL SELECT :Street1, :CityId1 FROM DUAL", sqlQuery.GetSql());
@@ -211,7 +211,7 @@ public class OracleSqlGeneratorTests
     public static void BulkInsertOne()
     {
         ISqlGenerator<Address> userSqlGenerator = new SqlGenerator<Address>(_sqlConnector, false);
-        var sqlQuery = userSqlGenerator.GetBulkInsert(new List<Address> { new Address() });
+        var sqlQuery = userSqlGenerator.GetBulkInsert(new List<Address> { new() });
 
         Assert.Equal("INSERT INTO Addresses (Street, CityId) SELECT :Street0, :CityId0 FROM DUAL", sqlQuery.GetSql());
     }
@@ -221,7 +221,7 @@ public class OracleSqlGeneratorTests
     {
         MicroOrmConfig.AllowKeyAsIdentity = true;
         ISqlGenerator<AddressKeyAsIdentity> userSqlGenerator = new SqlGenerator<AddressKeyAsIdentity>(_sqlConnector, false);
-        var sqlQuery = userSqlGenerator.GetBulkInsert(new List<AddressKeyAsIdentity> { new AddressKeyAsIdentity() });
+        var sqlQuery = userSqlGenerator.GetBulkInsert(new List<AddressKeyAsIdentity> { new() });
 
         Assert.Equal("INSERT INTO Addresses (Street, CityId) SELECT :Street0, :CityId0 FROM DUAL", sqlQuery.GetSql());
         MicroOrmConfig.AllowKeyAsIdentity = false;
@@ -233,8 +233,8 @@ public class OracleSqlGeneratorTests
         ISqlGenerator<Phone> userSqlGenerator = new SqlGenerator<Phone>(_sqlConnector, false);
         var phones = new List<Phone>
         {
-            new Phone { Id = 10, IsActive = true, PNumber = "111" },
-            new Phone { Id = 10, IsActive = false, PNumber = "222" }
+            new() { Id = 10, IsActive = true, PNumber = "111" },
+            new() { Id = 10, IsActive = false, PNumber = "222" }
         };
 
         var sqlQuery = userSqlGenerator.GetBulkUpdate(phones);
@@ -254,8 +254,8 @@ public class OracleSqlGeneratorTests
         ISqlGenerator<Report> userSqlGenerator = new SqlGenerator<Report>(_sqlConnector, false);
         var reports = new List<Report>
         {
-            new Report { Id = 10, AnotherId = 10, UserId = 22 },
-            new Report { Id = 10, AnotherId = 10, UserId = 23 }
+            new() { Id = 10, AnotherId = 10, UserId = 22 },
+            new() { Id = 10, AnotherId = 10, UserId = 23 }
         };
 
         var sqlQuery = userSqlGenerator.GetBulkUpdate(reports);
