@@ -17,7 +17,7 @@ public partial class SqlGenerator<TEntity>
         var properties = SqlProperties.Where(p =>
             !KeySqlProperties.Any(k => k.PropertyName.Equals(p.PropertyName, StringComparison.OrdinalIgnoreCase)) && !p.IgnoreUpdate).ToArray();
 
-        if (!properties.Any())
+        if (properties.Length == 0)
             throw new ArgumentException("Can't update without [Key]");
 
         if (HasUpdatedAt && UpdatedAtProperty.GetCustomAttribute<UpdatedAtAttribute>() is { } attribute)

@@ -14,7 +14,7 @@ public partial class SqlGenerator<TEntity>
     public virtual SqlQuery GetBulkUpdate(IEnumerable<TEntity> entities)
     {
         var entitiesArray = entities as TEntity[] ?? entities.ToArray();
-        if (!entitiesArray.Any())
+        if (entitiesArray.Length == 0)
             throw new ArgumentException("collection is empty");
 
         var entityType = entitiesArray[0].GetType();

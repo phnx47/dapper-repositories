@@ -28,7 +28,7 @@ public partial class ReadOnlyDapperRepository<TEntity>
         IDbTransaction? transaction,
         params Expression<Func<TEntity, object>>[] includes)
     {
-        if (!SqlGenerator.KeySqlProperties.Any())
+        if (SqlGenerator.KeySqlProperties.Length == 0)
             throw new NotSupportedException("Join doesn't support without [Key] attribute");
 
         var type = typeof(TEntity);
@@ -52,7 +52,7 @@ public partial class ReadOnlyDapperRepository<TEntity>
             childKeyProperties.AddRange(properties.Where(p => p.GetCustomAttributes<KeyAttribute>().Any()));
         }
 
-        if (!childKeyProperties.Any())
+        if (childKeyProperties.Count == 0)
             throw new NotSupportedException("Join doesn't support without [Key] attribute");
 
         var lookup = new Dictionary<object, TEntity>();
@@ -131,7 +131,7 @@ public partial class ReadOnlyDapperRepository<TEntity>
         CancellationToken cancellationToken,
         params Expression<Func<TEntity, object>>[] includes)
     {
-        if (!SqlGenerator.KeySqlProperties.Any())
+        if (SqlGenerator.KeySqlProperties.Length == 0)
             throw new NotSupportedException("Join doesn't support without [Key] attribute");
 
         var type = typeof(TEntity);
@@ -153,7 +153,7 @@ public partial class ReadOnlyDapperRepository<TEntity>
             childKeyProperties.AddRange(properties.Where(p => p.GetCustomAttributes<KeyAttribute>().Any()));
         }
 
-        if (!childKeyProperties.Any())
+        if (childKeyProperties.Count == 0)
             throw new NotSupportedException("Join doesn't support without [Key] attribute");
 
         var lookup = new Dictionary<object, TEntity>();
