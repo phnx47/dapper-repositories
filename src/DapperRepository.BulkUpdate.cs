@@ -38,7 +38,7 @@ public partial class DapperRepository<TEntity>
             {
                 int maxAllowedInstancesPerBatch = totalInstances / exceededTimes;
                 if (maxAllowedInstancesPerBatch > 1000) maxAllowedInstancesPerBatch = 1000;
-                var maxIterationCount = (int)Math.Ceiling((double)totalInstances / (double)maxAllowedInstancesPerBatch);
+                var maxIterationCount = (int)Math.Ceiling(totalInstances / (double)maxAllowedInstancesPerBatch);
                 for (int i = 0; i <= maxIterationCount; i++)
                 {
                     var skips = i * maxAllowedInstancesPerBatch;
@@ -94,7 +94,7 @@ public partial class DapperRepository<TEntity>
                 int maxAllowedInstancesPerBatch = totalInstances / exceededTimes;
                 if (maxAllowedInstancesPerBatch > 1000) maxAllowedInstancesPerBatch = 1000;
 
-                var maxIterationCount = (int)Math.Ceiling((double)totalInstances / (double)maxAllowedInstancesPerBatch);
+                var maxIterationCount = (int)Math.Ceiling(totalInstances / (double)maxAllowedInstancesPerBatch);
 
                 for (var i = 0; i <= maxIterationCount; i++)
                 {
