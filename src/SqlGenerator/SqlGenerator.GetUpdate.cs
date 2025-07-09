@@ -38,7 +38,7 @@ public partial class SqlGenerator<TEntity>
         query.SqlBuilder
             .Append("UPDATE ")
             .Append(TableName)
-            .Append(" ");
+            .Append(' ');
 
         if (includes.Length > 0)
         {
@@ -93,7 +93,7 @@ public partial class SqlGenerator<TEntity>
         query.SqlBuilder
             .Append("UPDATE ")
             .Append(TableName)
-            .Append(" ");
+            .Append(' ');
 
         if (includes.Length > 0)
         {
@@ -109,7 +109,7 @@ public partial class SqlGenerator<TEntity>
         }
 
         query.SqlBuilder
-            .Append(" ");
+            .Append(' ');
 
         AppendWherePredicateQuery(query, predicate, QueryType.Update);
 
@@ -133,10 +133,10 @@ public partial class SqlGenerator<TEntity>
         query.SqlBuilder
             .Append("UPDATE ")
             .Append(TableName)
-            .Append(" ");
+            .Append(' ');
         query.SqlBuilder.Append("SET ");
         query.SqlBuilder.Append(GetFieldsUpdate(TableName, properties, UseQuotationMarks == true));
-        query.SqlBuilder.Append(" ");
+        query.SqlBuilder.Append(' ');
         AppendWherePredicateQuery(query, predicate, QueryType.Update);
 
         var parameters = (Dictionary<string, object?>)query.Param!;
@@ -170,10 +170,10 @@ public partial class SqlGenerator<TEntity>
         query.SqlBuilder
             .Append("UPDATE ")
             .Append(TableName)
-            .Append(" ");
+            .Append(' ');
         query.SqlBuilder.Append("SET ");
         query.SqlBuilder.Append(GetFieldsUpdate(TableName, properties, UseQuotationMarks == true));
-        query.SqlBuilder.Append(" ");
+        query.SqlBuilder.Append(' ');
         AppendWherePredicateQuery(query, predicate, QueryType.Update);
 
         var parameters = (Dictionary<string, object?>)query.Param!;

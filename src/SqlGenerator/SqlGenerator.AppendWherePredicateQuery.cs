@@ -87,11 +87,11 @@ public partial class SqlGenerator<TEntity>
             if (!string.IsNullOrEmpty(expr.LinkingOperator))
             {
                 if (sqlBuilder.Length > 0)
-                    sqlBuilder.Append(" ");
+                    sqlBuilder.Append(' ');
 
                 sqlBuilder
                     .Append(expr.LinkingOperator)
-                    .Append(" ");
+                    .Append(' ');
             }
 
             switch (expr)

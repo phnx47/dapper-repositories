@@ -22,7 +22,7 @@ public partial class SqlGenerator<TEntity>
             sqlQuery.SqlBuilder
                 .Append(" FROM ")
                 .Append(TableName)
-                .Append(" ");
+                .Append(' ');
 
             sqlQuery.SqlBuilder.Append(joinsBuilder);
         }
@@ -31,7 +31,7 @@ public partial class SqlGenerator<TEntity>
             sqlQuery.SqlBuilder
                 .Append(" FROM ")
                 .Append(TableName)
-                .Append(" ");
+                .Append(' ');
         }
 
         AppendWherePredicateQuery(sqlQuery, predicate, QueryType.Select);
@@ -53,7 +53,7 @@ public partial class SqlGenerator<TEntity>
             sqlQuery.SqlBuilder
                 .Append(" FROM ")
                 .Append(TableName)
-                .Append(" ");
+                .Append(' ');
 
             sqlQuery.SqlBuilder.Append(joinsBuilder);
         }
@@ -62,7 +62,7 @@ public partial class SqlGenerator<TEntity>
             sqlQuery.SqlBuilder
                 .Append(" FROM ")
                 .Append(TableName)
-                .Append(" ");
+                .Append(' ');
         }
 
         AppendWherePredicateQuery(sqlQuery, predicate, QueryType.Select);
@@ -77,9 +77,9 @@ public partial class SqlGenerator<TEntity>
 
         query.SqlBuilder
             .Append(TableName)
-            .Append(".")
+            .Append('.')
             .Append(sqlProperty.ColumnName)
-            .Append(")");
+            .Append(')');
 
         if (sqlProperty.Alias != null)
             query.SqlBuilder
