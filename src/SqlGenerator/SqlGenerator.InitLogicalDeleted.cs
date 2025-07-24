@@ -7,7 +7,6 @@ using MicroOrm.Dapper.Repositories.Attributes.LogicalDelete;
 
 namespace MicroOrm.Dapper.Repositories.SqlGenerator;
 
-
 public partial class SqlGenerator<TEntity>
     where TEntity : class
 {
@@ -28,7 +27,8 @@ public partial class SqlGenerator<TEntity>
                 continue;
 
             JoinsLogicalDelete ??= new Dictionary<string, PropertyInfo>();
-            JoinsLogicalDelete.Add(joinAttr.TableName, deleteAttr);
+            if (!JoinsLogicalDelete.ContainsKey(joinAttr.TableName))
+                JoinsLogicalDelete.Add(joinAttr.TableName, deleteAttr);
         }
 
 
