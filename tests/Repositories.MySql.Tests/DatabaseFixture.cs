@@ -34,7 +34,7 @@ public class DatabaseFixture : IDisposable
         Db.Connection.Execute($"USE `DAB`");
         Db.Connection.Execute("CREATE TABLE IF NOT EXISTS `Phones` " +
                               "(`Id` int not null auto_increment, `PNumber` varchar(256) not null, " +
-                              "`IsActive` boolean not null, `Code` varchar(256) not null, PRIMARY KEY  (`Id`));");
+                              "`IsActive` boolean not null, `Code` varchar(256) not null, `Deleted` boolean, PRIMARY KEY  (`Id`));");
 
         Db.Connection.Execute($"USE `{_dbName}`");
 

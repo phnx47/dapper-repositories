@@ -47,7 +47,7 @@ public class DatabaseFixture : IDisposable
         Db.Connection.Execute(@"CREATE TABLE Cities (Identifier uuid not null, Name varchar(256) not null)");
         Db.Connection.Execute(@"CREATE TABLE Reports (Id int not null, AnotherId int not null, UserId int not null,  PRIMARY KEY (Id, AnotherId))");
         Db.Connection.Execute(
-            @"CREATE TABLE DAB.Phones (Id SERIAL not null, PNumber varchar(256) not null, IsActive bool not null, Code varchar(256) not null, PRIMARY KEY (Id))");
+            @"CREATE TABLE DAB.Phones (Id SERIAL not null, PNumber varchar(256) not null, IsActive bool not null, Code varchar(256) not null, Deleted bool, PRIMARY KEY (Id))");
 
         InitData.Execute(Db);
     }
