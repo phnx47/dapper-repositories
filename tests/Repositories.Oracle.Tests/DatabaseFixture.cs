@@ -67,7 +67,7 @@ public class DatabaseFixture : IDisposable
                   PNUMBER VARCHAR(256) NOT NULL,
                   ISACTIVE NUMBER(1) NOT NULL,
                   CODE VARCHAR(256) NOT NULL,
-                    DELETED NUMBER,
+                  DELETED NUMBER,
                   PRIMARY KEY  (ID))");
 
         Db.Connection.Execute(
