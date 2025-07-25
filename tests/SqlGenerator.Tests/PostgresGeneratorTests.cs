@@ -7,31 +7,31 @@ using Xunit;
 
 namespace SqlGenerator.Tests;
 
-public class PostgresSqlGeneratorTests
+public class PostgresGeneratorTests
 {
     private const SqlProvider _sqlConnector = SqlProvider.PostgreSQL;
 
     [Fact]
     public static void Count()
     {
-        ISqlGenerator<User> userSqlGenerator = new SqlGenerator<User>(_sqlConnector, true);
-        var sqlQuery = userSqlGenerator.GetCount(null);
+        var sqlGenerator = new SqlGenerator<User>(_sqlConnector, true);
+        var sqlQuery = sqlGenerator.GetCount(null);
         Assert.Equal("SELECT COUNT(*) FROM \"Users\" WHERE \"Users\".\"Deleted\" IS NULL", sqlQuery.GetSql());
     }
 
     [Fact]
     public static void CountWithDistinct()
     {
-        ISqlGenerator<User> userSqlGenerator = new SqlGenerator<User>(_sqlConnector, true);
-        var sqlQuery = userSqlGenerator.GetCount(null, user => user.AddressId);
+        var sqlGenerator = new SqlGenerator<User>(_sqlConnector, true);
+        var sqlQuery = sqlGenerator.GetCount(null, user => user.AddressId);
         Assert.Equal("SELECT COUNT(DISTINCT \"Users\".\"AddressId\") FROM \"Users\" WHERE \"Users\".\"Deleted\" IS NULL", sqlQuery.GetSql());
     }
 
     [Fact]
     public static void CountWithDistinctAndWhere()
     {
-        ISqlGenerator<User> userSqlGenerator = new SqlGenerator<User>(_sqlConnector, true);
-        var sqlQuery = userSqlGenerator.GetCount(x => x.PhoneId == 1, user => user.AddressId);
+        var sqlGenerator = new SqlGenerator<User>(_sqlConnector, true);
+        var sqlQuery = sqlGenerator.GetCount(x => x.PhoneId == 1, user => user.AddressId);
         Assert.Equal("SELECT COUNT(DISTINCT \"Users\".\"AddressId\") FROM \"Users\" WHERE (\"Users\".\"PhoneId\" = @PhoneId_p0) AND \"Users\".\"Deleted\" IS NULL",
             sqlQuery.GetSql());
     }
@@ -39,7 +39,7 @@ public class PostgresSqlGeneratorTests
     [Fact]
     public void SelectLimit()
     {
-        ISqlGenerator<City> sqlGenerator = new SqlGenerator<City>(_sqlConnector);
+        var sqlGenerator = new SqlGenerator<City>(_sqlConnector);
         var filterData = new FilterData();
         var data = filterData.LimitInfo ?? new LimitInfo();
         data.Limit = 10u;
@@ -52,7 +52,7 @@ public class PostgresSqlGeneratorTests
     [Fact]
     public void SelectOrderBy()
     {
-        ISqlGenerator<City> sqlGenerator = new SqlGenerator<City>(_sqlConnector);
+        var sqlGenerator = new SqlGenerator<City>(_sqlConnector);
         var filterData = new FilterData();
         var data = filterData.OrderInfo ?? new OrderInfo();
         data.Columns = new List<string> { "Name" };
@@ -66,7 +66,7 @@ public class PostgresSqlGeneratorTests
     [Fact]
     public void SelectOrderByWithTableIdentifier_QuoMarks()
     {
-        ISqlGenerator<City> sqlGenerator = new SqlGenerator<City>(_sqlConnector, true);
+        var sqlGenerator = new SqlGenerator<City>(_sqlConnector, true);
         var filterData = new FilterData();
         var data = filterData.OrderInfo ?? new OrderInfo();
         data.Columns = new List<string> { "Cities.Name" };
@@ -81,7 +81,7 @@ public class PostgresSqlGeneratorTests
     [Fact]
     public void SelectPaged()
     {
-        ISqlGenerator<City> sqlGenerator = new SqlGenerator<City>(_sqlConnector);
+        var sqlGenerator = new SqlGenerator<City>(_sqlConnector);
         var filterData = new FilterData();
         var data = filterData.LimitInfo ?? new LimitInfo();
         data.Limit = 10u;
@@ -95,7 +95,7 @@ public class PostgresSqlGeneratorTests
     [Fact]
     public void SelectFirst()
     {
-        ISqlGenerator<City> sqlGenerator = new SqlGenerator<City>(_sqlConnector);
+        var sqlGenerator = new SqlGenerator<City>(_sqlConnector);
         var sqlQuery = sqlGenerator.GetSelectFirst(x => x.Identifier == Guid.Empty, null);
         Assert.Equal("SELECT Cities.Identifier, Cities.Name FROM Cities WHERE Cities.Identifier = @Identifier_p0 LIMIT 1", sqlQuery.GetSql());
     }
@@ -103,7 +103,7 @@ public class PostgresSqlGeneratorTests
     [Fact]
     public void SelectFirst_QuoMarks()
     {
-        ISqlGenerator<City> sqlGenerator = new SqlGenerator<City>(_sqlConnector, true);
+        var sqlGenerator = new SqlGenerator<City>(_sqlConnector, true);
         var sqlQuery = sqlGenerator.GetSelectFirst(x => x.Identifier == Guid.Empty, null);
         Assert.Equal("SELECT \"Cities\".\"Identifier\", \"Cities\".\"Name\" FROM \"Cities\" WHERE \"Cities\".\"Identifier\" = @Identifier_p0 LIMIT 1", sqlQuery.GetSql());
     }
@@ -111,8 +111,8 @@ public class PostgresSqlGeneratorTests
     [Fact]
     public static void Update()
     {
-        ISqlGenerator<User> userSqlGenerator = new SqlGenerator<User>(_sqlConnector);
-        var sqlQuery = userSqlGenerator.GetUpdate(new User());
+        var sqlGenerator = new SqlGenerator<User>(_sqlConnector);
+        var sqlQuery = sqlGenerator.GetUpdate(new User());
 
         Assert.Equal("UPDATE Users " +
                      "SET Name = @UserName, " +
@@ -127,8 +127,8 @@ public class PostgresSqlGeneratorTests
     [Fact]
     public static void Update_QuoMarks()
     {
-        ISqlGenerator<User> userSqlGenerator = new SqlGenerator<User>(_sqlConnector, true);
-        var sqlQuery = userSqlGenerator.GetUpdate(new User());
+        var sqlGenerator = new SqlGenerator<User>(_sqlConnector, true);
+        var sqlQuery = sqlGenerator.GetUpdate(new User());
 
         Assert.Equal("UPDATE \"Users\" " +
                      "SET \"Name\" = @UserName, " +
@@ -143,32 +143,32 @@ public class PostgresSqlGeneratorTests
     [Fact]
     public static void BulkUpdate()
     {
-        ISqlGenerator<Phone> userSqlGenerator = new SqlGenerator<Phone>(_sqlConnector);
+        var sqlGenerator = new SqlGenerator<Phone>(_sqlConnector);
         var phones = new List<Phone>
         {
             new() { Id = 10, IsActive = true, PNumber = "111" },
             new() { Id = 10, IsActive = false, PNumber = "222" }
         };
 
-        var sqlQuery = userSqlGenerator.GetBulkUpdate(phones);
+        var sqlQuery = sqlGenerator.GetBulkUpdate(phones);
 
-        Assert.Equal("UPDATE DAB.Phones SET PNumber = @PNumber0, IsActive = @IsActive0 WHERE Id = @Id0; " +
-                     "UPDATE DAB.Phones SET PNumber = @PNumber1, IsActive = @IsActive1 WHERE Id = @Id1", sqlQuery.GetSql());
+        Assert.Equal("UPDATE DAB.Phones SET PNumber = @PNumber0, IsActive = @IsActive0, Deleted = @Deleted0 WHERE Id = @Id0; " +
+                     "UPDATE DAB.Phones SET PNumber = @PNumber1, IsActive = @IsActive1, Deleted = @Deleted1 WHERE Id = @Id1", sqlQuery.GetSql());
     }
 
     [Fact]
     public static void BulkUpdate_QuoMarks()
     {
-        ISqlGenerator<Phone> userSqlGenerator = new SqlGenerator<Phone>(_sqlConnector, true);
+        var sqlGenerator = new SqlGenerator<Phone>(_sqlConnector, true);
         var phones = new List<Phone>
         {
             new() { Id = 10, IsActive = true, PNumber = "111" },
             new() { Id = 10, IsActive = false, PNumber = "222" }
         };
 
-        var sqlQuery = userSqlGenerator.GetBulkUpdate(phones);
+        var sqlQuery = sqlGenerator.GetBulkUpdate(phones);
 
-        Assert.Equal("UPDATE \"DAB\".\"Phones\" SET \"PNumber\" = @PNumber0, \"IsActive\" = @IsActive0 WHERE \"Id\" = @Id0; " +
-                     "UPDATE \"DAB\".\"Phones\" SET \"PNumber\" = @PNumber1, \"IsActive\" = @IsActive1 WHERE \"Id\" = @Id1", sqlQuery.GetSql());
+        Assert.Equal("UPDATE \"DAB\".\"Phones\" SET \"PNumber\" = @PNumber0, \"IsActive\" = @IsActive0, \"Deleted\" = @Deleted0 WHERE \"Id\" = @Id0; " +
+                     "UPDATE \"DAB\".\"Phones\" SET \"PNumber\" = @PNumber1, \"IsActive\" = @IsActive1, \"Deleted\" = @Deleted1 WHERE \"Id\" = @Id1", sqlQuery.GetSql());
     }
 }
