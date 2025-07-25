@@ -37,7 +37,7 @@ public abstract class DatabaseFixture : IDisposable
         Db.Connection.Execute(@"CREATE TABLE Cities (Identifier uniqueidentifier not null, Name varchar(256) not null)");
         Db.Connection.Execute(@"CREATE TABLE Reports (Id int not null, AnotherId int not null, UserId int not null,  PRIMARY KEY (Id, AnotherId))");
         Db.Connection.Execute(
-            @"CREATE TABLE DAB.Phones (Id int IDENTITY(1,1) not null, PNumber varchar(256) not null, IsActive bit not null, Code varchar(256) not null, PRIMARY KEY (Id))");
+            @"CREATE TABLE DAB.Phones (Id int IDENTITY(1,1) not null, PNumber varchar(256) not null, IsActive bit not null, Code varchar(256) not null, Deleted bit, PRIMARY KEY (Id))");
 
         InitData.Execute(Db);
     }
