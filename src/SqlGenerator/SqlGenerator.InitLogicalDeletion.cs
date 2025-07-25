@@ -10,7 +10,7 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator;
 public partial class SqlGenerator<TEntity>
     where TEntity : class
 {
-    private void InitLogicalDeleted()
+    private void InitLogicalDeletion()
     {
         var statusProperty =
             SqlProperties.FirstOrDefault(x => x.PropertyInfo.GetCustomAttribute<StatusAttribute>() != null);
@@ -21,19 +21,20 @@ public partial class SqlGenerator<TEntity>
             if (joinAttr?.TableName == null)
                 continue;
 
-            //var deleted = joinProperty.JoinPropertyInfo.PropertyType.GetCustomAttribute<DeletedAttribute>();
-            var deleteAttr = property.PropertyType.GetProperties().FirstOrDefault(x => x.GetCustomAttribute<DeletedAttribute>() != null);
-            if (deleteAttr == null)
+            var deleteProperty = property.PropertyType.GetProperties()
+                .FirstOrDefault(x => x.GetCustomAttribute<DeletedAttribute>() != null);
+            if (deleteProperty == null)
                 continue;
 
-            JoinsLogicalDelete ??= new Dictionary<string, PropertyInfo>();
-            if (!JoinsLogicalDelete.ContainsKey(joinAttr.TableName))
-                JoinsLogicalDelete.Add(joinAttr.TableName, deleteAttr);
+            JoinLogicalDeleteProperties ??= new Dictionary<string, PropertyInfo>();
+            if (!JoinLogicalDeleteProperties.ContainsKey(joinAttr.TableName))
+                JoinLogicalDeleteProperties.Add(joinAttr.TableName, deleteProperty);
         }
 
 
         if (statusProperty == null)
             return;
+
         StatusPropertyName = statusProperty.ColumnName;
 
         if (statusProperty.PropertyInfo.PropertyType == typeof(bool))
@@ -49,12 +50,13 @@ public partial class SqlGenerator<TEntity>
         }
         else if (statusProperty.PropertyInfo.PropertyType.IsEnum)
         {
-            var deleteOption = statusProperty.PropertyInfo.PropertyType.GetFields().FirstOrDefault(f => f.GetCustomAttribute<DeletedAttribute>() != null);
+            var deleteField = statusProperty.PropertyInfo.PropertyType.GetFields()
+                .FirstOrDefault(f => f.GetCustomAttribute<DeletedAttribute>() != null);
 
-            if (deleteOption == null)
+            if (deleteField == null)
                 return;
 
-            var enumValue = Enum.Parse(statusProperty.PropertyInfo.PropertyType, deleteOption.Name);
+            var enumValue = Enum.Parse(statusProperty.PropertyInfo.PropertyType, deleteField.Name);
             LogicalDeleteValue = Convert.ChangeType(enumValue, Enum.GetUnderlyingType(statusProperty.PropertyInfo.PropertyType));
 
             LogicalDelete = true;

@@ -72,7 +72,7 @@ public partial class SqlGenerator<TEntity>
         else if (attrJoin.TableName != null)
         {
             var customFilter = string.Empty;
-            if (JoinsLogicalDelete != null && JoinsLogicalDelete.TryGetValue(attrJoin.TableName, out var deleteAttr))
+            if (JoinLogicalDeleteProperties != null && JoinLogicalDeleteProperties.TryGetValue(attrJoin.TableName, out var deleteAttr))
             {
                 var colAttr = deleteAttr.GetCustomAttribute<ColumnAttribute>();
                 var colName = colAttr == null ? deleteAttr.Name : colAttr.Name;

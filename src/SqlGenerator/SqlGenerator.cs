@@ -27,7 +27,7 @@ public partial class SqlGenerator<TEntity> : ISqlGenerator<TEntity>
         // Order is important
         InitProperties();
         InitConfig();
-        InitLogicalDeleted();
+        InitLogicalDeletion();
     }
 
     /// <summary>
@@ -99,7 +99,7 @@ public partial class SqlGenerator<TEntity> : ISqlGenerator<TEntity>
     public bool LogicalDelete { get; protected set; }
 
 
-    public Dictionary<string, PropertyInfo>? JoinsLogicalDelete { get; protected set; }
+    public Dictionary<string, PropertyInfo>? JoinLogicalDeleteProperties { get; protected set; }
 
 
     public string? StatusPropertyName { get; protected set; }

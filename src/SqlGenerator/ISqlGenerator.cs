@@ -82,7 +82,7 @@ public interface ISqlGenerator<TEntity> where TEntity : class
     /// <summary>
     ///     Joined tables with logical delete
     /// </summary>
-    Dictionary<string, PropertyInfo>? JoinsLogicalDelete { get; }
+    Dictionary<string, PropertyInfo>? JoinLogicalDeleteProperties { get; }
 
     /// <summary>
     ///     Has Logical delete
