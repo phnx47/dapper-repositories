@@ -27,8 +27,13 @@ public partial class SqlGenerator<TEntity>
                 continue;
 
             JoinLogicalDeleteProperties ??= new Dictionary<string, PropertyInfo>();
+
+#if (NETCOREAPP2_0_OR_GREATER || NETSTANDARD2_1_OR_GREATER)
+            JoinLogicalDeleteProperties.TryAdd(joinAttr.TableName, deleteProperty);
+#else
             if (!JoinLogicalDeleteProperties.ContainsKey(joinAttr.TableName))
                 JoinLogicalDeleteProperties.Add(joinAttr.TableName, deleteProperty);
+#endif
         }
 
 
