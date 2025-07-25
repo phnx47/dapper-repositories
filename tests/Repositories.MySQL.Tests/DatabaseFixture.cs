@@ -2,7 +2,7 @@ using System;
 using Dapper;
 using Repositories.Base;
 
-namespace Repositories.MySql.Tests;
+namespace Repositories.MySQL.Tests;
 
 public class DatabaseFixture : IDisposable
 {

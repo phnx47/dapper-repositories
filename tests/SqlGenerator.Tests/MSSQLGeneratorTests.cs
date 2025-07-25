@@ -9,7 +9,8 @@ using Xunit;
 
 namespace SqlGenerator.Tests;
 
-public class MsSqlGeneratorTests
+// ReSharper disable once InconsistentNaming
+public class MSSQLGeneratorTests
 {
     private const SqlProvider _sqlConnector = SqlProvider.MSSQL;
 

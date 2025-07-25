@@ -6,7 +6,7 @@ using Xunit;
 
 [assembly: CollectionBehavior(DisableTestParallelization = true)]
 
-namespace Repositories.MySql.Tests;
+namespace Repositories.MySQL.Tests;
 
 public abstract class RepositoriesTests<TFixture>(DatabaseFixture fixture) : BaseRepositoriesTests(fixture.Db), IClassFixture<TFixture>
     where TFixture : DatabaseFixture

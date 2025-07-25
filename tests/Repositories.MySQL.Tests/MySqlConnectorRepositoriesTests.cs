@@ -3,7 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace Repositories.MySql.Tests;
+namespace Repositories.MySQL.Tests;
 
 public class MySqlConnectorRepositoriesTests(MySqlConnectorDatabaseFixture fixture) : RepositoriesTests<MySqlConnectorDatabaseFixture>(fixture)
 {

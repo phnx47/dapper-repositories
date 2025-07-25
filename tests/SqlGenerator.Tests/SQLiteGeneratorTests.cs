@@ -7,6 +7,7 @@ using Xunit;
 
 namespace SqlGenerator.Tests;
 
+// ReSharper disable once InconsistentNaming
 public class SQLiteGeneratorTests
 {
     private const SqlProvider _sqlConnector = SqlProvider.SQLite;
