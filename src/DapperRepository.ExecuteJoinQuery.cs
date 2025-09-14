@@ -220,8 +220,8 @@ public partial class ReadOnlyDapperRepository<TEntity>
     }
 
 
-    private static TEntity EntityJoinMapping<TChild1, TChild2, TChild3, TChild4, TChild5, TChild6>(IDictionary<object, TEntity> lookup, PropertyInfo[] keyProperties,
-        IList<PropertyInfo> childKeyProperties, IList<PropertyInfo> childProperties, TEntity entity, params object?[] childs)
+    private static TEntity EntityJoinMapping<TChild1, TChild2, TChild3, TChild4, TChild5, TChild6>(Dictionary<object, TEntity> lookup, PropertyInfo[] keyProperties,
+        List<PropertyInfo> childKeyProperties, List<PropertyInfo> childProperties, TEntity entity, params object?[] childs)
     {
         var compositeKeyProperty = string.Join("|", keyProperties.Select(q => q.GetValue(entity)?.ToString()));
 

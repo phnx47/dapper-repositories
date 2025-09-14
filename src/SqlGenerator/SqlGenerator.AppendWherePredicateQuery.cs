@@ -15,7 +15,7 @@ public partial class SqlGenerator<TEntity>
 {
     private void AppendWherePredicateQuery(SqlQuery sqlQuery, Expression<Func<TEntity, bool>>? predicate, QueryType queryType)
     {
-        IDictionary<string, object?> dictionaryParams;
+        Dictionary<string, object?> dictionaryParams;
         if (sqlQuery.Param is Dictionary<string, object?> param)
         {
             dictionaryParams = param;
