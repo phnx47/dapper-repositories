@@ -7,7 +7,6 @@ using Xunit;
 
 namespace SqlGenerator.Tests;
 
-// ReSharper disable once InconsistentNaming
 public class SQLiteGeneratorTests
 {
     private const SqlProvider _sqlConnector = SqlProvider.SQLite;
@@ -53,6 +52,7 @@ public class SQLiteGeneratorTests
     {
         ISqlGenerator<City> sqlGenerator = new SqlGenerator<City>(_sqlConnector, false);
         var sqlQuery = sqlGenerator.GetSelectFirst(x => x.Identifier == Guid.Empty && x.Name == "", null);
-        Assert.Equal("SELECT Cities.Identifier, Cities.Name FROM Cities WHERE Cities.Identifier = @Identifier_p0 AND Cities.Name = @Name_p1 LIMIT 1", sqlQuery.GetSql());
+        Assert.Equal("SELECT Cities.Identifier, Cities.Name FROM Cities WHERE Cities.Identifier = @Identifier_p0 AND Cities.Name = @Name_p1 LIMIT 1",
+            sqlQuery.GetSql());
     }
 }

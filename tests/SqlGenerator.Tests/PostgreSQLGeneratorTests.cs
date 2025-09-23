@@ -7,7 +7,6 @@ using Xunit;
 
 namespace SqlGenerator.Tests;
 
-// ReSharper disable once InconsistentNaming
 public class PostgreSQLGeneratorTests
 {
     private const SqlProvider _sqlConnector = SqlProvider.PostgreSQL;
