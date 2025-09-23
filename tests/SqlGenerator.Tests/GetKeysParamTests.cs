@@ -13,7 +13,8 @@ public class GetKeysParamTests
     {
         var sqlGenerator = new SqlGenerator<Report>();
 
-        var ex = Assert.Throws<ArgumentException>(() => sqlGenerator.GetKeysParam(new[] { 1 }));
+        var ids = new[] { 1 };
+        var ex = Assert.Throws<ArgumentException>(() => sqlGenerator.GetKeysParam(ids));
 
         Assert.Equal("id", ex.ParamName);
         Assert.StartsWith("GetSelectById id(Array) length not equals key properties count", ex.Message);
@@ -50,7 +51,8 @@ public class GetKeysParamTests
     {
         var sqlGenerator = new SqlGenerator<Report>();
 
-        var param = Assert.IsAssignableFrom<IReadOnlyDictionary<string, object>>(sqlGenerator.GetKeysParam(new[] { 1, 2 }));
+        var ids = new[] { 1, 2 };
+        var param = Assert.IsAssignableFrom<IReadOnlyDictionary<string, object>>(sqlGenerator.GetKeysParam(ids));
 
         Assert.Equal(2, param.Count);
 

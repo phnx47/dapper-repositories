@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using Dapper;
 using MicroOrm.Dapper.Repositories.Config;
@@ -93,7 +92,8 @@ public abstract class BaseRepositoriesTests
     [Fact]
     public void FindById_MultiKeys()
     {
-        Assert.NotNull(Db.Reports.FindById(new[] { 1, 2 }));
+        var ids = new[] { 1, 2 };
+        Assert.NotNull(Db.Reports.FindById(ids));
     }
 
     [Fact]

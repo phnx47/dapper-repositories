@@ -496,7 +496,8 @@ public class MSSQLGeneratorTests
     public static void SelectById_MultiKeys()
     {
         var sqlGenerator = new SqlGenerator<Report>(_sqlConnector, true);
-        var sqlQuery = sqlGenerator.GetSelectById(new[] { 1, 2 }, null);
+        var ids = new[] { 1, 2 };
+        var sqlQuery = sqlGenerator.GetSelectById(ids, null);
 
         Assert.Equal("SELECT TOP 1 [Reports].[Id], [Reports].[AnotherId], [Reports].[UserId] FROM [Reports] " +
                      "WHERE [Reports].[Id] = @Id AND [Reports].[AnotherId] = @AnotherId", sqlQuery.GetSql());
