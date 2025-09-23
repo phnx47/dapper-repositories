@@ -10,8 +10,6 @@ namespace TestClasses;
 [Table("Users")]
 public class User : BaseEntity<int>
 {
-    public string ReadOnly => "test";
-
     [Column(Order = 1)]
     public string Name { get; set; }
 
