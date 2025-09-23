@@ -288,7 +288,7 @@ public class MSSQLGeneratorTests
     public static void ContainsArrayPredicate()
     {
         var sqlGenerator = new SqlGenerator<User>(_sqlConnector, true);
-        var ids = new int[] { };
+        var ids = Array.Empty<int>();
         var sqlQuery = sqlGenerator.GetSelectAll(x => ids.Contains(x.Id), null);
 
         Assert.Equal(
