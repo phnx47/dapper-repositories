@@ -80,5 +80,9 @@ dotnet_naming_symbols.private_fields.applicable_accessibilities = private
 resharper_inconsistent_naming_highlighting = hint
 
 ## Code Quality Analysis
+
+dotnet_analyzer_diagnostic.category-Performance.severity = error
+
 dotnet_diagnostic.CA2007.severity = error # Use ConfigureAwait
+dotnet_diagnostic.CA1845.severity = none # Use span-based 'string.Concat'
 configure_await_analysis_mode = library
