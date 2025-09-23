@@ -375,7 +375,7 @@ public class OracleGeneratorTests
     public void Insert_AllowKeyAsIdentity_QuoMarks()
     {
         MicroOrmConfig.AllowKeyAsIdentity = true;
-        ISqlGenerator<AddressKeyAsIdentity> sqlGenerator = new SqlGenerator<AddressKeyAsIdentity>(_sqlConnector, false);
+        var sqlGenerator = new SqlGenerator<AddressKeyAsIdentity>(_sqlConnector, false);
         var sqlQuery = sqlGenerator.GetInsert(new AddressKeyAsIdentity());
 
         Assert.Equal("INSERT INTO Addresses (Street, CityId) VALUES (:Street, :CityId) RETURNING Id INTO :newId", sqlQuery.GetSql());

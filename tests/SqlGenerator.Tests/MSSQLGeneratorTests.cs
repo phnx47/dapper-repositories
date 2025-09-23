@@ -220,7 +220,7 @@ public class MSSQLGeneratorTests
     public static void BulkInsertOneKeyAsIdentity()
     {
         MicroOrmConfig.AllowKeyAsIdentity = true;
-        ISqlGenerator<AddressKeyAsIdentity> userSqlGenerator = new SqlGenerator<AddressKeyAsIdentity>(_sqlConnector, true);
+        var userSqlGenerator = new SqlGenerator<AddressKeyAsIdentity>(_sqlConnector, true);
         var sqlQuery = userSqlGenerator.GetBulkInsert(new List<AddressKeyAsIdentity> { new() });
 
         Assert.Equal("INSERT INTO [Addresses] ([Street], [CityId]) VALUES (@Street0, @CityId0)", sqlQuery.GetSql());
@@ -729,7 +729,7 @@ public class MSSQLGeneratorTests
         Assert.Equal("%456", parameters11["Code_p1"].ToString());
         Assert.Equal("%789%", parameters11["Code_p2"].ToString());
 
-        ISqlGenerator<User> userSqlGenerator2 = new SqlGenerator<User>(_sqlConnector, true);
+        var userSqlGenerator2 = new SqlGenerator<User>(_sqlConnector, true);
         var sPrefix2 =
             "SELECT [Users].[Id], [Users].[Name], [Users].[AddressId], [Users].[PhoneId], [Users].[OfficePhoneId], [Users].[Deleted], [Users].[UpdatedAt], " +
             "[Phones_PhoneId].[Id], [Phones_PhoneId].[PNumber], [Phones_PhoneId].[IsActive], [Phones_PhoneId].[Code], [Phones_PhoneId].[Deleted] " +
