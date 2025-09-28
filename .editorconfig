@@ -68,6 +68,8 @@ csharp_new_line_before_else = true
 csharp_new_line_before_catch = true
 csharp_new_line_before_finally = true
 
+csharp_prefer_braces = false
+
 # ==============================================================================
 # Naming Conventions
 # ==============================================================================
