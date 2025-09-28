@@ -41,6 +41,8 @@ dotnet_style_explicit_tuple_names = true:suggestion
 # C# Code Style Settings
 # ==============================================================================
 
+csharp_style_namespace_declarations = file_scoped
+
 # Variable declarations
 csharp_style_var_for_built_in_types = false:none
 csharp_style_var_when_type_is_apparent = true:suggestion
