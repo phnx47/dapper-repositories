@@ -13,11 +13,14 @@ trim_trailing_whitespace = true
 indent_size = 4
 max_line_length = 160
 
-## Dotnet code style settings:
+# ==============================================================================
+# .NET Code Style Settings
+# ==============================================================================
 
-# Sort using and Import directives with System.* appearing first
+# Sort using and import directives with System.* appearing first
 dotnet_sort_system_directives_first = true
-# Avoid "this." and "Me." if not necessary
+
+# Avoid "this." qualifier if not necessary
 dotnet_style_qualification_for_field = false:suggestion
 dotnet_style_qualification_for_property = false:suggestion
 dotnet_style_qualification_for_method = false:suggestion
@@ -27,46 +30,47 @@ dotnet_style_qualification_for_event = false:suggestion
 dotnet_style_predefined_type_for_locals_parameters_members = true:suggestion
 dotnet_style_predefined_type_for_member_access = true:suggestion
 
-# Suggest more modern language features when available
+# Prefer modern language features when available
 dotnet_style_object_initializer = true:suggestion
 dotnet_style_collection_initializer = true:suggestion
 dotnet_style_coalesce_expression = true:suggestion
 dotnet_style_null_propagation = true:suggestion
 dotnet_style_explicit_tuple_names = true:suggestion
 
-# CSharp code style settings:
+# ==============================================================================
+# C# Code Style Settings
+# ==============================================================================
 
-# Prefer "var" everywhere
+# Variable declarations
 csharp_style_var_for_built_in_types = false:none
 csharp_style_var_when_type_is_apparent = true:suggestion
 csharp_style_var_elsewhere = true:suggestion
 
-# Prefer method-like constructs to have a block body
+# Expression-bodied members
 csharp_style_expression_bodied_methods = false:none
 csharp_style_expression_bodied_constructors = false:none
 csharp_style_expression_bodied_operators = false:none
-
-# Prefer property-like constructs to have an expression-body
 csharp_style_expression_bodied_properties = true:none
 csharp_style_expression_bodied_indexers = true:none
 csharp_style_expression_bodied_accessors = true:none
 
-# Suggest more modern language features when available
+# Pattern matching and modern language features
 csharp_style_pattern_matching_over_is_with_cast_check = true:suggestion
 csharp_style_pattern_matching_over_as_with_null_check = true:suggestion
 csharp_style_inlined_variable_declaration = true:suggestion
 csharp_style_throw_expression = true:suggestion
 csharp_style_conditional_delegate_call = true:suggestion
 
-# Newline settings
+# Newline preferences
 csharp_new_line_before_else = true
 csharp_new_line_before_catch = true
 csharp_new_line_before_finally = true
 
-## Naming
+# ==============================================================================
+# Naming Conventions
+# ==============================================================================
 
-### private fields should be _camelCase
-
+# Private fields should be _camelCase
 dotnet_naming_style.underscore_prefix.capitalization = camel_case
 dotnet_naming_style.underscore_prefix.required_prefix = _
 
@@ -77,13 +81,23 @@ dotnet_naming_rule.private_fields_with_underscore.severity = suggestion
 dotnet_naming_symbols.private_fields.applicable_kinds = field
 dotnet_naming_symbols.private_fields.applicable_accessibilities = private
 
+# ==============================================================================
+# ReSharper Settings
+# ==============================================================================
+
 resharper_inconsistent_naming_highlighting = hint
 
-## Code Quality Analysis
+# ==============================================================================
+# Code Analysis & Diagnostics
+# ==============================================================================
 
+# Analyzer categories
 dotnet_analyzer_diagnostic.category-Performance.severity = error
 dotnet_analyzer_diagnostic.category-Style.severity = warning
 
+# Specific diagnostic rules
 dotnet_diagnostic.CA2007.severity = error # Use ConfigureAwait
 dotnet_diagnostic.CA1845.severity = none # Use span-based 'string.Concat'
+
+# ConfigureAwait analysis mode
 configure_await_analysis_mode = library
