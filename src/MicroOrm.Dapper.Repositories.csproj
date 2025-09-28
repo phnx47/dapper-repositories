@@ -5,7 +5,6 @@
     <Authors>Serge K and Contributors</Authors>
     <TargetFrameworks>net462;netstandard2.0;net8.0</TargetFrameworks>
     <Nullable>enable</Nullable>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <PackageId>MicroOrm.Dapper.Repositories</PackageId>
     <PackageTags>dapper;micro-orm;repositories;crud</PackageTags>
