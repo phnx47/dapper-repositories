@@ -82,6 +82,7 @@ resharper_inconsistent_naming_highlighting = hint
 ## Code Quality Analysis
 
 dotnet_analyzer_diagnostic.category-Performance.severity = error
+dotnet_analyzer_diagnostic.category-Style.severity = warning
 
 dotnet_diagnostic.CA2007.severity = error # Use ConfigureAwait
 dotnet_diagnostic.CA1845.severity = none # Use span-based 'string.Concat'
