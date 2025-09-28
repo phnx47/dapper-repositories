@@ -25,7 +25,7 @@ public class SQLiteGeneratorTests
         var sqlGenerator = new SqlGenerator<City>(_sqlConnector, false);
         var filterData = new FilterData();
         var data = filterData.OrderInfo ?? new OrderInfo();
-        data.Columns = new List<string> { "Name" };
+        data.Columns = ["Name"];
         data.Direction = OrderInfo.SortDirection.ASC;
         filterData.OrderInfo = data;
 

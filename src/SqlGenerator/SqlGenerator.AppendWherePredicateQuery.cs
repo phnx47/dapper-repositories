@@ -170,7 +170,7 @@ public partial class SqlGenerator<TEntity>
         switch (queryNode)
         {
             case QueryParameterExpression:
-                return new List<QueryExpression> { queryNode };
+                return [queryNode];
 
             case QueryBinaryExpression qbExpr:
                 return qbExpr.Nodes;

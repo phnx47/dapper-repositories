@@ -140,7 +140,7 @@ public partial class SqlGenerator<TEntity>
                             case QueryBinaryExpression rQBExpr:
                                 if (lQPExpr.LinkingOperator == rQBExpr.Nodes.Last().LinkingOperator) // AND a AND (c AND d)
                                 {
-                                    var nodes = new QueryBinaryExpression(new List<QueryExpression> { leftExpr })
+                                    var nodes = new QueryBinaryExpression([leftExpr])
                                     {
                                         LinkingOperator = leftExpr.LinkingOperator,
                                     };
@@ -203,7 +203,7 @@ public partial class SqlGenerator<TEntity>
                 return leftExpr;
             }
 
-            return new QueryBinaryExpression(new List<QueryExpression> { leftExpr, rightExpr })
+            return new QueryBinaryExpression([leftExpr, rightExpr])
             {
                 NodeType = QueryExpressionType.Binary,
                 LinkingOperator = nLinkingOperator,

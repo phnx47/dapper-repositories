@@ -556,7 +556,7 @@ public class MSSQLGeneratorTests
         var filterData = new FilterData();
 
         var data = filterData.OrderInfo ?? new OrderInfo();
-        data.Columns = new List<string> { "Id" };
+        data.Columns = ["Id"];
         data.Direction = OrderInfo.SortDirection.ASC;
         filterData.OrderInfo = data;
 
@@ -574,7 +574,7 @@ public class MSSQLGeneratorTests
         var filterData = new FilterData();
 
         var data = filterData.OrderInfo ?? new OrderInfo();
-        data.Columns = new List<string> { "Users.Id" };
+        data.Columns = ["Users.Id"];
         data.Direction = OrderInfo.SortDirection.ASC;
         filterData.OrderInfo = data;
 
@@ -591,7 +591,7 @@ public class MSSQLGeneratorTests
         var filterData = new FilterData();
 
         var data = filterData.OrderInfo ?? new OrderInfo();
-        data.Columns = new List<string> { "Id" };
+        data.Columns = ["Id"];
         data.Direction = OrderInfo.SortDirection.ASC;
         filterData.OrderInfo = data;
 

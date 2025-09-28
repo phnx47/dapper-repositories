@@ -39,13 +39,13 @@ public partial class ReadOnlyDapperRepository<TEntity>
             {
                 if (expr.Body is UnaryExpression { Operand: MemberExpression expression })
                 {
-                    order.Columns = new List<string> { GetProperty(expression, type) };
+                    order.Columns = [GetProperty(expression, type)];
                 }
 
                 break;
             }
             case ExpressionType.MemberAccess:
-                order.Columns = new List<string> { GetProperty(expr.Body, type) };
+                order.Columns = [GetProperty(expr.Body, type)];
                 break;
             default:
             {

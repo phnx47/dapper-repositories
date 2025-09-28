@@ -61,7 +61,7 @@ public partial class SqlGenerator<TEntity> : ISqlGenerator<TEntity>
     public bool? UseQuotationMarks { get; set; }
 
 
-    public PropertyInfo[] AllProperties { get; protected set; } = Array.Empty<PropertyInfo>();
+    public PropertyInfo[] AllProperties { get; protected set; } = [];
 
 
     [MemberNotNullWhen(true, nameof(UpdatedAtProperty), nameof(UpdatedAtPropertyMetadata))]
@@ -87,13 +87,13 @@ public partial class SqlGenerator<TEntity> : ISqlGenerator<TEntity>
     public SqlPropertyMetadata? IdentitySqlProperty { get; protected set; }
 
 
-    public SqlPropertyMetadata[] KeySqlProperties { get; protected set; } = Array.Empty<SqlPropertyMetadata>();
+    public SqlPropertyMetadata[] KeySqlProperties { get; protected set; } = [];
 
 
-    public SqlPropertyMetadata[] SqlProperties { get; protected set; } = Array.Empty<SqlPropertyMetadata>();
+    public SqlPropertyMetadata[] SqlProperties { get; protected set; } = [];
 
 
-    public SqlJoinPropertyMetadata[] SqlJoinProperties { get; protected set; }= Array.Empty<SqlJoinPropertyMetadata>();
+    public SqlJoinPropertyMetadata[] SqlJoinProperties { get; protected set; }= [];
 
 
     public bool LogicalDelete { get; protected set; }

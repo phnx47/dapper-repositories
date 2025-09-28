@@ -507,7 +507,7 @@ public class OracleGeneratorTests
         var filterData = new FilterData();
 
         var data = filterData.OrderInfo ?? new OrderInfo();
-        data.Columns = new List<string> { "Id" };
+        data.Columns = ["Id"];
         data.Direction = OrderInfo.SortDirection.ASC;
         filterData.OrderInfo = data;
 

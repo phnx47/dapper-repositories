@@ -199,7 +199,7 @@ public class MySQLGeneratorTests
         var sqlGenerator = new SqlGenerator<City>(_sqlConnector, false);
         var filterData = new FilterData();
         var data = filterData.OrderInfo ?? new OrderInfo();
-        data.Columns = new List<string> { "Name" };
+        data.Columns = ["Name"];
         data.Direction = OrderInfo.SortDirection.ASC;
         filterData.OrderInfo = data;
 
@@ -213,7 +213,7 @@ public class MySQLGeneratorTests
         var sqlGenerator = new SqlGenerator<City>(_sqlConnector, true);
         var filterData = new FilterData();
         var data = filterData.OrderInfo ?? new OrderInfo();
-        data.Columns = new List<string> { "Cities.Name" };
+        data.Columns = ["Cities.Name"];
         data.Direction = OrderInfo.SortDirection.ASC;
         filterData.OrderInfo = data;
 
