@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using MicroOrm.Dapper.Repositories.SqlGenerator;
 using MicroOrm.Dapper.Repositories.SqlGenerator.Filters;
 using TestClasses;
