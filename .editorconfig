@@ -106,6 +106,7 @@ dotnet_diagnostic.CA1845.severity = none # Use span-based 'string.Concat'
 
 dotnet_diagnostic.IDE0058.severity = none # Remove unnecessary expression value
 dotnet_diagnostic.IDE0010.severity = none # Add missing cases to switch statement
+dotnet_diagnostic.IDE0305.severity = none # Use collection expression for fluent
 
 # ConfigureAwait analysis mode
 configure_await_analysis_mode = library
