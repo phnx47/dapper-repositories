@@ -105,6 +105,7 @@ dotnet_diagnostic.CA2007.severity = error # Use ConfigureAwait
 dotnet_diagnostic.CA1845.severity = none # Use span-based 'string.Concat'
 
 dotnet_diagnostic.IDE0058.severity = none # Remove unnecessary expression value
+dotnet_diagnostic.IDE0010.severity = none # Add missing cases to switch statement
 
 # ConfigureAwait analysis mode
 configure_await_analysis_mode = library
