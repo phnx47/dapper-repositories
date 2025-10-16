@@ -13,6 +13,7 @@ on:
 
 env:
   TEST_DB_PASS: "Password12!"
+  PKG_VERSION: "0.0.0"
 
 jobs:
   build:
@@ -65,15 +66,15 @@ jobs:
 
       - name: Set Dev version
         if: github.ref == 'refs/heads/main'
-        run: echo "VERSION=$(git describe --long --tags | sed 's/^v//;0,/-/s//./')" >> $GITHUB_ENV
+        run: echo "PKG_VERSION=$(git describe --long --tags | sed 's/^v//;0,/-/s//./')" >> $GITHUB_ENV
 
       - name: Set Release version
         if: startsWith(github.ref, 'refs/tags/v')
-        run: echo "VERSION=${GITHUB_REF_NAME#v}" >> $GITHUB_ENV
+        run: echo "PKG_VERSION=${GITHUB_REF_NAME#v}" >> $GITHUB_ENV
 
       - name: Pack NuGet artifacts
         if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v')
-        run: dotnet pack --no-build -c Release -p:PackageVersion="${{ env.VERSION }}" -o packages
+        run: dotnet pack --no-build -c Release -p:PackageVersion="${{ env.PKG_VERSION }}" -o packages
 
       - name: Upload artifacts
         if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v')
