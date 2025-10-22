@@ -5,7 +5,7 @@
     <CoverletOutputFormat>opencover</CoverletOutputFormat>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="MySql.Data" Version="9.4.0" />
+    <PackageReference Include="MySql.Data" Version="9.5.0" />
     <PackageReference Include="MySqlConnector" Version="2.4.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.0.0" />
     <PackageReference Include="xunit.v3" Version="3.1.0" />
