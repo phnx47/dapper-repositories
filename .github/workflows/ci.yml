@@ -89,7 +89,7 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - name: Download artifacts
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@v6
         with:
           name: packages
       - name: Push to GitHub
@@ -108,7 +108,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v5
       - name: Download artifacts
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@v6
         with:
           name: packages
           path: packages
@@ -124,7 +124,7 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - name: Download artifacts
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@v6
         with:
           name: packages
       - name: Push to NuGet
