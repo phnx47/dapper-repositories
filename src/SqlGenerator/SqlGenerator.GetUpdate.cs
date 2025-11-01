@@ -59,7 +59,7 @@ public partial class SqlGenerator<TEntity>
             .Select(p => $"{TableName}.{p.ColumnName} = {ParameterSymbol}{entity.GetType().Name}{p.PropertyName}")));
 
         if (query.Param == null || !(query.Param is Dictionary<string, object?> parameters))
-            parameters = new Dictionary<string, object?>();
+            parameters = [];
 
         foreach (var metadata in properties.Concat(KeySqlProperties))
             parameters.Add($"{entity.GetType().Name}{metadata.PropertyName}", entity.GetType().GetProperty(metadata.PropertyName)?.GetValue(entity, null));

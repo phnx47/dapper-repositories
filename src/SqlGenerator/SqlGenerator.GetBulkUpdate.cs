@@ -27,7 +27,7 @@ public partial class SqlGenerator<TEntity>
         var parameters = new Dictionary<string, object?>();
 
         //In Oracle we use MERGE INTO to excute multipe update with argument.
-        List<string> singleSelectsForOracle = new List<string>();
+        var singleSelectsForOracle = new List<string>();
 
         for (var i = 0; i < entitiesArray.Length; i++)
         {

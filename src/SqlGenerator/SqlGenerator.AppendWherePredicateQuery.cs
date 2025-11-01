@@ -22,7 +22,7 @@ public partial class SqlGenerator<TEntity>
         }
         else
         {
-            dictionaryParams = new Dictionary<string, object?>();
+            dictionaryParams = [];
         }
 
         if (predicate != null)
