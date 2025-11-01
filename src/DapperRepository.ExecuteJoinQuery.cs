@@ -239,35 +239,16 @@ public partial class ReadOnlyDapperRepository<TEntity>
                 var list = (IList?)childProperty.GetValue(target);
                 if (list == null)
                 {
-                    switch (i)
+                    list = i switch
                     {
-                        case 0:
-                            list = new List<TChild1>();
-                            break;
-
-                        case 1:
-                            list = new List<TChild2>();
-                            break;
-
-                        case 2:
-                            list = new List<TChild3>();
-                            break;
-
-                        case 3:
-                            list = new List<TChild4>();
-                            break;
-
-                        case 4:
-                            list = new List<TChild5>();
-                            break;
-
-                        case 5:
-                            list = new List<TChild6>();
-                            break;
-
-                        default:
-                            throw new NotSupportedException();
-                    }
+                        0 => new List<TChild1>(),
+                        1 => new List<TChild2>(),
+                        2 => new List<TChild3>(),
+                        3 => new List<TChild4>(),
+                        4 => new List<TChild5>(),
+                        5 => new List<TChild6>(),
+                        _ => throw new NotSupportedException()
+                    };
 
                     childProperty.SetValue(target, list);
                 }

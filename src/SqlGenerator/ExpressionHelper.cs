@@ -15,21 +15,12 @@ internal static class ExpressionHelper
         if (Equals(field, null))
             throw new ArgumentNullException(nameof(field), "field can't be null");
 
-        MemberExpression expr;
-
-        switch (field.Body)
+        var expr = field.Body switch
         {
-            case MemberExpression body:
-                expr = body;
-                break;
-
-            case UnaryExpression expression:
-                expr = (MemberExpression)expression.Operand;
-                break;
-
-            default:
-                throw new ArgumentException("Expression field isn't supported", nameof(field));
-        }
+            MemberExpression body => body,
+            UnaryExpression expression => (MemberExpression)expression.Operand,
+            _ => throw new ArgumentException("Expression field isn't supported", nameof(field))
+        };
 
         return expr.Member.Name;
     }
@@ -91,91 +82,45 @@ internal static class ExpressionHelper
 
     public static string GetSqlOperator(ExpressionType type)
     {
-        switch (type)
+        return type switch
         {
-            case ExpressionType.Equal:
-            case ExpressionType.Not:
-            case ExpressionType.MemberAccess:
-                return "=";
-
-            case ExpressionType.NotEqual:
-                return "!=";
-
-            case ExpressionType.LessThan:
-                return "<";
-
-            case ExpressionType.LessThanOrEqual:
-                return "<=";
-
-            case ExpressionType.GreaterThan:
-                return ">";
-
-            case ExpressionType.GreaterThanOrEqual:
-                return ">=";
-
-            case ExpressionType.AndAlso:
-            case ExpressionType.And:
-                return "AND";
-
-            case ExpressionType.Or:
-            case ExpressionType.OrElse:
-                return "OR";
-
-            case ExpressionType.Default:
-                return string.Empty;
-
-            default:
-                throw new NotSupportedException(type + " isn't supported");
-        }
+            ExpressionType.Equal or ExpressionType.Not or ExpressionType.MemberAccess => "=",
+            ExpressionType.NotEqual => "!=",
+            ExpressionType.LessThan => "<",
+            ExpressionType.LessThanOrEqual => "<=",
+            ExpressionType.GreaterThan => ">",
+            ExpressionType.GreaterThanOrEqual => ">=",
+            ExpressionType.AndAlso or ExpressionType.And => "AND",
+            ExpressionType.Or or ExpressionType.OrElse => "OR",
+            ExpressionType.Default => string.Empty,
+            _ => throw new NotSupportedException(type + " isn't supported")
+        };
     }
 
     public static string GetSqlLikeValue(string methodName, object? value)
     {
         value ??= string.Empty;
 
-        switch (methodName)
+        return methodName switch
         {
-            case "CompareString":
-            case "Equals":
-                return value.ToString() ?? string.Empty;
-
-            case "StartsWith":
-                return string.Format("{0}%", value);
-
-            case "EndsWith":
-                return string.Format("%{0}", value);
-
-            case "StringContains":
-                return string.Format("%{0}%", value);
-
-            default:
-                throw new NotImplementedException();
-        }
+            "CompareString" or "Equals" => value.ToString() ?? string.Empty,
+            "StartsWith" => string.Format("{0}%", value),
+            "EndsWith" => string.Format("%{0}", value),
+            "StringContains" => string.Format("%{0}%", value),
+            _ => throw new NotImplementedException()
+        };
     }
 
     public static string GetMethodCallSqlOperator(string methodName, bool isNotUnary = false)
     {
-        switch (methodName)
+        return methodName switch
         {
-            case "StartsWith":
-            case "EndsWith":
-            case "StringContains":
-                return isNotUnary ? "NOT LIKE" : "LIKE";
-
-            case "Contains":
-                return isNotUnary ? "NOT IN" : "IN";
-
-            case "Equals":
-            case "CompareString":
-                return isNotUnary ? "!=" : "=";
-
-            case "Any":
-            case "All":
-                return methodName.ToUpperInvariant();
-
-            default:
-                throw new NotSupportedException(methodName + " isn't supported");
-        }
+            "StartsWith" or "EndsWith" or "StringContains" => isNotUnary ? "NOT LIKE" : "LIKE",
+            "Contains" => isNotUnary ? "NOT IN" : "IN",
+            "Equals" or "CompareString" => isNotUnary ? "!=" : "=",
+            "Any" or "All" => methodName.ToUpperInvariant(),
+            _ => throw new NotSupportedException(methodName + " isn't supported")
+        };
     }
 
     public static BinaryExpression GetBinaryExpression(Expression expression)

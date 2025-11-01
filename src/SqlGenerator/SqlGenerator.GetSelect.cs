@@ -170,21 +170,13 @@ public partial class SqlGenerator<TEntity>
     {
         // If a table identifier is passed in with field the data string will be table.field instead of just rapping quotations around the
         // string [table.field] or `table.field` we have to replace the seperator . with ].[ or `.` to get [table].[field] or `table`.`field`
-        switch (Provider)
+        return Provider switch
         {
-            case SqlProvider.MSSQL:
-                return $"[{columnIdentifier.Replace(".", "].[")}]";
-
-            case SqlProvider.MySQL:
-            case SqlProvider.SQLite:
-                return $"`{columnIdentifier.Replace(".", "`.`")}`";
-
-            case SqlProvider.PostgreSQL:
-                return $"\"{columnIdentifier.Replace(".", "\".\"")}\"";
-
-            default:
-                return columnIdentifier;
-        }
+            SqlProvider.MSSQL => $"[{columnIdentifier.Replace(".", "].[")}]",
+            SqlProvider.MySQL or SqlProvider.SQLite => $"`{columnIdentifier.Replace(".", "`.`")}`",
+            SqlProvider.PostgreSQL => $"\"{columnIdentifier.Replace(".", "\".\"")}\"",
+            _ => columnIdentifier
+        };
     }
 
     /// <summary>

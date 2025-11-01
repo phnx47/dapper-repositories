@@ -167,16 +167,11 @@ public partial class SqlGenerator<TEntity>
     private List<QueryExpression> GetQueryProperties(Expression expr)
     {
         var queryNode = GetQueryProperties(expr, ExpressionType.Default);
-        switch (queryNode)
+        return queryNode switch
         {
-            case QueryParameterExpression:
-                return [queryNode];
-
-            case QueryBinaryExpression qbExpr:
-                return qbExpr.Nodes;
-
-            default:
-                throw new NotSupportedException(queryNode.ToString());
-        }
+            QueryParameterExpression => [queryNode],
+            QueryBinaryExpression qbExpr => qbExpr.Nodes,
+            _ => throw new NotSupportedException(queryNode.ToString())
+        };
     }
 }
