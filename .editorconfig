@@ -17,26 +17,6 @@ max_line_length = 160
 # .NET Code Style Settings
 # ==============================================================================
 
-# Sort using and import directives with System.* appearing first
-dotnet_sort_system_directives_first = true
-
-# Avoid "this." qualifier if not necessary
-dotnet_style_qualification_for_field = false:suggestion
-dotnet_style_qualification_for_property = false:suggestion
-dotnet_style_qualification_for_method = false:suggestion
-dotnet_style_qualification_for_event = false:suggestion
-
-# Use language keywords instead of framework type names for type references
-dotnet_style_predefined_type_for_locals_parameters_members = true:suggestion
-dotnet_style_predefined_type_for_member_access = true:suggestion
-
-# Prefer modern language features when available
-dotnet_style_object_initializer = true:suggestion
-dotnet_style_collection_initializer = true:suggestion
-dotnet_style_coalesce_expression = true:suggestion
-dotnet_style_null_propagation = true:suggestion
-dotnet_style_explicit_tuple_names = true:suggestion
-
 dotnet_style_prefer_collection_expression = when_types_exactly_match
 
 # ==============================================================================
@@ -58,19 +38,7 @@ csharp_style_expression_bodied_properties = true:none
 csharp_style_expression_bodied_indexers = true:none
 csharp_style_expression_bodied_accessors = true:none
 
-# Pattern matching and modern language features
 csharp_style_prefer_pattern_matching = false
-csharp_style_pattern_matching_over_is_with_cast_check = true:suggestion
-csharp_style_pattern_matching_over_as_with_null_check = true:suggestion
-csharp_style_inlined_variable_declaration = true:suggestion
-csharp_style_throw_expression = true:suggestion
-csharp_style_conditional_delegate_call = true:suggestion
-
-# Newline preferences
-csharp_new_line_before_else = true
-csharp_new_line_before_catch = true
-csharp_new_line_before_finally = true
-
 csharp_prefer_braces = false
 
 # ==============================================================================
