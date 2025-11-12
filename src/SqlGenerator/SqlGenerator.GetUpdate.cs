@@ -58,7 +58,7 @@ public partial class SqlGenerator<TEntity>
         query.SqlBuilder.Append(string.Join(" AND ", KeySqlProperties.Where(p => !p.IgnoreUpdate)
             .Select(p => $"{TableName}.{p.ColumnName} = {ParameterSymbol}{entity.GetType().Name}{p.PropertyName}")));
 
-        if (query.Param == null || !(query.Param is Dictionary<string, object?> parameters))
+        if (query.Param is not Dictionary<string, object?> parameters)
             parameters = [];
 
         foreach (var metadata in properties.Concat(KeySqlProperties))

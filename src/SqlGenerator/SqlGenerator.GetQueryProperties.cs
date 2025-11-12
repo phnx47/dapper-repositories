@@ -60,8 +60,7 @@ public partial class SqlGenerator<TEntity>
                 case "StartsWith":
                 case "EndsWith":
                 {
-                    if (exprObj == null
-                        || exprObj.NodeType != ExpressionType.MemberAccess)
+                    if (exprObj is not { NodeType: ExpressionType.MemberAccess })
                     {
                         goto default;
                     }
