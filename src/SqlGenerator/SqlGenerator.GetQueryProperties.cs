@@ -114,7 +114,7 @@ public partial class SqlGenerator<TEntity>
                 }
 
                 var propertyValue = ExpressionHelper.GetValue(binaryExpression.Right);
-                var nodeType = checkNullable ? (propertyValue is bool b && !b ? ExpressionType.Equal : ExpressionType.NotEqual) : binaryExpression.NodeType;
+                var nodeType = checkNullable ? propertyValue is bool b && !b ? ExpressionType.Equal : ExpressionType.NotEqual : binaryExpression.NodeType;
                 if (checkNullable)
                 {
                     propertyValue = null;

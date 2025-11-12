@@ -98,21 +98,19 @@ public class OracleGeneratorTests
             var spNames = ComplicatedObj.StaticPropertyNames;
 
             sqlGenerator.GetSelectAll(
-                x => (
-                    (ids.Contains(x.Id) || farIds.Contains(x.Id) || sfarIds.Contains(x.Id)
-                     || tmp.FieldArIds.Contains(x.Id) || x.Id == tmp.Id
-                     || ComplicatedObj.StaticFieldArIds.Contains(x.Id)
-                     || x.Id == id)
-                    && (pNames.Contains(x.Name) || spNames.Contains(x.Name)
-                                                || tmp.PropertyNames.Contains(x.Name) || tmp.FieldNames.Contains(x.Name)
-                                                || ComplicatedObj.StaticFieldNames.Contains(x.Name)
-                                                || ComplicatedObj.StaticPropertyNames.Contains(x.Name)
-                                                || x.Name == ComplicatedObj.StaticName
-                                                || x.Name == ComplicatedObj.StaticPropertyName
-                                                || x.Name == tmp.PropertName
-                                                || x.Name == Guid.NewGuid().ToString()
-                                                || x.Name == string.Empty)
-                ), null);
+                x => (ids.Contains(x.Id) || farIds.Contains(x.Id) || sfarIds.Contains(x.Id)
+                      || tmp.FieldArIds.Contains(x.Id) || x.Id == tmp.Id
+                      || ComplicatedObj.StaticFieldArIds.Contains(x.Id)
+                      || x.Id == id)
+                     && (pNames.Contains(x.Name) || spNames.Contains(x.Name)
+                                                 || tmp.PropertyNames.Contains(x.Name) || tmp.FieldNames.Contains(x.Name)
+                                                 || ComplicatedObj.StaticFieldNames.Contains(x.Name)
+                                                 || ComplicatedObj.StaticPropertyNames.Contains(x.Name)
+                                                 || x.Name == ComplicatedObj.StaticName
+                                                 || x.Name == ComplicatedObj.StaticPropertyName
+                                                 || x.Name == tmp.PropertName
+                                                 || x.Name == Guid.NewGuid().ToString()
+                                                 || x.Name == string.Empty), null);
         }
         catch (NotSupportedException ex)
         {
@@ -575,7 +573,7 @@ public class OracleGeneratorTests
         var sqlQuery6 = sqlGenerator.GetSelectAll(x => !x.IsActive || (x.IsActive && ids.Contains(x.Id)), null);
         Assert.Equal(sPrefix + "(DAB.Phones.IsActive = :IsActive_p0 OR (DAB.Phones.IsActive = :IsActive_p1 AND DAB.Phones.Id IN :Id_p2)) AND DAB.Phones.Deleted IS NULL", sqlQuery6.GetSql());
 
-        var sqlQuery7 = sqlGenerator.GetSelectAll(x => (x.IsActive && x.Id == 123) && (x.Id == 456 && x.PNumber == "456"), null);
+        var sqlQuery7 = sqlGenerator.GetSelectAll(x => x.IsActive && x.Id == 123 && x.Id == 456 && x.PNumber == "456", null);
         Assert.Equal(
             sPrefix + "(DAB.Phones.IsActive = :IsActive_p0 AND DAB.Phones.Id = :Id_p1 AND DAB.Phones.Id = :Id_p2 AND DAB.Phones.PNumber = :PNumber_p3) AND DAB.Phones.Deleted IS NULL",
             sqlQuery7.GetSql());
@@ -587,7 +585,7 @@ public class OracleGeneratorTests
             "(DAB.Phones.PNumber = :PNumber_p0 AND (DAB.Phones.IsActive = :IsActive_p1 OR DAB.Phones.PNumber = :PNumber_p2 OR DAB.Phones.PNumber = :PNumber_p3 OR (DAB.Phones.Id = :Id_p4 AND DAB.Phones.PNumber = :PNumber_p5)) AND DAB.Phones.Id = :Id_p6) AND DAB.Phones.Deleted IS NULL",
             sqlQuery8.GetSql());
 
-        var sqlQuery9 = sqlGenerator.GetSelectAll(x => (x.Id == 456 && x.PNumber == "456") && x.Id == 123 && (x.Id == 4567 && x.PNumber == "4567"), null);
+        var sqlQuery9 = sqlGenerator.GetSelectAll(x => x.Id == 456 && x.PNumber == "456" && x.Id == 123 && x.Id == 4567 && x.PNumber == "4567", null);
         Assert.Equal(
             sPrefix +
             "(DAB.Phones.Id = :Id_p0 AND DAB.Phones.PNumber = :PNumber_p1 AND DAB.Phones.Id = :Id_p2 AND DAB.Phones.Id = :Id_p3 AND DAB.Phones.PNumber = :PNumber_p4) AND DAB.Phones.Deleted IS NULL",

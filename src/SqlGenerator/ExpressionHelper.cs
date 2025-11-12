@@ -70,7 +70,7 @@ internal static class ExpressionHelper
             case UnaryExpression unaryExpression
                 when (unaryExpression.NodeType == ExpressionType.Convert
                       || unaryExpression.NodeType == ExpressionType.ConvertChecked)
-                     && (unaryExpression.Type.UnwrapNullableType() == unaryExpression.Operand.Type):
+                     && unaryExpression.Type.UnwrapNullableType() == unaryExpression.Operand.Type:
                 return GetValue(unaryExpression.Operand, out parameterName);
         }
 
