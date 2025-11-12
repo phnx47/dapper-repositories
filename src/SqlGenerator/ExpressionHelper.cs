@@ -164,10 +164,9 @@ internal static class ExpressionHelper
         switch (expression)
         {
             case MethodCallExpression expr:
-                if (expr.Method.IsStatic)
-                    return (MemberExpression)expr.Arguments.Last(x => x.NodeType == ExpressionType.MemberAccess);
-                else
-                    return (MemberExpression)expr.Arguments[0];
+                return expr.Method.IsStatic
+                    ? (MemberExpression)expr.Arguments.Last(x => x.NodeType == ExpressionType.MemberAccess)
+                    : (MemberExpression)expr.Arguments[0];
 
             case MemberExpression memberExpression:
                 return memberExpression;

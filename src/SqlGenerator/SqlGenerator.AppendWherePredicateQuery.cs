@@ -15,15 +15,7 @@ public partial class SqlGenerator<TEntity>
 {
     private void AppendWherePredicateQuery(SqlQuery sqlQuery, Expression<Func<TEntity, bool>>? predicate, QueryType queryType)
     {
-        Dictionary<string, object?> dictionaryParams;
-        if (sqlQuery.Param is Dictionary<string, object?> param)
-        {
-            dictionaryParams = param;
-        }
-        else
-        {
-            dictionaryParams = [];
-        }
+        var param = sqlQuery.Param as Dictionary<string, object?> ?? [];
 
         if (predicate != null)
         {
@@ -37,7 +29,7 @@ public partial class SqlGenerator<TEntity>
             var conditions = new List<KeyValuePair<string, object?>>();
             BuildQuerySql(queryProperties, ref sqlBuilder, ref conditions, ref qLevel);
 
-            dictionaryParams.AddRange(conditions);
+            param.AddRange(conditions);
 
             if (LogicalDelete && queryType == QueryType.Select)
             {
@@ -64,9 +56,9 @@ public partial class SqlGenerator<TEntity>
         }
 
         if (LogicalDelete && HasUpdatedAt && queryType == QueryType.Delete)
-            dictionaryParams.Add(UpdatedAtPropertyMetadata.ColumnName, DateTime.UtcNow);
+            param.Add(UpdatedAtPropertyMetadata.ColumnName, DateTime.UtcNow);
 
-        sqlQuery.SetParam(dictionaryParams);
+        sqlQuery.SetParam(param);
     }
 
     /// <summary>
