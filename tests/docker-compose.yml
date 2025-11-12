@@ -13,7 +13,7 @@ services:
     ports:
       - "1433:1433"
   oracle:
-    image: gvenzl/oracle-xe:21-slim-faststart
+    image: gvenzl/oracle-free:23-slim-faststart
     environment:
       ORACLE_PASSWORD: ${TEST_DB_PASS}
     ports:
