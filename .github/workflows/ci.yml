@@ -21,7 +21,7 @@ jobs:
     runs-on: ubuntu-24.04
     services:
       mysql:
-        image: mysql:8.0-debian
+        image: mysql:9.5-oracle
         env:
           MYSQL_ROOT_PASSWORD: ${{ env.TEST_DB_PASS }}
         ports:
@@ -34,7 +34,7 @@ jobs:
         ports:
           - "1433:1433"
       oracle:
-        image: gvenzl/oracle-xe:21-slim-faststart
+        image: gvenzl/oracle-free:23-slim-faststart
         env:
           ORACLE_PASSWORD: ${{ env.TEST_DB_PASS }}
         ports:
