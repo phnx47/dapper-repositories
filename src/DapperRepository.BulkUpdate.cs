@@ -15,17 +15,15 @@ namespace MicroOrm.Dapper.Repositories;
 public partial class DapperRepository<TEntity>
     where TEntity : class
 {
-
     public virtual bool BulkUpdate(IEnumerable<TEntity> instances)
     {
         return BulkUpdate(instances, null);
     }
 
-
     public virtual bool BulkUpdate(IEnumerable<TEntity> instances, IDbTransaction? transaction)
     {
         int totalInstances = instances.Count();
-        if(totalInstances == 0)
+        if (totalInstances == 0)
             return true;
 
         if (SqlGenerator.Provider == SqlProvider.MSSQL)
@@ -37,7 +35,8 @@ public partial class DapperRepository<TEntity>
             if (exceededTimes > 1)
             {
                 int maxAllowedInstancesPerBatch = totalInstances / exceededTimes;
-                if (maxAllowedInstancesPerBatch > 1000) maxAllowedInstancesPerBatch = 1000;
+                if (maxAllowedInstancesPerBatch > 1000)
+                    maxAllowedInstancesPerBatch = 1000;
                 var maxIterationCount = (int)Math.Ceiling(totalInstances / (double)maxAllowedInstancesPerBatch);
                 for (int i = 0; i <= maxIterationCount; i++)
                 {
@@ -60,24 +59,20 @@ public partial class DapperRepository<TEntity>
         return result;
     }
 
-
     public virtual Task<bool> BulkUpdateAsync(IEnumerable<TEntity> instances)
     {
         return BulkUpdateAsync(instances, null, CancellationToken.None);
     }
-
 
     public virtual Task<bool> BulkUpdateAsync(IEnumerable<TEntity> instances, CancellationToken cancellationToken)
     {
         return BulkUpdateAsync(instances, null, cancellationToken);
     }
 
-
     public virtual Task<bool> BulkUpdateAsync(IEnumerable<TEntity> instances, IDbTransaction? transaction)
     {
         return BulkUpdateAsync(instances, transaction, CancellationToken.None);
     }
-
 
     public virtual async Task<bool> BulkUpdateAsync(IEnumerable<TEntity> instances, IDbTransaction? transaction, CancellationToken cancellationToken)
     {
@@ -92,7 +87,8 @@ public partial class DapperRepository<TEntity>
             if (exceededTimes > 1)
             {
                 int maxAllowedInstancesPerBatch = totalInstances / exceededTimes;
-                if (maxAllowedInstancesPerBatch > 1000) maxAllowedInstancesPerBatch = 1000;
+                if (maxAllowedInstancesPerBatch > 1000)
+                    maxAllowedInstancesPerBatch = 1000;
 
                 var maxIterationCount = (int)Math.Ceiling(totalInstances / (double)maxAllowedInstancesPerBatch);
 
@@ -114,7 +110,9 @@ public partial class DapperRepository<TEntity>
         }
 
         var queryResult = SqlGenerator.GetBulkUpdate(instances);
-        var result = await Connection.ExecuteAsync(new CommandDefinition(queryResult.GetSql(), queryResult.Param, transaction, cancellationToken: cancellationToken)).ConfigureAwait(false) > 0;
+        var result = await Connection
+            .ExecuteAsync(new CommandDefinition(queryResult.GetSql(), queryResult.Param, transaction, cancellationToken: cancellationToken))
+            .ConfigureAwait(false) > 0;
         return result;
     }
 }

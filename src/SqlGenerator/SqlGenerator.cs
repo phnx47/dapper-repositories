@@ -5,7 +5,6 @@ using MicroOrm.Dapper.Repositories.Config;
 
 namespace MicroOrm.Dapper.Repositories.SqlGenerator;
 
-
 public partial class SqlGenerator<TEntity> : ISqlGenerator<TEntity>
     where TEntity : class
 {
@@ -59,50 +58,35 @@ public partial class SqlGenerator<TEntity> : ISqlGenerator<TEntity>
     /// </summary>
     public bool? UseQuotationMarks { get; set; }
 
-
     public PropertyInfo[] AllProperties { get; protected set; } = [];
-
 
     [MemberNotNullWhen(true, nameof(UpdatedAtProperty), nameof(UpdatedAtPropertyMetadata))]
     public bool HasUpdatedAt => UpdatedAtProperty != null;
 
-
     public PropertyInfo? UpdatedAtProperty { get; protected set; }
 
-
     public SqlPropertyMetadata? UpdatedAtPropertyMetadata { get; protected set; }
-
 
     [MemberNotNullWhen(true, nameof(IdentitySqlProperty))]
     public bool IsIdentity => IdentitySqlProperty != null;
 
-
     public string TableName { get; protected set; } = string.Empty;
-
 
     public string? TableSchema { get; protected set; }
 
-
     public SqlPropertyMetadata? IdentitySqlProperty { get; protected set; }
-
 
     public SqlPropertyMetadata[] KeySqlProperties { get; protected set; } = [];
 
-
     public SqlPropertyMetadata[] SqlProperties { get; protected set; } = [];
 
-
-    public SqlJoinPropertyMetadata[] SqlJoinProperties { get; protected set; }= [];
-
+    public SqlJoinPropertyMetadata[] SqlJoinProperties { get; protected set; } = [];
 
     public bool LogicalDelete { get; protected set; }
 
-
     public Dictionary<string, PropertyInfo>? JoinLogicalDeleteProperties { get; protected set; }
 
-
     public string? StatusPropertyName { get; protected set; }
-
 
     public object? LogicalDeleteValue { get; protected set; }
 

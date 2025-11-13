@@ -5,7 +5,6 @@ using MicroOrm.Dapper.Repositories.SqlGenerator.QueryExpressions;
 
 namespace MicroOrm.Dapper.Repositories.SqlGenerator;
 
-
 public partial class SqlGenerator<TEntity>
     where TEntity : class
 {

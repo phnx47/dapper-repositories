@@ -15,29 +15,25 @@ namespace MicroOrm.Dapper.Repositories;
 public partial class DapperRepository<TEntity>
     where TEntity : class
 {
-
     public virtual int BulkInsert(IEnumerable<TEntity> instances)
     {
         return BulkInsert(instances, null);
     }
-
 
     public virtual Task<int> BulkInsertAsync(IEnumerable<TEntity> instances)
     {
         return BulkInsertAsync(instances, null, CancellationToken.None);
     }
 
-
     public virtual Task<int> BulkInsertAsync(IEnumerable<TEntity> instances, CancellationToken cancellationToken)
     {
         return BulkInsertAsync(instances, null, cancellationToken);
     }
 
-
     public virtual int BulkInsert(IEnumerable<TEntity> instances, IDbTransaction? transaction)
     {
         int totalInstances = instances.Count();
-        if(totalInstances == 0)
+        if (totalInstances == 0)
             return 0;
 
         if (SqlGenerator.Provider == SqlProvider.MSSQL)
@@ -45,14 +41,16 @@ public partial class DapperRepository<TEntity>
             var count = 0;
             var properties =
                 (SqlGenerator.IsIdentity
-                    ? SqlGenerator.SqlProperties.Where(p => !p.PropertyName.Equals(SqlGenerator.IdentitySqlProperty.PropertyName, StringComparison.OrdinalIgnoreCase))
+                    ? SqlGenerator.SqlProperties.Where(p =>
+                        !p.PropertyName.Equals(SqlGenerator.IdentitySqlProperty.PropertyName, StringComparison.OrdinalIgnoreCase))
                     : SqlGenerator.SqlProperties).ToList();
 
             var exceededTimes = (int)Math.Ceiling(totalInstances * properties.Count / 2099d);
             if (exceededTimes > 1)
             {
                 var maxAllowedInstancesPerBatch = totalInstances / exceededTimes;
-                if (maxAllowedInstancesPerBatch > 1000) maxAllowedInstancesPerBatch = 1000;
+                if (maxAllowedInstancesPerBatch > 1000)
+                    maxAllowedInstancesPerBatch = 1000;
 
                 var maxIterationCount = (int)Math.Ceiling(totalInstances / (double)maxAllowedInstancesPerBatch);
 
@@ -76,12 +74,10 @@ public partial class DapperRepository<TEntity>
         return Connection.Execute(queryResult.GetSql(), queryResult.Param, transaction);
     }
 
-
     public virtual Task<int> BulkInsertAsync(IEnumerable<TEntity> instances, IDbTransaction? transaction)
     {
         return BulkInsertAsync(instances, transaction, CancellationToken.None);
     }
-
 
     public virtual async Task<int> BulkInsertAsync(IEnumerable<TEntity> instances, IDbTransaction? transaction, CancellationToken cancellationToken)
     {
@@ -92,14 +88,16 @@ public partial class DapperRepository<TEntity>
 
             var properties =
                 (SqlGenerator.IsIdentity
-                    ? SqlGenerator.SqlProperties.Where(p => !p.PropertyName.Equals(SqlGenerator.IdentitySqlProperty.PropertyName, StringComparison.OrdinalIgnoreCase))
+                    ? SqlGenerator.SqlProperties.Where(p =>
+                        !p.PropertyName.Equals(SqlGenerator.IdentitySqlProperty.PropertyName, StringComparison.OrdinalIgnoreCase))
                     : SqlGenerator.SqlProperties).ToList();
 
             var exceededTimes = (int)Math.Ceiling(totalInstances * properties.Count / 2099d);
             if (exceededTimes > 1)
             {
                 var maxAllowedInstancesPerBatch = totalInstances / exceededTimes;
-                if (maxAllowedInstancesPerBatch > 1000) maxAllowedInstancesPerBatch = 1000;
+                if (maxAllowedInstancesPerBatch > 1000)
+                    maxAllowedInstancesPerBatch = 1000;
 
                 var maxIterationCount = (int)Math.Ceiling(totalInstances / (double)maxAllowedInstancesPerBatch);
 
