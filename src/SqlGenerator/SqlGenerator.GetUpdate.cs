@@ -17,7 +17,7 @@ public partial class SqlGenerator<TEntity>
         var properties = SqlProperties.Where(p =>
             !KeySqlProperties.Any(k => k.PropertyName.Equals(p.PropertyName, StringComparison.OrdinalIgnoreCase)) && !p.IgnoreUpdate).ToArray();
 
-        if (!properties.Any())
+        if (properties.Length == 0)
             throw new ArgumentException("Can't update without [Key]");
 
         if (HasUpdatedAt && UpdatedAtProperty.GetCustomAttribute<UpdatedAtAttribute>() is { } attribute)
@@ -38,7 +38,7 @@ public partial class SqlGenerator<TEntity>
         query.SqlBuilder
             .Append("UPDATE ")
             .Append(TableName)
-            .Append(" ");
+            .Append(' ');
 
         if (includes.Length > 0)
         {
@@ -58,8 +58,8 @@ public partial class SqlGenerator<TEntity>
         query.SqlBuilder.Append(string.Join(" AND ", KeySqlProperties.Where(p => !p.IgnoreUpdate)
             .Select(p => $"{TableName}.{p.ColumnName} = {ParameterSymbol}{entity.GetType().Name}{p.PropertyName}")));
 
-        if (query.Param == null || !(query.Param is Dictionary<string, object?> parameters))
-            parameters = new Dictionary<string, object?>();
+        if (query.Param is not Dictionary<string, object?> parameters)
+            parameters = [];
 
         foreach (var metadata in properties.Concat(KeySqlProperties))
             parameters.Add($"{entity.GetType().Name}{metadata.PropertyName}", entity.GetType().GetProperty(metadata.PropertyName)?.GetValue(entity, null));
@@ -93,7 +93,7 @@ public partial class SqlGenerator<TEntity>
         query.SqlBuilder
             .Append("UPDATE ")
             .Append(TableName)
-            .Append(" ");
+            .Append(' ');
 
         if (includes.Length > 0)
         {
@@ -109,7 +109,7 @@ public partial class SqlGenerator<TEntity>
         }
 
         query.SqlBuilder
-            .Append(" ");
+            .Append(' ');
 
         AppendWherePredicateQuery(query, predicate, QueryType.Update);
 
@@ -133,10 +133,10 @@ public partial class SqlGenerator<TEntity>
         query.SqlBuilder
             .Append("UPDATE ")
             .Append(TableName)
-            .Append(" ");
+            .Append(' ');
         query.SqlBuilder.Append("SET ");
         query.SqlBuilder.Append(GetFieldsUpdate(TableName, properties, UseQuotationMarks == true));
-        query.SqlBuilder.Append(" ");
+        query.SqlBuilder.Append(' ');
         AppendWherePredicateQuery(query, predicate, QueryType.Update);
 
         var parameters = (Dictionary<string, object?>)query.Param!;
@@ -170,10 +170,10 @@ public partial class SqlGenerator<TEntity>
         query.SqlBuilder
             .Append("UPDATE ")
             .Append(TableName)
-            .Append(" ");
+            .Append(' ');
         query.SqlBuilder.Append("SET ");
         query.SqlBuilder.Append(GetFieldsUpdate(TableName, properties, UseQuotationMarks == true));
-        query.SqlBuilder.Append(" ");
+        query.SqlBuilder.Append(' ');
         AppendWherePredicateQuery(query, predicate, QueryType.Update);
 
         var parameters = (Dictionary<string, object?>)query.Param!;

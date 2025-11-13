@@ -28,7 +28,7 @@ public partial class ReadOnlyDapperRepository<TEntity>
         IDbTransaction? transaction,
         params Expression<Func<TEntity, object>>[] includes)
     {
-        if (!SqlGenerator.KeySqlProperties.Any())
+        if (SqlGenerator.KeySqlProperties.Length == 0)
             throw new NotSupportedException("Join doesn't support without [Key] attribute");
 
         var type = typeof(TEntity);
@@ -52,7 +52,7 @@ public partial class ReadOnlyDapperRepository<TEntity>
             childKeyProperties.AddRange(properties.Where(p => p.GetCustomAttributes<KeyAttribute>().Any()));
         }
 
-        if (!childKeyProperties.Any())
+        if (childKeyProperties.Count == 0)
             throw new NotSupportedException("Join doesn't support without [Key] attribute");
 
         var lookup = new Dictionary<object, TEntity>();
@@ -131,7 +131,7 @@ public partial class ReadOnlyDapperRepository<TEntity>
         CancellationToken cancellationToken,
         params Expression<Func<TEntity, object>>[] includes)
     {
-        if (!SqlGenerator.KeySqlProperties.Any())
+        if (SqlGenerator.KeySqlProperties.Length == 0)
             throw new NotSupportedException("Join doesn't support without [Key] attribute");
 
         var type = typeof(TEntity);
@@ -153,7 +153,7 @@ public partial class ReadOnlyDapperRepository<TEntity>
             childKeyProperties.AddRange(properties.Where(p => p.GetCustomAttributes<KeyAttribute>().Any()));
         }
 
-        if (!childKeyProperties.Any())
+        if (childKeyProperties.Count == 0)
             throw new NotSupportedException("Join doesn't support without [Key] attribute");
 
         var lookup = new Dictionary<object, TEntity>();
@@ -220,8 +220,8 @@ public partial class ReadOnlyDapperRepository<TEntity>
     }
 
 
-    private static TEntity EntityJoinMapping<TChild1, TChild2, TChild3, TChild4, TChild5, TChild6>(IDictionary<object, TEntity> lookup, PropertyInfo[] keyProperties,
-        IList<PropertyInfo> childKeyProperties, IList<PropertyInfo> childProperties, TEntity entity, params object?[] childs)
+    private static TEntity EntityJoinMapping<TChild1, TChild2, TChild3, TChild4, TChild5, TChild6>(Dictionary<object, TEntity> lookup, PropertyInfo[] keyProperties,
+        List<PropertyInfo> childKeyProperties, List<PropertyInfo> childProperties, TEntity entity, params object?[] childs)
     {
         var compositeKeyProperty = string.Join("|", keyProperties.Select(q => q.GetValue(entity)?.ToString()));
 
@@ -239,35 +239,16 @@ public partial class ReadOnlyDapperRepository<TEntity>
                 var list = (IList?)childProperty.GetValue(target);
                 if (list == null)
                 {
-                    switch (i)
+                    list = i switch
                     {
-                        case 0:
-                            list = new List<TChild1>();
-                            break;
-
-                        case 1:
-                            list = new List<TChild2>();
-                            break;
-
-                        case 2:
-                            list = new List<TChild3>();
-                            break;
-
-                        case 3:
-                            list = new List<TChild4>();
-                            break;
-
-                        case 4:
-                            list = new List<TChild5>();
-                            break;
-
-                        case 5:
-                            list = new List<TChild6>();
-                            break;
-
-                        default:
-                            throw new NotSupportedException();
-                    }
+                        0 => new List<TChild1>(),
+                        1 => new List<TChild2>(),
+                        2 => new List<TChild3>(),
+                        3 => new List<TChild4>(),
+                        4 => new List<TChild5>(),
+                        5 => new List<TChild6>(),
+                        _ => throw new NotSupportedException()
+                    };
 
                     childProperty.SetValue(target, list);
                 }

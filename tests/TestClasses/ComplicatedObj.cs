@@ -11,11 +11,11 @@ public class ComplicatedObj
     public static string StaticName = "SS-456";
     public static string StaticPropertyName { get; } = "SS-PP-789";
 
-    public string[] FieldNames = { "456", "654" };
-    public int[] FieldArIds = { 1, 2, 3 };
-    public string[] PropertyNames { get; } = { "456", "654" };
+    public string[] FieldNames = ["456", "654"];
+    public int[] FieldArIds = [1, 2, 3];
+    public string[] PropertyNames { get; } = ["456", "654"];
 
-    public static string[] StaticFieldNames = { "456", "654" };
-    public static int[] StaticFieldArIds = { 1, 2, 3 };
-    public static string[] StaticPropertyNames { get; } = { "456", "654" };
+    public static string[] StaticFieldNames = ["456", "654"];
+    public static int[] StaticFieldArIds = [1, 2, 3];
+    public static string[] StaticPropertyNames { get; } = ["456", "654"];
 }

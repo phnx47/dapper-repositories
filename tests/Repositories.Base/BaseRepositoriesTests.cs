@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using Dapper;
 using MicroOrm.Dapper.Repositories.Config;
@@ -93,7 +92,8 @@ public abstract class BaseRepositoriesTests
     [Fact]
     public void FindById_MultiKeys()
     {
-        Assert.NotNull(Db.Reports.FindById(new[] { 1, 2 }));
+        var ids = new[] { 1, 2 };
+        Assert.NotNull(Db.Reports.FindById(ids));
     }
 
     [Fact]
@@ -533,8 +533,8 @@ public abstract class BaseRepositoriesTests
     {
         var adresses = new List<Address>
         {
-            new Address { Street = "aaa0", CityId = "10" },
-            new Address { Street = "aaa1", CityId = "11" }
+            new() { Street = "aaa0", CityId = "10" },
+            new() { Street = "aaa1", CityId = "11" }
         };
 
         int inserted = await Db.Address.BulkInsertAsync(adresses, TestContext.Current.CancellationToken);
@@ -552,8 +552,8 @@ public abstract class BaseRepositoriesTests
     {
         var adresses = new List<Address>
         {
-            new Address { Street = "aaa0", CityId = "10" },
-            new Address { Street = "aaa1", CityId = "11" }
+            new() { Street = "aaa0", CityId = "10" },
+            new() { Street = "aaa1", CityId = "11" }
         };
 
         int inserted = Db.Address.BulkInsert(adresses);
@@ -571,9 +571,9 @@ public abstract class BaseRepositoriesTests
     {
         var adresses = new List<Address>
         {
-            new Address { Street = "aaa10", CityId = "110" },
-            new Address { Street = "aaa10", CityId = "111" },
-            new Address { Street = "aaa10", CityId = "112" }
+            new() { Street = "aaa10", CityId = "110" },
+            new() { Street = "aaa10", CityId = "111" },
+            new() { Street = "aaa10", CityId = "112" }
         };
 
         int inserted = Db.Address.BulkInsert(adresses);
@@ -600,9 +600,9 @@ public abstract class BaseRepositoriesTests
     {
         var adresses = new List<Address>
         {
-            new Address { Street = "xaaa10", CityId = "x110" },
-            new Address { Street = "xaaa10", CityId = "x111" },
-            new Address { Street = "xaaa10", CityId = "x112" }
+            new() { Street = "xaaa10", CityId = "x110" },
+            new() { Street = "xaaa10", CityId = "x111" },
+            new() { Street = "xaaa10", CityId = "x112" }
         };
 
         int inserted = Db.Address.BulkInsert(adresses);

@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using MicroOrm.Dapper.Repositories.SqlGenerator.Filters;
@@ -12,13 +11,11 @@ namespace MicroOrm.Dapper.Repositories;
 public partial class ReadOnlyDapperRepository<TEntity>
     where TEntity : class
 {
-
     public virtual IReadOnlyDapperRepository<TEntity> SetOrderBy()
     {
         FilterData.OrderInfo = null;
         return this;
     }
-
 
     public virtual IReadOnlyDapperRepository<TEntity> SetOrderBy(OrderInfo.SortDirection direction, params string[] cols)
     {
@@ -38,7 +35,6 @@ public partial class ReadOnlyDapperRepository<TEntity>
         return SetOrderBy(query, false);
     }
 
-
     public virtual IReadOnlyDapperRepository<TEntity> SetOrderBy(string query, bool permanent)
     {
         var order = FilterData.OrderInfo ?? new OrderInfo();
@@ -51,13 +47,11 @@ public partial class ReadOnlyDapperRepository<TEntity>
         return this;
     }
 
-
     public virtual IReadOnlyDapperRepository<TEntity> SetOrderBy(OrderInfo.SortDirection direction, bool permanent,
         Expression<Func<TEntity, object>> expr)
     {
         return SetOrderBy<TEntity>(direction, permanent, expr);
     }
-
 
     public virtual IReadOnlyDapperRepository<TEntity> SetOrderBy<T>(OrderInfo.SortDirection direction, bool permanent,
         Expression<Func<T, object>> expr)
@@ -72,13 +66,13 @@ public partial class ReadOnlyDapperRepository<TEntity>
             {
                 if (expr.Body is UnaryExpression { Operand: MemberExpression expression })
                 {
-                    order.Columns = new List<string> { GetProperty(expression, type) };
+                    order.Columns = [GetProperty(expression, type)];
                 }
 
                 break;
             }
             case ExpressionType.MemberAccess:
-                order.Columns = new List<string> { GetProperty(expr.Body, type) };
+                order.Columns = [GetProperty(expr.Body, type)];
                 break;
             default:
             {
@@ -105,7 +99,6 @@ public partial class ReadOnlyDapperRepository<TEntity>
     {
         return SetOrderBy(direction, false, expr);
     }
-
 
     public virtual IReadOnlyDapperRepository<TEntity> SetOrderBy<T>(OrderInfo.SortDirection direction, Expression<Func<T, object>> expr)
     {

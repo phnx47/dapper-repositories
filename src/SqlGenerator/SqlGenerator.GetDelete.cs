@@ -92,7 +92,7 @@ public partial class SqlGenerator<TEntity>
                     .Append(UpdatedAtPropertyMetadata.PropertyName);
         }
 
-        sqlQuery.SqlBuilder.Append(" ");
+        sqlQuery.SqlBuilder.Append(' ');
         AppendWherePredicateQuery(sqlQuery, predicate, QueryType.Delete);
         return sqlQuery;
     }

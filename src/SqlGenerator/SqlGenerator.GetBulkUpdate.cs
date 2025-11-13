@@ -14,7 +14,7 @@ public partial class SqlGenerator<TEntity>
     public virtual SqlQuery GetBulkUpdate(IEnumerable<TEntity> entities)
     {
         var entitiesArray = entities as TEntity[] ?? entities.ToArray();
-        if (!entitiesArray.Any())
+        if (entitiesArray.Length == 0)
             throw new ArgumentException("collection is empty");
 
         var entityType = entitiesArray[0].GetType();
@@ -27,7 +27,7 @@ public partial class SqlGenerator<TEntity>
         var parameters = new Dictionary<string, object?>();
 
         //In Oracle we use MERGE INTO to excute multipe update with argument.
-        List<string> singleSelectsForOracle = new List<string>();
+        var singleSelectsForOracle = new List<string>();
 
         for (var i = 0; i < entitiesArray.Length; i++)
         {

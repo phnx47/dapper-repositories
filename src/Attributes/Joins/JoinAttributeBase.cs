@@ -6,21 +6,13 @@ namespace MicroOrm.Dapper.Repositories.Attributes.Joins;
 /// <summary>
 /// Base class for JOIN attributes
 /// </summary>
-public abstract class JoinAttributeBase : Attribute
+public abstract class JoinAttributeBase(string type) : Attribute
 {
-    /// <summary>
-    /// Initialize a new instance with the specified join type
-    /// </summary>
-    protected JoinAttributeBase(string joinType)
-    {
-        JoinType = joinType;
-    }
-
     /// <summary>
     /// Initialize a new instance with full join specification
     /// </summary>
-    protected JoinAttributeBase(string tableName, string key, string externalKey, string tableSchema, string tableAlias, string joinType)
-        : this(joinType)
+    protected JoinAttributeBase(string tableName, string key, string externalKey, string tableSchema, string tableAlias, string type)
+        : this(type)
     {
         TableName = tableName;
         Key = key;
@@ -28,11 +20,6 @@ public abstract class JoinAttributeBase : Attribute
         TableSchema = tableSchema;
         TableAlias = tableAlias;
     }
-
-    /// <summary>
-    /// The SQL JOIN type keyword
-    /// </summary>
-    private string? JoinType { get; }
 
     private string? _tableName;
 
@@ -61,12 +48,12 @@ public abstract class JoinAttributeBase : Attribute
     public string? ExternalKey { get; set; }
 
     /// <summary>
-    ///     Table alias
+    /// Table alias
     /// </summary>
     public string? TableAlias { get; set; }
 
     /// <summary>
     /// Returns the join type string
     /// </summary>
-    public override string? ToString() => JoinType;
+    public override string ToString() => type;
 }

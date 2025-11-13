@@ -20,7 +20,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Repositories.Base", "tests\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Repositories.MSSQL.Tests", "tests\Repositories.MSSQL.Tests\Repositories.MSSQL.Tests.csproj", "{5049285B-1366-41C2-AD7C-4F70B11BFD5C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Repositories.MySql.Tests", "tests\Repositories.MySql.Tests\Repositories.MySql.Tests.csproj", "{E0118ECB-F93A-4297-9D3F-0E2AC7C709A4}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Repositories.MySQL.Tests", "tests\Repositories.MySQL.Tests\Repositories.MySQL.Tests.csproj", "{E0118ECB-F93A-4297-9D3F-0E2AC7C709A4}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Repositories.Oracle.Tests", "tests\Repositories.Oracle.Tests\Repositories.Oracle.Tests.csproj", "{9F38EB03-41AD-4CAD-9903-12E0E890FF41}"
 EndProject

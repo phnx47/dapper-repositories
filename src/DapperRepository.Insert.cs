@@ -40,7 +40,7 @@ public partial class DapperRepository<TEntity>
             if (SqlGenerator.Provider == Repositories.SqlGenerator.SqlProvider.Oracle)
             {
                 Connection.Execute(queryResult.GetSql(), queryResult.Param, transaction);
-                int newId = ((DynamicParameters)(queryResult.Param!)).Get<int>(":newId");
+                int newId = ((DynamicParameters)queryResult.Param!).Get<int>(":newId");
                 return SetValue(newId, instance);
             }
             else
@@ -68,7 +68,7 @@ public partial class DapperRepository<TEntity>
             if (SqlGenerator.Provider == Repositories.SqlGenerator.SqlProvider.Oracle)
             {
                 await Connection.ExecuteAsync(new CommandDefinition(queryResult.GetSql(), queryResult.Param, transaction, cancellationToken: cancellationToken)).ConfigureAwait(false);
-                int newId = ((DynamicParameters)(queryResult.Param!)).Get<int>(":newId");
+                int newId = ((DynamicParameters)queryResult.Param!).Get<int>(":newId");
                 return SetValue(newId, instance);
             }
             else

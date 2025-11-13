@@ -21,7 +21,7 @@ public partial class SqlGenerator<TEntity>
             sqlQuery.SqlBuilder
                 .Append(" FROM ")
                 .Append(TableName)
-                .Append(" ");
+                .Append(' ');
 
             sqlQuery.SqlBuilder.Append(joinsBuilder);
         }
@@ -30,7 +30,7 @@ public partial class SqlGenerator<TEntity>
             sqlQuery.SqlBuilder
                 .Append(" FROM ")
                 .Append(TableName)
-                .Append(" ");
+                .Append(' ');
         }
 
         if (filterData?.SelectInfo != null)
@@ -140,16 +140,16 @@ public partial class SqlGenerator<TEntity>
 
             if (i >= count - 1)
             {
-                sqlQuery.SqlBuilder.Append(" ");
+                sqlQuery.SqlBuilder.Append(' ');
                 sqlQuery.SqlBuilder.Append(filterData.OrderInfo.Direction);
                 break;
             }
 
-            sqlQuery.SqlBuilder.Append(",");
+            sqlQuery.SqlBuilder.Append(',');
             i++;
         }
 
-        sqlQuery.SqlBuilder.Append(" ");
+        sqlQuery.SqlBuilder.Append(' ');
 
         if (!filterData.OrderInfo.Permanent)
         {
@@ -170,21 +170,13 @@ public partial class SqlGenerator<TEntity>
     {
         // If a table identifier is passed in with field the data string will be table.field instead of just rapping quotations around the
         // string [table.field] or `table.field` we have to replace the seperator . with ].[ or `.` to get [table].[field] or `table`.`field`
-        switch (Provider)
+        return Provider switch
         {
-            case SqlProvider.MSSQL:
-                return $"[{columnIdentifier.Replace(".", "].[")}]";
-
-            case SqlProvider.MySQL:
-            case SqlProvider.SQLite:
-                return $"`{columnIdentifier.Replace(".", "`.`")}`";
-
-            case SqlProvider.PostgreSQL:
-                return $"\"{columnIdentifier.Replace(".", "\".\"")}\"";
-
-            default:
-                return columnIdentifier;
-        }
+            SqlProvider.MSSQL => $"[{columnIdentifier.Replace(".", "].[")}]",
+            SqlProvider.MySQL or SqlProvider.SQLite => $"`{columnIdentifier.Replace(".", "`.`")}`",
+            SqlProvider.PostgreSQL => $"\"{columnIdentifier.Replace(".", "\".\"")}\"",
+            _ => columnIdentifier
+        };
     }
 
     /// <summary>
@@ -226,11 +218,11 @@ public partial class SqlGenerator<TEntity>
                 break;
             }
 
-            sqlQuery.SqlBuilder.Append(",");
+            sqlQuery.SqlBuilder.Append(',');
             i++;
         }
 
-        sqlQuery.SqlBuilder.Append(" ");
+        sqlQuery.SqlBuilder.Append(' ');
 
         if (!filterData.GroupInfo.Permanent)
         {
@@ -267,7 +259,7 @@ public partial class SqlGenerator<TEntity>
             sqlQuery.SqlBuilder
                 .Append(" FROM ")
                 .Append(TableName)
-                .Append(" ");
+                .Append(' ');
 
             sqlQuery.SqlBuilder.Append(joinsBuilder);
         }
@@ -276,26 +268,26 @@ public partial class SqlGenerator<TEntity>
             sqlQuery.SqlBuilder
                 .Append(" FROM ")
                 .Append(TableName)
-                .Append(" ");
+                .Append(' ');
         }
 
         for (var index = 0; index < KeySqlProperties.Length; index++)
             sqlQuery.SqlBuilder
                 .Append(index == 0 ? "WHERE " : "AND ")
                 .Append(TableName)
-                .Append(".")
+                .Append('.')
                 .Append(KeySqlProperties[index].ColumnName)
                 .Append(" = ")
                 .Append(ParameterSymbol)
                 .Append(KeySqlProperties[index].PropertyName)
-                .Append(" ");
+                .Append(' ');
 
         if (LogicalDelete)
         {
             sqlQuery.SqlBuilder
                 .Append("AND ")
                 .Append(TableName)
-                .Append(".")
+                .Append('.')
                 .Append(StatusPropertyName);
 
             if (LogicalDeleteValueNullable)
@@ -308,7 +300,7 @@ public partial class SqlGenerator<TEntity>
                 sqlQuery.SqlBuilder
                     .Append(" != ")
                     .Append(LogicalDeleteValue)
-                    .Append(" ");
+                    .Append(' ');
             }
         }
 
@@ -337,15 +329,15 @@ public partial class SqlGenerator<TEntity>
 
         query.SqlBuilder
             .Append(predicate == null && !LogicalDelete ? "WHERE" : "AND")
-            .Append(" ")
+            .Append(' ')
             .Append(TableName)
-            .Append(".")
+            .Append('.')
             .Append(columnName)
             .Append(" BETWEEN '")
             .Append(from)
             .Append("' AND '")
             .Append(to)
-            .Append("'");
+            .Append('\'');
 
         return query;
     }

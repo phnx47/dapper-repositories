@@ -11,7 +11,6 @@ using MicroOrm.Dapper.Repositories.Extensions;
 
 namespace MicroOrm.Dapper.Repositories.SqlGenerator;
 
-
 public partial class SqlGenerator<TEntity>
     where TEntity : class
 {
@@ -72,12 +71,12 @@ public partial class SqlGenerator<TEntity>
         else if (attrJoin.TableName != null)
         {
             var customFilter = string.Empty;
-            if (JoinsLogicalDelete != null && JoinsLogicalDelete.TryGetValue(attrJoin.TableName, out var deleteAttr))
+            if (JoinLogicalDeleteProperties != null && JoinLogicalDeleteProperties.TryGetValue(attrJoin.TableName, out var deleteAttr))
             {
                 var colAttr = deleteAttr.GetCustomAttribute<ColumnAttribute>();
                 var colName = colAttr == null ? deleteAttr.Name : colAttr.Name;
                 object deleteValue = Provider == SqlProvider.PostgreSQL ? "true" : 1;
-                if(deleteAttr.PropertyType == typeof(bool?))
+                if (deleteAttr.PropertyType == typeof(bool?))
                 {
                     customFilter = string.IsNullOrEmpty(attrJoin.TableAlias)
                         ? $"AND {attrJoin.TableName}.{colName} IS NULL "

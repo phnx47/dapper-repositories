@@ -9,7 +9,7 @@ using Xunit;
 
 namespace SqlGenerator.Tests;
 
-public class MsSqlGeneratorTests
+public class MSSQLGeneratorTests
 {
     private const SqlProvider _sqlConnector = SqlProvider.MSSQL;
 
@@ -99,21 +99,19 @@ public class MsSqlGeneratorTests
             var spNames = ComplicatedObj.StaticPropertyNames;
 
             sqlGenerator.GetSelectAll(
-                x => (
-                    (ids.Contains(x.Id) || farIds.Contains(x.Id) || sfarIds.Contains(x.Id)
-                     || tmp.FieldArIds.Contains(x.Id) || x.Id == tmp.Id
-                     || ComplicatedObj.StaticFieldArIds.Contains(x.Id)
-                     || x.Id == id)
-                    && (pNames.Contains(x.Name) || spNames.Contains(x.Name)
-                                                || tmp.PropertyNames.Contains(x.Name) || tmp.FieldNames.Contains(x.Name)
-                                                || ComplicatedObj.StaticFieldNames.Contains(x.Name)
-                                                || ComplicatedObj.StaticPropertyNames.Contains(x.Name)
-                                                || x.Name == ComplicatedObj.StaticName
-                                                || x.Name == ComplicatedObj.StaticPropertyName
-                                                || x.Name == tmp.PropertName
-                                                || x.Name == Guid.NewGuid().ToString()
-                                                || x.Name == string.Empty)
-                ), null);
+                x => (ids.Contains(x.Id) || farIds.Contains(x.Id) || sfarIds.Contains(x.Id)
+                      || tmp.FieldArIds.Contains(x.Id) || x.Id == tmp.Id
+                      || ComplicatedObj.StaticFieldArIds.Contains(x.Id)
+                      || x.Id == id)
+                     && (pNames.Contains(x.Name) || spNames.Contains(x.Name)
+                                                 || tmp.PropertyNames.Contains(x.Name) || tmp.FieldNames.Contains(x.Name)
+                                                 || ComplicatedObj.StaticFieldNames.Contains(x.Name)
+                                                 || ComplicatedObj.StaticPropertyNames.Contains(x.Name)
+                                                 || x.Name == ComplicatedObj.StaticName
+                                                 || x.Name == ComplicatedObj.StaticPropertyName
+                                                 || x.Name == tmp.PropertName
+                                                 || x.Name == Guid.NewGuid().ToString()
+                                                 || x.Name == string.Empty), null);
         }
         catch (NotSupportedException ex)
         {
@@ -220,7 +218,7 @@ public class MsSqlGeneratorTests
     public static void BulkInsertOneKeyAsIdentity()
     {
         MicroOrmConfig.AllowKeyAsIdentity = true;
-        ISqlGenerator<AddressKeyAsIdentity> userSqlGenerator = new SqlGenerator<AddressKeyAsIdentity>(_sqlConnector, true);
+        var userSqlGenerator = new SqlGenerator<AddressKeyAsIdentity>(_sqlConnector, true);
         var sqlQuery = userSqlGenerator.GetBulkInsert(new List<AddressKeyAsIdentity> { new() });
 
         Assert.Equal("INSERT INTO [Addresses] ([Street], [CityId]) VALUES (@Street0, @CityId0)", sqlQuery.GetSql());
@@ -287,7 +285,7 @@ public class MsSqlGeneratorTests
     public static void ContainsArrayPredicate()
     {
         var sqlGenerator = new SqlGenerator<User>(_sqlConnector, true);
-        var ids = new int[] { };
+        var ids = Array.Empty<int>();
         var sqlQuery = sqlGenerator.GetSelectAll(x => ids.Contains(x.Id), null);
 
         Assert.Equal(
@@ -495,7 +493,8 @@ public class MsSqlGeneratorTests
     public static void SelectById_MultiKeys()
     {
         var sqlGenerator = new SqlGenerator<Report>(_sqlConnector, true);
-        var sqlQuery = sqlGenerator.GetSelectById(new[] { 1, 2 }, null);
+        var ids = new[] { 1, 2 };
+        var sqlQuery = sqlGenerator.GetSelectById(ids, null);
 
         Assert.Equal("SELECT TOP 1 [Reports].[Id], [Reports].[AnotherId], [Reports].[UserId] FROM [Reports] " +
                      "WHERE [Reports].[Id] = @Id AND [Reports].[AnotherId] = @AnotherId", sqlQuery.GetSql());
@@ -555,7 +554,7 @@ public class MsSqlGeneratorTests
         var filterData = new FilterData();
 
         var data = filterData.OrderInfo ?? new OrderInfo();
-        data.Columns = new List<string> { "Id" };
+        data.Columns = ["Id"];
         data.Direction = OrderInfo.SortDirection.ASC;
         filterData.OrderInfo = data;
 
@@ -573,7 +572,7 @@ public class MsSqlGeneratorTests
         var filterData = new FilterData();
 
         var data = filterData.OrderInfo ?? new OrderInfo();
-        data.Columns = new List<string> { "Users.Id" };
+        data.Columns = ["Users.Id"];
         data.Direction = OrderInfo.SortDirection.ASC;
         filterData.OrderInfo = data;
 
@@ -590,7 +589,7 @@ public class MsSqlGeneratorTests
         var filterData = new FilterData();
 
         var data = filterData.OrderInfo ?? new OrderInfo();
-        data.Columns = new List<string> { "Id" };
+        data.Columns = ["Id"];
         data.Direction = OrderInfo.SortDirection.ASC;
         filterData.OrderInfo = data;
 
@@ -662,7 +661,7 @@ public class MsSqlGeneratorTests
         Assert.Equal(sPrefix + "([DAB].[Phones].[IsActive] = @IsActive_p0 OR ([DAB].[Phones].[IsActive] = @IsActive_p1 AND [DAB].[Phones].[Id] IN @Id_p2)) AND [DAB].[Phones].[Deleted] IS NULL",
             sqlQuery6.GetSql());
 
-        var sqlQuery7 = sqlGenerator.GetSelectAll(x => (x.IsActive && x.Id == 123) && (x.Id == 456 && x.PNumber == "456"), null);
+        var sqlQuery7 = sqlGenerator.GetSelectAll(x => x.IsActive && x.Id == 123 && x.Id == 456 && x.PNumber == "456", null);
         Assert.Equal(
             sPrefix +
             "([DAB].[Phones].[IsActive] = @IsActive_p0 AND [DAB].[Phones].[Id] = @Id_p1 AND [DAB].[Phones].[Id] = @Id_p2 AND [DAB].[Phones].[PNumber] = @PNumber_p3) AND [DAB].[Phones].[Deleted] IS NULL",
@@ -675,7 +674,7 @@ public class MsSqlGeneratorTests
             "([DAB].[Phones].[PNumber] = @PNumber_p0 AND ([DAB].[Phones].[IsActive] = @IsActive_p1 OR [DAB].[Phones].[PNumber] = @PNumber_p2 OR [DAB].[Phones].[PNumber] = @PNumber_p3 OR ([DAB].[Phones].[Id] = @Id_p4 AND [DAB].[Phones].[PNumber] = @PNumber_p5)) AND [DAB].[Phones].[Id] = @Id_p6) AND [DAB].[Phones].[Deleted] IS NULL",
             sqlQuery8.GetSql());
 
-        var sqlQuery9 = sqlGenerator.GetSelectAll(x => (x.Id == 456 && x.PNumber == "456") && x.Id == 123 && (x.Id == 4567 && x.PNumber == "4567"), null);
+        var sqlQuery9 = sqlGenerator.GetSelectAll(x => x.Id == 456 && x.PNumber == "456" && x.Id == 123 && x.Id == 4567 && x.PNumber == "4567", null);
         Assert.Equal(
             sPrefix +
             "([DAB].[Phones].[Id] = @Id_p0 AND [DAB].[Phones].[PNumber] = @PNumber_p1 AND [DAB].[Phones].[Id] = @Id_p2 AND [DAB].[Phones].[Id] = @Id_p3 AND [DAB].[Phones].[PNumber] = @PNumber_p4) AND [DAB].[Phones].[Deleted] IS NULL",
@@ -728,7 +727,7 @@ public class MsSqlGeneratorTests
         Assert.Equal("%456", parameters11["Code_p1"].ToString());
         Assert.Equal("%789%", parameters11["Code_p2"].ToString());
 
-        ISqlGenerator<User> userSqlGenerator2 = new SqlGenerator<User>(_sqlConnector, true);
+        var userSqlGenerator2 = new SqlGenerator<User>(_sqlConnector, true);
         var sPrefix2 =
             "SELECT [Users].[Id], [Users].[Name], [Users].[AddressId], [Users].[PhoneId], [Users].[OfficePhoneId], [Users].[Deleted], [Users].[UpdatedAt], " +
             "[Phones_PhoneId].[Id], [Phones_PhoneId].[PNumber], [Phones_PhoneId].[IsActive], [Phones_PhoneId].[Code], [Phones_PhoneId].[Deleted] " +

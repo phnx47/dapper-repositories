@@ -12,7 +12,7 @@ public class SelectInfo
     /// </summary>
     public SelectInfo()
     {
-        Columns = new List<string>();
+        Columns = [];
     }
 
     /// <summary>

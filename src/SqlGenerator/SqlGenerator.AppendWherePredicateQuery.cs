@@ -15,15 +15,7 @@ public partial class SqlGenerator<TEntity>
 {
     private void AppendWherePredicateQuery(SqlQuery sqlQuery, Expression<Func<TEntity, bool>>? predicate, QueryType queryType)
     {
-        IDictionary<string, object?> dictionaryParams;
-        if (sqlQuery.Param is Dictionary<string, object?> param)
-        {
-            dictionaryParams = param;
-        }
-        else
-        {
-            dictionaryParams = new Dictionary<string, object?>();
-        }
+        var param = sqlQuery.Param as Dictionary<string, object?> ?? [];
 
         if (predicate != null)
         {
@@ -37,7 +29,7 @@ public partial class SqlGenerator<TEntity>
             var conditions = new List<KeyValuePair<string, object?>>();
             BuildQuerySql(queryProperties, ref sqlBuilder, ref conditions, ref qLevel);
 
-            dictionaryParams.AddRange(conditions);
+            param.AddRange(conditions);
 
             if (LogicalDelete && queryType == QueryType.Select)
             {
@@ -64,9 +56,9 @@ public partial class SqlGenerator<TEntity>
         }
 
         if (LogicalDelete && HasUpdatedAt && queryType == QueryType.Delete)
-            dictionaryParams.Add(UpdatedAtPropertyMetadata.ColumnName, DateTime.UtcNow);
+            param.Add(UpdatedAtPropertyMetadata.ColumnName, DateTime.UtcNow);
 
-        sqlQuery.SetParam(dictionaryParams);
+        sqlQuery.SetParam(param);
     }
 
     /// <summary>
@@ -87,11 +79,11 @@ public partial class SqlGenerator<TEntity>
             if (!string.IsNullOrEmpty(expr.LinkingOperator))
             {
                 if (sqlBuilder.Length > 0)
-                    sqlBuilder.Append(" ");
+                    sqlBuilder.Append(' ');
 
                 sqlBuilder
                     .Append(expr.LinkingOperator)
-                    .Append(" ");
+                    .Append(' ');
             }
 
             switch (expr)
@@ -167,16 +159,11 @@ public partial class SqlGenerator<TEntity>
     private List<QueryExpression> GetQueryProperties(Expression expr)
     {
         var queryNode = GetQueryProperties(expr, ExpressionType.Default);
-        switch (queryNode)
+        return queryNode switch
         {
-            case QueryParameterExpression:
-                return new List<QueryExpression> { queryNode };
-
-            case QueryBinaryExpression qbExpr:
-                return qbExpr.Nodes;
-
-            default:
-                throw new NotSupportedException(queryNode.ToString());
-        }
+            QueryParameterExpression => [queryNode],
+            QueryBinaryExpression qbExpr => qbExpr.Nodes,
+            _ => throw new NotSupportedException(queryNode.ToString())
+        };
     }
 }

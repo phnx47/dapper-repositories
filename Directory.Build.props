@@ -3,6 +3,8 @@
     <LangVersion>12.0</LangVersion>
     <IsPackable>false</IsPackable>
     <NoWarn>CS1591;NETSDK1138</NoWarn>
+    <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition="'$(GITHUB_ACTIONS)' == 'true'">
     <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>

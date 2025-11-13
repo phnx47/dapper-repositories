@@ -3,18 +3,17 @@ using MicroOrm.Dapper.Repositories.Attributes.Joins;
 
 namespace MicroOrm.Dapper.Repositories.SqlGenerator;
 
-
 public partial class SqlGenerator<TEntity>
     where TEntity : class
 {
-    private static string GetTableNameWithSchemaPrefix(string? tableName, string? tableSchema, SqlProvider sqlProvider, string startQuotationMark = "", string endQuotationMark = "")
+    private static string GetTableNameWithSchemaPrefix(string? tableName, string? tableSchema, SqlProvider sqlProvider, string startQuotationMark = "",
+        string endQuotationMark = "")
     {
-        if (string.IsNullOrEmpty(tableSchema))
-            return startQuotationMark + tableName + endQuotationMark;
-
-        return sqlProvider == SqlProvider.SQLite
-            ? startQuotationMark + tableSchema + "." + tableName + endQuotationMark
-            : startQuotationMark + tableSchema + endQuotationMark + "." + startQuotationMark + tableName + endQuotationMark;
+        return string.IsNullOrEmpty(tableSchema)
+            ? startQuotationMark + tableName + endQuotationMark
+            : sqlProvider == SqlProvider.SQLite
+                ? startQuotationMark + tableSchema + "." + tableName + endQuotationMark
+                : startQuotationMark + tableSchema + endQuotationMark + "." + startQuotationMark + tableName + endQuotationMark;
     }
 
     private string GetTableNameWithQuotes(JoinAttributeBase attrJoin, SqlPropertyMetadata[] props, string tableName)

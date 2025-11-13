@@ -11,7 +11,6 @@ using MicroOrm.Dapper.Repositories.Extensions;
 
 namespace MicroOrm.Dapper.Repositories.SqlGenerator;
 
-
 public partial class SqlGenerator<TEntity>
     where TEntity : class
 {
@@ -26,12 +25,10 @@ public partial class SqlGenerator<TEntity>
         TableSchema = tableAttribute != null ? tableAttribute.Schema : string.Empty;
 
         AllProperties = entityType.FindClassProperties().Where(q => q.CanWrite).ToArray();
+        InitSqlJoinProperties();
 
         var props = entityType.FindClassPrimitiveProperties();
 
-        var joinProperties = AllProperties.Where(p => p.GetCustomAttributes<JoinAttributeBase>().Any()).ToArray();
-
-        SqlJoinProperties = GetJoinPropertyMetadata(joinProperties);
 
         // Filter the non stored properties
         SqlProperties = props.Where(p => !p.GetCustomAttributes<NotMappedAttribute>().Any()).Select(p => new SqlPropertyMetadata(p)).ToArray();
@@ -57,24 +54,26 @@ public partial class SqlGenerator<TEntity>
     }
 
     /// <summary>
-    ///     Get join/nested properties
+    ///     Init join/nested properties
     /// </summary>
-    /// <returns></returns>
-    private static SqlJoinPropertyMetadata[] GetJoinPropertyMetadata(PropertyInfo[] joinPropertiesInfo)
+    private void InitSqlJoinProperties()
     {
         // Filter and get only non collection nested properties
-        var singleJoinTypes = joinPropertiesInfo.Where(p => !p.PropertyType.IsConstructedGenericType).ToArray();
+        var singleJoinTypes = AllProperties
+            .Where(p => p.GetCustomAttributes<JoinAttributeBase>().Any())
+            .Where(p => !p.PropertyType.IsConstructedGenericType);
 
         var joinPropertyMetadatas = new List<SqlJoinPropertyMetadata>();
 
         foreach (var propertyInfo in singleJoinTypes)
         {
-            var joinInnerProperties = propertyInfo.PropertyType.GetProperties().Where(q => q.CanWrite)
-                .Where(ExpressionHelper.GetPrimitivePropertiesPredicate());
-            joinPropertyMetadatas.AddRange(joinInnerProperties.Where(p => !p.GetCustomAttributes<NotMappedAttribute>().Any())
-                .Select(p => new SqlJoinPropertyMetadata(propertyInfo, p)).ToArray());
+            joinPropertyMetadatas.AddRange(propertyInfo.PropertyType.GetProperties()
+                .Where(q => q.CanWrite)
+                .Where(ExpressionHelper.GetPrimitivePropertiesPredicate())
+                .Where(p => !p.GetCustomAttributes<NotMappedAttribute>().Any())
+                .Select(p => new SqlJoinPropertyMetadata(propertyInfo, p)));
         }
 
-        return joinPropertyMetadatas.ToArray();
+        SqlJoinProperties = joinPropertyMetadatas.ToArray();
     }
 }
