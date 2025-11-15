@@ -40,7 +40,7 @@ jobs:
         ports:
           - "1521:1521"
       postgres:
-        image: postgres:18.0-alpine
+        image: postgres:18-alpine
         ports:
           - "5432:5432"
         env:
