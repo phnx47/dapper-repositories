@@ -1,6 +1,6 @@
 services:
   mysql:
-    image: mysql:9.5-oracle
+    image: mysql:9-oracle
     environment:
       MYSQL_ROOT_PASSWORD: ${TEST_DB_PASS}
     ports:
