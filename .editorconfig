@@ -79,6 +79,7 @@ dotnet_diagnostic.IDE0010.severity = none # Add missing cases to switch statemen
 dotnet_diagnostic.IDE0072.severity = none # Add missing cases to switch expression
 dotnet_diagnostic.IDE0305.severity = none # Use collection expression for fluent
 dotnet_diagnostic.IDE0100.severity = none # Remove unnecessary equality operator
+dotnet_diagnostic.IDE0031.severity = none # Use null propagation
 
 # ConfigureAwait analysis mode
 configure_await_analysis_mode = library
