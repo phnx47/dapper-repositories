@@ -15,6 +15,11 @@ env:
   TEST_DB_PASS: "Password12!"
   PKG_VERSION: "0.0.0"
 
+permissions:
+  id-token: write
+  contents: write
+  packages: write
+
 jobs:
   build:
     name: Build, Test & Pack
@@ -128,8 +133,13 @@ jobs:
         uses: actions/download-artifact@v8
         with:
           name: packages
+      - name: NuGet Login
+        uses: NuGet/login@v1
+        id: login
+        with:
+          user: ${{ github.repository_owner }}
       - name: Push to NuGet
         run: |
           dotnet nuget push "*.nupkg" \
-            -k ${{ secrets.NUGET_KEY }} \
+            -k ${{ steps.login.outputs.NUGET_API_KEY }} \
             -s https://api.nuget.org/v3/index.json
