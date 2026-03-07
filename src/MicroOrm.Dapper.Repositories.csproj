@@ -3,7 +3,7 @@
     <Description>CRUD for Dapper</Description>
     <Copyright>2015 © Serge K</Copyright>
     <Authors>Serge K and Contributors</Authors>
-    <TargetFrameworks>net462;netstandard2.0;net8.0</TargetFrameworks>
+    <TargetFrameworks>net462;netstandard2.0;net8.0;net10.0</TargetFrameworks>
     <Nullable>enable</Nullable>
     <PackageId>MicroOrm.Dapper.Repositories</PackageId>
     <PackageTags>dapper;micro-orm;repositories;crud</PackageTags>
