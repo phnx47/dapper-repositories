@@ -65,7 +65,7 @@ public partial class ReadOnlyDapperRepository<TEntity>
         return SetGroupBy(false, expr);
     }
 
-    public virtual IReadOnlyDapperRepository<TEntity> SetOrderBy<T>(Expression<Func<T, object>> expr)
+    public virtual IReadOnlyDapperRepository<TEntity> SetGroupBy<T>(Expression<Func<T, object>> expr)
     {
         return SetGroupBy(false, expr);
     }

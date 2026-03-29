@@ -1546,7 +1546,7 @@ public interface IReadOnlyDapperRepository<TEntity> : IDisposable where TEntity 
     /// Set query group by using another model (use this when need to group by joined table)
     /// <param name="expr">The columns to use in group</param>
     /// </summary>
-    IReadOnlyDapperRepository<TEntity> SetOrderBy<T>(Expression<Func<T, object>> expr);
+    IReadOnlyDapperRepository<TEntity> SetGroupBy<T>(Expression<Func<T, object>> expr);
 
     /// <summary>
     /// Set query grouping
