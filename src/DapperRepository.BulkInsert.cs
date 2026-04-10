@@ -81,10 +81,13 @@ public partial class DapperRepository<TEntity>
 
     public virtual async Task<int> BulkInsertAsync(IEnumerable<TEntity> instances, IDbTransaction? transaction, CancellationToken cancellationToken)
     {
+        int totalInstances = instances.Count();
+        if (totalInstances == 0)
+            return 0;
+
         if (SqlGenerator.Provider == SqlProvider.MSSQL)
         {
             var count = 0;
-            var totalInstances = instances.Count();
 
             var properties =
                 (SqlGenerator.IsIdentity
