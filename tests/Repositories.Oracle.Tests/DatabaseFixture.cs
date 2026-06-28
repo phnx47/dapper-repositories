@@ -45,6 +45,8 @@ public class DatabaseFixture : IDisposable
                   ID NUMBER GENERATED ALWAYS AS IDENTITY(START WITH 1 INCREMENT BY 1),
                   NAME VARCHAR(256) NOT NULL,
                   USERID NUMBER NOT NULL,
+                  PRICE NUMBER(18,2) NOT NULL,
+                  PREVIOUSPRICE NUMBER(18,2) NOT NULL,
                   STATUS NUMBER NOT NULL,
                   DATA RAW(16) NULL,
                   PRIMARY KEY (ID))");
