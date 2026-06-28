@@ -399,7 +399,7 @@ public class OracleGeneratorTests
         var sqlQuery = sqlGenerator.GetSelectAll(null, null, user => user.Cars);
 
         Assert.Equal("SELECT Users.Id, Users.Name, Users.AddressId, Users.PhoneId, Users.OfficePhoneId, Users.Deleted, Users.UpdatedAt, " +
-                     "Cars_Id.Id, Cars_Id.Name, Cars_Id.Data, Cars_Id.UserId, Cars_Id.Status " +
+                     "Cars_Id.Id, Cars_Id.Name, Cars_Id.Data, Cars_Id.UserId, Cars_Id.Price, Cars_Id.PreviousPrice, Cars_Id.Status " +
                      "FROM Users LEFT JOIN Cars Cars_Id ON Users.Id = Cars_Id.UserId " +
                      "WHERE Users.Deleted IS NULL", sqlQuery.GetSql());
     }

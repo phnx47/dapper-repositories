@@ -13,6 +13,10 @@ public class Car : BaseEntity<int>
 
     public int UserId { get; set; }
 
+    public decimal Price { get; set; }
+
+    public decimal PreviousPrice { get; set; }
+
     [LeftJoin("Users", "UserId", "Id")]
     public User User { get; set; }
 

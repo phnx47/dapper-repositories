@@ -30,6 +30,39 @@ internal static class ExpressionHelper
         return GetValue(member, out _);
     }
 
+    /// <summary>
+    /// Determines whether the expression references an entity column (the lambda parameter)
+    /// rather than a constant or captured value.
+    /// </summary>
+    /// <param name="expr">The expression to inspect.</param>
+    /// <param name="memberExpression">Out. The underlying member access when the expression is a column reference.</param>
+    /// <returns><c>true</c> when the expression resolves to a column of the queried entity.</returns>
+    public static bool IsColumnReference(Expression? expr, out MemberExpression? memberExpression)
+    {
+        memberExpression = null;
+
+        // Unwrap nullable/widening conversions
+        while (expr is UnaryExpression { NodeType: ExpressionType.Convert or ExpressionType.ConvertChecked } unary)
+            expr = unary.Operand;
+
+        if (expr is not MemberExpression member)
+            return false;
+
+        var current = member;
+        while (current != null)
+        {
+            if (current.Expression is ParameterExpression)
+            {
+                memberExpression = member;
+                return true;
+            }
+
+            current = current.Expression as MemberExpression;
+        }
+
+        return false;
+    }
+
     private static object? GetValue(Expression? member, out string? parameterName)
     {
         parameterName = null;

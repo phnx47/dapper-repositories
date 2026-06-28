@@ -102,6 +102,25 @@ public partial class SqlGenerator<TEntity>
                         columnName = SqlProperties.First(x => x.PropertyName == qpExpr.PropertyName).ColumnName;
                     }
 
+                    if (qpExpr.IsColumnComparison)
+                    {
+                        var rightTableName = TableName;
+                        string rightColumnName;
+                        if (qpExpr.PropertyValueColumnNested)
+                        {
+                            var joinProperty = SqlJoinProperties.First(x => x.PropertyName == qpExpr.PropertyValueColumn);
+                            rightTableName = string.IsNullOrEmpty(joinProperty.TableAlias) ? joinProperty.TableName : joinProperty.TableAlias;
+                            rightColumnName = joinProperty.ColumnName;
+                        }
+                        else
+                        {
+                            rightColumnName = SqlProperties.First(x => x.PropertyName == qpExpr.PropertyValueColumn).ColumnName;
+                        }
+
+                        sqlBuilder.AppendFormat("{0}.{1} {2} {3}.{4}", tableName, columnName, qpExpr.QueryOperator, rightTableName, rightColumnName);
+                        break;
+                    }
+
                     if (qpExpr.PropertyValue == null)
                     {
                         sqlBuilder.AppendFormat("{0}.{1} {2} NULL", tableName, columnName, qpExpr.QueryOperator == "=" ? "IS" : "IS NOT");

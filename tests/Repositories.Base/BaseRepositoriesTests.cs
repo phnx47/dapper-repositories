@@ -214,6 +214,39 @@ public abstract class BaseRepositoriesTests
     }
 
     [Fact]
+    public async Task FindAllByColumnToColumnComparison()
+    {
+        var ct = TestContext.Current.CancellationToken;
+
+        // UserId=900 scopes this group
+        await Db.Cars.InsertAsync(new Car { Name = "PriceUp", UserId = 900, Price = 120, PreviousPrice = 100 }, ct);
+        await Db.Cars.InsertAsync(new Car { Name = "PriceSame", UserId = 900, Price = 100, PreviousPrice = 100 }, ct);
+        await Db.Cars.InsertAsync(new Car { Name = "PriceDown", UserId = 900, Price = 80, PreviousPrice = 100 }, ct);
+
+        var up = (await Db.Cars.FindAllAsync(x => x.UserId == 900 && x.Price > x.PreviousPrice, ct)).ToArray();
+        Assert.Equal("PriceUp", Assert.Single(up).Name);
+
+        var same = (await Db.Cars.FindAllAsync(x => x.UserId == 900 && x.Price == x.PreviousPrice, ct)).ToArray();
+        Assert.Equal("PriceSame", Assert.Single(same).Name);
+
+        var down = (await Db.Cars.FindAllAsync(x => x.UserId == 900 && x.Price < x.PreviousPrice, ct)).ToArray();
+        Assert.Equal("PriceDown", Assert.Single(down).Name);
+    }
+
+    [Fact]
+    public async Task FindAllByColumnToColumnComparisonOnJoin()
+    {
+        var ct = TestContext.Current.CancellationToken;
+
+        // Both PhoneId=1, so x.Phone.Id=1; only OfficePhoneId=1 satisfies OfficePhoneId == Phone.Id
+        await Db.Users.InsertAsync(new User { Name = "JoinMatch", AddressId = 901, PhoneId = 1, OfficePhoneId = 1 }, ct);
+        await Db.Users.InsertAsync(new User { Name = "JoinNoMatch", AddressId = 901, PhoneId = 1, OfficePhoneId = 2 }, ct);
+
+        var users = (await Db.Users.FindAllAsync<Phone>(x => x.AddressId == 901 && x.OfficePhoneId == x.Phone.Id, q => q.Phone, ct)).ToArray();
+        Assert.Equal("JoinMatch", Assert.Single(users).Name);
+    }
+
+    [Fact]
     public async Task FindPhoneAsyncDifferentBoolQuery()
     {
         var phone = await Db.Phones.FindAsync(x => x.Id == 1, TestContext.Current.CancellationToken);

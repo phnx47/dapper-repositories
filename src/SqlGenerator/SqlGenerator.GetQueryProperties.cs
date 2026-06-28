@@ -111,6 +111,20 @@ public partial class SqlGenerator<TEntity>
                     propertyName = prop.PropertyName;
                 }
 
+                if (!checkNullable && ExpressionHelper.IsColumnReference(binaryExpression.Right, out var rightMember))
+                {
+                    var rightPropertyName = ExpressionHelper.GetPropertyNamePath(rightMember!, out var rightNested);
+
+                    if (!SqlProperties.Select(x => x.PropertyName).Contains(rightPropertyName) &&
+                        !SqlJoinProperties.Select(x => x.PropertyName).Contains(rightPropertyName))
+                        throw new NotSupportedException("predicate can't parse");
+
+                    var columnOpr = ExpressionHelper.GetSqlOperator(binaryExpression.NodeType);
+                    var columnLink = ExpressionHelper.GetSqlOperator(linkingType);
+
+                    return new QueryParameterExpression(columnLink, propertyName, columnOpr, isNested, rightPropertyName, rightNested);
+                }
+
                 var propertyValue = ExpressionHelper.GetValue(binaryExpression.Right);
                 var nodeType = checkNullable ? propertyValue is bool b && !b ? ExpressionType.Equal : ExpressionType.NotEqual : binaryExpression.NodeType;
                 if (checkNullable)

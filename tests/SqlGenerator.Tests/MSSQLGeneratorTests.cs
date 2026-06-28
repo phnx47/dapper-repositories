@@ -418,7 +418,7 @@ public class MSSQLGeneratorTests
 
         Assert.Equal(
             "SELECT [Users].[Id], [Users].[Name], [Users].[AddressId], [Users].[PhoneId], [Users].[OfficePhoneId], [Users].[Deleted], [Users].[UpdatedAt], " +
-            "[Cars_Id].[Id], [Cars_Id].[Name], [Cars_Id].[Data], [Cars_Id].[UserId], [Cars_Id].[Status] " +
+            "[Cars_Id].[Id], [Cars_Id].[Name], [Cars_Id].[Data], [Cars_Id].[UserId], [Cars_Id].[Price], [Cars_Id].[PreviousPrice], [Cars_Id].[Status] " +
             "FROM [Users] LEFT JOIN [Cars] AS [Cars_Id] ON [Users].[Id] = [Cars_Id].[UserId] " +
             "WHERE [Users].[Deleted] IS NULL", sqlQuery.GetSql());
     }
@@ -446,6 +446,42 @@ public class MSSQLGeneratorTests
                      "Phones_PhoneId.Id, Phones_PhoneId.PNumber, Phones_PhoneId.IsActive, Phones_PhoneId.Code, Phones_PhoneId.Deleted " +
                      "FROM Users INNER JOIN DAB.Phones AS Phones_PhoneId ON Users.PhoneId = Phones_PhoneId.Id " +
                      "WHERE (Phones_PhoneId.PNumber = @PhonePNumber_p0) AND Users.Deleted IS NULL", sqlQuery.GetSql());
+    }
+
+    [Fact]
+    public static void ColumnToColumnComparison()
+    {
+        var sqlGenerator = new SqlGenerator<User>(_sqlConnector, true);
+        var sqlQuery = sqlGenerator.GetSelectAll(x => x.PhoneId > x.OfficePhoneId, null);
+
+        Assert.Equal(
+            "SELECT [Users].[Id], [Users].[Name], [Users].[AddressId], [Users].[PhoneId], [Users].[OfficePhoneId], [Users].[Deleted], [Users].[UpdatedAt] FROM [Users] " +
+            "WHERE ([Users].[PhoneId] > [Users].[OfficePhoneId]) AND [Users].[Deleted] IS NULL", sqlQuery.GetSql());
+        Assert.Empty(sqlQuery.Param as IDictionary<string, object> ?? new Dictionary<string, object>());
+    }
+
+    [Fact]
+    public static void ColumnToColumnComparisonCombinedWithValue()
+    {
+        var sqlGenerator = new SqlGenerator<User>(_sqlConnector, true);
+        var sqlQuery = sqlGenerator.GetSelectAll(x => x.PhoneId == x.OfficePhoneId && x.Name == "Sam", null);
+
+        Assert.Equal(
+            "SELECT [Users].[Id], [Users].[Name], [Users].[AddressId], [Users].[PhoneId], [Users].[OfficePhoneId], [Users].[Deleted], [Users].[UpdatedAt] FROM [Users] " +
+            "WHERE ([Users].[PhoneId] = [Users].[OfficePhoneId] AND [Users].[Name] = @Name_p0) AND [Users].[Deleted] IS NULL", sqlQuery.GetSql());
+    }
+
+    [Fact]
+    public static void ColumnToColumnComparisonOnJoin()
+    {
+        var sqlGenerator = new SqlGenerator<User>(_sqlConnector, true);
+        var sqlQuery = sqlGenerator.GetSelectFirst(x => x.PhoneId == x.Phone.Id, null, user => user.Phone);
+
+        Assert.Equal(
+            "SELECT [Users].[Id], [Users].[Name], [Users].[AddressId], [Users].[PhoneId], [Users].[OfficePhoneId], [Users].[Deleted], [Users].[UpdatedAt], " +
+            "[Phones_PhoneId].[Id], [Phones_PhoneId].[PNumber], [Phones_PhoneId].[IsActive], [Phones_PhoneId].[Code], [Phones_PhoneId].[Deleted] " +
+            "FROM [Users] INNER JOIN [DAB].[Phones] AS [Phones_PhoneId] ON [Users].[PhoneId] = [Phones_PhoneId].[Id] " +
+            "WHERE ([Users].[PhoneId] = [Phones_PhoneId].[Id]) AND [Users].[Deleted] IS NULL", sqlQuery.GetSql());
     }
 
     [Fact]

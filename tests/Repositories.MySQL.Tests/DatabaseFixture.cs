@@ -44,7 +44,7 @@ public class DatabaseFixture : IDisposable
 
         Db.Connection.Execute("CREATE TABLE IF NOT EXISTS `Cars` " +
                               "(`Id` int not null auto_increment, `Name` varchar(256) not null, " +
-                              "`UserId` int not null, `Status` int not null, Data binary(16) null, PRIMARY KEY  (`Id`));");
+                              "`UserId` int not null, `Price` decimal(18,2) not null, `PreviousPrice` decimal(18,2) not null, `Status` int not null, Data binary(16) null, PRIMARY KEY  (`Id`));");
 
         Db.Connection.Execute("CREATE TABLE IF NOT EXISTS `Addresses`" +
                               "(`Id` int not null auto_increment, `Street` varchar(256) not null, " +
