@@ -294,6 +294,36 @@ public class MSSQLGeneratorTests
     }
 
     [Fact]
+    public static void ContainsFilledArrayPredicate()
+    {
+        var sqlGenerator = new SqlGenerator<User>(_sqlConnector, true);
+        var ids = new[] { 1, 2, 3 };
+        var sqlQuery = sqlGenerator.GetSelectAll(x => ids.Contains(x.Id), null);
+
+        var parameters = sqlQuery.Param as IDictionary<string, object>;
+        Assert.Equal(ids, parameters["Id_p0"]);
+
+        Assert.Equal(
+            "SELECT [Users].[Id], [Users].[Name], [Users].[AddressId], [Users].[PhoneId], [Users].[OfficePhoneId], [Users].[Deleted], [Users].[UpdatedAt] " +
+            "FROM [Users] WHERE ([Users].[Id] IN @Id_p0) AND [Users].[Deleted] IS NULL", sqlQuery.GetSql());
+    }
+
+    [Fact]
+    public static void ContainsStringArrayPredicate()
+    {
+        var sqlGenerator = new SqlGenerator<User>(_sqlConnector, true);
+        var names = new[] { "TestName0", "TestName1" };
+        var sqlQuery = sqlGenerator.GetSelectAll(x => names.Contains(x.Name), null);
+
+        var parameters = sqlQuery.Param as IDictionary<string, object>;
+        Assert.Equal(names, parameters["Name_p0"]);
+
+        Assert.Equal(
+            "SELECT [Users].[Id], [Users].[Name], [Users].[AddressId], [Users].[PhoneId], [Users].[OfficePhoneId], [Users].[Deleted], [Users].[UpdatedAt] " +
+            "FROM [Users] WHERE ([Users].[Name] IN @Name_p0) AND [Users].[Deleted] IS NULL", sqlQuery.GetSql());
+    }
+
+    [Fact]
     public static void NotContainsPredicate()
     {
         var sqlGenerator = new SqlGenerator<User>(_sqlConnector, true);

@@ -179,8 +179,8 @@ internal static class ExpressionHelper
 
     public static object? GetValuesFromCollection(MethodCallExpression callExpr)
     {
-        var expr = (callExpr.Method.IsStatic ? callExpr.Arguments.First() : callExpr.Object)
-            as MemberExpression;
+        var collection = callExpr.Method.IsStatic ? callExpr.Arguments.First() : callExpr.Object;
+        var expr = UnwrapSpanConversion(collection) as MemberExpression;
 
         try
         {
@@ -190,6 +190,22 @@ internal static class ExpressionHelper
         {
             throw new NotSupportedException(callExpr.Method.Name + " isn't supported");
         }
+    }
+
+    /// <summary>
+    /// Unwraps the implicit array to span conversion the compiler inserts since C# 14,
+    /// when <c>array.Contains(x)</c> binds to <c>MemoryExtensions.Contains</c> instead of <c>Enumerable.Contains</c>.
+    /// </summary>
+    private static Expression? UnwrapSpanConversion(Expression? expr)
+    {
+        if (expr is MethodCallExpression { Method: { IsSpecialName: true, Name: "op_Implicit" }, Arguments.Count: 1 } conversion
+            && conversion.Type.Name is "ReadOnlySpan`1" or "Span`1")
+            expr = conversion.Arguments[0];
+
+        while (expr is UnaryExpression { NodeType: ExpressionType.Convert or ExpressionType.ConvertChecked } unary)
+            expr = unary.Operand;
+
+        return expr;
     }
 
     public static MemberExpression? GetMemberExpression(Expression? expression)
