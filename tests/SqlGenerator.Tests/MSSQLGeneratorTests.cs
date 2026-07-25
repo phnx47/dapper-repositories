@@ -324,6 +324,15 @@ public class MSSQLGeneratorTests
     }
 
     [Fact]
+    public static void ContainsInlineCollectionThrows()
+    {
+        var sqlGenerator = new SqlGenerator<User>(_sqlConnector, true);
+
+        Assert.Throws<NotSupportedException>(() => sqlGenerator.GetSelectAll(x => new[] { 1, 2, 3 }.Contains(x.Id), null));
+        Assert.Throws<NotSupportedException>(() => sqlGenerator.GetSelectAll(x => new List<int> { 1, 2, 3 }.Contains(x.Id), null));
+    }
+
+    [Fact]
     public static void NotContainsPredicate()
     {
         var sqlGenerator = new SqlGenerator<User>(_sqlConnector, true);

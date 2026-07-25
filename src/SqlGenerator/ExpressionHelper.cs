@@ -180,7 +180,9 @@ internal static class ExpressionHelper
     public static object? GetValuesFromCollection(MethodCallExpression callExpr)
     {
         var collection = callExpr.Method.IsStatic ? callExpr.Arguments.First() : callExpr.Object;
-        var expr = UnwrapSpanConversion(collection) as MemberExpression;
+
+        if (UnwrapSpanConversion(collection) is not MemberExpression expr)
+            throw new NotSupportedException($"'{callExpr.Method.Name}' requires the collection to be a variable, field or property");
 
         try
         {
