@@ -652,4 +652,14 @@ public class OracleGeneratorTests
         Assert.Equal("123%", parameters21["PhonePNumber_p0"].ToString());
         Assert.Equal("%abc%", parameters21["Name_p1"].ToString());
     }
+
+    [Fact]
+    public static void UpdateWithJoinThrows()
+    {
+        var sqlGenerator = new SqlGenerator<User>(_sqlConnector);
+        var user = new User { Id = 10, Name = "John", Addresses = new Address() };
+        var ex = Assert.Throws<NotSupportedException>(() => sqlGenerator.GetUpdate(user, x => x.Addresses));
+
+        Assert.Contains("only for MySQL", ex.Message);
+    }
 }

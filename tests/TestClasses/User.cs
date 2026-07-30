@@ -13,6 +13,9 @@ public class User : BaseEntity<int>
     [Column(Order = 1)]
     public string Name { get; set; }
 
+    // Read-only, so it's never mapped to a column
+    public string DisplayName => $"{Name} #{Id}";
+
     public int AddressId { get; set; }
 
     public int PhoneId { get; set; }
