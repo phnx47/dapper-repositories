@@ -171,4 +171,14 @@ public class PostgreSQLGeneratorTests
         Assert.Equal("UPDATE \"DAB\".\"Phones\" SET \"PNumber\" = @PNumber0, \"IsActive\" = @IsActive0, \"Deleted\" = @Deleted0 WHERE \"Id\" = @Id0; " +
                      "UPDATE \"DAB\".\"Phones\" SET \"PNumber\" = @PNumber1, \"IsActive\" = @IsActive1, \"Deleted\" = @Deleted1 WHERE \"Id\" = @Id1", sqlQuery.GetSql());
     }
+
+    [Fact]
+    public static void UpdateWithJoinThrows()
+    {
+        var sqlGenerator = new SqlGenerator<User>(_sqlConnector);
+        var user = new User { Id = 10, Name = "John", Addresses = new Address() };
+        var ex = Assert.Throws<NotSupportedException>(() => sqlGenerator.GetUpdate(user, x => x.Addresses));
+
+        Assert.Contains("only for MySQL", ex.Message);
+    }
 }

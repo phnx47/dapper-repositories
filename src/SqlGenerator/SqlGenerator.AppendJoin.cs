@@ -14,17 +14,30 @@ namespace MicroOrm.Dapper.Repositories.SqlGenerator;
 public partial class SqlGenerator<TEntity>
     where TEntity : class
 {
+    /// <summary>
+    /// Resolve an "includes" expression to the join property it names
+    /// </summary>
+    private PropertyInfo GetJoinProperty(Expression<Func<TEntity, object>> include, string paramName, out JoinAttributeBase attribute)
+    {
+        var propertyName = ExpressionHelper.GetPropertyName(include);
+
+        var property = AllProperties.FirstOrDefault(q => q.Name == propertyName)
+            ?? throw new ArgumentException($"Can't join [{propertyName}]: not a writable property of {typeof(TEntity).Name}", paramName);
+
+        attribute = property.GetCustomAttribute<JoinAttributeBase>()
+            ?? throw new ArgumentException(
+                $"Can't join [{propertyName}]: property isn't marked with [LeftJoin], [InnerJoin], [RightJoin] or [CrossJoin]", paramName);
+
+        return property;
+    }
+
     private string AppendJoinToUpdate<TBase>(TBase entity, SqlQuery originalBuilder, params Expression<Func<TEntity, object>>[] includes) where TBase : notnull
     {
         var joinBuilder = new StringBuilder();
 
         foreach (var include in includes)
         {
-            var joinProperty = AllProperties.First(q => q.Name == ExpressionHelper.GetPropertyName(include));
-            var attrJoin = joinProperty.GetCustomAttribute<JoinAttributeBase>();
-
-            if (attrJoin == null)
-                continue;
+            var joinProperty = GetJoinProperty(include, nameof(includes), out var attrJoin);
 
             var declaringType = joinProperty.ReflectedType?.GetTypeInfo();
             var tableAttribute = declaringType?.GetCustomAttribute<TableAttribute>();
@@ -35,7 +48,12 @@ public partial class SqlGenerator<TEntity>
 
             var joinEntity = entity.GetType().GetProperty(joinProperty.Name)?.GetValue(entity, null);
             if (joinEntity == null)
-                return string.Empty;
+                continue;
+
+            // "UPDATE t1 JOIN t2 ON ... SET ..." is MySQL-only syntax; every other provider rejects it at parse time
+            if (Provider != SqlProvider.MySQL)
+                throw new NotSupportedException(
+                    $"Update with joins isn't supported for {Provider}, only for MySQL. Update [{joinProperty.Name}] with a separate query");
 
             var dict = properties.ToDictionary(prop => $"{prop.PropertyInfo.ReflectedType?.Name}{prop.PropertyName}",
                 prop => joinType.GetProperty(prop.PropertyName)?.GetValue(joinEntity, null));
@@ -113,11 +131,7 @@ public partial class SqlGenerator<TEntity>
 
         foreach (var include in includes)
         {
-            var joinProperty = AllProperties.First(q => q.Name == ExpressionHelper.GetPropertyName(include));
-            var attrJoin = joinProperty.GetCustomAttribute<JoinAttributeBase>();
-
-            if (attrJoin == null)
-                continue;
+            var joinProperty = GetJoinProperty(include, nameof(includes), out var attrJoin);
 
             var declaringType = joinProperty.ReflectedType?.GetTypeInfo();
             var tableAttribute = declaringType?.GetCustomAttribute<TableAttribute>();

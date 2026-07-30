@@ -819,4 +819,50 @@ public class MSSQLGeneratorTests
         Assert.True("123%" == parameters21["PhonePNumber_p0"].ToString());
         Assert.True("%abc%" == parameters21["Name_p1"].ToString());
     }
+
+    [Fact]
+    public static void UpdateWithNonJoinIncludeThrows()
+    {
+        var sqlGenerator = new SqlGenerator<User>(_sqlConnector);
+        var ex = Assert.Throws<ArgumentException>(() => sqlGenerator.GetUpdate(new User { Id = 10, Name = "John" }, x => x.Name));
+
+        Assert.Contains("Can't join [Name]", ex.Message);
+    }
+
+    [Fact]
+    public static void UpdateWithPredicateAndNonJoinIncludeThrows()
+    {
+        var sqlGenerator = new SqlGenerator<User>(_sqlConnector);
+        var ex = Assert.Throws<ArgumentException>(() => sqlGenerator.GetUpdate(x => x.Id == 10, new User { Name = "John" }, x => x.Name));
+
+        Assert.Contains("Can't join [Name]", ex.Message);
+    }
+
+    [Fact]
+    public static void UpdateWithReadOnlyIncludeThrows()
+    {
+        var sqlGenerator = new SqlGenerator<User>(_sqlConnector);
+        var ex = Assert.Throws<ArgumentException>(() => sqlGenerator.GetUpdate(new User { Id = 10, Name = "John" }, x => x.DisplayName));
+
+        Assert.Contains("not a writable property", ex.Message);
+    }
+
+    [Fact]
+    public static void UpdateWithJoinThrows()
+    {
+        var sqlGenerator = new SqlGenerator<User>(_sqlConnector);
+        var user = new User { Id = 10, Name = "John", Addresses = new Address() };
+        var ex = Assert.Throws<NotSupportedException>(() => sqlGenerator.GetUpdate(user, x => x.Addresses));
+
+        Assert.Contains("only for MySQL", ex.Message);
+    }
+
+    [Fact]
+    public static void SelectWithNonJoinIncludeThrows()
+    {
+        var sqlGenerator = new SqlGenerator<User>(_sqlConnector);
+        var ex = Assert.Throws<ArgumentException>(() => sqlGenerator.GetSelectAll(null, null, x => x.Name));
+
+        Assert.Contains("Can't join [Name]", ex.Message);
+    }
 }

@@ -54,4 +54,14 @@ public class SQLiteGeneratorTests
         Assert.Equal("SELECT Cities.Identifier, Cities.Name FROM Cities WHERE Cities.Identifier = @Identifier_p0 AND Cities.Name = @Name_p1 LIMIT 1",
             sqlQuery.GetSql());
     }
+
+    [Fact]
+    public static void UpdateWithJoinThrows()
+    {
+        var sqlGenerator = new SqlGenerator<User>(_sqlConnector);
+        var user = new User { Id = 10, Name = "John", Addresses = new Address() };
+        var ex = Assert.Throws<NotSupportedException>(() => sqlGenerator.GetUpdate(user, x => x.Addresses));
+
+        Assert.Contains("only for MySQL", ex.Message);
+    }
 }

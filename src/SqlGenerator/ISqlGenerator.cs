@@ -124,11 +124,20 @@ public interface ISqlGenerator<TEntity> where TEntity : class
     /// <summary>
     ///     Get SQL for UPDATE Query
     /// </summary>
+    /// <param name="entity">Entity to update; every mapped column is written</param>
+    /// <param name="includes">Join properties whose rows are updated along with the entity. MySQL only</param>
+    /// <exception cref="ArgumentException">A property in <paramref name="includes" /> isn't marked with a join attribute</exception>
+    /// <exception cref="NotSupportedException">A join would be written for a provider other than MySQL</exception>
     SqlQuery GetUpdate(TEntity entity, params Expression<Func<TEntity, object>>[] includes);
 
     /// <summary>
     ///     Get SQL for UPDATE Query
     /// </summary>
+    /// <param name="predicate">Filter for the rows to update</param>
+    /// <param name="entity">Entity to update; every mapped column is written</param>
+    /// <param name="includes">Join properties whose rows are updated along with the entity. MySQL only</param>
+    /// <exception cref="ArgumentException">A property in <paramref name="includes" /> isn't marked with a join attribute</exception>
+    /// <exception cref="NotSupportedException">A join would be written for a provider other than MySQL</exception>
     SqlQuery GetUpdate(Expression<Func<TEntity, bool>>? predicate, TEntity entity, params Expression<Func<TEntity, object>>[] includes);
 
     /// <summary>

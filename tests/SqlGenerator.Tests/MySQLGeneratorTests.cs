@@ -264,14 +264,20 @@ public class MySQLGeneratorTests
     }
 
     [Fact]
-    public static void UpdateWithPredicateAndJoin()
+    public static void SetOrderByAndSetLimitWithWhere()
     {
-        var sqlGenerator = new SqlGenerator<User>(_sqlConnector);
-        var model = new User { Addresses = new Address() };
-        var sqlQuery = sqlGenerator.GetUpdate(q => q.AddressId == 1, model, x => x.Addresses);
+        var sqlGenerator = new SqlGenerator<City>(_sqlConnector);
+
+        var filterData = new FilterData
+        {
+            OrderInfo = new OrderInfo { CustomQuery = "Identifier ASC, Name DESC " },
+            LimitInfo = new LimitInfo { Limit = 10, Offset = 2 }
+        };
+
+        var sqlQuery = sqlGenerator.GetSelectAll(q => q.Name != "City", filterData);
         var sql = sqlQuery.GetSql();
         Assert.Equal(
-            "UPDATE Users LEFT JOIN Addresses ON Users.AddressId = Addresses.Id SET Users.Name = @UserName, Users.AddressId = @UserAddressId, Users.PhoneId = @UserPhoneId, Users.OfficePhoneId = @UserOfficePhoneId, Users.Deleted = @UserDeleted, Users.UpdatedAt = @UserUpdatedAt, Addresses.Street = @AddressStreet, Addresses.CityId = @AddressCityId WHERE Users.AddressId = @AddressId_p0",
+            "SELECT Cities.Identifier, Cities.Name FROM Cities WHERE Cities.Name != @Name_p0 ORDER BY Identifier ASC, Name DESC LIMIT 10 OFFSET 2",
             sql);
     }
 
@@ -288,20 +294,32 @@ public class MySQLGeneratorTests
     }
 
     [Fact]
-    public static void SetOrderByAndSetLimitWithWhere()
+    public static void UpdateWithPredicateAndJoin()
     {
-        var sqlGenerator = new SqlGenerator<City>(_sqlConnector);
-
-        var filterData = new FilterData
-        {
-            OrderInfo = new OrderInfo { CustomQuery = "Identifier ASC, Name DESC " },
-            LimitInfo = new LimitInfo { Limit = 10, Offset = 2 }
-        };
-
-        var sqlQuery = sqlGenerator.GetSelectAll(q => q.Name != "City", filterData);
+        var sqlGenerator = new SqlGenerator<User>(_sqlConnector);
+        var model = new User { Addresses = new Address() };
+        var sqlQuery = sqlGenerator.GetUpdate(q => q.AddressId == 1, model, x => x.Addresses);
         var sql = sqlQuery.GetSql();
         Assert.Equal(
-            "SELECT Cities.Identifier, Cities.Name FROM Cities WHERE Cities.Name != @Name_p0 ORDER BY Identifier ASC, Name DESC LIMIT 10 OFFSET 2",
+            "UPDATE Users LEFT JOIN Addresses ON Users.AddressId = Addresses.Id SET Users.Name = @UserName, Users.AddressId = @UserAddressId, Users.PhoneId = @UserPhoneId, Users.OfficePhoneId = @UserOfficePhoneId, Users.Deleted = @UserDeleted, Users.UpdatedAt = @UserUpdatedAt, Addresses.Street = @AddressStreet, Addresses.CityId = @AddressCityId WHERE Users.AddressId = @AddressId_p0",
             sql);
+    }
+
+    [Fact]
+    public static void UpdateWithNonJoinIncludeThrows()
+    {
+        var sqlGenerator = new SqlGenerator<User>(_sqlConnector);
+        var ex = Assert.Throws<ArgumentException>(() => sqlGenerator.GetUpdate(new User { Id = 10, Name = "John" }, x => x.Name));
+
+        Assert.Contains("Can't join [Name]", ex.Message);
+    }
+
+    [Fact]
+    public static void UpdateWithReadOnlyIncludeThrows()
+    {
+        var sqlGenerator = new SqlGenerator<User>(_sqlConnector);
+        var ex = Assert.Throws<ArgumentException>(() => sqlGenerator.GetUpdate(new User { Id = 10, Name = "John" }, x => x.DisplayName));
+
+        Assert.Contains("not a writable property", ex.Message);
     }
 }
