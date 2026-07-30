@@ -7,11 +7,9 @@ using MicroOrm.Dapper.Repositories.Attributes;
 
 namespace MicroOrm.Dapper.Repositories.SqlGenerator;
 
-
 public partial class SqlGenerator<TEntity>
     where TEntity : class
 {
-
     public virtual SqlQuery GetUpdate(TEntity entity, params Expression<Func<TEntity, object>>[] includes)
     {
         var properties = SqlProperties.Where(p =>
@@ -188,18 +186,12 @@ public partial class SqlGenerator<TEntity>
 
     private string GetFieldsUpdate(string? tableName, IEnumerable<SqlPropertyMetadata> properties, bool useMarks)
     {
-        if (Provider == SqlProvider.SQLite || Provider == SqlProvider.PostgreSQL)
-        {
-            //***
-            //*** Building update query for sqlite
-            //***
-            return string.Join(", ", properties
-                .Select(p => $"{(useMarks ? p.ColumnName : p.CleanColumnName)} = {ParameterSymbol}{p.PropertyInfo.ReflectedType?.Name}{p.PropertyName}"));
-        }
-        else
-        {
-            return string.Join(", ", properties
-                .Select(p => $"{tableName}.{(useMarks ? p.ColumnName : p.CleanColumnName)} = {ParameterSymbol}{p.PropertyInfo.ReflectedType?.Name}{p.PropertyName}"));
-        }
+        return Provider is SqlProvider.SQLite or SqlProvider.PostgreSQL
+            ? string.Join(", ", properties
+                .Select(p =>
+                    $"{(useMarks ? p.ColumnName : p.CleanColumnName)} = {ParameterSymbol}{p.PropertyInfo.ReflectedType?.Name}{p.PropertyName}"))
+            : string.Join(", ", properties
+                .Select(p =>
+                    $"{tableName}.{(useMarks ? p.ColumnName : p.CleanColumnName)} = {ParameterSymbol}{p.PropertyInfo.ReflectedType?.Name}{p.PropertyName}"));
     }
 }
