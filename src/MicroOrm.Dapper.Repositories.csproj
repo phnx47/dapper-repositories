@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Description>CRUD for Dapper</Description>
+    <Description>Generate SQL for CRUD operations based on your POCO classes for Dapper</Description>
     <Copyright>2015 © phnx47</Copyright>
     <Authors>phnx47 and contributors</Authors>
     <TargetFrameworks>net462;netstandard2.0;net8.0;net10.0</TargetFrameworks>
