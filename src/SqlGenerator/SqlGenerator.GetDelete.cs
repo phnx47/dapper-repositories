@@ -1,8 +1,6 @@
 using System;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Reflection;
-using MicroOrm.Dapper.Repositories.Attributes;
 
 namespace MicroOrm.Dapper.Repositories.SqlGenerator;
 
@@ -35,17 +33,9 @@ public partial class SqlGenerator<TEntity>
                 .Append(" = ")
                 .Append(LogicalDeleteValue);
 
-            if (HasUpdatedAt && UpdatedAtProperty.GetCustomAttribute<UpdatedAtAttribute>() is { } attribute)
+            if (HasUpdatedAt)
             {
-                var offset = attribute.TimeKind == DateTimeKind.Local
-                    ? new DateTimeOffset(DateTime.Now)
-                    : new DateTimeOffset(DateTime.UtcNow);
-                if (attribute.OffSet != 0)
-                {
-                    offset = offset.ToOffset(TimeSpan.FromHours(attribute.OffSet));
-                }
-
-                UpdatedAtProperty.SetValue(entity, offset.DateTime);
+                SetUpdatedAt(entity);
 
                 sqlQuery.SqlBuilder
                     .Append(", ")

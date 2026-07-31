@@ -1,8 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
-using MicroOrm.Dapper.Repositories.Attributes;
 
 namespace MicroOrm.Dapper.Repositories.SqlGenerator;
 
@@ -32,18 +30,7 @@ public partial class SqlGenerator<TEntity>
         for (var i = 0; i < entitiesArray.Length; i++)
         {
             var entity = entitiesArray[i];
-            if (HasUpdatedAt && UpdatedAtProperty.GetCustomAttribute<UpdatedAtAttribute>() is { } attribute)
-            {
-                var offset = attribute.TimeKind == DateTimeKind.Local
-                    ? new DateTimeOffset(DateTime.Now)
-                    : new DateTimeOffset(DateTime.UtcNow);
-                if (attribute.OffSet != 0)
-                {
-                    offset = offset.ToOffset(TimeSpan.FromHours(attribute.OffSet));
-                }
-
-                UpdatedAtProperty.SetValue(entity, offset.DateTime);
-            }
+            SetUpdatedAt(entity);
 
             if (Provider != SqlProvider.Oracle)
             {

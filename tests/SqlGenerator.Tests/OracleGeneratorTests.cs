@@ -662,4 +662,91 @@ public class OracleGeneratorTests
 
         Assert.Contains("only for MySQL", ex.Message);
     }
+
+    [Fact]
+    public static void UpdateColumns()
+    {
+        var sqlGenerator = new SqlGenerator<User>(_sqlConnector);
+        var user = new User { Id = 10, Name = "John", AddressId = 5 };
+        var sqlQuery = sqlGenerator.GetUpdateColumns(user, x => x.Name);
+
+        Assert.Equal("UPDATE Users SET Users.Name = :UserName, Users.UpdatedAt = :UserUpdatedAt WHERE Users.Id = :UserId", sqlQuery.GetSql());
+        Assert.NotNull(user.UpdatedAt);
+
+        var parameters = sqlQuery.Param as IDictionary<string, object>;
+        Assert.Equal(3, parameters.Count);
+        Assert.Equal("John", parameters["UserName"]);
+        Assert.Equal(10, parameters["UserId"]);
+    }
+
+    [Fact]
+    public static void UpdateColumnsWithPredicate()
+    {
+        var sqlGenerator = new SqlGenerator<User>(_sqlConnector);
+        var user = new User { Name = "John", AddressId = 5 };
+        var sqlQuery = sqlGenerator.GetUpdateColumns(x => x.Id == 10, user, x => x.Name, x => x.AddressId);
+
+        Assert.Equal("UPDATE Users SET Users.Name = :UserName, Users.AddressId = :UserAddressId, Users.UpdatedAt = :UserUpdatedAt WHERE Users.Id = :Id_p0",
+            sqlQuery.GetSql());
+    }
+
+    [Fact]
+    public static void UpdateColumnsWithDuplicate()
+    {
+        var sqlGenerator = new SqlGenerator<User>(_sqlConnector);
+        var sqlQuery = sqlGenerator.GetUpdateColumns(new User { Id = 10, Name = "John" }, x => x.Name, x => x.Name);
+
+        Assert.Equal("UPDATE Users SET Users.Name = :UserName, Users.UpdatedAt = :UserUpdatedAt WHERE Users.Id = :UserId", sqlQuery.GetSql());
+    }
+
+    [Fact]
+    public static void UpdateColumnsWithKeyThrows()
+    {
+        var sqlGenerator = new SqlGenerator<User>(_sqlConnector);
+        var ex = Assert.Throws<ArgumentException>(() => sqlGenerator.GetUpdateColumns(new User { Id = 10, Name = "John" }, x => x.Id));
+
+        Assert.Contains("Can't update [Id]", ex.Message);
+    }
+
+    [Fact]
+    public static void UpdateColumnsWithIgnoreUpdateThrows()
+    {
+        var sqlGenerator = new SqlGenerator<Phone>(_sqlConnector);
+        var ex = Assert.Throws<ArgumentException>(() => sqlGenerator.GetUpdateColumns(new Phone { Id = 10, Code = "ZZZ" }, x => x.Code));
+
+        Assert.Contains("[IgnoreUpdate]", ex.Message);
+    }
+
+    [Fact]
+    public static void UpdateColumnsWithReadOnlyColumnThrows()
+    {
+        var sqlGenerator = new SqlGenerator<User>(_sqlConnector);
+        var ex = Assert.Throws<ArgumentException>(() => sqlGenerator.GetUpdateColumns(new User { Id = 10, Name = "John" }, x => x.DisplayName));
+
+        Assert.Contains("not a mapped column", ex.Message);
+    }
+
+    [Fact]
+    public static void UpdateAnonymousWithUpdatedAt()
+    {
+        var sqlGenerator = new SqlGenerator<User>(_sqlConnector);
+        var sqlQuery = sqlGenerator.GetUpdate(x => x.Id == 10, new { Name = "John" });
+
+        Assert.Equal("UPDATE Users SET Users.Name = :UserName, Users.UpdatedAt = :UserUpdatedAt WHERE Users.Id = :Id_p0", sqlQuery.GetSql());
+
+        var parameters = sqlQuery.Param as IDictionary<string, object>;
+        Assert.IsType<DateTime>(parameters["UserUpdatedAt"]);
+    }
+
+    [Fact]
+    public static void UpdateDictionaryWithUpdatedAt()
+    {
+        var sqlGenerator = new SqlGenerator<User>(_sqlConnector);
+        var sqlQuery = sqlGenerator.GetUpdate(x => x.Id == 10, new Dictionary<string, object> { { "Name", "John" } });
+
+        Assert.Equal("UPDATE Users SET Users.Name = :UserName, Users.UpdatedAt = :UserUpdatedAt WHERE Users.Id = :Id_p0", sqlQuery.GetSql());
+
+        var parameters = sqlQuery.Param as IDictionary<string, object>;
+        Assert.IsType<DateTime>(parameters["UserUpdatedAt"]);
+    }
 }

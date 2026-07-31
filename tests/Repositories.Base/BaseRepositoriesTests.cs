@@ -418,6 +418,68 @@ public abstract class BaseRepositoriesTests
     }
 
     [Fact]
+    public void InsertAndUpdateColumns()
+    {
+        var user = new User
+        {
+            Name = "John",
+            AddressId = 100
+        };
+
+        var insert = Db.Users.Insert(user);
+        Assert.True(insert);
+
+        var insertedAt = Db.Users.Find(q => q.Id == user.Id).UpdatedAt;
+        user.Name = "John1";
+        user.AddressId = 200;
+
+        var update = Db.Users.UpdateColumns(user, x => x.Name);
+        Assert.True(update);
+
+        var userFromDb = Db.Users.Find(q => q.Id == user.Id);
+        Assert.Equal("John1", userFromDb.Name);
+        Assert.Equal(100, userFromDb.AddressId);
+        Assert.True(userFromDb.UpdatedAt >= insertedAt);
+
+        update = Db.Users.UpdateColumns(q => q.Id == user.Id, user, x => x.AddressId);
+        Assert.True(update);
+
+        userFromDb = Db.Users.Find(q => q.Id == user.Id);
+        Assert.Equal(200, userFromDb.AddressId);
+    }
+
+    [Fact]
+    public async Task InsertAndUpdateColumnsAsync()
+    {
+        var user = new User
+        {
+            Name = "John",
+            AddressId = 100
+        };
+
+        var insert = await Db.Users.InsertAsync(user, TestContext.Current.CancellationToken);
+        Assert.True(insert);
+
+        var insertedAt = (await Db.Users.FindAsync(q => q.Id == user.Id, TestContext.Current.CancellationToken)).UpdatedAt;
+        user.Name = "John1";
+        user.AddressId = 200;
+
+        var update = await Db.Users.UpdateColumnsAsync(user, TestContext.Current.CancellationToken, x => x.Name);
+        Assert.True(update);
+
+        var userFromDb = await Db.Users.FindAsync(q => q.Id == user.Id, TestContext.Current.CancellationToken);
+        Assert.Equal("John1", userFromDb.Name);
+        Assert.Equal(100, userFromDb.AddressId);
+        Assert.True(userFromDb.UpdatedAt >= insertedAt);
+
+        update = await Db.Users.UpdateColumnsAsync(q => q.Id == user.Id, user, TestContext.Current.CancellationToken, x => x.AddressId);
+        Assert.True(update);
+
+        userFromDb = await Db.Users.FindAsync(q => q.Id == user.Id, TestContext.Current.CancellationToken);
+        Assert.Equal(200, userFromDb.AddressId);
+    }
+
+    [Fact]
     public void InsertBinaryData()
     {
         var guid = Guid.NewGuid();
