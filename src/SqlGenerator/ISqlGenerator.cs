@@ -141,19 +141,39 @@ public interface ISqlGenerator<TEntity> where TEntity : class
     SqlQuery GetUpdate(Expression<Func<TEntity, bool>>? predicate, TEntity entity, params Expression<Func<TEntity, object>>[] includes);
 
     /// <summary>
+    ///     Get SQL for UPDATE Query of the listed columns only
+    /// </summary>
+    /// <param name="entity">Entity the values are read from; rows are matched by [Key]</param>
+    /// <param name="column">Column to update</param>
+    /// <param name="columns">More columns to update</param>
+    /// <exception cref="ArgumentException">A column isn't mapped, or is marked with [Key] or [IgnoreUpdate]</exception>
+    SqlQuery GetUpdateColumns(TEntity entity, Expression<Func<TEntity, object>> column, params Expression<Func<TEntity, object>>[] columns);
+
+    /// <summary>
+    ///     Get SQL for UPDATE Query of the listed columns only
+    /// </summary>
+    /// <param name="predicate">Filter for the rows to update</param>
+    /// <param name="entity">Entity the values are read from</param>
+    /// <param name="column">Column to update</param>
+    /// <param name="columns">More columns to update</param>
+    /// <exception cref="ArgumentException">A column isn't mapped, or is marked with [Key] or [IgnoreUpdate]</exception>
+    SqlQuery GetUpdateColumns(Expression<Func<TEntity, bool>>? predicate, TEntity entity, Expression<Func<TEntity, object>> column,
+        params Expression<Func<TEntity, object>>[] columns);
+
+    /// <summary>
     ///     Get the SQL statement to update the fields under the anonymous class
     ///     (Filtering fields in anonymous classes that are inconsistent with the entity type)
     /// </summary>
-    /// <param name="predicate"></param>
-    /// <param name="setPropertyObj"></param>
+    /// <param name="predicate">Filter for the rows to update</param>
+    /// <param name="setPropertyObj">Object whose properties name the columns to update and hold their values</param>
     SqlQuery GetUpdate(Expression<Func<TEntity, bool>>? predicate, object setPropertyObj);
 
     /// <summary>
     ///     Get the SQL statement to update the fields in the setPropertyDict dictionary
     ///     (Validates fields in the dictionary that are inconsistent with the entity type)
     /// </summary>
-    /// <param name="predicate"></param>
-    /// <param name="setPropertyDict"></param>
+    /// <param name="predicate">Filter for the rows to update</param>
+    /// <param name="setPropertyDict">Columns to update and their values</param>
     SqlQuery GetUpdate(Expression<Func<TEntity, bool>>? predicate, Dictionary<string, object> setPropertyDict);
 
     /// <summary>

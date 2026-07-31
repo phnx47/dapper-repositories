@@ -196,6 +196,76 @@ public interface IDapperRepository<TEntity> : IReadOnlyDapperRepository<TEntity>
         params Expression<Func<TEntity, object>>[] includes);
 
     /// <summary>
+    ///     Update the listed columns of the object in DB
+    /// </summary>
+    bool UpdateColumns(TEntity instance, Expression<Func<TEntity, object>> column, params Expression<Func<TEntity, object>>[] columns);
+
+    /// <summary>
+    ///     Update the listed columns of the object in DB
+    /// </summary>
+    Task<bool> UpdateColumnsAsync(TEntity instance, Expression<Func<TEntity, object>> column, params Expression<Func<TEntity, object>>[] columns);
+
+    /// <summary>
+    ///     Update the listed columns of the object in DB
+    /// </summary>
+    Task<bool> UpdateColumnsAsync(TEntity instance, CancellationToken cancellationToken, Expression<Func<TEntity, object>> column,
+        params Expression<Func<TEntity, object>>[] columns);
+
+    /// <summary>
+    ///     Update the listed columns of the object in DB
+    /// </summary>
+    bool UpdateColumns(TEntity instance, IDbTransaction? transaction, Expression<Func<TEntity, object>> column,
+        params Expression<Func<TEntity, object>>[] columns);
+
+    /// <summary>
+    ///     Update the listed columns of the object in DB
+    /// </summary>
+    Task<bool> UpdateColumnsAsync(TEntity instance, IDbTransaction? transaction, Expression<Func<TEntity, object>> column,
+        params Expression<Func<TEntity, object>>[] columns);
+
+    /// <summary>
+    ///     Update the listed columns of the object in DB
+    /// </summary>
+    Task<bool> UpdateColumnsAsync(TEntity instance, IDbTransaction? transaction, CancellationToken cancellationToken, Expression<Func<TEntity, object>> column,
+        params Expression<Func<TEntity, object>>[] columns);
+
+    /// <summary>
+    ///     Update the listed columns of the objects matched by the predicate
+    /// </summary>
+    bool UpdateColumns(Expression<Func<TEntity, bool>>? predicate, TEntity instance, Expression<Func<TEntity, object>> column,
+        params Expression<Func<TEntity, object>>[] columns);
+
+    /// <summary>
+    ///     Update the listed columns of the objects matched by the predicate
+    /// </summary>
+    Task<bool> UpdateColumnsAsync(Expression<Func<TEntity, bool>>? predicate, TEntity instance, Expression<Func<TEntity, object>> column,
+        params Expression<Func<TEntity, object>>[] columns);
+
+    /// <summary>
+    ///     Update the listed columns of the objects matched by the predicate
+    /// </summary>
+    Task<bool> UpdateColumnsAsync(Expression<Func<TEntity, bool>>? predicate, TEntity instance, CancellationToken cancellationToken,
+        Expression<Func<TEntity, object>> column, params Expression<Func<TEntity, object>>[] columns);
+
+    /// <summary>
+    ///     Update the listed columns of the objects matched by the predicate
+    /// </summary>
+    bool UpdateColumns(Expression<Func<TEntity, bool>>? predicate, TEntity instance, IDbTransaction? transaction, Expression<Func<TEntity, object>> column,
+        params Expression<Func<TEntity, object>>[] columns);
+
+    /// <summary>
+    ///     Update the listed columns of the objects matched by the predicate
+    /// </summary>
+    Task<bool> UpdateColumnsAsync(Expression<Func<TEntity, bool>>? predicate, TEntity instance, IDbTransaction? transaction,
+        Expression<Func<TEntity, object>> column, params Expression<Func<TEntity, object>>[] columns);
+
+    /// <summary>
+    ///     Update the listed columns of the objects matched by the predicate
+    /// </summary>
+    Task<bool> UpdateColumnsAsync(Expression<Func<TEntity, bool>>? predicate, TEntity instance, IDbTransaction? transaction, CancellationToken cancellationToken,
+        Expression<Func<TEntity, object>> column, params Expression<Func<TEntity, object>>[] columns);
+
+    /// <summary>
     ///     Bulk Update objects to DB
     /// </summary>
     bool BulkUpdate(IEnumerable<TEntity> instances);

@@ -2,8 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Reflection;
-using MicroOrm.Dapper.Repositories.Attributes;
 
 namespace MicroOrm.Dapper.Repositories.SqlGenerator;
 
@@ -12,44 +10,167 @@ public partial class SqlGenerator<TEntity>
 {
     public virtual SqlQuery GetUpdate(TEntity entity, params Expression<Func<TEntity, object>>[] includes)
     {
-        var properties = SqlProperties.Where(p =>
-            !KeySqlProperties.Any(k => k.PropertyName.Equals(p.PropertyName, StringComparison.OrdinalIgnoreCase)) && !p.IgnoreUpdate).ToArray();
+        var properties = GetPropertiesToUpdate();
 
         if (properties.Length == 0)
             throw new ArgumentException("Can't update without [Key]");
 
-        if (HasUpdatedAt && UpdatedAtProperty.GetCustomAttribute<UpdatedAtAttribute>() is { } attribute)
-        {
-            var offset = attribute.TimeKind == DateTimeKind.Local
-                ? new DateTimeOffset(DateTime.Now)
-                : new DateTimeOffset(DateTime.UtcNow);
-            if (attribute.OffSet != 0)
-            {
-                offset = offset.ToOffset(TimeSpan.FromHours(attribute.OffSet));
-            }
+        SetUpdatedAt(entity);
 
-            UpdatedAtProperty.SetValue(entity, offset.DateTime);
-        }
+        return BuildUpdateByKey(entity, properties, includes);
+    }
+
+    public virtual SqlQuery GetUpdate(Expression<Func<TEntity, bool>>? predicate, TEntity entity, params Expression<Func<TEntity, object>>[] includes)
+    {
+        var properties = GetPropertiesToUpdate();
+
+        SetUpdatedAt(entity);
+
+        return BuildUpdateByPredicate(predicate, entity, properties, includes);
+    }
+
+    public virtual SqlQuery GetUpdateColumns(TEntity entity, Expression<Func<TEntity, object>> column, params Expression<Func<TEntity, object>>[] columns)
+    {
+        var properties = GetColumnsToUpdate(column, columns);
+
+        SetUpdatedAt(entity);
+
+        return BuildUpdateByKey(entity, properties, []);
+    }
+
+    public virtual SqlQuery GetUpdateColumns(Expression<Func<TEntity, bool>>? predicate, TEntity entity, Expression<Func<TEntity, object>> column,
+        params Expression<Func<TEntity, object>>[] columns)
+    {
+        var properties = GetColumnsToUpdate(column, columns);
+
+        SetUpdatedAt(entity);
+
+        return BuildUpdateByPredicate(predicate, entity, properties, []);
+    }
+
+    public virtual SqlQuery GetUpdate(Expression<Func<TEntity, bool>>? predicate, object setPropertyObj)
+    {
+        var setProperties = setPropertyObj.GetType().GetProperties();
+        var properties = SqlProperties
+            .Where(p => !KeySqlProperties.Any(k => k.PropertyName.Equals(p.PropertyName, StringComparison.OrdinalIgnoreCase)) && !p.IgnoreUpdate
+                && setProperties.Any(k => k.Name.Equals(p.PropertyName, StringComparison.OrdinalIgnoreCase)))
+            .ToArray();
+
+        var updatedAt = GetUpdatedAtToSet(properties, out var updatedAtValue);
+        var fields = properties;
+        if (updatedAt != null)
+            fields = [.. properties, updatedAt];
 
         var query = new SqlQuery();
-
         query.SqlBuilder
             .Append("UPDATE ")
             .Append(TableName)
             .Append(' ');
+        query.SqlBuilder.Append("SET ");
+        query.SqlBuilder.Append(GetFieldsUpdate(TableName, fields, UseQuotationMarks == true));
+        query.SqlBuilder.Append(' ');
+        AppendWherePredicateQuery(query, predicate, QueryType.Update);
 
-        if (includes.Length > 0)
+        var parameters = (Dictionary<string, object?>)query.Param!;
+        foreach (var metadata in properties)
         {
-            var joinsBuilder = AppendJoinToUpdate(entity, query, includes);
-            query.SqlBuilder.Append("SET ");
-            query.SqlBuilder.Append(GetFieldsUpdate(TableName, properties, UseQuotationMarks == true));
-            query.SqlBuilder.Append(joinsBuilder);
+            var setProp = setProperties.FirstOrDefault(p => p.Name.Equals(metadata.PropertyName, StringComparison.OrdinalIgnoreCase));
+            if (setProp == null)
+                continue;
+            parameters.Add($"{typeof(TEntity).Name}{metadata.PropertyName}", setProp.GetValue(setPropertyObj));
         }
-        else
+
+        if (updatedAt != null)
+            parameters.Add($"{typeof(TEntity).Name}{updatedAt.PropertyName}", updatedAtValue);
+
+        return query;
+    }
+
+    public virtual SqlQuery GetUpdate(Expression<Func<TEntity, bool>>? predicate, Dictionary<string, object> setPropertyDict)
+    {
+        var propNameExceptItems = setPropertyDict.Keys.Except(SqlProperties.Select(p => p.PropertyName)).ToArray();
+        if (propNameExceptItems.Length > 0)
         {
-            query.SqlBuilder.Append("SET ");
-            query.SqlBuilder.Append(GetFieldsUpdate(TableName, properties, UseQuotationMarks == true));
+            string keys = string.Join(",", propNameExceptItems);
+            throw new ArgumentException(string.Concat(nameof(setPropertyDict), "content error detail:", $" [{keys}] not equal entity column name"));
         }
+
+        var properties = SqlProperties
+            .Where(p => !KeySqlProperties.Any(k => k.PropertyName.Equals(p.PropertyName, StringComparison.OrdinalIgnoreCase)) && !p.IgnoreUpdate
+                && setPropertyDict.Any(k => k.Key.Equals(p.PropertyName, StringComparison.OrdinalIgnoreCase)))
+            .ToArray();
+
+        var updatedAt = GetUpdatedAtToSet(properties, out var updatedAtValue);
+        var fields = properties;
+        if (updatedAt != null)
+            fields = [.. properties, updatedAt];
+
+        var query = new SqlQuery();
+        query.SqlBuilder
+            .Append("UPDATE ")
+            .Append(TableName)
+            .Append(' ');
+        query.SqlBuilder.Append("SET ");
+        query.SqlBuilder.Append(GetFieldsUpdate(TableName, fields, UseQuotationMarks == true));
+        query.SqlBuilder.Append(' ');
+        AppendWherePredicateQuery(query, predicate, QueryType.Update);
+
+        var parameters = (Dictionary<string, object?>)query.Param!;
+        foreach (var metadata in properties)
+        {
+            var value = setPropertyDict.FirstOrDefault(p => p.Key.Equals(metadata.PropertyName, StringComparison.OrdinalIgnoreCase)).Value;
+            parameters.Add($"{typeof(TEntity).Name}{metadata.PropertyName}", value);
+        }
+
+        if (updatedAt != null)
+            parameters.Add($"{typeof(TEntity).Name}{updatedAt.PropertyName}", updatedAtValue);
+
+        return query;
+    }
+
+    private SqlPropertyMetadata[] GetPropertiesToUpdate()
+    {
+        return SqlProperties.Where(p =>
+            !KeySqlProperties.Any(k => k.PropertyName.Equals(p.PropertyName, StringComparison.OrdinalIgnoreCase)) && !p.IgnoreUpdate).ToArray();
+    }
+
+    private SqlPropertyMetadata[] GetColumnsToUpdate(Expression<Func<TEntity, object>> column, Expression<Func<TEntity, object>>[] columns)
+    {
+        var properties = new List<SqlPropertyMetadata>(columns.Length + 1);
+
+        AddColumnToUpdate(properties, column, nameof(column));
+        foreach (var item in columns)
+            AddColumnToUpdate(properties, item, nameof(columns));
+
+        var updatedAt = GetUpdatedAtToSet(properties, out _);
+        if (updatedAt != null)
+            properties.Add(updatedAt);
+
+        return properties.ToArray();
+    }
+
+    private void AddColumnToUpdate(List<SqlPropertyMetadata> properties, Expression<Func<TEntity, object>> column, string paramName)
+    {
+        var propertyName = ExpressionHelper.GetPropertyName(column);
+
+        var property = SqlProperties.FirstOrDefault(p => p.PropertyName == propertyName)
+            ?? throw new ArgumentException($"Can't update [{propertyName}]: not a mapped column of {typeof(TEntity).Name}", paramName);
+
+        if (KeySqlProperties.Any(k => k.PropertyName == propertyName))
+            throw new ArgumentException($"Can't update [{propertyName}]: property is marked with [Key]", paramName);
+
+        if (property.IgnoreUpdate)
+            throw new ArgumentException($"Can't update [{propertyName}]: property is marked with [IgnoreUpdate]", paramName);
+
+        if (properties.All(p => p.PropertyName != propertyName))
+            properties.Add(property);
+    }
+
+    private SqlQuery BuildUpdateByKey(TEntity entity, SqlPropertyMetadata[] properties, Expression<Func<TEntity, object>>[] includes)
+    {
+        var query = new SqlQuery();
+
+        AppendUpdateSet(query, entity, properties, includes);
 
         query.SqlBuilder.Append(" WHERE ");
 
@@ -67,44 +188,12 @@ public partial class SqlGenerator<TEntity>
         return query;
     }
 
-
-    public virtual SqlQuery GetUpdate(Expression<Func<TEntity, bool>>? predicate, TEntity entity, params Expression<Func<TEntity, object>>[] includes)
+    private SqlQuery BuildUpdateByPredicate(Expression<Func<TEntity, bool>>? predicate, TEntity entity, SqlPropertyMetadata[] properties,
+        Expression<Func<TEntity, object>>[] includes)
     {
-        var properties = SqlProperties.Where(p =>
-            !KeySqlProperties.Any(k => k.PropertyName.Equals(p.PropertyName, StringComparison.OrdinalIgnoreCase)) && !p.IgnoreUpdate).ToArray();
-
-        if (HasUpdatedAt && UpdatedAtProperty.GetCustomAttribute<UpdatedAtAttribute>() is { } attribute)
-        {
-            var offset = attribute.TimeKind == DateTimeKind.Local
-                ? new DateTimeOffset(DateTime.Now)
-                : new DateTimeOffset(DateTime.UtcNow);
-            if (attribute.OffSet != 0)
-            {
-                offset = offset.ToOffset(TimeSpan.FromHours(attribute.OffSet));
-            }
-
-            UpdatedAtProperty.SetValue(entity, offset.DateTime);
-        }
-
         var query = new SqlQuery();
 
-        query.SqlBuilder
-            .Append("UPDATE ")
-            .Append(TableName)
-            .Append(' ');
-
-        if (includes.Length > 0)
-        {
-            var joinsBuilder = AppendJoinToUpdate(entity, query, includes);
-            query.SqlBuilder.Append("SET ");
-            query.SqlBuilder.Append(GetFieldsUpdate(TableName, properties, UseQuotationMarks == true));
-            query.SqlBuilder.Append(joinsBuilder);
-        }
-        else
-        {
-            query.SqlBuilder.Append("SET ");
-            query.SqlBuilder.Append(GetFieldsUpdate(TableName, properties, UseQuotationMarks == true));
-        }
+        AppendUpdateSet(query, entity, properties, includes);
 
         query.SqlBuilder
             .Append(' ');
@@ -118,70 +207,18 @@ public partial class SqlGenerator<TEntity>
         return query;
     }
 
-
-    public virtual SqlQuery GetUpdate(Expression<Func<TEntity, bool>>? predicate, object setPropertyObj)
+    private void AppendUpdateSet(SqlQuery query, TEntity entity, SqlPropertyMetadata[] properties, Expression<Func<TEntity, object>>[] includes)
     {
-        var setProperties = setPropertyObj.GetType().GetProperties();
-        var properties = SqlProperties
-            .Where(p => !KeySqlProperties.Any(k => k.PropertyName.Equals(p.PropertyName, StringComparison.OrdinalIgnoreCase)) && !p.IgnoreUpdate
-                && setProperties.Any(k => k.Name.Equals(p.PropertyName, StringComparison.OrdinalIgnoreCase)))
-            .ToArray();
-
-        var query = new SqlQuery();
         query.SqlBuilder
             .Append("UPDATE ")
             .Append(TableName)
             .Append(' ');
+
+        var joinsBuilder = includes.Length > 0 ? AppendJoinToUpdate(entity, query, includes) : string.Empty;
+
         query.SqlBuilder.Append("SET ");
         query.SqlBuilder.Append(GetFieldsUpdate(TableName, properties, UseQuotationMarks == true));
-        query.SqlBuilder.Append(' ');
-        AppendWherePredicateQuery(query, predicate, QueryType.Update);
-
-        var parameters = (Dictionary<string, object?>)query.Param!;
-        foreach (var metadata in properties)
-        {
-            var setProp = setProperties.FirstOrDefault(p => p.Name.Equals(metadata.PropertyName, StringComparison.OrdinalIgnoreCase));
-            if (setProp == null)
-                continue;
-            parameters.Add($"{typeof(TEntity).Name}{metadata.PropertyName}", setProp.GetValue(setPropertyObj));
-        }
-
-        return query;
-    }
-
-
-    public virtual SqlQuery GetUpdate(Expression<Func<TEntity, bool>>? predicate, Dictionary<string, object> setPropertyDict)
-    {
-        var propNameExceptItems = setPropertyDict.Keys.Except(SqlProperties.Select(p => p.PropertyName)).ToArray();
-        if (propNameExceptItems.Length > 0)
-        {
-            string keys = string.Join(",", propNameExceptItems);
-            throw new ArgumentException(string.Concat(nameof(setPropertyDict), "content error detail:", $" [{keys}] not equal entity column name"));
-        }
-
-        var properties = SqlProperties
-            .Where(p => !KeySqlProperties.Any(k => k.PropertyName.Equals(p.PropertyName, StringComparison.OrdinalIgnoreCase)) && !p.IgnoreUpdate
-                && setPropertyDict.Any(k => k.Key.Equals(p.PropertyName, StringComparison.OrdinalIgnoreCase)))
-            .ToArray();
-
-        var query = new SqlQuery();
-        query.SqlBuilder
-            .Append("UPDATE ")
-            .Append(TableName)
-            .Append(' ');
-        query.SqlBuilder.Append("SET ");
-        query.SqlBuilder.Append(GetFieldsUpdate(TableName, properties, UseQuotationMarks == true));
-        query.SqlBuilder.Append(' ');
-        AppendWherePredicateQuery(query, predicate, QueryType.Update);
-
-        var parameters = (Dictionary<string, object?>)query.Param!;
-        foreach (var metadata in properties)
-        {
-            var value = setPropertyDict.FirstOrDefault(p => p.Key.Equals(metadata.PropertyName, StringComparison.OrdinalIgnoreCase)).Value;
-            parameters.Add($"{typeof(TEntity).Name}{metadata.PropertyName}", value);
-        }
-
-        return query;
+        query.SqlBuilder.Append(joinsBuilder);
     }
 
     private string GetFieldsUpdate(string? tableName, IEnumerable<SqlPropertyMetadata> properties, bool useMarks)
