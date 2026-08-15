@@ -4,7 +4,7 @@ using Repositories.Base;
 using TestClasses;
 using Xunit;
 
-[assembly: CollectionBehavior(DisableTestParallelization = true)]
+[assembly: CollectionBehavior(CollectionBehavior.CollectionPerAssembly)]
 
 namespace Repositories.MySQL.Tests;
 
