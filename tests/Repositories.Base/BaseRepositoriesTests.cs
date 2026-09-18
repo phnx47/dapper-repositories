@@ -865,4 +865,27 @@ public abstract class BaseRepositoriesTests
         var users5 = (await Db.Users.FindAllAsync(x => x.Name.StartsWith("est"), TestContext.Current.CancellationToken)).ToArray();
         Assert.True(users5.Length <= 0);
     }
+
+    [Fact]
+    public async Task FindAllByLikeNameIgnoreCase()
+    {
+        var users1 = (await Db.Users.FindAllAsync(x => x.Name.EndsWith("name1", StringComparison.OrdinalIgnoreCase), TestContext.Current.CancellationToken)).ToArray();
+        Assert.NotEmpty(users1);
+        Assert.All(users1, u => Assert.EndsWith("name1", u.Name, StringComparison.OrdinalIgnoreCase));
+
+        var users2 = (await Db.Users.FindAllAsync(x => x.Name.Contains("NAME", StringComparison.InvariantCultureIgnoreCase), TestContext.Current.CancellationToken)).ToArray();
+        Assert.NotEmpty(users2);
+        Assert.All(users2, u => Assert.Contains("name", u.Name, StringComparison.OrdinalIgnoreCase));
+
+        var users3 = (await Db.Users.FindAllAsync(x => x.Name.StartsWith("TEST", StringComparison.CurrentCultureIgnoreCase), TestContext.Current.CancellationToken)).ToArray();
+        Assert.NotEmpty(users3);
+        Assert.All(users3, u => Assert.StartsWith("test", u.Name, StringComparison.OrdinalIgnoreCase));
+
+        var users4 = (await Db.Users.FindAllAsync(x => !x.Name.StartsWith("test", StringComparison.OrdinalIgnoreCase), TestContext.Current.CancellationToken)).ToArray();
+        Assert.DoesNotContain(users4, u => u.Name.StartsWith("test", StringComparison.OrdinalIgnoreCase));
+
+        var users5 = (await Db.Users.FindAllAsync(x => x.Name.Equals("testname2", StringComparison.OrdinalIgnoreCase), TestContext.Current.CancellationToken)).ToArray();
+        Assert.NotEmpty(users5);
+        Assert.All(users5, u => Assert.Equal("TestName2", u.Name));
+    }
 }

@@ -136,6 +136,14 @@ public partial class SqlGenerator<TEntity>
                             else
                                 sqlBuilder.AppendFormat("{0}.{1} <> ALL(" + ParameterSymbol + "{2})", tableName, columnName, vKey);
                         }
+                        else if (qpExpr.IgnoreCase)
+                        {
+                            // PostgreSQL has ILIKE; the other providers get LOWER() on both sides
+                            if (Provider == SqlProvider.PostgreSQL && qpExpr.QueryOperator is "LIKE" or "NOT LIKE")
+                                sqlBuilder.AppendFormat("{0}.{1} {2} " + ParameterSymbol + "{3}", tableName, columnName, qpExpr.QueryOperator is "LIKE" ? "ILIKE" : "NOT ILIKE", vKey);
+                            else
+                                sqlBuilder.AppendFormat("LOWER({0}.{1}) {2} LOWER(" + ParameterSymbol + "{3})", tableName, columnName, qpExpr.QueryOperator, vKey);
+                        }
                         else
                             sqlBuilder.AppendFormat("{0}.{1} {2} " + ParameterSymbol + "{3}", tableName, columnName, qpExpr.QueryOperator, vKey);
                         conditions.Add(new KeyValuePair<string, object?>(vKey, qpExpr.PropertyValue));

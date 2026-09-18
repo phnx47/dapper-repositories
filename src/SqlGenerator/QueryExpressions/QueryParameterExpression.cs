@@ -20,15 +20,17 @@ internal class QueryParameterExpression : QueryExpression
     /// <param name="propertyValue">The property value.</param>
     /// <param name="queryOperator">The query operator.</param>
     /// <param name="nestedProperty">Signilize if it is nested property.</param>
+    /// <param name="ignoreCase">Signilize if the string comparison is case-insensitive.</param>
     internal QueryParameterExpression(string linkingOperator,
         string propertyName, object? propertyValue,
-        string queryOperator, bool nestedProperty) : this()
+        string queryOperator, bool nestedProperty, bool ignoreCase = false) : this()
     {
         LinkingOperator = linkingOperator;
         PropertyName = propertyName;
         PropertyValue = propertyValue;
         QueryOperator = queryOperator;
         NestedProperty = nestedProperty;
+        IgnoreCase = ignoreCase;
     }
 
     /// <summary>
@@ -58,6 +60,11 @@ internal class QueryParameterExpression : QueryExpression
     public bool NestedProperty { get; set; }
 
     /// <summary>
+    /// <c>true</c> when the string comparison was requested with a <see cref="System.StringComparison"/> that ignores case.
+    /// </summary>
+    public bool IgnoreCase { get; set; }
+
+    /// <summary>
     /// Name of the right-hand property when comparing a column against another column.
     /// </summary>
     public string? PropertyValueColumn { get; set; }
@@ -75,6 +82,6 @@ internal class QueryParameterExpression : QueryExpression
     public override string ToString()
     {
         return
-            $"[{base.ToString()}, PropertyName:{PropertyName}, PropertyValue:{PropertyValue}, QueryOperator:{QueryOperator}, NestedProperty:{NestedProperty}, PropertyValueColumn:{PropertyValueColumn}, PropertyValueColumnNested:{PropertyValueColumnNested}]";
+            $"[{base.ToString()}, PropertyName:{PropertyName}, PropertyValue:{PropertyValue}, QueryOperator:{QueryOperator}, NestedProperty:{NestedProperty}, IgnoreCase:{IgnoreCase}, PropertyValueColumn:{PropertyValueColumn}, PropertyValueColumnNested:{PropertyValueColumnNested}]";
     }
 }
