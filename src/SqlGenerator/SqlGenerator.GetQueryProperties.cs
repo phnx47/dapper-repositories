@@ -74,7 +74,8 @@ public partial class SqlGenerator<TEntity>
                     var likeValue = ExpressionHelper.GetSqlLikeValue(methodName, propertyValue);
                     var opr = ExpressionHelper.GetMethodCallSqlOperator(methodName, isNotUnary);
                     var link = ExpressionHelper.GetSqlOperator(linkingType);
-                    return new QueryParameterExpression(link, propertyName, likeValue, opr, isNested);
+                    var ignoreCase = ExpressionHelper.IsIgnoreCase(methodCallExpression);
+                    return new QueryParameterExpression(link, propertyName, likeValue, opr, isNested, ignoreCase);
                 }
                 default:
                     throw new NotSupportedException($"'{methodName}' method is not supported");

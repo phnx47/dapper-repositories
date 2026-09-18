@@ -1,5 +1,7 @@
 using System;
+using System.Linq.Expressions;
 using MicroOrm.Dapper.Repositories.SqlGenerator;
+using TestClasses;
 using Xunit;
 
 namespace SqlGenerator.Tests;
@@ -64,5 +66,25 @@ public class ExpressionHelperTests
 
         var result3 = ExpressionHelper.GetSqlLikeValue("EndsWith", 789);
         Assert.Equal("%789", result3);
+    }
+
+    [Fact]
+    public void IsIgnoreCase()
+    {
+        Assert.True(ExpressionHelper.IsIgnoreCase(Call(x => x.Name.Contains("ab", StringComparison.OrdinalIgnoreCase))));
+        Assert.True(ExpressionHelper.IsIgnoreCase(Call(x => x.Name.StartsWith("ab", StringComparison.InvariantCultureIgnoreCase))));
+        Assert.True(ExpressionHelper.IsIgnoreCase(Call(x => x.Name.Equals("ab", StringComparison.CurrentCultureIgnoreCase))));
+
+        var comparison = StringComparison.OrdinalIgnoreCase;
+        Assert.True(ExpressionHelper.IsIgnoreCase(Call(x => x.Name.EndsWith("ab", comparison))));
+
+        Assert.False(ExpressionHelper.IsIgnoreCase(Call(x => x.Name.Contains("ab"))));
+        Assert.False(ExpressionHelper.IsIgnoreCase(Call(x => x.Name.StartsWith("ab", StringComparison.Ordinal))));
+        Assert.False(ExpressionHelper.IsIgnoreCase(Call(x => x.Name.Equals("ab", StringComparison.InvariantCulture))));
+    }
+
+    private static MethodCallExpression Call(Expression<Func<User, bool>> predicate)
+    {
+        return (MethodCallExpression)predicate.Body;
     }
 }

@@ -177,6 +177,20 @@ internal static class ExpressionHelper
         return GetValue(expr);
     }
 
+    /// <summary>
+    /// Determines whether a string method call (Contains, StartsWith, EndsWith, Equals) was given
+    /// a <see cref="StringComparison"/> that ignores case.
+    /// </summary>
+    /// <param name="callExpr">The method call expression.</param>
+    /// <returns><c>true</c> when the comparison argument is one of the <c>*IgnoreCase</c> values.</returns>
+    public static bool IsIgnoreCase(MethodCallExpression callExpr)
+    {
+        return callExpr.Arguments.FirstOrDefault(a => a.Type == typeof(StringComparison)) is { } comparisonArg
+               && GetValue(comparisonArg) is StringComparison.CurrentCultureIgnoreCase
+                   or StringComparison.InvariantCultureIgnoreCase
+                   or StringComparison.OrdinalIgnoreCase;
+    }
+
     public static object? GetValuesFromCollection(MethodCallExpression callExpr)
     {
         var collection = callExpr.Method.IsStatic ? callExpr.Arguments.First() : callExpr.Object;

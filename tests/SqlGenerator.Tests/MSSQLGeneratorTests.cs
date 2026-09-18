@@ -794,7 +794,7 @@ public class MSSQLGeneratorTests
             null);
         Assert.Equal(
             sPrefix1 +
-            "([DAB].[Phones].[Code] LIKE @Code_p0 OR [DAB].[Phones].[Code] NOT LIKE @Code_p1 OR [DAB].[Phones].[Code] LIKE @Code_p2) AND [DAB].[Phones].[Deleted] IS NULL",
+            "(LOWER([DAB].[Phones].[Code]) LIKE LOWER(@Code_p0) OR [DAB].[Phones].[Code] NOT LIKE @Code_p1 OR [DAB].[Phones].[Code] LIKE @Code_p2) AND [DAB].[Phones].[Deleted] IS NULL",
             sqlQuery11.GetSql());
 
         var parameters11 = sqlQuery11.Param as IDictionary<string, object>;
@@ -960,5 +960,27 @@ public class MSSQLGeneratorTests
 
         var parameters = sqlQuery.Param as IDictionary<string, object>;
         Assert.IsType<DateTime>(parameters["UserUpdatedAt"]);
+    }
+
+    [Fact]
+    public static void SelectLikeIgnoreCase()
+    {
+        var sqlGenerator = new SqlGenerator<Phone>(_sqlConnector, true);
+        var sqlQuery = sqlGenerator.GetSelectAll(
+            x => x.Code.Contains("uk", StringComparison.OrdinalIgnoreCase)
+                 || !x.Code.StartsWith("uk", StringComparison.InvariantCultureIgnoreCase)
+                 || x.Code.Equals("uk", StringComparison.CurrentCultureIgnoreCase)
+                 || x.Code.EndsWith("uk", StringComparison.Ordinal),
+            null);
+        Assert.Equal(
+            "SELECT [DAB].[Phones].[Id], [DAB].[Phones].[PNumber], [DAB].[Phones].[IsActive], [DAB].[Phones].[Code], [DAB].[Phones].[Deleted] FROM [DAB].[Phones] WHERE " +
+            "(LOWER([DAB].[Phones].[Code]) LIKE LOWER(@Code_p0) OR LOWER([DAB].[Phones].[Code]) NOT LIKE LOWER(@Code_p1) OR LOWER([DAB].[Phones].[Code]) = LOWER(@Code_p2) OR [DAB].[Phones].[Code] LIKE @Code_p3) AND [DAB].[Phones].[Deleted] IS NULL",
+            sqlQuery.GetSql());
+
+        var parameters = sqlQuery.Param as IDictionary<string, object>;
+        Assert.Equal("%uk%", parameters["Code_p0"].ToString());
+        Assert.Equal("uk%", parameters["Code_p1"].ToString());
+        Assert.Equal("uk", parameters["Code_p2"].ToString());
+        Assert.Equal("%uk", parameters["Code_p3"].ToString());
     }
 }
