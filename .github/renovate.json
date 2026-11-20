@@ -6,6 +6,7 @@
   "semanticCommits": "disabled",
   "commitMessageAction": "Bump",
   "commitMessageTopic": "{{depName}}",
+  "minimumReleaseAge": "3 days",
   "packageRules": [
     {
       "automerge": true,
